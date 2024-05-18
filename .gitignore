@@ -7,6 +7,9 @@
 *.o
 *.obj
 
+Content/StarterContent
+Content/__ExternalActors__
+Content/__ExternalObjects__
 # Precompiled Headers
 *.gch
 *.pch
