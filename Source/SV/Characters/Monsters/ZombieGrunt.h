@@ -9,6 +9,7 @@
 class UGridMovementComponent;
 class UHitCapsuleComponent;
 class UDamageRecieveComponent;
+class UCharacterDetailsComponent;
 /**
  * 
  */
@@ -28,5 +29,6 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UGridMovementComponent* GridMovementComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UHitCapsuleComponent* BodyHitComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UDamageRecieveComponent* DamageRecieveComponent;
+	UPROPERTY(BlueprintreadWrite, EditAnywhere) UCharacterDetailsComponent* CharacterDetailsComponent;
 	
 };
