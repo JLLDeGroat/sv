@@ -67,3 +67,9 @@ void UEquipmentComponent::FireEquippedGun() {
 			gunFire->FireAtLocation(attackComponent->GetCurrentTargetLocation());
 	}
 }
+
+int UEquipmentComponent::GetActionPointsNeededToUseEquipment() {
+	//TODO: 
+	// set it so that we get the amount from the equipment component
+	return 2;
+}

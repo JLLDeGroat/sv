@@ -21,6 +21,7 @@
 #include "../Characters/Components/TargetingComponent.h"
 #include "../Characters/Components/AttackComponent.h"
 #include "../Characters/Components/CharacterDetailsComponent.h"
+#include "../Characters/Components/EquipmentComponent.h"
 #include "Components/PawnCameraComponent.h"
 #include "Camera/CameraComponent.h"
 
@@ -152,6 +153,14 @@ void AGamePlayerController::ClickAction_Started() {
 
 			//assuming only one target data
 
+			auto equipmentComponent = actor->GetComponentByClass<UEquipmentComponent>();
+			auto detailsComponent = actor->GetComponentByClass<UCharacterDetailsComponent>();
+
+			if (!equipmentComponent || !detailsComponent)
+				return UDebugMessages::LogError(this, "could not get equpiment or details component, will not begin try attack");
+
+			detailsComponent->RemoveActionPoints(equipmentComponent->GetActionPointsNeededToUseEquipment());
+
 			auto attackComponent = selected->GetAsActor()->GetComponentByClass<UAttackComponent>();
 			attackComponent->TryAttackLocation(currentTargetData[0].GetShootLocation(), target);
 		}
@@ -202,7 +211,6 @@ void AGamePlayerController::RightClickAction_Released() {
 
 void AGamePlayerController::BeginTarget_Started() {
 	auto selected = SelectionManager->GetSelected();
-
 	auto pawnCameraComponent = PlayerPawn->GetPawnCameraComponent();
 
 
@@ -215,6 +223,14 @@ void AGamePlayerController::BeginTarget_Started() {
 	}
 	else if (selected) {
 		auto actor = selected->GetAsActor();
+
+		auto equipmentComponent = actor->GetComponentByClass<UEquipmentComponent>();
+		auto detailsComponent = actor->GetComponentByClass<UCharacterDetailsComponent>();
+
+		if (!equipmentComponent || !detailsComponent ||
+			equipmentComponent->GetActionPointsNeededToUseEquipment() > detailsComponent->GetActionPoints())
+			return UDebugMessages::LogError(this, "could not get equpiment or details component, or not enough action points. will not begin targeting");
+
 
 		auto targetingComponent = actor->GetComponentByClass<UTargetingComponent>();
 
@@ -249,17 +265,18 @@ void AGamePlayerController::MoveRight_Started(const FInputActionValue& Value) {
 }
 
 void AGamePlayerController::MouseMove(const FInputActionValue& Value) {
+	if (PlayerPawn->GetPawnCameraComponent()->GetCurrentCameraState() == ECameraState::CS_GunTarget) {
+		auto camera = PlayerPawn->GetCameraComponent();
 
-	auto camera = PlayerPawn->GetCameraComponent();
+		auto vectorValue = Value.Get<FVector2D>();
 
-	auto vectorValue = Value.Get<FVector2D>();
+		auto additionalRotation = FRotator(vectorValue.Y, vectorValue.X, 0);
+		auto current = camera->GetRelativeRotation();
+		auto newRotation = additionalRotation + current;
 
-	auto additionalRotation = FRotator(vectorValue.Y, vectorValue.X, 0);
-	auto current = camera->GetRelativeRotation();
-	auto newRotation = additionalRotation + current;
+		if (newRotation.Pitch > 60) newRotation.Pitch = 60;
+		else if (newRotation.Pitch < -60) newRotation.Pitch = -60;
 
-	if (newRotation.Pitch > 60) newRotation.Pitch = 60;
-	else if (newRotation.Pitch < -60) newRotation.Pitch = -60;
-
-	camera->SetRelativeRotation(newRotation);
+		camera->SetRelativeRotation(newRotation);
+	}
 }

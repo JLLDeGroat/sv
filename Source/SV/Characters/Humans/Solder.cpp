@@ -51,8 +51,8 @@ ASolder::ASolder(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(O
 	DetailsComponent->AddMaxMovementPoints(6);
 	DetailsComponent->AddMovementPoints(6);
 
-	DetailsComponent->AddActionPoints(2);
 	DetailsComponent->AddMaxActionPoints(2);
+	DetailsComponent->AddActionPoints(2);
 }
 
 // Called when the game starts or when spawned
