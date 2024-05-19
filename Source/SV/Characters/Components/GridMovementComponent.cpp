@@ -11,6 +11,7 @@
 #include "../../Utilities/SvUtilities.h"
 #include "../Anim/CharAnimInstance.h"
 #include "TargetingComponent.h"
+#include "CharacterDetailsComponent.h"
 
 // Sets default values for this component's properties
 UGridMovementComponent::UGridMovementComponent(const FObjectInitializer& ObjectInitializer) : UAnimAccessComponent(ObjectInitializer)
@@ -109,7 +110,7 @@ bool UGridMovementComponent::HasFoundEnd() {
 
 
 FMovementData* UGridMovementComponent::HasAnalysedGridItem(FVector startLocation) {
-	for (int i = 0; i < MovementData.Num(); i++) 
+	for (int i = 0; i < MovementData.Num(); i++)
 		if (MovementData[i].GetStart() == startLocation)
 			return &MovementData[i];
 
@@ -117,34 +118,36 @@ FMovementData* UGridMovementComponent::HasAnalysedGridItem(FVector startLocation
 }
 
 bool UGridMovementComponent::AlreadyInPrevious(FVector gridLocation, TArray<FVector> previous) {
-	for (int i = 0; i < previous.Num(); i++) 
-		if (previous[i] == gridLocation) 
+	for (int i = 0; i < previous.Num(); i++)
+		if (previous[i] == gridLocation)
 			return true;
-	
+
 	return false;
 }
 
 TArray<FVector> UGridMovementComponent::FindRoute(FVector start, FVector end) {
 	MovementData.Empty();
 
-	TArray<FVector> emptyPrevious;
-	auto thisMovementDataIndex = GetMovementDataForGridItem(start, emptyPrevious, end);
-	auto thisMovementData = &MovementData[thisMovementDataIndex];
+	auto detailsComponent = GetOwner()->GetComponentByClass<UCharacterDetailsComponent>();
 
-	FindRouteRecursive(thisMovementData, end);
+	if (detailsComponent->GetMovementPoints() > 0) {
+		TArray<FVector> emptyPrevious;
+		auto thisMovementDataIndex = GetMovementDataForGridItem(start, emptyPrevious, end);
+		auto thisMovementData = &MovementData[thisMovementDataIndex];
 
-	if (HasFoundEnd()) {
-		UDebugMessages::LogDisplay(this, "found end");
-		for (int i = 0; i < MovementData.Num(); i++) {
-			if (MovementData[i].GetIsEnd()) {
-				TArray<FVector> FinalMovement = MovementData[i].GetPrevious();
-				FinalMovement.Emplace(MovementData[i].GetStart());
-				return FinalMovement;
+		FindRouteRecursive(thisMovementData, end);
+
+		if (HasFoundEnd()) {
+			UDebugMessages::LogDisplay(this, "found end");
+			for (int i = 0; i < MovementData.Num(); i++) {
+				if (MovementData[i].GetIsEnd()) {
+					TArray<FVector> FinalMovement = MovementData[i].GetPrevious();
+					FinalMovement.Emplace(MovementData[i].GetStart());
+					return FinalMovement;
+				}
 			}
 		}
-	}
-	else {
-		UDebugMessages::LogError(this, "could not find end");
+		else UDebugMessages::LogError(this, "could not find end");
 	}
 
 	TArray<FVector> response;
@@ -157,8 +160,12 @@ void UGridMovementComponent::FindRouteRecursive(FMovementData* movementData, FVe
 		TArray<FVector> newPrevious = movementData->GetPrevious();
 		newPrevious.Emplace(movementData->GetStart());
 
-		if (newPrevious.Num() > MovementPoints + 1)
+		auto detailsComponent = GetOwner()->GetComponentByClass<UCharacterDetailsComponent>();
+
+		if (!detailsComponent || newPrevious.Num() > detailsComponent->GetMovementPoints() + 1) {
+			UDebugMessages::LogError(this, "failed to get details component or no movement points left, cannot move");
 			return;
+		}
 
 		TArray<int> newConnectionIds;
 
@@ -200,7 +207,7 @@ int UGridMovementComponent::GetMovementDataForGridItem(FVector gridItem, TArray<
 	TArray<FVector> locs;
 	GetMovableAdjacentTiles(gridItem, locs, end);
 
-	for (int i = 0; i < locs.Num(); i++) 
+	for (int i = 0; i < locs.Num(); i++)
 		currentMovement.AddConnection(locs[i]);
 
 	MovementData.Emplace(currentMovement);

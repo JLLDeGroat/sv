@@ -93,6 +93,4 @@ private:
 	
 	UPROPERTY() TArray<AActor*> TestActorList;
 	UPROPERTY() TArray<FMovementData> MovementData;
-
-	UPROPERTY() int MovementPoints = 5;
 };
