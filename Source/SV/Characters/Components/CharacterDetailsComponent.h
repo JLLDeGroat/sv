@@ -25,6 +25,8 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	void RefreshOnNewTurn();
+
 	void SetCharacterControl(ECharacterControl characterControl);
 	ECharacterControl GetCharacterControl() const;
 
@@ -33,9 +35,30 @@ public:
 
 	void RemoveHealth(int health, bool& isDead);
 
+	void RemoveMovementPoints(int amount);
+	void AddMovementPoints(int amount);
+	int GetMovementPoints() const;
+
+	void RemoveMaxMovementPoints(int amount);
+	void AddMaxMovementPoints(int amount);
+	int GetMaxMovementPoints();
+
+	void RemoveActionPoints(int amount);
+	void AddActionPoints(int amount);
+	int GetActionPoints() const;
+
+	void RemoveMaxActionPoints(int amount);
+	void AddMaxActionPoints(int amount);
+	int GetMaxActionPoints() const;
+
 private:
 
 	UPROPERTY() ECharacterControl ControlType;
 	UPROPERTY() int Health;
-		
+
+	UPROPERTY() int MovementPoints;
+	UPROPERTY() int MaxMovementPoints;
+
+	UPROPERTY() int ActionPoints;
+	UPROPERTY() int MaxActionPoints;
 };

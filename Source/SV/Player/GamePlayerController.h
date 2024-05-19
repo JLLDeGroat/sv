@@ -11,7 +11,7 @@ class UInputMappingContext;
 class UInputAction;
 class AGridSelectionActor;
 class USelectionManager;
-
+class UControlManager;
 class APlayerPawn;
 
 struct FInputActionValue;
@@ -30,6 +30,8 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupInputComponent() override;
+
+	
 
 protected:
 
@@ -63,5 +65,6 @@ protected:
 private:
 
 	UPROPERTY() USelectionManager* SelectionManager;
+	UPROPERTY() UControlManager* ControlManager;
 	UPROPERTY() APlayerPawn* PlayerPawn;
 };

@@ -6,6 +6,8 @@
 #include "GameFramework/HUD.h"
 #include "GameHud.generated.h"
 
+
+class UMainGameHud;
 /**
  * 
  */
@@ -14,4 +16,12 @@ class SV_API AGameHud : public AHUD
 {
 	GENERATED_BODY()
 	
+public:
+
+	virtual void BeginPlay() override;
+
+protected:
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UMainGameHud* MainGameHud;
+
 };

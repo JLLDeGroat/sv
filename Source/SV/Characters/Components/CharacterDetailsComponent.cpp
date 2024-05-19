@@ -55,3 +55,54 @@ void UCharacterDetailsComponent::RemoveHealth(int health, bool& isDead) {
 		isDead = true;
 	}
 }
+
+void UCharacterDetailsComponent::RefreshOnNewTurn() {
+	MovementPoints = MaxMovementPoints;
+	ActionPoints = MaxActionPoints;
+}
+
+void UCharacterDetailsComponent::RemoveMovementPoints(int amount) {
+	MovementPoints -= amount;
+	if (MovementPoints < 0) MovementPoints = 0;
+}
+void UCharacterDetailsComponent::AddMovementPoints(int amount) {
+	MovementPoints += amount;
+	if (MovementPoints > MaxMovementPoints) MovementPoints = MaxMovementPoints;
+}
+int UCharacterDetailsComponent::GetMovementPoints() const {
+	return MovementPoints;
+}
+
+void UCharacterDetailsComponent::RemoveMaxMovementPoints(int amount) {
+	MaxMovementPoints -= amount;
+	if (MaxMovementPoints < 0) MaxMovementPoints = 0;
+}
+void UCharacterDetailsComponent::AddMaxMovementPoints(int amount) {
+	MaxMovementPoints += amount;
+}
+int UCharacterDetailsComponent::GetMaxMovementPoints() {
+	return MaxMovementPoints;
+}
+
+void UCharacterDetailsComponent::RemoveActionPoints(int amount) {
+	ActionPoints -= amount;
+	if (ActionPoints < 0) ActionPoints = 0;
+}
+void UCharacterDetailsComponent::AddActionPoints(int amount) {
+	ActionPoints += amount;
+	if (ActionPoints > MaxActionPoints) ActionPoints = MaxActionPoints;
+}
+int UCharacterDetailsComponent::GetActionPoints() const {
+	return ActionPoints;
+}
+
+void UCharacterDetailsComponent::RemoveMaxActionPoints(int amount) {
+	MaxActionPoints += amount;
+}
+void UCharacterDetailsComponent::AddMaxActionPoints(int amount) {
+	MaxActionPoints -= amount;
+	if (MaxActionPoints < 0) MaxActionPoints = 0;
+}
+int UCharacterDetailsComponent::GetMaxActionPoints() const {
+	return MaxActionPoints;
+}
