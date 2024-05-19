@@ -29,6 +29,8 @@ public:
 
 	void FireEquippedGun();
 
+	int GetActionPointsNeededToUseEquipment();
+
 private:
 
 	UPROPERTY() TArray<AEquipment*> Equipment;

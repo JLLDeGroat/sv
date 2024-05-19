@@ -9,6 +9,7 @@
 #include "../Components/HitBoxComponent.h"
 #include "../Components/HitCapsuleComponent.h"
 #include "../Components/DamageRecieveComponent.h"
+#include "../Components/CharacterDetailsComponent.h"
 
 AZombieGrunt::AZombieGrunt(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(ObjectInitializer) {
 
@@ -29,6 +30,14 @@ AZombieGrunt::AZombieGrunt(const FObjectInitializer& ObjectInitializer) : ABaseC
 	BodyHitComponent->SetupAttachment(RootComponent);
 
 	DamageRecieveComponent = CreateDefaultSubobject<UDamageRecieveComponent>(TEXT("DamageRecieve"));
+
+	CharacterDetailsComponent = CreateDefaultSubobject<UCharacterDetailsComponent>(TEXT("CharacterDetails"));
+
+	CharacterDetailsComponent->AddMaxActionPoints(2);
+	CharacterDetailsComponent->AddActionPoints(2);
+
+	CharacterDetailsComponent->AddMaxMovementPoints(6);
+	CharacterDetailsComponent->AddMovementPoints(6);
 }
 
 UGridMovementComponent* AZombieGrunt::GetGridMovementComponent() {

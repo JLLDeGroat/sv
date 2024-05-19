@@ -48,11 +48,11 @@ ASolder::ASolder(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(O
 	AttackComponent = CreateDefaultSubobject<UAttackComponent>(TEXT("Attack"));
 	DamageRecieveComponent = CreateDefaultSubobject<UDamageRecieveComponent>(TEXT("DamageRecieve"));
 
-	DetailsComponent->AddMaxMovementPoints(6);
-	DetailsComponent->AddMovementPoints(6);
+	DetailsComponent->AddMaxMovementPoints(5);
+	DetailsComponent->AddMovementPoints(5);
 
-	DetailsComponent->AddActionPoints(2);
 	DetailsComponent->AddMaxActionPoints(2);
+	DetailsComponent->AddActionPoints(2);
 }
 
 // Called when the game starts or when spawned

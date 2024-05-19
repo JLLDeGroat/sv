@@ -41,7 +41,7 @@ public:
 
 	void RemoveMaxMovementPoints(int amount);
 	void AddMaxMovementPoints(int amount);
-	int GetMaxMovementPoints();
+	int GetMaxMovementPoints() const;
 
 	void RemoveActionPoints(int amount);
 	void AddActionPoints(int amount);

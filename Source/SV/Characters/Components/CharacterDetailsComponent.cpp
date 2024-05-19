@@ -80,7 +80,7 @@ void UCharacterDetailsComponent::RemoveMaxMovementPoints(int amount) {
 void UCharacterDetailsComponent::AddMaxMovementPoints(int amount) {
 	MaxMovementPoints += amount;
 }
-int UCharacterDetailsComponent::GetMaxMovementPoints() {
+int UCharacterDetailsComponent::GetMaxMovementPoints() const {
 	return MaxMovementPoints;
 }
 
@@ -97,10 +97,10 @@ int UCharacterDetailsComponent::GetActionPoints() const {
 }
 
 void UCharacterDetailsComponent::RemoveMaxActionPoints(int amount) {
-	MaxActionPoints += amount;
+	MaxActionPoints -= amount;
 }
 void UCharacterDetailsComponent::AddMaxActionPoints(int amount) {
-	MaxActionPoints -= amount;
+	MaxActionPoints += amount;
 	if (MaxActionPoints < 0) MaxActionPoints = 0;
 }
 int UCharacterDetailsComponent::GetMaxActionPoints() const {
