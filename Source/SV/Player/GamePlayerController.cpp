@@ -14,6 +14,7 @@
 #include "../Interfaces/Movable.h"
 #include "../Interfaces/SvChar.h"
 #include "Managers/SelectionManager.h"
+#include "Managers/ControlManager.h"
 #include "../Characters/Components/GridMovementComponent.h"
 #include "../Utilities/SvUtilities.h"
 #include "PlayerPawn.h"
@@ -39,6 +40,7 @@ AGamePlayerController::AGamePlayerController() {
 	CameraMoveAction = LoadObject<UInputAction>(this, TEXT("/Script/EnhancedInput.InputAction'/Game/Controls/IA_MouseMove.IA_MouseMove'"));
 
 	SelectionManager = NewObject<USelectionManager>();
+	ControlManager = NewObject<UControlManager>();
 }
 
 void AGamePlayerController::BeginPlay() {
@@ -64,31 +66,33 @@ void AGamePlayerController::BeginPlay() {
 void AGamePlayerController::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 
-	FHitResult Hit;
-	GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel1, false, Hit);
+	if (ControlManager->GetCanMouseDesignateSelectionDecal()) {
+		FHitResult Hit;
+		GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel1, false, Hit);
 
-	if (Hit.GetActor()) {
-		auto localised = UGridUtilities::GetNormalisedGridLocation(Hit.Location);
+		if (Hit.GetActor()) {
+			auto localised = UGridUtilities::GetNormalisedGridLocation(Hit.Location);
 
-		if (SelectionManager->GetCurrentMousedLocation().X != localised.X ||
-			SelectionManager->GetCurrentMousedLocation().Y != localised.Y)
-		{
-			GridSelection->SetActorLocation(localised);
-			SelectionManager->SetCurrentMousedLocation(localised);
-
-			auto selected = SelectionManager->GetSelected();
-			TScriptInterface<IMovable> movable;
-			if (selected && selected->TryGetAsMoveable(movable) &&
-				selected->IsControlType(ECharacterControl::CC_Player))
+			if (SelectionManager->GetCurrentMousedLocation().X != localised.X ||
+				SelectionManager->GetCurrentMousedLocation().Y != localised.Y)
 			{
-				auto movableComponent = movable->GetGridMovementComponent();
-				auto startLocation = selected->GetSelectableGridLocation();
+				GridSelection->SetActorLocation(localised);
+				SelectionManager->SetCurrentMousedLocation(localised);
 
-				auto gridSteps = movableComponent->FindRoute(startLocation, localised);
-				SelectionManager->SetLocationPath(gridSteps);
-				if (gridSteps.Num() > 1) {
-					for (int i = 1; i < gridSteps.Num(); i++) {
-						DrawDebugLine(GetWorld(), gridSteps[i - 1], gridSteps[i], FColor::Red, false, 1.0f, 0, 1.0f);
+				auto selected = SelectionManager->GetSelected();
+				TScriptInterface<IMovable> movable;
+				if (selected && selected->TryGetAsMoveable(movable) &&
+					selected->IsControlType(ECharacterControl::CC_Player))
+				{
+					auto movableComponent = movable->GetGridMovementComponent();
+					auto startLocation = selected->GetSelectableGridLocation();
+
+					auto gridSteps = movableComponent->FindRoute(startLocation, localised);
+					SelectionManager->SetLocationPath(gridSteps);
+					if (gridSteps.Num() > 1) {
+						for (int i = 1; i < gridSteps.Num(); i++) {
+							DrawDebugLine(GetWorld(), gridSteps[i - 1], gridSteps[i], FColor::Red, false, 1.0f, 0, 1.0f);
+						}
 					}
 				}
 			}
@@ -196,11 +200,9 @@ void AGamePlayerController::BeginTarget_Started() {
 		pawnCameraComponent->UpdateCameraState(ECameraState::CS_Control);
 		bShowMouseCursor = true;
 		SetInputMode(FInputModeGameAndUI());
-
-		return;
+		ControlManager->SetCanMouseDesignateSelectionDecal(true);
 	}
-
-	if (selected) {
+	else if (selected) {
 		auto actor = selected->GetAsActor();
 
 		auto targetingComponent = actor->GetComponentByClass<UTargetingComponent>();
@@ -219,6 +221,7 @@ void AGamePlayerController::BeginTarget_Started() {
 				currentTargetData[0].GetCharacter()->GetSelectableGridLocation());
 
 			bShowMouseCursor = false;
+			ControlManager->SetCanMouseDesignateSelectionDecal(false);
 			SetInputMode(FInputModeGameOnly());
 		}
 	}

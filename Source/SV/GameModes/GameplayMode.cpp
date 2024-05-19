@@ -5,7 +5,9 @@
 #include "../Hud/GameHud.h"
 #include "../Player/GamePlayerController.h"
 #include "../Player/PlayerPawn.h"
+#include "Managers/TurnManager.h"
 #include "Managers/CharacterManager.h"
+#include "VgCore/Domain/Debug/DebugMessages.h"
 
 AGameplayMode::AGameplayMode() {
 	PlayerControllerClass = AGamePlayerController::StaticClass();
@@ -13,7 +15,8 @@ AGameplayMode::AGameplayMode() {
 	HUDClass = AGameHud::StaticClass();
 
 
-	CharacterManager = NewObject<UCharacterManager>();
+	CharacterManager = CreateDefaultSubobject<UCharacterManager>(TEXT("CharacterManager"));
+	TurnManager = CreateDefaultSubobject<UTurnManager>(TEXT("TurnManager"));
 }
 
 void AGameplayMode::BeginPlay() {
@@ -23,4 +26,13 @@ void AGameplayMode::BeginPlay() {
 
 UCharacterManager* AGameplayMode::GetCharacterManager() {
 	return CharacterManager;
+}
+
+void AGameplayMode::EndTurn() {
+	TurnManager->BeginAITurn();
+}
+
+void AGameplayMode::BeginPlayerTurn() {
+	UDebugMessages::LogDisplay(this, "Beginning Player Turn");
+	TurnManager->BeginPlayerTurn();
 }

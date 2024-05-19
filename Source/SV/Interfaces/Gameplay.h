@@ -26,4 +26,6 @@ public:
 
 	virtual UCharacterManager* GetCharacterManager() = 0;
 
+	virtual void EndTurn() = 0;
+	virtual void BeginPlayerTurn() = 0;
 };

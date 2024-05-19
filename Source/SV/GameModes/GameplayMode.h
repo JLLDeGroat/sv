@@ -8,6 +8,7 @@
 #include "GameplayMode.generated.h"
 
 class UCharacterManager;
+class UTurnManager;
 /**
  * 
  */
@@ -24,8 +25,12 @@ public:
 
 	//inherited from IGameplay
 	virtual UCharacterManager* GetCharacterManager() override;
+	virtual void EndTurn() override;
+	virtual void BeginPlayerTurn() override;
 
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UCharacterManager* CharacterManager;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UTurnManager* TurnManager;
+
 };

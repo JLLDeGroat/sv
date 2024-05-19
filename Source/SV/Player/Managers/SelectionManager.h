@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
+#include "Base/BaseControllerManager.h"
 #include "SelectionManager.generated.h"
 
 class ISelectable;
@@ -12,7 +12,7 @@ class ISelectable;
  *
  */
 UCLASS()
-class SV_API USelectionManager : public UObject
+class SV_API USelectionManager : public UBaseControllerManager
 {
 	GENERATED_BODY()
 
