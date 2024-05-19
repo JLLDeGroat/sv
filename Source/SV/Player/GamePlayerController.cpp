@@ -20,6 +20,7 @@
 #include "PlayerPawn.h"
 #include "../Characters/Components/TargetingComponent.h"
 #include "../Characters/Components/AttackComponent.h"
+#include "../Characters/Components/CharacterDetailsComponent.h"
 #include "Components/PawnCameraComponent.h"
 #include "Camera/CameraComponent.h"
 
@@ -169,16 +170,26 @@ void AGamePlayerController::RightClickAction_Started() {
 
 	auto selected = SelectionManager->GetSelected();
 	if (selected) {
-		UDebugMessages::LogDisplay(this, "something selected");
 		TScriptInterface<IMovable> movable;
 		if (selected->TryGetAsMoveable(movable)) {
+			auto selectedDetails = selected->GetAsActor()->GetComponentByClass<UCharacterDetailsComponent>();
+			if (!selectedDetails || selectedDetails->GetMovementPoints() == 0) {
+				UDebugMessages::LogError(this, "failed to get selected details or had zero movement points cannot move");
+				return;
+			}
+
 			auto selectedMouseLocation = SelectionManager->GetCurrentMousedLocation();
 			auto currentActorGridLocation = selected->GetSelectableGridLocation();
+
 
 			UDebugMessages::LogDisplay(this, "Moving from " + currentActorGridLocation.ToString() + " to: " + selectedMouseLocation.ToString());
 			//testing grid system
 			auto gridSteps = movable->GetGridMovementComponent()->FindRoute(currentActorGridLocation, selectedMouseLocation);
 			//
+
+			int stepsTaken = gridSteps.Num();
+
+			selectedDetails->RemoveMovementPoints(stepsTaken);
 
 			UDebugMessages::LogDisplay(this, "moving");
 			movable->GetGridMovementComponent()->MoveAcrossGrid(SelectionManager->GetLocationPath());
