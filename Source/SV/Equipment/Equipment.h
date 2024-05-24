@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Equipment.generated.h"
 
+class UEquipmentDetailsComponent;
+
 UCLASS()
 class SV_API AEquipment : public AActor
 {
@@ -19,6 +21,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UEquipmentDetailsComponent* EquipmentDetailsComponent;
 
 public:	
 	// Called every frame

@@ -2,6 +2,7 @@
 
 
 #include "CharacterDetailsComponent.h"
+#include "VgCore/Domain/Debug/DebugMessages.h"
 
 // Sets default values for this component's properties
 UCharacterDetailsComponent::UCharacterDetailsComponent()
@@ -59,6 +60,7 @@ void UCharacterDetailsComponent::RemoveHealth(int health, bool& isDead) {
 void UCharacterDetailsComponent::RefreshOnNewTurn() {
 	MovementPoints = MaxMovementPoints;
 	ActionPoints = MaxActionPoints;
+	UDebugMessages::LogDisplay(this, "refreshed movement and action points");
 }
 
 void UCharacterDetailsComponent::RemoveMovementPoints(int amount) {

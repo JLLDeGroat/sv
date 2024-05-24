@@ -41,6 +41,8 @@ void UDamageRecieveComponent::DoDamage(float multiplier, int damage) {
 	}
 
 	int total = multiplier * damage;
+	
+	UDebugMessages::LogDisplay(this, "took " + FString::SanitizeFloat(total, 0) + " damage.");
 	bool isDead = false;
 	details->RemoveHealth(total, isDead);
 

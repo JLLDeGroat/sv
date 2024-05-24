@@ -32,6 +32,14 @@ public:
 	static float GetGridGape();
 
 	static void GetAdjacentGridTiles(FVector location, TArray<FVector>& adjacentTiles);
+	static bool AreGridLocationsAdjacent(FVector loc1, FVector loc2);
+	static int GetTileElevation(FVector loc);
+
+	static TArray<FVector> OrderByClosestTo(FVector location, TArray<FVector> locationArray);
 	
 	static TScriptInterface<IGameplay> GetGameMode(UWorld* world);
+
+private:
+
+	static bool IsInBounds(FVector location);
 };

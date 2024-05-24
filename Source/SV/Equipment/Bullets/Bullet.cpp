@@ -40,7 +40,6 @@ ABullet::ABullet()
 	}
 
 	BulletDetailsComponent = CreateDefaultSubobject<UBulletDetailsComponent>(TEXT("BulletDetails"));
-	BulletDetailsComponent->SetBaseDamage(25);
 }
 
 // Called when the game starts or when spawned
@@ -53,10 +52,8 @@ void ABullet::BeginPlay()
 }
 
 // Called every frame
-void ABullet::Tick(float DeltaTime)
-{
+void ABullet::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
-
 }
 
 void ABullet::OnAutoDestroyCallback() {

@@ -1,0 +1,21 @@
+{
+    "SkillDataItems": [
+        {
+            "Name": "zg_claws",
+            "Category": "activation",
+            "DamageType": "melee",
+            "DamageMin": 30,
+            "DamageMax": 50,
+            "ApCost": 2,
+            "AttackType": "AT_BasicMelee"
+        },
+        {
+            "Name": "templated",
+            "Category": "templated",
+            "DamageType": "templated",
+            "DamageMin": 0,
+            "DamageMax": 0,
+            "ApCost": 0
+        }
+    ]
+}

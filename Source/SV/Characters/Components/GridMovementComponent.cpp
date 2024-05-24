@@ -43,7 +43,8 @@ void UGridMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		newLocation.Z = GetOwner()->GetActorLocation().Z;
 		GetOwner()->SetActorLocation(newLocation);
 
-		AnimInstance->UpdateSpeed(200);
+		if(AnimInstance) 
+			AnimInstance->UpdateSpeed(200);
 
 		auto lookAtRot = UGridUtilities::FindLookAtRotation(newLocation, MovementLocations[0]);
 		lookAtRot.Pitch = GetOwner()->GetActorRotation().Pitch;
@@ -58,7 +59,10 @@ void UGridMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	}
 	else {
 		SetComponentTickEnabled(false);
-		AnimInstance->UpdateSpeed(0);
+		
+		if (AnimInstance) 
+			AnimInstance->UpdateSpeed(0);
+		
 		auto targeting = GetOwner()->GetComponentByClass<UTargetingComponent>();
 		if (targeting) {
 			targeting->DetermineTargetData();
@@ -125,7 +129,7 @@ bool UGridMovementComponent::AlreadyInPrevious(FVector gridLocation, TArray<FVec
 	return false;
 }
 
-TArray<FVector> UGridMovementComponent::FindRoute(FVector start, FVector end) {
+TArray<FVector> UGridMovementComponent::FindRoute(FVector start, FVector end, bool bisAI) {
 	MovementData.Empty();
 
 	auto detailsComponent = GetOwner()->GetComponentByClass<UCharacterDetailsComponent>();
@@ -135,7 +139,7 @@ TArray<FVector> UGridMovementComponent::FindRoute(FVector start, FVector end) {
 		auto thisMovementDataIndex = GetMovementDataForGridItem(start, emptyPrevious, end);
 		auto thisMovementData = &MovementData[thisMovementDataIndex];
 
-		FindRouteRecursive(thisMovementData, end);
+		FindRouteRecursive(thisMovementData, end, bisAI);
 
 		if (HasFoundEnd()) {
 			UDebugMessages::LogDisplay(this, "found end");
@@ -154,7 +158,7 @@ TArray<FVector> UGridMovementComponent::FindRoute(FVector start, FVector end) {
 	return response;
 }
 
-void UGridMovementComponent::FindRouteRecursive(FMovementData* movementData, FVector desiredLocation) {
+void UGridMovementComponent::FindRouteRecursive(FMovementData* movementData, FVector desiredLocation, bool bisAI) {
 
 	if (!HasFoundEnd()) {
 		TArray<FVector> newPrevious = movementData->GetPrevious();
@@ -162,8 +166,8 @@ void UGridMovementComponent::FindRouteRecursive(FMovementData* movementData, FVe
 
 		auto detailsComponent = GetOwner()->GetComponentByClass<UCharacterDetailsComponent>();
 
-		if (!detailsComponent || newPrevious.Num() > detailsComponent->GetMovementPoints() + 1) {
-			UDebugMessages::LogError(this, "failed to get details component or no movement points left, cannot move");
+		if (!detailsComponent || (newPrevious.Num() > detailsComponent->GetMovementPoints() + 1 && !bisAI)) {
+			UDebugMessages::LogError(this, "failed to get details component or no movement points left whilst not being AI, cannot move");
 			return;
 		}
 
@@ -187,7 +191,7 @@ void UGridMovementComponent::FindRouteRecursive(FMovementData* movementData, FVe
 			}
 
 			if (MovementData[newConnectionIds[i]].GetConnections().Num() > 0)
-				FindRouteRecursive(&MovementData[newConnectionIds[i]], desiredLocation);
+				FindRouteRecursive(&MovementData[newConnectionIds[i]], desiredLocation, bisAI);
 		}
 	}
 }

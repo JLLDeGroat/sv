@@ -5,6 +5,7 @@
 #include "../BaseCharacter.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "../Components/EquipmentComponent.h"
+#include "../Components/SkillsComponent.h"
 #include "../Components/AttackComponent.h"
 
 UCharAnimInstance::UCharAnimInstance(const FObjectInitializer& ObjectInitializer)
@@ -54,4 +55,31 @@ void UCharAnimInstance::OnFinishFire() {
 				attackComponent->UpdateCurrentAttackState(EAttackState::CS_Return);
 			},
 			TStatId(), nullptr, ENamedThreads::GameThread);
+}
+
+void UCharAnimInstance::OnMeleeHit() {
+	auto owningActor = GetOwningActor();
+	auto skillComponent = owningActor->GetComponentByClass<USkillsComponent>();
+	auto equipmentComponent = owningActor->GetComponentByClass<UEquipmentComponent>();
+
+	if (!skillComponent || !equipmentComponent) 
+		return UDebugMessages::LogError(this, "there was no skill/equipment component, will not complete on melee hit");
+
+	if (skillComponent->GetCurrentActiveSkill()) {
+		FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([skillComponent]
+			{ skillComponent->UseCurrentSkillOnTarget(); },
+			TStatId(), nullptr, ENamedThreads::GameThread);
+	}
+	else {
+
+	}
+}
+void UCharAnimInstance::OnFinishMelee() {
+	bIsAttacking = false;
+
+	/*FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([]
+		{
+			
+		},
+		TStatId(), nullptr, ENamedThreads::GameThread);*/
 }

@@ -7,11 +7,12 @@
 #include "../../Utilities/GridUtilities.h"
 #include "../../Utilities/SvUtilities.h"
 #include "../Anim/CharAnimInstance.h"
+#include "../../Interfaces/SvChar.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 
 UAttackComponent::UAttackComponent(const FObjectInitializer& ObjectInitializer)
-	: UAnimAccessComponent(ObjectInitializer) {
-
+	: UAnimAccessComponent(ObjectInitializer) 
+{
 	PrimaryComponentTick.bCanEverTick = true;
 	CurrentAttackState = EAttackState::CS_NONE;
 }
@@ -24,7 +25,9 @@ void UAttackComponent::BeginPlay() {
 void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (CurrentAttackState == EAttackState::CS_Rotating) {
+	if (CurrentAttackState == EAttackState::CS_RotatingToMelee ||
+		CurrentAttackState == EAttackState::CS_RotatingToShoot)
+	{
 		auto lookAtRot = UGridUtilities::FindLookAtRotation(GetOwner()->GetActorLocation(), CurrentTargetLocation);
 		lookAtRot.Pitch = GetOwner()->GetActorRotation().Pitch;
 		lookAtRot.Roll = GetOwner()->GetActorRotation().Roll;
@@ -33,11 +36,13 @@ void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		GetOwner()->SetActorRotation(newRotation);
 
 		if ((newRotation.Yaw - 2.5f) < lookAtRot.Yaw &&
-			(newRotation.Yaw + 2.5f) > lookAtRot.Yaw) {
-
+			(newRotation.Yaw + 2.5f) > lookAtRot.Yaw) 
+		{
 			UDebugMessages::LogDisplay(this, "starting the attack");
 			SetComponentTickEnabled(false);
-			AnimInstance->SetIsAttacking(true, EAttackType::AT_BasicFire);
+			AnimInstance->SetIsAttacking(true, CurrentAttackState == EAttackState::CS_RotatingToShoot ? 
+				EAttackType::AT_BasicFire : 
+				EAttackType::AT_BasicMelee);
 		}
 	}
 	else if (CurrentAttackState == EAttackState::CS_MoveAttack) {
@@ -76,17 +81,20 @@ void UAttackComponent::UpdateCurrentAttackState(EAttackState attackState) {
 	SetComponentTickEnabled(true);
 }
 
-void UAttackComponent::TryAttackLocation(FVector sourceGridLocation, FVector location) {
+void UAttackComponent::TryAttackTarget(FVector sourceGridLocation, TScriptInterface<ISvChar> targetCharacter, bool bIsRange) {
+	CurrentTargetCharacter = targetCharacter;
+	TryAttackLocation(sourceGridLocation, UGridUtilities::GetNormalisedGridLocation(targetCharacter->GetAsActor()->GetActorLocation()), bIsRange);
+}
 
+void UAttackComponent::TryAttackLocation(FVector sourceGridLocation, FVector location, bool bIsRange) {
 	//assuming the gun is a AR
 	//assuming we dont have to move
-
 	CurrentTargetLocation = location;
 
 	auto gridLocation = UGridUtilities::GetNormalisedGridLocation(GetOwner()->GetActorLocation());
 
 	if (gridLocation == sourceGridLocation) {
-		CurrentAttackState = EAttackState::CS_Rotating;
+		CurrentAttackState = bIsRange ? EAttackState::CS_RotatingToShoot : EAttackState::CS_RotatingToMelee;
 		SetComponentTickEnabled(true);
 	}
 	else {
@@ -96,10 +104,9 @@ void UAttackComponent::TryAttackLocation(FVector sourceGridLocation, FVector loc
 		CurrentAttackState = EAttackState::CS_MoveAttack;
 		SetComponentTickEnabled(true);
 	}
-
 }
 
-FVector UAttackComponent::GetCurrentTargetLocation() {
+FVector UAttackComponent::GetCurrentTargetLocation() const {
 	return CurrentTargetLocation;
 }
 
@@ -138,16 +145,8 @@ EAttackType UAttackComponent::DetermineAttackStateFromDirection(FVector currentG
 			return EAttackType::AT_MoveAndFire_Left;
 		}
 	}
+}
 
-	// if movementAtRot.Vector().y  > 0 
-		// if targetLookAtRot.Vector().x > 0
-			// turning left
-		// else if 
-			// turning right
-
-	// if movementAtRot.Vector().y < 0 
-		// if targetLookAtRot.Vector().x > 0
-			// turning right
-		// else if 
-			// turning left
+TScriptInterface<ISvChar> UAttackComponent::GetCurrentTargetCharacter() {
+	return CurrentTargetCharacter;
 }

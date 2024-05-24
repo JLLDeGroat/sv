@@ -31,6 +31,9 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnGunFire();
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnFinishFire();
 
+	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnMeleeHit();
+	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnFinishMelee();
+
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) float Speed;

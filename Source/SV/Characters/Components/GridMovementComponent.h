@@ -76,7 +76,7 @@ public:
 	void MoveAcrossGrid(TArray<FVector> movementLocs);
 	void MovementLoop();
 
-	TArray<FVector> FindRoute(FVector start, FVector end); 
+	TArray<FVector> FindRoute(FVector start, FVector end, bool bisAI = false); 
 
 	bool GetMovableAdjacentTiles(FVector start, TArray<FVector>& ValidAdjacentTiles, FVector orderByDistanceLoc = FVector::ZeroVector);
 
@@ -84,7 +84,7 @@ private:
 
 	UPROPERTY() TArray<FVector> MovementLocations;
 
-	void FindRouteRecursive(FMovementData* movementData, FVector desiredLocation);
+	void FindRouteRecursive(FMovementData* movementData, FVector desiredLocation, bool bisAI = false);
 
 	int GetMovementDataForGridItem(FVector gridItem, TArray<FVector> previous, FVector end);
 	bool HasFoundEnd();
