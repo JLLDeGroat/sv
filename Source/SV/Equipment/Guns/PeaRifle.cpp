@@ -5,6 +5,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/GunFireComponent.h"
 #include "../../Utilities/SvUtilities.h"
+#include "../Components/EquipmentDetailsComponent.h"
 
 APeaRifle::APeaRifle(const FObjectInitializer& ObjectInitializer) : AEquipment(ObjectInitializer) {
 
@@ -20,6 +21,9 @@ APeaRifle::APeaRifle(const FObjectInitializer& ObjectInitializer) : AEquipment(O
 
 	GunFireComponent = CreateDefaultSubobject<UGunFireComponent>(TEXT("GunFire"));
 	GunFireComponent->SetMeshAndSocketName(GunMesh, "FireSocket");
+
+	EquipmentDetailsComponent->SetIsRange(true);
+	EquipmentDetailsComponent->SetBaseDamage(25);
 }
 
 void APeaRifle::SetupAttachVector() {

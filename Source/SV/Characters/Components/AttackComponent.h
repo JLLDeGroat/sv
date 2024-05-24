@@ -7,6 +7,7 @@
 #include "../../Enums/ECharacterEnums.h"
 #include "AttackComponent.generated.h"
 
+class ISvChar;
 /**
  * 
  */
@@ -19,11 +20,14 @@ public:
 
 	UAttackComponent(const FObjectInitializer& ObjectInitializer);
 
-	void TryAttackLocation(FVector sourceGridLocation, FVector location);
+	void TryAttackTarget(FVector sourceGridLocation, TScriptInterface<ISvChar> targetCharacter, bool bIsRange = true);
+	void TryAttackLocation(FVector sourceGridLocation, FVector location, bool bIsRange = true);
 
-	FVector GetCurrentTargetLocation();
+	FVector GetCurrentTargetLocation() const;
 
 	void UpdateCurrentAttackState(EAttackState attackState);
+
+	TScriptInterface<ISvChar> GetCurrentTargetCharacter();
 
 protected:
 
@@ -41,6 +45,8 @@ private:
 	UPROPERTY() FRotator InitialRotation;
 	UPROPERTY() FVector MoveToLocation;
 	UPROPERTY() FRotator AdditionalRotation;
+
+	UPROPERTY() TScriptInterface<ISvChar> CurrentTargetCharacter;
 
 	EAttackType DetermineAttackStateFromDirection(FVector currentGridLoc, FVector movementLoc, FVector targetLoc);
 

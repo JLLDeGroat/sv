@@ -4,17 +4,21 @@
 
 #include "CoreMinimal.h"
 #include "../BaseCharacter.h"
+#include "../../Interfaces/Movable.h"
 #include "ZombieGrunt.generated.h"
 
 class UGridMovementComponent;
 class UHitCapsuleComponent;
 class UDamageRecieveComponent;
-class UCharacterDetailsComponent;
+class UEquipmentComponent;
+class USkillsComponent;
+class UAttackComponent;
+
 /**
  * 
  */
 UCLASS()
-class SV_API AZombieGrunt : public ABaseCharacter
+class SV_API AZombieGrunt : public ABaseCharacter, public IMovable
 {
 	GENERATED_BODY()
 
@@ -24,11 +28,13 @@ public:
 
 protected:
 
-	UGridMovementComponent* GetGridMovementComponent();
+	virtual UGridMovementComponent* GetGridMovementComponent() override;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UGridMovementComponent* GridMovementComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UHitCapsuleComponent* BodyHitComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UDamageRecieveComponent* DamageRecieveComponent;
-	UPROPERTY(BlueprintreadWrite, EditAnywhere) UCharacterDetailsComponent* CharacterDetailsComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UEquipmentComponent* EquipmentComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) USkillsComponent* SkillComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UAttackComponent* AttackComponent;
 	
 };

@@ -32,7 +32,8 @@ enum class EAttackType : uint8 {
 	AT_NONE = 1,
 	AT_BasicFire = 2,
 	AT_MoveAndFire_Left = 3,
-	AT_MoveAndFire_Right = 4
+	AT_MoveAndFire_Right = 4,
+	AT_BasicMelee = 5,
 };
 
 UENUM(BlueprintType)
@@ -48,8 +49,9 @@ UENUM(BlueprintType)
 enum class EAttackState : uint8 {
 	INVALID = 0,
 	CS_NONE = 1,
-	CS_Rotating = 2,
+	CS_RotatingToMelee = 2,
 	CS_Attacking = 3,
 	CS_MoveAttack = 4,
-	CS_Return = 5
+	CS_Return = 5,
+	CS_RotatingToShoot = 6,
 };

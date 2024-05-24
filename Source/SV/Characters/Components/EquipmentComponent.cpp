@@ -10,6 +10,8 @@
 #include "../../Utilities/GridUtilities.h"
 #include "../../Equipment/Bullets/Components/TravelComponent.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
+#include "../../Equipment/Equipment.h"
+#include "../../Equipment/Components/EquipmentDetailsComponent.h"
 
 // Sets default values for this component's properties
 UEquipmentComponent::UEquipmentComponent()
@@ -72,4 +74,21 @@ int UEquipmentComponent::GetActionPointsNeededToUseEquipment() {
 	//TODO: 
 	// set it so that we get the amount from the equipment component
 	return 2;
+}
+
+TArray<AEquipment*> UEquipmentComponent::GetAllMeleeEquipment() {
+	TArray<AEquipment*> foundEquipment;
+	for (int i = 0; i < Equipment.Num(); i++) {
+		if (!Equipment[i]) continue;
+
+		auto equipmentDetailsComponent = Equipment[i]->GetComponentByClass<UEquipmentDetailsComponent>();
+		if (!equipmentDetailsComponent) {
+			UDebugMessages::LogError(this, "This equipment has no details component");
+			continue;
+		}
+
+		if (equipmentDetailsComponent->GetIsMelee()) 
+			foundEquipment.Emplace(Equipment[i]);
+	}
+	return foundEquipment;
 }

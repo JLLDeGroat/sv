@@ -6,7 +6,9 @@
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "../../Bullets/Bullet.h"
 #include "../../Bullets/Components/TravelComponent.h"
+#include "../../Bullets/Components/BulletDetailsComponent.h"
 #include "../../../Utilities/GridUtilities.h"
+#include "../../Components/EquipmentDetailsComponent.h"
 
 // Sets default values for this component's properties
 UGunFireComponent::UGunFireComponent()
@@ -58,6 +60,12 @@ void UGunFireComponent::FireAtLocation(FVector location) {
 
 	auto newBullet = GetOwner()->GetWorld()->SpawnActor<ABullet>(bulletStart, bulletRotation);
 	if (newBullet) {
+
+		auto equipmentDetails = GetOwner()->GetComponentByClass<UEquipmentDetailsComponent>();
+		auto bulletDetails = newBullet->GetComponentByClass<UBulletDetailsComponent>();
+		if (bulletDetails && equipmentDetails)
+			bulletDetails->SetBaseDamage(equipmentDetails->GetBaseDamage());
+
 		auto bulletTravel = newBullet->GetComponentByClass<UTravelComponent>();
 		if (bulletTravel)
 			bulletTravel->StartTravel(location);

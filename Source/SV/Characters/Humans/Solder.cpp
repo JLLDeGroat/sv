@@ -18,13 +18,7 @@ ASolder::ASolder(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(O
 
 	GridMovementComponent = CreateDefaultSubobject<UGridMovementComponent>(TEXT("GridMovement"));
 
-	//test stuff
-	/*auto comp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TestMesh"));
-	comp->SetupAttachment(RootComponent);
-	auto mesh = USvUtilities::GetStaticMesh("/Script/Engine.StaticMesh'/Game/LevelPrototyping/Meshes/SM_Cylinder.SM_Cylinder'");
-	comp->SetStaticMesh(mesh);
-	comp->SetCollisionResponseToChannel(USvUtilities::GetClickableChannel(), ECR_Block);
-	comp->SetCanEverAffectNavigation(false);*/
+
 
 	DetailsComponent->SetCharacterControl(ECharacterControl::CC_Player);
 	DetailsComponent->SetHealth(100);

@@ -14,7 +14,6 @@ UTurnManager::UTurnManager(const FObjectInitializer& ObjectInitializer) : UObjec
 }
 
 void UTurnManager::BeginAITurn() {
-	auto w = GetWorld();
 	NewObject<UAITurnRunnable>()
 		->Initialise(GetWorld())
 		->Begin();
@@ -39,6 +38,11 @@ void UTurnManager::BeginPlayerTurn() {
 		if (!foundCharacters[i]) continue;
 
 		auto characterActor = foundCharacters[i]->GetAsActor();
-	
+		auto detailsComponent = characterActor->GetComponentByClass<UCharacterDetailsComponent>();
+		
+		if (!detailsComponent) 
+			return UDebugMessages::LogError(this, "failed to get details component, cannot begin player turn");
+
+		detailsComponent->RefreshOnNewTurn();
 	}
 }
