@@ -9,6 +9,7 @@
 
 class UGridMovementComponent;
 class UHitCapsuleComponent;
+class UHitBoxComponent;
 class UDamageRecieveComponent;
 class UEquipmentComponent;
 class USkillsComponent;
@@ -31,10 +32,26 @@ protected:
 	virtual UGridMovementComponent* GetGridMovementComponent() override;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UGridMovementComponent* GridMovementComponent;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) UHitCapsuleComponent* BodyHitComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UDamageRecieveComponent* DamageRecieveComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UEquipmentComponent* EquipmentComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) USkillsComponent* SkillComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UAttackComponent* AttackComponent;
+
+	//Hit Boxes
+
+	UPROPERTY(BlueprintreadWrite, EditAnywhere) UHitCapsuleComponent* LeftArmHitComponent;
+	UPROPERTY(BlueprintreadWrite, EditAnywhere) UHitCapsuleComponent* RightArmHitComponent;
+	UPROPERTY(BlueprintreadWrite, EditAnywhere) UHitCapsuleComponent* RightForeArmHitComponent;
+
+	UPROPERTY(BlueprintreadWrite, EditAnywhere) UHitBoxComponent* UpperTorsoHitComponent;
+	UPROPERTY(BlueprintreadWrite, EditAnywhere) UHitBoxComponent* LowerTorsoHitComponent;
+
+	UPROPERTY(BlueprintreadWrite, EditAnywhere) UHitCapsuleComponent* LeftLegHitComponent;
+	UPROPERTY(BlueprintreadWrite, EditAnywhere) UHitCapsuleComponent* RightLegHitComponent;
+
+	UPROPERTY(BlueprintreadWrite, EditAnywhere) UHitCapsuleComponent* LeftUpperLegHitComponent;
+	UPROPERTY(BlueprintreadWrite, EditAnywhere) UHitCapsuleComponent* RightUpperLegHitComponent;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UHitCapsuleComponent* HeadHitComponent;
 	
 };
