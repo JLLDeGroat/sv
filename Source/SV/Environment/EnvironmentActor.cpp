@@ -25,6 +25,7 @@ void AEnvironmentActor::Tick(float DeltaTime)
 }
 
 void AEnvironmentActor::SetupEnvironmentMeshComponent(UStaticMeshComponent* component) {
+	component->SetCollisionObjectType(USvUtilities::GetEnvironmentChannel());
 	component->SetCollisionResponseToChannel(USvUtilities::GetEnvironmentChannel(), ECR_Block);
 	component->SetCollisionResponseToChannel(USvUtilities::GetBulletCollisionChannel(), ECR_Overlap);
 	component->SetCollisionResponseToChannel(USvUtilities::GetBulletCollisionObjectChannel(), ECR_Overlap);

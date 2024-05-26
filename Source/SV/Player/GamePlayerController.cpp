@@ -70,7 +70,7 @@ void AGamePlayerController::Tick(float DeltaTime) {
 
 	if (ControlManager->GetCanMouseDesignateSelectionDecal()) {
 		FHitResult Hit;
-		GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel1, false, Hit);
+		GetHitResultUnderCursor(USvUtilities::GetFloorTargetChannel(), false, Hit);
 
 		if (Hit.GetActor()) {
 			auto localised = UGridUtilities::GetNormalisedGridLocation(Hit.Location);
@@ -137,11 +137,21 @@ void AGamePlayerController::ClickAction_Started() {
 	GetHitResultUnderCursor(USvUtilities::GetClickableChannel(), false, Hit);
 
 	if (PlayerPawn->GetPawnCameraComponent()->GetCurrentCameraState() == ECameraState::CS_GunTarget) {
+
 		auto cameraForwardVector = PlayerPawn->GetCameraComponent()->GetForwardVector();
 		auto distance = 5000; // TODO this should be decided by the equipment i think
-		auto target = PlayerPawn->GetCameraComponent()->GetComponentLocation() + (distance * cameraForwardVector);
+		auto targetLocation = PlayerPawn->GetCameraComponent()->GetComponentLocation() + (distance * cameraForwardVector);
 
-		DrawDebugLine(GetWorld(), PlayerPawn->GetCameraComponent()->GetComponentLocation(), target, FColor::Cyan, false, 60.0f, 0, 5);
+		FHitResult TestHit;
+		FCollisionObjectQueryParams collisionParams;
+		collisionParams.AddObjectTypesToQuery(USvUtilities::GetBulletCollisionObjectChannel());
+		collisionParams.AddObjectTypesToQuery(USvUtilities::GetEnvironmentChannel());
+		GetWorld()->LineTraceSingleByObjectType(TestHit, PlayerPawn->GetCameraComponent()->GetComponentLocation(), targetLocation, collisionParams);
+
+		if (TestHit.GetActor()) 
+			targetLocation = TestHit.Location;
+
+		DrawDebugLine(GetWorld(), PlayerPawn->GetCameraComponent()->GetComponentLocation(), targetLocation, FColor::Cyan, false, 60.0f, 0, 5);
 
 		PlayerPawn->GetPawnCameraComponent()->UpdateCameraState(ECameraState::CS_Control);
 
@@ -162,7 +172,7 @@ void AGamePlayerController::ClickAction_Started() {
 			detailsComponent->RemoveActionPoints(equipmentComponent->GetActionPointsNeededToUseEquipment());
 
 			auto attackComponent = selected->GetAsActor()->GetComponentByClass<UAttackComponent>();
-			attackComponent->TryAttackLocation(currentTargetData[0].GetShootLocation(), target);
+			attackComponent->TryAttackLocation(currentTargetData[0].GetShootLocation(), targetLocation);
 		}
 	}
 	else {
@@ -255,13 +265,13 @@ void AGamePlayerController::BeginTarget_Started() {
 }
 
 void AGamePlayerController::MoveUp_Started(const FInputActionValue& Value) {
-	auto pawn = GetPawn();
-	pawn->SetActorLocation(pawn->GetActorLocation() + FVector(Value.Get<float>() * MovementMultiplier, 0, 0));
+	if (PlayerPawn->GetPawnCameraComponent()->GetCurrentCameraState() != ECameraState::CS_GunTarget)
+		PlayerPawn->SetActorLocation(PlayerPawn->GetActorLocation() + FVector(Value.Get<float>() * MovementMultiplier, 0, 0));
 }
 
 void AGamePlayerController::MoveRight_Started(const FInputActionValue& Value) {
-	auto pawn = GetPawn();
-	pawn->SetActorLocation(pawn->GetActorLocation() + FVector(0, Value.Get<float>() * MovementMultiplier, 0));
+	if (PlayerPawn->GetPawnCameraComponent()->GetCurrentCameraState() != ECameraState::CS_GunTarget)
+		PlayerPawn->SetActorLocation(PlayerPawn->GetActorLocation() + FVector(0, Value.Get<float>() * MovementMultiplier, 0));
 }
 
 void AGamePlayerController::MouseMove(const FInputActionValue& Value) {
