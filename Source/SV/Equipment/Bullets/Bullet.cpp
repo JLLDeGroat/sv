@@ -11,23 +11,20 @@
 // Sets default values
 ABullet::ABullet()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	BulletCollisionComponent = CreateDefaultSubobject<UBulletCollisionComponent>(TEXT("Collision"));
-	RootComponent = BulletCollisionComponent;
-
-	BulletCollisionComponent->SetCapsuleRadius(1, false);
-	BulletCollisionComponent->SetCapsuleHalfHeight(10, false);
-	BulletCollisionComponent->SetRelativeRotation(FRotator(90, 0, 0));
-
 	BulletMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BulletMesh"));
-	BulletMeshComponent->SetupAttachment(RootComponent);
-	BulletMeshComponent->SetRelativeLocation(FVector(0, 0, -7));
-	BulletMeshComponent->SetRelativeRotation(FRotator(-90, 0, 0));
+	RootComponent = BulletMeshComponent;
 	BulletMeshComponent->SetCanEverAffectNavigation(false);
 	BulletMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+	BulletCollisionComponent = CreateDefaultSubobject<UBulletCollisionComponent>(TEXT("Collision"));
+	BulletCollisionComponent->SetupAttachment(RootComponent);
+	BulletCollisionComponent->SetRelativeLocation(FVector(-7, 0, 0));
+	BulletCollisionComponent->SetCapsuleRadius(1, false);
+	BulletCollisionComponent->SetCapsuleHalfHeight(10, false);
+	BulletCollisionComponent->SetRelativeRotation(FRotator(90, 0, 0));
 
 	TravelComponent = CreateDefaultSubobject<UTravelComponent>(TEXT("Travel"));
 
@@ -46,7 +43,7 @@ ABullet::ABullet()
 void ABullet::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	//TODO Uncomment OnDebug
 	//GetWorld()->GetTimerManager().SetTimer(AutoDestroyTimer, this, &ABullet::OnAutoDestroyCallback, 20.0f, false);
 }
