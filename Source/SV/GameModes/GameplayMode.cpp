@@ -16,12 +16,13 @@ AGameplayMode::AGameplayMode() {
 
 
 	CharacterManager = CreateDefaultSubobject<UCharacterManager>(TEXT("CharacterManager"));
+	CharacterManager->AssignDelegates();
+
 	TurnManager = CreateDefaultSubobject<UTurnManager>(TEXT("TurnManager"));
 }
 
 void AGameplayMode::BeginPlay() {
 	Super::BeginPlay();
-	CharacterManager->AssignDelegates();
 }
 
 UCharacterManager* AGameplayMode::GetCharacterManager() {

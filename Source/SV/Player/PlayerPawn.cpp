@@ -15,16 +15,18 @@ APlayerPawn::APlayerPawn()
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetRelativeRotation(FRotator(-70, 0, 0));
-	Camera->SetRelativeLocation(FVector(0, 0, 1200));
+
+	auto defaultLocation = FVector(-400, 0, 1200);
+	Camera->SetRelativeLocation(defaultLocation);
 
 	CameraComponent = CreateDefaultSubobject<UPawnCameraComponent>(TEXT("CameraMovement"));
+	CameraComponent->SetDefaultCameraOffset(defaultLocation);
 
 	CameraOverlapComponent = CreateDefaultSubobject<UCameraOverlapComponent>(TEXT("OverlapComponent"));
 	CameraOverlapComponent->SetupAttachment(Camera);
 	CameraOverlapComponent->SetSphereRadius(30);
 	CameraOverlapComponent->SetVisibility(true);
 	CameraOverlapComponent->bHiddenInGame = false;
-
 }
 
 // Called when the game starts or when spawned

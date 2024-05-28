@@ -10,13 +10,13 @@
 class IHitComponent;
 class ABaseCharacter;
 /**
- * 
+ *
  */
 UINTERFACE()
 class SV_API USvChar : public UInterface
 {
 	GENERATED_BODY()
-	
+
 };
 
 class SV_API ISvChar {
@@ -32,5 +32,7 @@ public:
 	virtual AActor* GetAsActor() = 0;
 
 	virtual void UpdateActorVisibility(bool value) = 0;
+
+	virtual FGuid GetSvCharId() = 0;
 
 };

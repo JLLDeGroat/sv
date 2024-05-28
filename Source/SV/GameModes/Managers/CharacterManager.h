@@ -28,6 +28,7 @@ public:
 protected:
 
 	UFUNCTION() void OnReceiveNewCharacter(ABaseCharacter* character);
+	UFUNCTION() void OnRemoveCharacter(FGuid Id);
 
 private:
 

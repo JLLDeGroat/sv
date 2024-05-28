@@ -26,7 +26,6 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UCameraComponent* Camera;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UPawnCameraComponent* CameraComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UCameraOverlapComponent* CameraOverlapComponent;

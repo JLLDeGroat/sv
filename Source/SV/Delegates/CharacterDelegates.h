@@ -12,6 +12,7 @@
 class ABaseCharacter;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FReceiveNewCharacter, ABaseCharacter*, Character);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRemoveCharacter, FGuid, Id);
 
 UCLASS()
 class SV_API UCharacterDelegates : public UObject
@@ -28,4 +29,5 @@ public:
 	}
 
 	FReceiveNewCharacter _ReceiveNewCharacter;
+	FRemoveCharacter _RemoveCharacter;
 };

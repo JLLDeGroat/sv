@@ -54,7 +54,7 @@ void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		auto newRotation = UKismetMathLibrary::RInterpTo(GetOwner()->GetActorRotation(), lookAtRot, DeltaTime, 100);
 		GetOwner()->SetActorRotation(newRotation);
 
-		auto newLocation = UKismetMathLibrary::VInterpTo_Constant(GetOwner()->GetActorLocation(), MoveToLocation, DeltaTime, 100);
+		auto newLocation = UKismetMathLibrary::VInterpTo_Constant(GetOwner()->GetActorLocation(), MoveToLocation, DeltaTime, 150);
 		GetOwner()->SetActorLocation(newLocation);
 
 		if ((newRotation.Yaw - 2.5f) < lookAtRot.Yaw &&
@@ -66,7 +66,7 @@ void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		auto newRotation = UKismetMathLibrary::RInterpTo(GetOwner()->GetActorRotation(), InitialRotation, DeltaTime, 100);
 		GetOwner()->SetActorRotation(newRotation);
 
-		auto newLocation = UKismetMathLibrary::VInterpTo_Constant(GetOwner()->GetActorLocation(), InitialLocation, DeltaTime, 100);
+		auto newLocation = UKismetMathLibrary::VInterpTo_Constant(GetOwner()->GetActorLocation(), InitialLocation, DeltaTime, 150);
 		GetOwner()->SetActorLocation(newLocation);
 
 		if ((newRotation.Yaw - 2.5f) < InitialRotation.Yaw &&

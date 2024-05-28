@@ -12,10 +12,13 @@ UCharacterManager::UCharacterManager(const FObjectInitializer& ObjectInitializer
 void UCharacterManager::AssignDelegates() {
 	auto characterDelegates = UCharacterDelegates::GetInstance();
 
-	if (characterDelegates)
+	if (characterDelegates) {
 		characterDelegates->_ReceiveNewCharacter.AddDynamic(this, &UCharacterManager::OnReceiveNewCharacter);
-	else
+		characterDelegates->_RemoveCharacter.AddDynamic(this, &UCharacterManager::OnRemoveCharacter);
+	}
+	else {
 		UDebugMessages::LogError(this, "AssignDelegates failed assigning delegates");
+	}
 }
 
 void UCharacterManager::OnReceiveNewCharacter(ABaseCharacter* character) {
@@ -24,9 +27,20 @@ void UCharacterManager::OnReceiveNewCharacter(ABaseCharacter* character) {
 	UDebugMessages::LogDisplay(this, "Added: " + character->GetName() + " to character list");
 }
 
+void UCharacterManager::OnRemoveCharacter(FGuid Id) {
+	for (int i = 0; i < CharacterList.Num(); i++) {
+		if (CharacterList[i]->GetSvCharId() == Id) {
+			CharacterList.RemoveAt(i);
+			break;
+		}
+	}
+	UDebugMessages::LogDisplay(this, "removed: " + Id.ToString() + " from character list");
+}
+
 void UCharacterManager::GetCharacterListOfCharacterType(ECharacterControl characterControl, TArray<TScriptInterface<ISvChar>>& foundCharacters) {
 	for (int i = 0; i < CharacterList.Num(); i++) {
-		if (CharacterList[i] && CharacterList[i]->IsControlType(characterControl)) 
-			foundCharacters.Emplace(CharacterList[i]);
+		if (CharacterList[i])
+			if (CharacterList[i]->IsControlType(characterControl))
+				foundCharacters.Emplace(CharacterList[i]);
 	}
 }
