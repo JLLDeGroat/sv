@@ -21,6 +21,8 @@ public:
 	void UpdateCameraState(ECameraState cameraState, FVector moveToLocation = FVector::ZeroVector, FVector lookAtLocation = FVector::ZeroVector);
 	ECameraState GetCurrentCameraState();
 
+	void SetDefaultCameraOffset(FVector defaultValue);
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -43,6 +45,10 @@ private:
 
 	UPROPERTY() bool CurrentlyMoving;
 
+	UPROPERTY() FVector DefaultCameraOffset;
+
 	UPROPERTY() UCameraComponent* CameraComponent;
+
+	bool ShoudUseSetRotation() const;
 		
 };

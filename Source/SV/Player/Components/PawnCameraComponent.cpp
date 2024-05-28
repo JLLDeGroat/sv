@@ -5,6 +5,7 @@
 #include "Camera/CameraComponent.h"
 #include "../../Utilities/GridUtilities.h"
 #include "Runtime/Engine/Classes/Kismet/KismetMathLibrary.h"
+#include "VgCore/Domain/Debug/DebugMessages.h"
 
 // Sets default values for this component's properties
 UPawnCameraComponent::UPawnCameraComponent()
@@ -30,13 +31,19 @@ void UPawnCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	if (CurrentlyMoving) {
+		auto currentLocation = GetOwner()->GetActorLocation();
 
-		auto newLocation = UKismetMathLibrary::VInterpTo_Constant(GetOwner()->GetActorLocation(), CurrentMoveTo, DeltaTime, 550);
-		auto lookAtRot = CurrentCameraState != ECameraState::CS_Control ?
+		//if (UseOffsetMovement) {
+		//	currentLocation += DefaultCameraOffset;
+		//}
+
+		auto newLocation = UKismetMathLibrary::VInterpTo_Constant(currentLocation, CurrentMoveTo, DeltaTime, 800);
+		
+		auto lookAtRot = ShoudUseSetRotation() ?
 			UGridUtilities::FindLookAtRotation(newLocation, CurrentRotateToLocation) :
 			FRotator(-70, 0, 0);
 
-		auto newRotation = UKismetMathLibrary::RInterpTo_Constant(GetOwner()->GetActorRotation(), lookAtRot, DeltaTime, 320);
+		auto newRotation = UKismetMathLibrary::RInterpTo_Constant(CameraComponent->GetComponentRotation(), lookAtRot, DeltaTime, 500);
 
 		CameraComponent->SetWorldLocation(newLocation);
 		CameraComponent->SetWorldRotation(newRotation);
@@ -44,29 +51,30 @@ void UPawnCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 		if (FVector::Dist(CameraComponent->GetComponentLocation(), CurrentMoveTo) < 5 &&
 			CameraComponent->GetComponentRotation().Equals(lookAtRot)) {
 			CurrentlyMoving = false;
+			CurrentRotateToLocation = FVector::ZeroVector;
 			SetComponentTickEnabled(false);
 		}
 	}
 }
 
 void UPawnCameraComponent::UpdateCameraState(ECameraState cameraState, FVector moveToLocation, FVector lookAtLocation) {
+	CurrentCameraState = cameraState;
 	if (cameraState == ECameraState::CS_Control) {
 		CurrentMoveTo = ReturnLocation;
 		CurrentRotateToLocation = lookAtLocation;
 
-		CurrentCameraState = cameraState;
-
 		auto playerController = GetWorld()->GetFirstPlayerController();
 		playerController->bShowMouseCursor = true;
 		playerController->SetInputMode(FInputModeGameOnly());
+	}
+	else if (cameraState == ECameraState::CS_ReTarget) {
+		CurrentMoveTo = moveToLocation += DefaultCameraOffset;
 	}
 	else {
 		ReturnLocation = CameraComponent->GetComponentLocation();
 
 		CurrentMoveTo = moveToLocation;
 		CurrentRotateToLocation = lookAtLocation;
-
-		CurrentCameraState = cameraState;
 	}
 
 	CurrentlyMoving = true;
@@ -75,4 +83,16 @@ void UPawnCameraComponent::UpdateCameraState(ECameraState cameraState, FVector m
 
 ECameraState UPawnCameraComponent::GetCurrentCameraState() {
 	return CurrentCameraState;
+}
+
+void UPawnCameraComponent::SetDefaultCameraOffset(FVector defaultValue) {
+	DefaultCameraOffset = defaultValue;
+}
+
+bool UPawnCameraComponent::ShoudUseSetRotation() const {
+	if (CurrentCameraState == ECameraState::CS_Control || 
+		CurrentCameraState == ECameraState::CS_ReTarget) 
+		return false;
+	
+	return true;
 }

@@ -10,6 +10,8 @@
 #include "../../Utilities/GridUtilities.h"
 #include "../../GameModes/Managers/CharacterManager.h"
 #include "GridMovementComponent.h"
+#include "../../Delegates/HudDelegates.h"
+#include "VgCore/Domain/Debug/DebugMessages.h"
 
 // Sets default values for this component's properties
 UTargetingComponent::UTargetingComponent()
@@ -44,6 +46,18 @@ TArray<FTargetData> UTargetingComponent::GetCurrentTargetData() {
 	return TargetData;
 }
 
+FTargetData* UTargetingComponent::GetCurrentMainTarget() {
+	for (int i = 0; i < TargetData.Num(); i++)
+		if (TargetData[i].GetId() == CurrentMainTargetId)
+			return &TargetData[i];
+	
+	return nullptr;
+}
+
+void UTargetingComponent::SetCurrentMainTargetId(FGuid targetId) {
+	CurrentMainTargetId = targetId;
+}
+
 void UTargetingComponent::DetermineTargetData() {
 	TargetData.Empty();
 
@@ -76,15 +90,26 @@ void UTargetingComponent::DetermineTargetData() {
 					}
 				}
 
-				if (canTarget) 
+				if (canTarget)
 					break;
 			}
 			// owner->GetWorld()->LineTraceSingleByChannel(Hit, ownerLocation, location)
 		}
 
+		auto hudDelegates = UHudDelegates::GetInstance();
+		if (!hudDelegates)
+			return UDebugMessages::LogError(this, "failed to get hud delegates, wont add targets to hud");
+
+		hudDelegates->_ClearTargetDataHud.Broadcast();
 		for (int i = 0; i < TargetData.Num(); i++) {
-			DrawDebugLine(owner->GetWorld(), TargetData[i].GetShootLocation() + FVector(0, 0, 100), 
-				TargetData[i].GetCharacter()->GetSelectableGridLocation(), FColor::Blue, true, 60, 1, 5);
+			if (i == 0)
+				CurrentMainTargetId = TargetData[i].GetId();
+
+			//DrawDebugLine(owner->GetWorld(), TargetData[i].GetShootLocation() + FVector(0, 0, 100),
+				//TargetData[i].GetCharacter()->GetSelectableGridLocation(), FColor::Blue, true, 60, 1, 5);
+
+			hudDelegates->_AddTargetDataToHud.Broadcast(TargetData[i].GetId(), TargetData[i].GetShootLocation(),
+				TargetData[i].GetCharacter()->GetSelectableGridLocation());
 		}
 	}
 }

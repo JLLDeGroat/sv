@@ -16,21 +16,25 @@ struct FTargetData
 public:
 
 	FTargetData() {
-
+		Id = FGuid::NewGuid();
 	}
 
 	FTargetData(FVector shootFromLoc, TScriptInterface<ISvChar> svChar) {
 		ShootFromLocation = shootFromLoc;
 		Character = svChar;
+		Id = FGuid::NewGuid();
 	}
 
 	TScriptInterface<ISvChar> GetCharacter() { return Character; }
 	FVector GetShootLocation() const { return ShootFromLocation; }
+	FGuid GetId() const { return Id; }
 
 protected:
 
 	UPROPERTY() FVector ShootFromLocation;
 	UPROPERTY() TScriptInterface<ISvChar> Character;
+
+	UPROPERTY() FGuid Id;
 
 };
 
@@ -46,12 +50,14 @@ public:
 	void DetermineTargetData();
 
 	TArray<FTargetData> GetCurrentTargetData();
+	FTargetData* GetCurrentMainTarget();
+
+	void SetCurrentMainTargetId(FGuid targetId);
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	UPROPERTY() TArray<FTargetData> TargetData;
 
 	bool ObtainPotentialTargetList(TArray<TScriptInterface<ISvChar>>& FoundCharacters) const;
 	TArray<FVector> GetPotentialShootingLocations();
@@ -59,6 +65,10 @@ protected:
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+private:
+	UPROPERTY() TArray<FTargetData> TargetData;
+	UPROPERTY() FGuid CurrentMainTargetId;
 
 
 };

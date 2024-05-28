@@ -102,6 +102,13 @@ void AGamePlayerController::Tick(float DeltaTime) {
 	}
 }
 
+USelectionManager* AGamePlayerController::GetSelectionManager() {
+	return SelectionManager;
+}
+UControlManager* AGamePlayerController::GetControlManager() {
+	return ControlManager;
+}
+
 void AGamePlayerController::SetupInputComponent() {
 	Super::SetupInputComponent();
 
@@ -159,7 +166,7 @@ void AGamePlayerController::ClickAction_Started() {
 		auto actor = selected->GetAsActor();
 		auto targetingComponent = actor->GetComponentByClass<UTargetingComponent>();
 		if (selected && targetingComponent) {
-			auto currentTargetData = targetingComponent->GetCurrentTargetData();
+			auto currentTargetData = targetingComponent->GetCurrentMainTarget();
 
 			//assuming only one target data
 
@@ -172,8 +179,12 @@ void AGamePlayerController::ClickAction_Started() {
 			detailsComponent->RemoveActionPoints(equipmentComponent->GetActionPointsNeededToUseEquipment());
 
 			auto attackComponent = selected->GetAsActor()->GetComponentByClass<UAttackComponent>();
-			attackComponent->TryAttackLocation(currentTargetData[0].GetShootLocation(), targetLocation);
+			attackComponent->TryAttackLocation(currentTargetData->GetShootLocation(), targetLocation);
 		}
+
+		bShowMouseCursor = true;
+		SetInputMode(FInputModeGameAndUI());
+		ControlManager->SetCanMouseDesignateSelectionDecal(true);
 	}
 	else {
 		if (Hit.GetActor() && SelectionManager->TrySetSelected(Hit.GetActor())) {
@@ -245,17 +256,16 @@ void AGamePlayerController::BeginTarget_Started() {
 		auto targetingComponent = actor->GetComponentByClass<UTargetingComponent>();
 
 		if (targetingComponent) {
-			auto currentTargetData = targetingComponent->GetCurrentTargetData();
+			auto currentTargetData = targetingComponent->GetCurrentMainTarget();
 
-			if (currentTargetData.Num() == 0) {
+			if (!currentTargetData) {
 				UDebugMessages::LogError(this, "no targeting data");
 				return;
 			}
-
 			//assuming only one target data
 
-			PlayerPawn->GetPawnCameraComponent()->UpdateCameraState(ECameraState::CS_GunTarget, currentTargetData[0].GetShootLocation(),
-				currentTargetData[0].GetCharacter()->GetSelectableGridLocation());
+			PlayerPawn->GetPawnCameraComponent()->UpdateCameraState(ECameraState::CS_GunTarget, currentTargetData->GetShootLocation(),
+				currentTargetData->GetCharacter()->GetSelectableGridLocation());
 
 			bShowMouseCursor = false;
 			ControlManager->SetCanMouseDesignateSelectionDecal(false);
