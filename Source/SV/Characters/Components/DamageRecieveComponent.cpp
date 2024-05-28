@@ -4,7 +4,8 @@
 #include "DamageRecieveComponent.h"
 #include "CharacterDetailsComponent.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
-
+#include "../../Delegates/CharacterDelegates.h"
+#include "../../Interfaces/SvChar.h"
 // Sets default values for this component's properties
 UDamageRecieveComponent::UDamageRecieveComponent()
 {
@@ -41,14 +42,22 @@ void UDamageRecieveComponent::DoDamage(float multiplier, int damage) {
 	}
 
 	int total = multiplier * damage;
-	
+
 	UDebugMessages::LogDisplay(this, "took " + FString::SanitizeFloat(total, 0) + " damage.");
 	bool isDead = false;
 	details->RemoveHealth(total, isDead);
 
 	if (isDead) {
+		auto characterDelegates = UCharacterDelegates::GetInstance();
+
+		if (!characterDelegates) 
+			return UDebugMessages::LogError(this, "failed to get character Delegates, wont kill soldier");
+
+
+		TScriptInterface<ISvChar> ownerAsCharacter = GetOwner();
+		characterDelegates->_RemoveCharacter.Broadcast(ownerAsCharacter->GetSvCharId());
+		GetOwner()->Destroy();
 		//TODO: 
 		// this should do something more better
-		GetOwner()->Destroy();
 	}
 }

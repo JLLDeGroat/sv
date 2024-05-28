@@ -26,6 +26,8 @@ ABaseCharacter::ABaseCharacter(const FObjectInitializer& ObjectInitializer) : AC
 	GetCapsuleComponent()->SetCollisionResponseToChannel(USvUtilities::GetClickableChannel(), ECR_Block);
 
 	DetailsComponent = CreateDefaultSubobject<UCharacterDetailsComponent>(TEXT("DetailsComponent"));
+
+	SvCharId = FGuid::NewGuid();
 }
 
 // Called when the game starts or when spawned
@@ -70,6 +72,9 @@ void ABaseCharacter::TryVisualiseTargets() {
 }
 AActor* ABaseCharacter::GetAsActor() {
 	return this;
+}
+FGuid ABaseCharacter::GetSvCharId() {
+	return SvCharId;
 }
 
 TArray<TScriptInterface<IHitComponent>> ABaseCharacter::GetHitComponents() {

@@ -31,7 +31,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupInputComponent() override;
 
-	
+	USelectionManager* GetSelectionManager();
+	UControlManager* GetControlManager();
 
 protected:
 
