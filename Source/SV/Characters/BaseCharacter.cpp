@@ -4,6 +4,8 @@
 #include "BaseCharacter.h"
 #include "../Utilities/GridUtilities.h"
 #include "../Utilities/SvUtilities.h"
+#include "../Interfaces/Gameplay.h"
+#include "../GameModes/Managers/CharacterManager.h"
 #include "AIController.h"
 #include "GameFramework/Controller.h"
 #include "Controllers/CharacterAIController.h"
@@ -35,10 +37,9 @@ void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	auto characterDelegates = UCharacterDelegates::GetInstance();
-	if (characterDelegates)
-		characterDelegates->_ReceiveNewCharacter.Broadcast(this);
-	else UDebugMessages::LogError(this, "failed to get character delegates");
+	auto gameMode = USvUtilities::GetGameMode(GetOwner()->GetWorld());
+	auto characterManager = gameMode->GetCharacterManager();
+	characterManager->ReceiveNewCharacter(this);
 }
 
 // Called every frame

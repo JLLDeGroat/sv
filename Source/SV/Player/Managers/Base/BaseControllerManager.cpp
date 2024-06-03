@@ -4,7 +4,7 @@
 #include "BaseControllerManager.h"
 #include "../../GamePlayerController.h"
 
-UBaseControllerManager::UBaseControllerManager(const FObjectInitializer& ObjectInitializer) : UObject(ObjectInitializer) {
+UBaseControllerManager::UBaseControllerManager(const FObjectInitializer& ObjectInitializer) : UActorComponent(ObjectInitializer) {
 
 }
 

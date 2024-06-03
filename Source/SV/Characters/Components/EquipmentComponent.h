@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "../../Enums/EEquipmentEnums.h"
 #include "EquipmentComponent.generated.h"
 
 class AEquipment;
@@ -20,6 +21,9 @@ public:
 	void UpdateActorVisibility(bool value);
 
 	TArray<AEquipment*> GetAllMeleeEquipment();
+
+	AEquipment* GetPrimaryEquipment();
+	void AttachEquipmentToSocket(EAttachType attachmentType, AEquipment* equipment, FString socketName);
 
 protected:
 	// Called when the game starts

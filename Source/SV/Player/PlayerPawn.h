@@ -8,6 +8,7 @@
 
 class UCameraComponent;
 class UPawnCameraComponent;
+class UPostProcessComponent;
 class UCameraOverlapComponent;
 
 UCLASS()
@@ -29,6 +30,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UCameraComponent* Camera;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UPawnCameraComponent* CameraComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UCameraOverlapComponent* CameraOverlapComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UPostProcessComponent* PostProcessComponent;
 
 public:	
 	// Called every frame

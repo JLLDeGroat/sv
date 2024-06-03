@@ -3,6 +3,8 @@
 
 #include "SelectionManager.h"
 #include "../../Interfaces/Selectable.h"
+#include "../../Interfaces/Movable.h"
+#include "../../Characters/Components/GridMovementComponent.h"
 
 bool USelectionManager::TrySetSelected(AActor* actor) {
 	ISelectable* selectable = Cast<ISelectable>(actor);

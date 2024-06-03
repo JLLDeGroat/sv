@@ -10,6 +10,8 @@
 #include "../Components/EquipmentComponent.h"
 #include "../Components/AttackComponent.h"
 #include "../Components/DamageRecieveComponent.h"
+#include "../Components/AnimSpeedComponent.h"
+#include "../Components/ThrowableComponent.h"
 // Sets default values
 ASolder::ASolder(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(ObjectInitializer)
 {
@@ -47,6 +49,9 @@ ASolder::ASolder(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(O
 
 	DetailsComponent->AddMaxActionPoints(2);
 	DetailsComponent->AddActionPoints(2);
+
+	AnimSpeedComponent = CreateDefaultSubobject<UAnimSpeedComponent>(TEXT("AnimSpeed"));
+	ThrowableComponent = CreateDefaultSubobject<UThrowableComponent>(TEXT("Throwable"));
 }
 
 // Called when the game starts or when spawned

@@ -6,6 +6,7 @@
 #include "Components/PawnCameraComponent.h"
 #include "Components/CameraOverlapComponent.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
+#include "Components/PostProcessComponent.h"
 
 // Sets default values
 APlayerPawn::APlayerPawn()
@@ -16,7 +17,7 @@ APlayerPawn::APlayerPawn()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetRelativeRotation(FRotator(-70, 0, 0));
 
-	auto defaultLocation = FVector(-400, 0, 1200);
+	auto defaultLocation = FVector(200, 0, 600);
 	Camera->SetRelativeLocation(defaultLocation);
 
 	CameraComponent = CreateDefaultSubobject<UPawnCameraComponent>(TEXT("CameraMovement"));
@@ -25,8 +26,20 @@ APlayerPawn::APlayerPawn()
 	CameraOverlapComponent = CreateDefaultSubobject<UCameraOverlapComponent>(TEXT("OverlapComponent"));
 	CameraOverlapComponent->SetupAttachment(Camera);
 	CameraOverlapComponent->SetSphereRadius(30);
-	CameraOverlapComponent->SetVisibility(true);
-	CameraOverlapComponent->bHiddenInGame = false;
+
+	PostProcessComponent = CreateDefaultSubobject<UPostProcessComponent>(TEXT("PostProcess"));
+
+	PostProcessComponent->Settings.bOverride_DepthOfFieldMinFstop = true;
+	PostProcessComponent->Settings.bOverride_DepthOfFieldSensorWidth = true;
+	PostProcessComponent->Settings.bOverride_DepthOfFieldFocalDistance = true;
+
+	/*DefaultDepthOfFieldFstopValue = Camera->PostProcessSettings.DepthOfFieldMinFstop;
+	DefaultDepthOfFieldFocalDistance = Camera->PostProcessSettings.DepthOfFieldFocalDistance;
+	DefaultDepthOfFieldSensorWidth = Camera->PostProcessSettings.DepthOfFieldSensorWidth;*/
+
+	PostProcessComponent->Settings.DepthOfFieldMinFstop = .4f;
+	PostProcessComponent->Settings.DepthOfFieldSensorWidth = 144;
+	PostProcessComponent->Settings.DepthOfFieldFocalDistance = 600;
 }
 
 // Called when the game starts or when spawned
@@ -34,6 +47,8 @@ void APlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	SetActorTickEnabled(false);
+
+	PostProcessComponent->Activate();
 }
 
 // Called every frame

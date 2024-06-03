@@ -12,6 +12,7 @@
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "../../Equipment/Equipment.h"
 #include "../../Equipment/Components/EquipmentDetailsComponent.h"
+#include "../../Equipment/Components/AttachedVectorComponent.h"
 
 // Sets default values for this component's properties
 UEquipmentComponent::UEquipmentComponent()
@@ -38,6 +39,9 @@ void UEquipmentComponent::BeginPlay()
 		gun->SetupAttachVector();
 
 		Equipment.Emplace(gun);
+
+		auto details = gun->GetComponentByClass<UEquipmentDetailsComponent>();
+		details->SetIsPrimaryEquipment(true);
 	}
 }
 
@@ -65,7 +69,7 @@ void UEquipmentComponent::FireEquippedGun() {
 		auto equipment = Equipment[0];
 
 		auto gunFire = equipment->GetComponentByClass<UGunFireComponent>();
-		if (gunFire) 
+		if (gunFire)
 			gunFire->FireAtLocation(attackComponent->GetCurrentTargetLocation());
 	}
 }
@@ -87,8 +91,35 @@ TArray<AEquipment*> UEquipmentComponent::GetAllMeleeEquipment() {
 			continue;
 		}
 
-		if (equipmentDetailsComponent->GetIsMelee()) 
+		if (equipmentDetailsComponent->GetIsMelee())
 			foundEquipment.Emplace(Equipment[i]);
 	}
 	return foundEquipment;
+}
+
+AEquipment* UEquipmentComponent::GetPrimaryEquipment() {
+	for (int i = 0; i < Equipment.Num(); i++) {
+		if (Equipment[i]) {
+			auto detailsComponent = Equipment[i]->GetComponentByClass<UEquipmentDetailsComponent>();
+			if (detailsComponent && detailsComponent->GetIsPrimaryEquipment())
+				return Equipment[i];
+		}
+	}
+
+	return nullptr;
+}
+
+void UEquipmentComponent::AttachEquipmentToSocket(EAttachType attachmentType, AEquipment* equipment, FString socketName) {
+	auto skeleMesh = GetOwner()->GetComponentByClass<USkeletalMeshComponent>();
+	equipment->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	equipment->AttachToComponent(skeleMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName(socketName));
+
+	auto vectorComponent = equipment->GetComponentByClass<UAttachedVectorComponent>();
+	
+	FVector loc;
+	FRotator rot;
+	if (vectorComponent->GetAttachmentsForType(attachmentType, loc, rot)) {
+		equipment->SetActorRelativeRotation(rot);
+		equipment->SetActorRelativeLocation(loc);
+	}
 }

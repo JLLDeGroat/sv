@@ -2,7 +2,7 @@
 
 
 #include "GridSelectionActor.h"
-#include "../Utilities/SvUtilities.h"
+#include "../../Utilities/SvUtilities.h"
 #include "Components/DecalComponent.h"
 
 // Sets default values
@@ -30,3 +30,6 @@ void AGridSelectionActor::BeginPlay()
 	MouseGridSelectDecal->DecalSize = FVector(25, 50, 50);
 }
 
+void AGridSelectionActor::SetVisibility(bool val) {
+	MouseGridSelectDecal->SetVisibility(val);
+}

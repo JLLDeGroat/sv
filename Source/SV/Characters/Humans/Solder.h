@@ -12,7 +12,8 @@ class UTargetingComponent;
 class UEquipmentComponent;
 class UAttackComponent;
 class UDamageRecieveComponent;
-
+class UAnimSpeedComponent;
+class UThrowableComponent;
 UCLASS()
 class SV_API ASolder : public ABaseCharacter, public IMovable
 {
@@ -32,11 +33,13 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY() UGridMovementComponent* GridMovementComponent;
-	UPROPERTY() UTargetingComponent* TargetingComponent;
-	UPROPERTY() UEquipmentComponent* EquipmentComponent;
-	UPROPERTY() UAttackComponent* AttackComponent;
-	UPROPERTY() UDamageRecieveComponent* DamageRecieveComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UGridMovementComponent* GridMovementComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UTargetingComponent* TargetingComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UEquipmentComponent* EquipmentComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UAttackComponent* AttackComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UDamageRecieveComponent* DamageRecieveComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UAnimSpeedComponent* AnimSpeedComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UThrowableComponent* ThrowableComponent;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

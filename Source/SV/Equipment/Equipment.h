@@ -7,6 +7,7 @@
 #include "Equipment.generated.h"
 
 class UEquipmentDetailsComponent;
+class UAttachedVectorComponent;
 
 UCLASS()
 class SV_API AEquipment : public AActor
@@ -23,6 +24,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UEquipmentDetailsComponent* EquipmentDetailsComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UAttachedVectorComponent* AttachedVectorComponent;
 
 public:	
 	// Called every frame

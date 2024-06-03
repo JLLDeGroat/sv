@@ -45,7 +45,7 @@ void ABullet::BeginPlay()
 	Super::BeginPlay();
 
 	//TODO Uncomment OnDebug
-	//GetWorld()->GetTimerManager().SetTimer(AutoDestroyTimer, this, &ABullet::OnAutoDestroyCallback, 20.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(AutoDestroyTimer, this, &ABullet::OnAutoDestroyCallback, 5.0f, false);
 }
 
 // Called every frame

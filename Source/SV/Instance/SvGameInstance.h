@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "../Data/SkillData.h"
+#include "../Data/FThrowableData.h"
 #include "SvGameInstance.generated.h"
 
 /**
@@ -19,10 +20,12 @@ public:
 	USvGameInstance();
 
 	void GetSkillDataItem(FString name, FSkillDataItem& dataItem);
+	void GetThrowableDataItem(EThrowable throwable, FThrowableDataItem& item);
 	
 protected:
 
 	UPROPERTY() FSkillData SkillData;
+	UPROPERTY() FThrowableData ThrowableData;
 
 private:
 
