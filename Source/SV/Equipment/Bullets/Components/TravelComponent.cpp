@@ -28,12 +28,13 @@ void UTravelComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	auto newLocation = UKismetMathLibrary::VInterpTo_Constant(GetOwner()->GetActorLocation(), TravelToLocation, DeltaTime, 100);
+	auto newLocation = UKismetMathLibrary::VInterpTo_Constant(GetOwner()->GetActorLocation(), TravelToLocation, DeltaTime, 10000);
+	//auto newLocation = UKismetMathLibrary::VInterpTo_Constant(GetOwner()->GetActorLocation(), TravelToLocation, DeltaTime, 200);
 	GetOwner()->SetActorLocation(newLocation);
 
-	if (FVector::Dist(TravelToLocation, GetOwner()->GetActorLocation()) < 10) {
+	if (FVector::Dist(TravelToLocation, GetOwner()->GetActorLocation()) < 10)
 		TravelToLocation = GetOwner()->GetActorLocation() + (5000 * GetOwner()->GetActorForwardVector());
-	}
+
 }
 
 void UTravelComponent::StartTravel(FVector location) {

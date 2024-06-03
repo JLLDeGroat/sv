@@ -3,8 +3,10 @@
 
 #include "SvUtilities.h"
 #include "../GameModes/GameplayMode.h"
+#include "../GameModes/Managers/CharacterManager.h"
 #include "../Interfaces/Gameplay.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
+#include "../Instance/SvGameInstance.h"
 #include "NiagaraSystem.h"
 
 ECollisionChannel USvUtilities::GetFloorTargetChannel() {
@@ -62,6 +64,11 @@ float USvUtilities::GetGridGape() { return 100.0f; }
 
 TScriptInterface<IGameplay> USvUtilities::GetGameMode(UWorld* world) {
 	return Cast<AGameplayMode>(world->GetAuthGameMode());
+}
+
+UCharacterManager* USvUtilities::GetGameModeCharacterManager(UWorld* world) {
+	auto gameMode = GetGameMode(world);
+	return gameMode->GetCharacterManager();
 }
 
 void USvUtilities::GetAdjacentGridTiles(FVector location, TArray<FVector>& adjacentTiles) {
@@ -139,4 +146,8 @@ int USvUtilities::GetTileElevation(FVector loc) {
 	else if (loc.Z > 800) val = 5;
 
 	return val;
+}
+
+USvGameInstance* USvUtilities::GetGameInstance(UWorld* world) {
+	return world->GetGameInstance<USvGameInstance>();
 }

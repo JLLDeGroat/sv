@@ -13,6 +13,7 @@
 #include "../Components/CharacterDetailsComponent.h"
 #include "../Components/SkillsComponent.h"
 #include "../Components/AttackComponent.h"
+#include "../Components/AnimSpeedComponent.h"
 
 AZombieGrunt::AZombieGrunt(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(ObjectInitializer) {
 
@@ -125,7 +126,7 @@ AZombieGrunt::AZombieGrunt(const FObjectInitializer& ObjectInitializer) : ABaseC
 
 	//BodySocketTwo
 	//BodySocketOne
-
+	AnimSpeedComponent = CreateDefaultSubobject<UAnimSpeedComponent>(TEXT("AnimSpeed"));
 }
 
 UGridMovementComponent* AZombieGrunt::GetGridMovementComponent() {

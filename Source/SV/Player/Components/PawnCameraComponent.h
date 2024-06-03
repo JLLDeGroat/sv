@@ -8,6 +8,7 @@
 #include "PawnCameraComponent.generated.h"
 
 class UCameraComponent;
+class UPostProcessComponent;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SV_API UPawnCameraComponent : public UActorComponent
@@ -18,8 +19,10 @@ public:
 	// Sets default values for this component's properties
 	UPawnCameraComponent();
 
-	void UpdateCameraState(ECameraState cameraState, FVector moveToLocation = FVector::ZeroVector, FVector lookAtLocation = FVector::ZeroVector);
+	void UpdateCameraState(ECameraState cameraState, FVector moveToLocation = FVector::ZeroVector, FVector lookAtLocation = FVector::ZeroVector, bool overrideCameraMovements = false);
 	ECameraState GetCurrentCameraState();
+
+	void DoCinematicAttackCameraMovement(AActor* attacker, AActor* target);
 
 	void SetDefaultCameraOffset(FVector defaultValue);
 
@@ -50,5 +53,14 @@ private:
 	UPROPERTY() UCameraComponent* CameraComponent;
 
 	bool ShoudUseSetRotation() const;
+
+	UPROPERTY() AActor* CinematicActorAttacker;
+	UPROPERTY() AActor* CinematicActorTarget;
+
+	bool GetValidCinematicLocation(FVector& location);
+
+	UPROPERTY() float DefaultDepthOfFieldFstopValue = 0.0f;
+	UPROPERTY() float DefaultDepthOfFieldSensorWidth = 0.0f;
+	UPROPERTY() float DefaultDepthOfFieldFocalDistance = 0.0f;
 		
 };

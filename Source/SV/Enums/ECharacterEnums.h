@@ -34,6 +34,7 @@ enum class EAttackType : uint8 {
 	AT_MoveAndFire_Left = 3,
 	AT_MoveAndFire_Right = 4,
 	AT_BasicMelee = 5,
+	AT_BasicThrow = 6,
 };
 
 UENUM(BlueprintType)
@@ -43,6 +44,8 @@ enum class ECameraState : uint8 {
 	CS_GunTarget = 2,
 	CS_GunShoot = 3,
 	CS_ReTarget = 4,
+	CS_CinematicShoot = 5,
+	CS_ThrowTarget = 6,
 };
 
 

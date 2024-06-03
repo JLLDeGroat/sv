@@ -25,10 +25,10 @@ public:
 
 	void GetCharacterListOfCharacterType(ECharacterControl characterControl, TArray<TScriptInterface<ISvChar>>& foundCharacters);
 
-protected:
+	void ReceiveNewCharacter(ABaseCharacter* character);
+	void RemoveCharacter(FGuid Id);
 
-	UFUNCTION() void OnReceiveNewCharacter(ABaseCharacter* character);
-	UFUNCTION() void OnRemoveCharacter(FGuid Id);
+protected:
 
 private:
 

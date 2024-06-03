@@ -14,6 +14,7 @@ class UDamageRecieveComponent;
 class UEquipmentComponent;
 class USkillsComponent;
 class UAttackComponent;
+class UAnimSpeedComponent;
 
 /**
  * 
@@ -53,5 +54,7 @@ protected:
 	UPROPERTY(BlueprintreadWrite, EditAnywhere) UHitCapsuleComponent* RightUpperLegHitComponent;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UHitCapsuleComponent* HeadHitComponent;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UAnimSpeedComponent* AnimSpeedComponent;
 	
 };

@@ -9,27 +9,14 @@
 UCharacterManager::UCharacterManager(const FObjectInitializer& ObjectInitializer) : UObject(ObjectInitializer) {
 }
 
-void UCharacterManager::AssignDelegates() {
-	auto characterDelegates = UCharacterDelegates::GetInstance();
-
-	if (characterDelegates) {
-		characterDelegates->_ReceiveNewCharacter.AddDynamic(this, &UCharacterManager::OnReceiveNewCharacter);
-		characterDelegates->_RemoveCharacter.AddDynamic(this, &UCharacterManager::OnRemoveCharacter);
-	}
-	else {
-		UDebugMessages::LogError(this, "AssignDelegates failed assigning delegates");
-	}
-}
-
-void UCharacterManager::OnReceiveNewCharacter(ABaseCharacter* character) {
+void UCharacterManager::ReceiveNewCharacter(ABaseCharacter* character) {
 	CharacterList.Emplace(character);
-
 	UDebugMessages::LogDisplay(this, "Added: " + character->GetName() + " to character list");
 }
 
-void UCharacterManager::OnRemoveCharacter(FGuid Id) {
+void UCharacterManager::RemoveCharacter(FGuid Id) {
 	for (int i = 0; i < CharacterList.Num(); i++) {
-		if (CharacterList[i]->GetSvCharId() == Id) {
+		if (CharacterList[i] && CharacterList[i]->GetSvCharId() == Id) {
 			CharacterList.RemoveAt(i);
 			break;
 		}

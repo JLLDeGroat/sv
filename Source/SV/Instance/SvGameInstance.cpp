@@ -12,12 +12,18 @@
 USvGameInstance::USvGameInstance() {
 
 	FString skillStringData;
-	FSkillData skillData;
 	ReadModData("Base/sv_sd", skillStringData);
 	if (!UFileManagementUtilities::JsonToStruct(skillStringData, &SkillData)) {
 		UDebugMessages::LogError(this, "failed to load sv_sd");
 		return;
 	} 
+
+	FString throwableDataString;
+	ReadModData("Base/sv_td", throwableDataString);
+	if (!UFileManagementUtilities::JsonToStruct(throwableDataString, &ThrowableData)) {
+		UDebugMessages::LogError(this, "failed to load sv_td");
+		return;
+	}
 }
 
 void USvGameInstance::ReadModData(FString modName, FString& fileText) {
@@ -35,4 +41,9 @@ void USvGameInstance::ReadModData(FString modName, FString& fileText) {
 void USvGameInstance::GetSkillDataItem(FString name, FSkillDataItem& dataItem) {
 	auto foundDataItem = SkillData.GetItemByName(name);
 	dataItem = *foundDataItem;
+}
+
+void USvGameInstance::GetThrowableDataItem(EThrowable throwable, FThrowableDataItem& item) {
+	auto foundDataItem = ThrowableData.GetThrowableByType(throwable);
+	item = *foundDataItem;
 }
