@@ -4,14 +4,15 @@
 #include "Equipment.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "Components/EquipmentDetailsComponent.h"
+#include "Components/AttachedVectorComponent.h"
 
 // Sets default values
 AEquipment::AEquipment(const FObjectInitializer& ObjectInitializer) : AActor(ObjectInitializer)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
-
 	EquipmentDetailsComponent = CreateDefaultSubobject<UEquipmentDetailsComponent>(TEXT("EquipmentDetails"));
+	AttachedVectorComponent = CreateDefaultSubobject<UAttachedVectorComponent>(TEXT("VectorComponents"));
 }
 
 // Called when the game starts or when spawned

@@ -9,6 +9,8 @@
  */
 class IGameplay;
 class UNiagaraSystem;
+class UCharacterManager;
+class USvGameInstance;
 
 UCLASS()
 class SV_API USvUtilities : public UObject
@@ -38,6 +40,9 @@ public:
 	static TArray<FVector> OrderByClosestTo(FVector location, TArray<FVector> locationArray);
 	
 	static TScriptInterface<IGameplay> GetGameMode(UWorld* world);
+	static UCharacterManager* GetGameModeCharacterManager(UWorld* world);
+
+	static USvGameInstance* GetGameInstance(UWorld* world);
 
 private:
 

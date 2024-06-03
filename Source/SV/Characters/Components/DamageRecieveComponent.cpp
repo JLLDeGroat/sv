@@ -6,6 +6,10 @@
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "../../Delegates/CharacterDelegates.h"
 #include "../../Interfaces/SvChar.h"
+#include "../../Interfaces/Gameplay.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "../../GameModes/Managers/CharacterManager.h"
+#include "../../Utilities/SvUtilities.h"
 // Sets default values for this component's properties
 UDamageRecieveComponent::UDamageRecieveComponent()
 {
@@ -34,7 +38,7 @@ void UDamageRecieveComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	// ...
 }
 
-void UDamageRecieveComponent::DoDamage(float multiplier, int damage) {
+void UDamageRecieveComponent::DoDamage(float multiplier, int damage, FVector location, float impulseDamage) {
 	auto details = GetOwner()->GetComponentByClass<UCharacterDetailsComponent>();
 	if (!details) {
 		UDebugMessages::LogError(this, "No details component, cannot take damage");
@@ -48,16 +52,31 @@ void UDamageRecieveComponent::DoDamage(float multiplier, int damage) {
 	details->RemoveHealth(total, isDead);
 
 	if (isDead) {
-		auto characterDelegates = UCharacterDelegates::GetInstance();
-
-		if (!characterDelegates) 
-			return UDebugMessages::LogError(this, "failed to get character Delegates, wont kill soldier");
-
-
 		TScriptInterface<ISvChar> ownerAsCharacter = GetOwner();
-		characterDelegates->_RemoveCharacter.Broadcast(ownerAsCharacter->GetSvCharId());
-		GetOwner()->Destroy();
-		//TODO: 
-		// this should do something more better
+
+		auto gameMode = USvUtilities::GetGameMode(GetOwner()->GetWorld());
+		auto characterManager = gameMode->GetCharacterManager();
+		characterManager->RemoveCharacter(ownerAsCharacter->GetSvCharId());
+
+		auto owner = GetOwner();
+		auto skeleton = owner->GetComponentByClass<USkeletalMeshComponent>();
+
+		GetOwner()->GetWorld()->GetTimerManager().SetTimer(DeathHandle, this, &UDamageRecieveComponent::OnDeathHandleCallback, 3.5f, false);
+
+		if (!skeleton)
+			return UDebugMessages::LogError(this, "failed to get skeletalmeshComponent on death");
+
+		skeleton->SetSimulatePhysics(true);
+		skeleton->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+
+		if (location == FVector::ZeroVector)
+			return UDebugMessages::LogError(this, "location was zero vector, cannot add impulse on death");
+
+		skeleton->AddRadialImpulse(location, 350, impulseDamage, ERadialImpulseFalloff::RIF_Linear);
+
 	}
+}
+
+void UDamageRecieveComponent::OnDeathHandleCallback() {
+	GetOwner()->Destroy();
 }

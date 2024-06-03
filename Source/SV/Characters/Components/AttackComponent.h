@@ -23,6 +23,8 @@ public:
 	void TryAttackTarget(FVector sourceGridLocation, TScriptInterface<ISvChar> targetCharacter, bool bIsRange = true);
 	void TryAttackLocation(FVector sourceGridLocation, FVector location, bool bIsRange = true);
 
+	void ReturnCharacterAnimationSpeedsToNormal();
+
 	FVector GetCurrentTargetLocation() const;
 
 	void UpdateCurrentAttackState(EAttackState attackState);

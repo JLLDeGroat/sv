@@ -12,6 +12,7 @@ UEquipmentDetailsComponent::UEquipmentDetailsComponent()
 	CritMultiplier = 1.0f;
 	bIsRange = false;
 	bIsMelee = false;
+	bIsPrimaryEquipment = false;
 }
 
 
@@ -61,4 +62,11 @@ void UEquipmentDetailsComponent::SetApCost(int amount) {
 }
 int UEquipmentDetailsComponent::GetApCost() const {
 	return ApCost;
+}
+
+void UEquipmentDetailsComponent::SetIsPrimaryEquipment(bool val) {
+	bIsPrimaryEquipment = val;
+}
+bool UEquipmentDetailsComponent::GetIsPrimaryEquipment() {
+	return bIsPrimaryEquipment;
 }

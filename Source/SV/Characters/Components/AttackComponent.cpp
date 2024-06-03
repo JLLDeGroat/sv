@@ -9,9 +9,12 @@
 #include "../Anim/CharAnimInstance.h"
 #include "../../Interfaces/SvChar.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
+#include "AnimSpeedComponent.h"
+#include "CharacterDetailsComponent.h"
+#include "../../GameModes/Managers/CharacterManager.h"
 
 UAttackComponent::UAttackComponent(const FObjectInitializer& ObjectInitializer)
-	: UAnimAccessComponent(ObjectInitializer) 
+	: UAnimAccessComponent(ObjectInitializer)
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	CurrentAttackState = EAttackState::CS_NONE;
@@ -36,12 +39,12 @@ void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		GetOwner()->SetActorRotation(newRotation);
 
 		if ((newRotation.Yaw - 2.5f) < lookAtRot.Yaw &&
-			(newRotation.Yaw + 2.5f) > lookAtRot.Yaw) 
+			(newRotation.Yaw + 2.5f) > lookAtRot.Yaw)
 		{
 			UDebugMessages::LogDisplay(this, "starting the attack");
 			SetComponentTickEnabled(false);
-			AnimInstance->SetIsAttacking(true, CurrentAttackState == EAttackState::CS_RotatingToShoot ? 
-				EAttackType::AT_BasicFire : 
+			AnimInstance->SetIsAttacking(true, CurrentAttackState == EAttackState::CS_RotatingToShoot ?
+				EAttackType::AT_BasicFire :
 				EAttackType::AT_BasicMelee);
 		}
 	}
@@ -78,12 +81,34 @@ void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 void UAttackComponent::UpdateCurrentAttackState(EAttackState attackState) {
 	CurrentAttackState = attackState;
+
+	CurrentTargetCharacter = nullptr;
 	SetComponentTickEnabled(true);
 }
 
 void UAttackComponent::TryAttackTarget(FVector sourceGridLocation, TScriptInterface<ISvChar> targetCharacter, bool bIsRange) {
 	CurrentTargetCharacter = targetCharacter;
 	TryAttackLocation(sourceGridLocation, UGridUtilities::GetNormalisedGridLocation(targetCharacter->GetAsActor()->GetActorLocation()), bIsRange);
+}
+
+void UAttackComponent::ReturnCharacterAnimationSpeedsToNormal() {
+	auto characterManager = USvUtilities::GetGameModeCharacterManager(GetOwner()->GetWorld());
+	auto ownerDetails = GetOwner()->GetComponentByClass<UCharacterDetailsComponent>();
+	if (characterManager && ownerDetails) {
+		auto characterControl = ownerDetails->GetCharacterControl() == ECharacterControl::CC_AI ?
+			ECharacterControl::CC_Player :
+			ECharacterControl::CC_AI;
+
+		TArray<TScriptInterface<ISvChar>> charactersToSlow;
+		characterManager->GetCharacterListOfCharacterType(characterControl, charactersToSlow);
+
+		for (int i = 0; i < charactersToSlow.Num(); i++) {
+			if (charactersToSlow[i]) {
+				auto animSpeed = charactersToSlow[i]->GetAsActor()->GetComponentByClass<UAnimSpeedComponent>();
+				if (animSpeed) animSpeed->ReturnToNormalAnimSpeed();
+			}
+		}
+	}
 }
 
 void UAttackComponent::TryAttackLocation(FVector sourceGridLocation, FVector location, bool bIsRange) {
@@ -103,6 +128,24 @@ void UAttackComponent::TryAttackLocation(FVector sourceGridLocation, FVector loc
 		AnimInstance->SetIsAttacking(true, attack);
 		CurrentAttackState = EAttackState::CS_MoveAttack;
 		SetComponentTickEnabled(true);
+	}
+
+	auto characterManager = USvUtilities::GetGameModeCharacterManager(GetOwner()->GetWorld());
+	auto ownerDetails = GetOwner()->GetComponentByClass<UCharacterDetailsComponent>();
+	if (characterManager && ownerDetails) {
+		auto characterControl = ownerDetails->GetCharacterControl() == ECharacterControl::CC_AI ?
+			ECharacterControl::CC_Player :
+			ECharacterControl::CC_AI;
+
+		TArray<TScriptInterface<ISvChar>> charactersToSlow;
+		characterManager->GetCharacterListOfCharacterType(characterControl, charactersToSlow);
+
+		for (int i = 0; i < charactersToSlow.Num(); i++) {
+			if (charactersToSlow[i]) {
+				auto animSpeed = charactersToSlow[i]->GetAsActor()->GetComponentByClass<UAnimSpeedComponent>();
+				if (animSpeed) animSpeed->SlowAnimation();
+			}
+		}
 	}
 }
 

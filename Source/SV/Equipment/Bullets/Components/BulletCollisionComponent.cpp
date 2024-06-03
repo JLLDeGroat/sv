@@ -17,12 +17,13 @@ UBulletCollisionComponent::UBulletCollisionComponent(const FObjectInitializer& O
 	SetCanEverAffectNavigation(false);
 	SetGenerateOverlapEvents(true);
 
-	OnComponentBeginOverlap.AddDynamic(this, &UBulletCollisionComponent::Overlapped);
-
 	SetCollisionResponseToAllChannels(ECR_Ignore);
-	SetCollisionResponseToChannel(USvUtilities::GetBulletCollisionObjectChannel(), ECR_Overlap);
-	SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
 	SetCollisionObjectType(USvUtilities::GetBulletCollisionObjectChannel());
+	SetCollisionResponseToChannel(USvUtilities::GetBulletCollisionObjectChannel(), ECR_Overlap);
+	SetCollisionResponseToChannel(USvUtilities::GetEnvironmentChannel(), ECR_Overlap);
+	SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
+
+	OnComponentBeginOverlap.AddDynamic(this, &UBulletCollisionComponent::Overlapped);
 }
 
 void UBulletCollisionComponent::Overlapped(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
@@ -40,7 +41,8 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent* OverlappedComp, 
 			return;
 		}
 
-		damageRecieve->DoDamage(hitComp->GetHitDamageMultiplier(), bulletDetails->GetBaseDamage());
+		damageRecieve->DoDamage(hitComp->GetHitDamageMultiplier(), bulletDetails->GetBaseDamage(), 
+			GetOwner()->GetActorLocation(), bulletDetails->GetBaseImpulse());
 		
 		//TODO:
 		//Create Blood spatter

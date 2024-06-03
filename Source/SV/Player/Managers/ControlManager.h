@@ -6,6 +6,9 @@
 #include "Base/BaseControllerManager.h"
 #include "ControlManager.generated.h"
 
+class USelectionManager;
+class AGrenadeIndicatorActor;
+class AGridSelectionActor;
 /**
  * 
  */
@@ -18,11 +21,32 @@ public:
 
 	UControlManager(const FObjectInitializer& ObjectInitializer);
 
+	void SetGrenadeIndicatorActor(AGrenadeIndicatorActor* indicatorActor);
+	FVector GetGrenadeIndicatorActorLocation();
+
+	void SetGridSelectionActor(AGridSelectionActor* gridSelectionActor);
+	AGridSelectionActor* GetGridSelectionActor();
+
 	FORCEINLINE bool GetCanMouseDesignateSelectionDecal();
 	void SetCanMouseDesignateSelectionDecal(bool val);
+
+	FORCEINLINE bool GetCanMouseDesignateExplosionRadiusActor();
+	void SetCanMouseDesignateExplosionRadiusActor(bool val);
+
+	void TickShowGrenadeIndicator(FVector mouseLocation);
+	void TickFindMovementPath(FVector localised);
+
+protected:
+
+	virtual void BeginPlay() override;
 
 private:
 
 	UPROPERTY() bool bCanMouseDesignateSelectionDecal;
+	UPROPERTY() bool bCanMouseDesignateExplosionRadiusActor;
+
+	UPROPERTY() AGrenadeIndicatorActor* GrenadeIndicatorActor;
+	UPROPERTY() AGridSelectionActor* GridSelectionActor;
+	UPROPERTY() USelectionManager* SelectionManager;
 	
 };

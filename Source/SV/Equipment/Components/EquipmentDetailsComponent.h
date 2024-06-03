@@ -31,6 +31,9 @@ public:
 	void SetApCost(int amount);
 	int GetApCost() const;
 
+	void SetIsPrimaryEquipment(bool val);
+	bool GetIsPrimaryEquipment();
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -47,4 +50,6 @@ private:
 	UPROPERTY() float CritMultiplier;
 
 	UPROPERTY() int ApCost;
+
+	UPROPERTY() bool bIsPrimaryEquipment;
 };

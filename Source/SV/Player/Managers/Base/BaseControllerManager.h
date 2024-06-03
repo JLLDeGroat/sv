@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
+#include "Components/ActorComponent.h"
 #include "BaseControllerManager.generated.h"
 
 class AGamePlayerController;
@@ -12,7 +12,7 @@ class AGamePlayerController;
  * 
  */
 UCLASS()
-class SV_API UBaseControllerManager : public UObject
+class SV_API UBaseControllerManager : public UActorComponent
 {
 	GENERATED_BODY()
 

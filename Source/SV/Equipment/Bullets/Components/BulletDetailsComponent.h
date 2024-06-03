@@ -19,6 +19,9 @@ public:
 	int GetBaseDamage();
 	void SetBaseDamage(int damage);
 
+	int GetBaseImpulse();
+	void SetBaseImpulse(int impulse);
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -31,5 +34,6 @@ public:
 private:
 
 	UPROPERTY() int BaseDamage;
+	UPROPERTY() int BaseImpulse;
 		
 };

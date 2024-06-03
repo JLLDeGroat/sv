@@ -1,0 +1,14 @@
+{
+    "ThrowableDataItems": [
+        {
+            "Name": "Frag Grenade",
+            "ThrowableType":"T_Grenade",
+            "DamageMin": 150,
+            "DamageMax": 150,
+            "ApCost": 2,
+            "MaxCapacity": 4,
+            "Range": 600,
+            "Radius": 6
+        }
+    ]
+}

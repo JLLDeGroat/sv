@@ -13,10 +13,16 @@ class AGridSelectionActor;
 class USelectionManager;
 class UControlManager;
 class APlayerPawn;
+class AGrenadeIndicatorActor;
 
 struct FInputActionValue;
+
+class ULeftClickAction;
+class URightClickAction;
+class UTargetAction;
+class UGrenadeActionComponent;
 /**
- * 
+ *
  */
 UCLASS()
 class SV_API AGamePlayerController : public APlayerController
@@ -34,6 +40,9 @@ public:
 	USelectionManager* GetSelectionManager();
 	UControlManager* GetControlManager();
 
+	void SetMouseAsUi();
+	void SetMouseAsGame();
+
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -46,22 +55,21 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true")) UInputAction* MoveRightAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true")) UInputAction* BeginTargetAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true")) UInputAction* CameraMoveAction;
-
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true")) UInputAction* GrenadeAction;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) AGridSelectionActor* GridSelection;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) AGrenadeIndicatorActor* GrenadeIndicator;
 
-	void ClickAction_Started();
-	void ClickAction_Released();
-	void RightClickAction_Started();
-	void RightClickAction_Released();
-
-	void BeginTarget_Started();
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) ULeftClickAction* LeftClickActionComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) URightClickAction* RightClickActionComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTargetAction* TargetActionComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UGrenadeActionComponent* GrenadeActionComponent;
 
 	void MoveUp_Started(const FInputActionValue& Value);
 	void MoveRight_Started(const FInputActionValue& Value);
 
 	void MouseMove(const FInputActionValue& Value);
 
-	UPROPERTY() float MovementMultiplier;
+	UPROPERTY() float MovementMultiplier;;
 
 private:
 
