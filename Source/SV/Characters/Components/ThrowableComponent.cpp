@@ -11,6 +11,9 @@
 #include "../../Equipment/Throwable/Components/ThrowTravelComponent.h"
 #include "../../Equipment/Throwable/Components/ThrowExplosionComponent.h"
 #include "../../Equipment/Components/AttachedVectorComponent.h"
+#include "../../Equipment/Throwable/Components/ThrownOwnerComponent.h"
+#include "../../Equipment/Components/EquipmentDetailsComponent.h"
+#include "../../Characters/Components/CharacterDetailsComponent.h"
 #include "Runtime/Engine/Classes/Kismet/KismetMathLibrary.h"
 
 // Sets default values for this component's properties
@@ -108,7 +111,7 @@ void UThrowableComponent::SpawnThrowableOfTypeAtRightHand(EThrowable throwable) 
 	auto travelComp = ThrownEquipment->GetComponentByClass<UThrowTravelComponent>();
 	travelComp->SetDestination(ThrowingDestination, skeletalMesh->GetSocketLocation(FName("RightHandSocket")));
 	ThrownEquipment->AttachToComponent(skeletalMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("RightHandSocket"));
-	
+
 	auto attachedComponent = ThrownEquipment->GetComponentByClass<UAttachedVectorComponent>();
 	if (attachedComponent) {
 		auto attachedLocation = attachedComponent->GetAttachedLocation();
@@ -117,6 +120,14 @@ void UThrowableComponent::SpawnThrowableOfTypeAtRightHand(EThrowable throwable) 
 		ThrownEquipment->SetActorRelativeLocation(attachedLocation);
 		ThrownEquipment->SetActorRelativeRotation(attachedRotation);
 	}
+
+	auto equipmentDetailsComponent = ThrownEquipment->GetComponentByClass<UEquipmentDetailsComponent>();
+	auto characterDetailsComponent = GetOwner()->GetComponentByClass<UCharacterDetailsComponent>();
+	if (equipmentDetailsComponent && characterDetailsComponent)
+		characterDetailsComponent->RemoveActionPoints(equipmentDetailsComponent->GetApCost());
+
+	auto thrownOwner = ThrownEquipment->GetComponentByClass<UThrownOwnerComponent>();
+	if (thrownOwner) thrownOwner->SetThrownOwner(GetOwner());
 
 	auto explosionComp = ThrownEquipment->GetComponentByClass<UThrowExplosionComponent>();
 	if (explosionComp) {

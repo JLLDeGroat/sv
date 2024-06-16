@@ -8,6 +8,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/ThrowExplosionComponent.h"
 #include "../Components/AttachedVectorComponent.h"
+#include "Components/ThrownOwnerComponent.h"
 
 
 AGrenade::AGrenade(const FObjectInitializer& ObjectInitializer)
@@ -33,4 +34,7 @@ AGrenade::AGrenade(const FObjectInitializer& ObjectInitializer)
 	ExplosionComponent->SetupAttachment(RootComponent);
 
 	AttachedVectorComponent->SetAttachedVectors(FVector::ZeroVector, FRotator(219, -5, 0));
+	ThrownOwnerComponent = CreateDefaultSubobject<UThrownOwnerComponent>(TEXT("ThrownOwner"));
+
+	EquipmentDetailsComponent->SetApCost(2);
 }

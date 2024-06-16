@@ -7,6 +7,9 @@
 #include "../../../Characters/Components/DamageRecieveComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "../../Components/EquipmentDetailsComponent.h"
+#include "../Components/ThrownOwnerComponent.h"
+#include "../../../Characters/Components/CharacterDetailsComponent.h"
+#include "../../../Player/Components/PawnCameraComponent.h"
 
 
 // Sets default values for this component's properties
@@ -72,6 +75,27 @@ void UThrowExplosionComponent::FuseHandleCallback() {
 
 	auto capsule = GetOwner()->GetComponentByClass<UCapsuleComponent>();
 	if (capsule) capsule->SetSimulatePhysics(false);
+
+	auto thrownOwner = GetOwner()->GetComponentByClass<UThrownOwnerComponent>();
+	if (thrownOwner && thrownOwner->GetThrownOwner()) {
+		auto details = thrownOwner->GetThrownOwner()->GetComponentByClass<UCharacterDetailsComponent>();
+
+		if (details && details->GetCharacterControl() == ECharacterControl::CC_Player) {
+			auto world = GetOwner()->GetWorld();
+			auto controller = world->GetFirstPlayerController();
+
+			auto pawnCamera = controller->GetPawn()->GetComponentByClass<UPawnCameraComponent>();
+			
+			if (!pawnCamera) 
+				return UDebugMessages::LogError(this, "could not find pawn camera component");
+		
+			pawnCamera->UpdateCameraState(ECameraState::CS_Control, FVector::ZeroVector, FVector::ZeroVector, true);
+		}
+		else
+			return UDebugMessages::LogError(this, "could not get character details component of thrown owner");
+	}
+	else
+		return UDebugMessages::LogError(this, "could not get thrown owner component");
 }
 
 void UThrowExplosionComponent::BeginExplosion() {

@@ -1,0 +1,13 @@
+{
+    "DescriptionItems": [
+        {
+            "Title":"Classic Game",
+            "DescriptionItems": [
+                "Enemies have standard damage and accuracy",
+                "Standard loot options",
+                "Standard Exp gain"
+            ],
+            "GameModeType": "EMT_Classic"
+        }
+    ]
+}

@@ -19,6 +19,9 @@ public:
 
 	static FRotator FindLookAtRotation(FVector source, FVector target);
 
+	static FVector GetRouteLocationAs3DLoc(FVector2D loc, bool bAddOffset = false);
+	static FVector2D GetRouteLocationFrom3DLoc(FVector loc, bool bRemoveOffset = false);
+
 private:
 
 	static float NormalizeGridValue(float loc);

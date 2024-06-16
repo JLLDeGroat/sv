@@ -9,6 +9,7 @@
 class UThrowTravelComponent;
 class UCapsuleComponent;
 class UThrowExplosionComponent;
+class UThrownOwnerComponent;
 
 /**
  * 
@@ -27,4 +28,5 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UThrowTravelComponent* TravelComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UCapsuleComponent* CapsuleComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UThrowExplosionComponent* ExplosionComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UThrownOwnerComponent* ThrownOwnerComponent;
 };

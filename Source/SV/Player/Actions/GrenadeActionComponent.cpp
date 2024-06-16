@@ -7,7 +7,7 @@
 #include "VgCore/Domain/Debug/DebugMessages.h"
 
 #include "../../Characters/Components/ThrowableComponent.h"
-
+#include "../../Characters/Components/CharacterDetailsComponent.h"
 #include "../../Interfaces/Selectable.h"
 #include "../Utility/GrenadeIndicatorActor.h"
 #include "../Components/PawnCameraComponent.h"
@@ -38,23 +38,27 @@ void UGrenadeActionComponent::DoAction() {
 		ControlManager->SetCanMouseDesignateExplosionRadiusActor(false);
 	}
 	else {
+		auto selected = SelectionManager->GetSelected();
+		auto actor = selected->GetAsActor();
+		auto throwableComponent = selected->GetAsActor()->GetComponentByClass<UThrowableComponent>();
+		ThrowableChosen = EThrowable::T_Grenade;
+		auto throwable = throwableComponent->GetThrowableItem(ThrowableChosen);
+
+		auto detailsComponent = actor->GetComponentByClass<UCharacterDetailsComponent>();
+
+		if (throwable->GetApCost() > detailsComponent->GetActionPoints())
+			return UDebugMessages::LogError(this, "cannot throw grenade, not enough actions points");
+
 		pawnCamera->UpdateCameraState(ECameraState::CS_ThrowTarget,
 			FVector::ZeroVector, FVector::ZeroVector, true);
 
 		ControlManager->SetCanMouseDesignateSelectionDecal(false);
 
-		auto selected = SelectionManager->GetSelected();
-
 		if (!selected)
 			return UDebugMessages::LogError(this, "wont begin grenade, nothing selected");
 
-		auto throwableComponent = selected->GetAsActor()->GetComponentByClass<UThrowableComponent>();
-		ThrowableChosen = EThrowable::T_Grenade;
-
 		if (throwableComponent && throwableComponent->GetThrowableAmount(ThrowableChosen) > 0) {
 			ControlManager->SetCanMouseDesignateExplosionRadiusActor(true);
-
-			auto throwable = throwableComponent->GetThrowableItem(ThrowableChosen);
 
 			if (!throwable)
 				return UDebugMessages::LogError(this, "failed to get throwable from component");

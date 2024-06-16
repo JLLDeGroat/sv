@@ -26,6 +26,10 @@ ECollisionChannel USvUtilities::GetBulletCollisionObjectChannel() {
 	return ECC_GameTraceChannel5;
 }
 
+ECollisionChannel USvUtilities::GetWorldSelectChannel() {
+	return ECC_GameTraceChannel6;
+}
+
 int USvUtilities::FormatLocation(float val) {
 	int value = val;
 
@@ -150,4 +154,8 @@ int USvUtilities::GetTileElevation(FVector loc) {
 
 USvGameInstance* USvUtilities::GetGameInstance(UWorld* world) {
 	return world->GetGameInstance<USvGameInstance>();
+}
+
+int USvUtilities::GetWorldMapGridMultiplier() {
+	return 100;
 }

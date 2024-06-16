@@ -5,10 +5,12 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "../Interfaces/Gameplay.h"
+#include "../Runnables/Base/BaseRunnable.h"
 #include "GameplayMode.generated.h"
 
 class UCharacterManager;
 class UTurnManager;
+class ULevelSpawnerManager;
 /**
  * 
  */
@@ -28,9 +30,15 @@ public:
 	virtual void EndTurn() override;
 	virtual void BeginPlayerTurn() override;
 
+	ULevelSpawnerManager* GetLevelSpawnerManager();
+
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UCharacterManager* CharacterManager;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UTurnManager* TurnManager;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) ULevelSpawnerManager* LevelSpawnerManager;
+
+	UPROPERTY() UBaseRunnable* LevelGenThread;
+	
 
 };

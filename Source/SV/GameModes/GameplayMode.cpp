@@ -7,20 +7,27 @@
 #include "../Player/PlayerPawn.h"
 #include "Managers/TurnManager.h"
 #include "Managers/CharacterManager.h"
+#include "Managers/LevelSpawnerManager.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
+#include "../Runnables/LevelGenerationRunnable.h"
 
 AGameplayMode::AGameplayMode() {
 	PlayerControllerClass = AGamePlayerController::StaticClass();
 	DefaultPawnClass = APlayerPawn::StaticClass();
 	HUDClass = AGameHud::StaticClass();
 
-
 	CharacterManager = CreateDefaultSubobject<UCharacterManager>(TEXT("CharacterManager"));
 	TurnManager = CreateDefaultSubobject<UTurnManager>(TEXT("TurnManager"));
+	LevelSpawnerManager = CreateDefaultSubobject<ULevelSpawnerManager>(TEXT("SpawnerManager"));
 }
 
 void AGameplayMode::BeginPlay() {
 	Super::BeginPlay();
+
+	LevelGenThread = NewObject<ULevelGenerationRunnable>()
+		->InsertVariables()
+		->Initialise(GetWorld())
+		->Begin();
 }
 
 UCharacterManager* AGameplayMode::GetCharacterManager() {
@@ -34,4 +41,8 @@ void AGameplayMode::EndTurn() {
 void AGameplayMode::BeginPlayerTurn() {
 	UDebugMessages::LogDisplay(this, "Beginning Player Turn");
 	TurnManager->BeginPlayerTurn();
+}
+
+ULevelSpawnerManager* AGameplayMode::GetLevelSpawnerManager() {
+	return LevelSpawnerManager;
 }

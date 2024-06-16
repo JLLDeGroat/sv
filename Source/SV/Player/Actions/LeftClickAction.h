@@ -19,6 +19,7 @@ public:
 
 	virtual void BeginPlay() override;
 	void DoAction();
+	void DoWorldAction();
 
 		
 };

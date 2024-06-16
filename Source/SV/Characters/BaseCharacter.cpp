@@ -38,6 +38,9 @@ void ABaseCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	auto gameMode = USvUtilities::GetGameMode(GetOwner()->GetWorld());
+	if (!gameMode) 
+		return UDebugMessages::LogError(this, "spawned under the wrong game mode");
+	
 	auto characterManager = gameMode->GetCharacterManager();
 	characterManager->ReceiveNewCharacter(this);
 }
@@ -85,8 +88,8 @@ TArray<TScriptInterface<IHitComponent>> ABaseCharacter::GetHitComponents() {
 	TArray< TScriptInterface<IHitComponent>> response;
 
 	for (UActorComponent* comp : components) {
-		if (comp->IsA<UHitBoxComponent>() || 
-			comp->IsA<UHitCapsuleComponent>()) 
+		if (comp->IsA<UHitBoxComponent>() ||
+			comp->IsA<UHitCapsuleComponent>())
 		{
 			response.Emplace(comp);
 		}

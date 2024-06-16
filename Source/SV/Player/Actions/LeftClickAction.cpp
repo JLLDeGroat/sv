@@ -16,9 +16,12 @@
 #include "../../Characters/Components/ThrowableComponent.h"
 #include "../../Interfaces/SvChar.h"
 #include "../../Interfaces/Selectable.h"
+#include "../Components/WorldPawnMovementComponent.h"
+#include "../../GameModes/WorldGameMode.h"
+#include "../../GameModes/WorldManagers/WorldDirectionManager.h"
 
 // Sets default values for this component's properties
-ULeftClickAction::ULeftClickAction(const FObjectInitializer& ObjectInitializer) : UBaseActionComponent(ObjectInitializer) 
+ULeftClickAction::ULeftClickAction(const FObjectInitializer& ObjectInitializer) : UBaseActionComponent(ObjectInitializer)
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -96,14 +99,36 @@ void ULeftClickAction::DoAction() {
 		auto grenadeDestinationLocation = ControlManager->GetGrenadeIndicatorActorLocation();
 		auto throwableComponent = selected->GetAsActor()->GetComponentByClass<UThrowableComponent>();
 
-		if (throwableComponent) 
+		if (throwableComponent)
 			throwableComponent->ThrowAtLocation(grenadeDestinationLocation);
 
 		ControlManager->SetCanMouseDesignateExplosionRadiusActor(false);
+
+		pawnCameraComponent->UpdateCameraState(ECameraState::CS_Throw, FVector::ZeroVector, FVector::ZeroVector, true);
 	}
 	else {
 		if (Hit.GetActor() && SelectionManager->TrySetSelected(Hit.GetActor())) {
 			SelectionManager->GetSelected()->TryVisualiseTargets();
+		}
+	}
+}
+
+void ULeftClickAction::DoWorldAction() {
+	auto controller = GetOwner<APlayerController>();
+	auto pawn = controller->GetPawn();
+
+	FHitResult Hit;
+	controller->GetHitResultUnderCursor(USvUtilities::GetWorldSelectChannel(), false, Hit);
+
+	if (Hit.GetActor()) {
+		auto movementComp = pawn->GetComponentByClass<UWorldPawnMovementComponent>();
+		auto getClickedLocation = Hit.GetActor()->GetActorLocation();
+		movementComp->MoveToNewLocation(getClickedLocation);
+
+		auto gameMode = GetWorld()->GetAuthGameMode<AWorldGameMode>();
+		if (gameMode && gameMode->GetComponentByClass<UWorldDirectionManager>()) {
+			auto worldDirectionManager = gameMode->GetComponentByClass<UWorldDirectionManager>();
+			worldDirectionManager->ClearDirections();
 		}
 	}
 }

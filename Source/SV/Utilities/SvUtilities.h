@@ -24,6 +24,8 @@ public:
 
 	static ECollisionChannel GetBulletCollisionObjectChannel();
 
+	static ECollisionChannel GetWorldSelectChannel();
+
 	static int FormatLocation(float val);
 
 	static UStaticMesh* GetStaticMesh(FString reference);
@@ -43,6 +45,8 @@ public:
 	static UCharacterManager* GetGameModeCharacterManager(UWorld* world);
 
 	static USvGameInstance* GetGameInstance(UWorld* world);
+
+	static int GetWorldMapGridMultiplier();
 
 private:
 

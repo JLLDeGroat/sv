@@ -8,22 +8,33 @@
 #include "VgFlMngmnt/Domain/FileManagementUtilities.h"
 #include "HAL/PlatformFileManager.h"
 #include "Misc/FileHelper.h"
+#include "Managers/RouteDataManager.h"
+#include "Managers/CrewDataManager.h"
+#include "Managers/LevelGenerationManager.h"
 
 USvGameInstance::USvGameInstance() {
 
 	FString skillStringData;
-	ReadModData("Base/sv_sd", skillStringData);
+
+	ReadFile("Base/sv_sd", &SkillData);
+	ReadFile("Base/sv_td", &ThrowableData);
+	ReadFile("Base/sv_gtd", &GameTypeDescriptions);
+	ReadFile("Base/sv_cmd", &CrewMemberData);
+	/*ReadModData("Base/sv_sd", skillStringData);
 	if (!UFileManagementUtilities::JsonToStruct(skillStringData, &SkillData)) {
 		UDebugMessages::LogError(this, "failed to load sv_sd");
 		return;
-	} 
+	} */
 
-	FString throwableDataString;
+	/*FString throwableDataString;
 	ReadModData("Base/sv_td", throwableDataString);
 	if (!UFileManagementUtilities::JsonToStruct(throwableDataString, &ThrowableData)) {
 		UDebugMessages::LogError(this, "failed to load sv_td");
 		return;
-	}
+	}*/
+	RouteManager = NewObject<URouteDataManager>();
+	CrewDataManager = NewObject<UCrewDataManager>();
+	LevelGenManager = NewObject<ULevelGenerationManager>();
 }
 
 void USvGameInstance::ReadModData(FString modName, FString& fileText) {
@@ -46,4 +57,29 @@ void USvGameInstance::GetSkillDataItem(FString name, FSkillDataItem& dataItem) {
 void USvGameInstance::GetThrowableDataItem(EThrowable throwable, FThrowableDataItem& item) {
 	auto foundDataItem = ThrowableData.GetThrowableByType(throwable);
 	item = *foundDataItem;
+}
+
+void USvGameInstance::GetGameTypeDescription(EGameModeType gameMode, FGameTypeDescriptionItem& item) {
+	auto foundDescriptionItem = GameTypeDescriptions.GetDescriptionItem(gameMode);
+	item = *foundDescriptionItem;
+}
+
+template<typename OutStructType>
+bool USvGameInstance::ReadFile(FString file, OutStructType* OutStruct)
+{
+	FString fileText;
+	ReadModData(file, fileText);
+	return UFileManagementUtilities::JsonToStruct(fileText, OutStruct);
+}
+
+URouteDataManager* USvGameInstance::GetRouteDataManager() {
+	return RouteManager;
+}
+
+UCrewDataManager* USvGameInstance::GetCrewManager() {
+	return CrewDataManager;
+}
+
+FCrewMemberData* USvGameInstance::GetPossibleCrewData() {
+	return &CrewMemberData;
 }

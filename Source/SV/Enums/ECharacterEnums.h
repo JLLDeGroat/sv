@@ -46,6 +46,7 @@ enum class ECameraState : uint8 {
 	CS_ReTarget = 4,
 	CS_CinematicShoot = 5,
 	CS_ThrowTarget = 6,
+	CS_Throw = 7
 };
 
 
