@@ -30,6 +30,10 @@ ECollisionChannel USvUtilities::GetWorldSelectChannel() {
 	return ECC_GameTraceChannel6;
 }
 
+ECollisionChannel USvUtilities::GetTriggerableChannel() {
+	return ECC_GameTraceChannel7;
+}
+
 int USvUtilities::FormatLocation(float val) {
 	int value = val;
 
@@ -83,17 +87,17 @@ void USvUtilities::GetAdjacentGridTiles(FVector location, TArray<FVector>& adjac
 
 	if (IsInBounds(location + FVector(-gridGape, 0, 0)))
 		adjacentTiles.Emplace(location + FVector(-gridGape, 0, 0));
-	
+
 	if (IsInBounds(location + FVector(0, gridGape, 0)))
 		adjacentTiles.Emplace(location + FVector(0, gridGape, 0));
-	
+
 	if (IsInBounds(location + FVector(0, -gridGape, 0)))
 		adjacentTiles.Emplace(location + FVector(0, -gridGape, 0));
 }
 
 bool USvUtilities::IsInBounds(FVector location) {
-	if (location.X > 3000 || location.X < -3000 ||
-		location.Y > 3000 || location.Y < -3000)
+	if (location.X > 10000 || location.X < -1000 ||
+		location.Y > 10000 || location.Y < -1000)
 		return false;
 
 	return true;
@@ -107,8 +111,8 @@ bool USvUtilities::AreGridLocationsAdjacent(FVector loc1, FVector loc2) {
 		GetAdjacentGridTiles(loc1, adjacentTiles);
 
 		for (int i = 0; i < adjacentTiles.Num(); i++) {
-			if (adjacentTiles[i].X == loc2.X && 
-				adjacentTiles[i].Y == loc2.Y) 
+			if (adjacentTiles[i].X == loc2.X &&
+				adjacentTiles[i].Y == loc2.Y)
 				return true;
 		}
 	}
@@ -154,6 +158,36 @@ int USvUtilities::GetTileElevation(FVector loc) {
 
 USvGameInstance* USvUtilities::GetGameInstance(UWorld* world) {
 	return world->GetGameInstance<USvGameInstance>();
+}
+
+TArray<FVector> USvUtilities::RandomizeList(TArray<FVector> list, FRandomStream stream) {
+	TArray<FVector> result = list;
+	if (result.Num() > 0)
+	{
+		int32 LastIndex = result.Num() - 1;
+		for (int32 i = 0; i <= LastIndex; ++i)
+		{
+			int32 Index = stream.RandRange(i, LastIndex);
+			if (i != Index)
+				result.Swap(i, Index);
+		}
+	}
+	return result;
+}
+
+TArray<FVector> USvUtilities::RandomizeList(TArray<FVector> list) {
+	TArray<FVector> result = list;
+	if (result.Num() > 0)
+	{
+		int32 LastIndex = result.Num() - 1;
+		for (int32 i = 0; i <= LastIndex; ++i)
+		{
+			int32 Index = FMath::RandRange(i, LastIndex);
+			if (i != Index)
+				result.Swap(i, Index);
+		}
+	}
+	return result;
 }
 
 int USvUtilities::GetWorldMapGridMultiplier() {

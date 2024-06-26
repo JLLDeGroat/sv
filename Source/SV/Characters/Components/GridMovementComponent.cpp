@@ -12,6 +12,8 @@
 #include "../Anim/CharAnimInstance.h"
 #include "TargetingComponent.h"
 #include "CharacterDetailsComponent.h"
+#include "../../Runnables/PostMovementRunnable.h"
+#include "../../Environment/Components/VaultableComponent.h"
 
 // Sets default values for this component's properties
 UGridMovementComponent::UGridMovementComponent(const FObjectInitializer& ObjectInitializer) : UAnimAccessComponent(ObjectInitializer)
@@ -21,6 +23,8 @@ UGridMovementComponent::UGridMovementComponent(const FObjectInitializer& ObjectI
 	PrimaryComponentTick.bCanEverTick = true;
 
 	// ...
+	DefaultMovementSpeed = 350;
+	MovementSpeed = DefaultMovementSpeed;
 }
 
 
@@ -39,20 +43,23 @@ void UGridMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	if (MovementLocations.Num() > 0) {
-		auto newLocation = UKismetMathLibrary::VInterpTo_Constant(GetOwner()->GetActorLocation(), MovementLocations[0], DeltaTime, 350);
-		newLocation.Z = GetOwner()->GetActorLocation().Z;
+		auto normalisedMovementLocation = MovementLocations[0];
+		normalisedMovementLocation.Z = GetOwner()->GetActorLocation().Z;
+
+		auto newLocation = UKismetMathLibrary::VInterpTo_Constant(GetOwner()->GetActorLocation(), normalisedMovementLocation, DeltaTime, MovementSpeed);
+		
 		GetOwner()->SetActorLocation(newLocation);
 
 		if(AnimInstance) 
 			AnimInstance->UpdateSpeed(200);
 
-		auto lookAtRot = UGridUtilities::FindLookAtRotation(newLocation, MovementLocations[0]);
+		auto lookAtRot = UGridUtilities::FindLookAtRotation(newLocation, normalisedMovementLocation);
 		lookAtRot.Pitch = GetOwner()->GetActorRotation().Pitch;
 		lookAtRot.Roll = GetOwner()->GetActorRotation().Roll;
 		auto newRotation = UKismetMathLibrary::RInterpTo_Constant(GetOwner()->GetActorRotation(), lookAtRot, DeltaTime, 200);
 		GetOwner()->SetActorRotation(newRotation);
 
-		auto dist = FVector::Distance(GetOwner()->GetActorLocation(), MovementLocations[0]);
+		auto dist = FVector::Distance(GetOwner()->GetActorLocation(), normalisedMovementLocation);
 		if (dist < 5) {
 			MovementLocations.RemoveAt(0);
 		}
@@ -67,6 +74,11 @@ void UGridMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		if (targeting) {
 			targeting->DetermineTargetData();
 		}
+
+		PostMovementRunnable = NewObject<UPostMovementRunnable>()
+			->InsertVariables(GetOwner())
+			->Initialise(GetWorld())
+			->Begin();
 	}
 }
 
@@ -74,7 +86,7 @@ void UGridMovementComponent::MoveAcrossGrid(TArray<FVector> movementLocs) {
 	if (movementLocs.Num() == 0) return;
 
 	MovementLocations = movementLocs;
-
+	AnimInstance->SetIsCrouching(false);
 	SetComponentTickEnabled(true);
 
 	/*auto owner = GetOwner<ABaseCharacter>();
@@ -256,10 +268,38 @@ bool UGridMovementComponent::GetMovableAdjacentTiles(FVector start, TArray<FVect
 		EntityHitParams.AddIgnoredActor(GetOwner());
 		world->LineTraceSingleByChannel(EntityHit, start, adjacentTiles[i], USvUtilities::GetClickableChannel(), EntityHitParams);
 
-		if (!EnvironmentHit.bBlockingHit && !EntityHit.bBlockingHit) {
+
+		auto detailsComponent = GetOwner()->GetComponentByClass<UCharacterDetailsComponent>();
+		auto hasVaultComponentAndCanVault = EnvironmentHit.GetActor() && EnvironmentHit.GetActor()->GetComponentByClass<UVaultableComponent>()
+			&& detailsComponent && detailsComponent->GetCanVault();
+
+		bool testV = false;
+		if (EnvironmentHit.bBlockingHit && !hasVaultComponentAndCanVault) {
+			if (EnvironmentHit.GetActor()->GetComponentByClass<UVaultableComponent>()) {
+				UDebugMessages::LogError(this, "why 2");
+				testV = true;
+			}
+		}
+
+		if ((!EnvironmentHit.bBlockingHit && !EntityHit.bBlockingHit) || 
+			(EnvironmentHit.bBlockingHit && hasVaultComponentAndCanVault))
+		{
+			if (testV) {
+				UDebugMessages::LogError(this, "hello");
+			}
 			ValidAdjacentTiles.Emplace(adjacentTiles[i]);
 		}
 	}
 
 	return !ValidAdjacentTiles.IsEmpty();
+}
+
+void UGridMovementComponent::ResetMovementSpeed() {
+	MovementSpeed = DefaultMovementSpeed;
+}
+void UGridMovementComponent::UpdateMovementSpeed(float speed) {
+	MovementSpeed = speed;
+}
+void UGridMovementComponent::PostMovementCrouch() {
+	AnimInstance->SetIsCrouching(true);
 }

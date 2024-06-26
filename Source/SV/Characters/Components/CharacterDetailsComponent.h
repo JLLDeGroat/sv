@@ -51,6 +51,9 @@ public:
 	void AddMaxActionPoints(int amount);
 	int GetMaxActionPoints() const;
 
+	void SetCanVault(bool value);
+	bool GetCanVault();
+
 private:
 
 	UPROPERTY() ECharacterControl ControlType;
@@ -61,4 +64,6 @@ private:
 
 	UPROPERTY() int ActionPoints;
 	UPROPERTY() int MaxActionPoints;
+
+	UPROPERTY() bool bCanVault;
 };

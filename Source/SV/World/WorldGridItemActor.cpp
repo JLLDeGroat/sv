@@ -56,3 +56,7 @@ void AWorldGridItemActor::SetIsSpawn() {
 	auto mat = USvUtilities::GetMaterial("/Script/Engine.Material'/Game/Materials/World/IsSpawn_M.IsSpawn_M'");
 	MeshComponent->SetMaterial(0, mat);
 }
+void AWorldGridItemActor::SetIsObstacle() {
+	auto mat = USvUtilities::GetMaterial("/Script/Engine.Material'/Game/Materials/World/IsObstacle_M.IsObstacle_M'");
+	MeshComponent->SetMaterial(0, mat);
+}

@@ -52,6 +52,8 @@ void URightClickAction::DoAction() {
 
 			auto selectedMouseLocation = SelectionManager->GetCurrentMousedLocation();
 			auto currentActorGridLocation = selected->GetSelectableGridLocation();
+			//move the z axis lower to hit fence items
+			currentActorGridLocation.Z -= 50;
 
 			UDebugMessages::LogDisplay(this, "Moving from " + currentActorGridLocation.ToString() + " to: " + selectedMouseLocation.ToString());
 			//testing grid system

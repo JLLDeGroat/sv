@@ -8,6 +8,8 @@
 #include "../Components/SkillsComponent.h"
 #include "../Components/AttackComponent.h"
 #include "../Components/ThrowableComponent.h"
+#include "../Components/VaultObstacleComponent.h"
+#include "../Components/GridMovementComponent.h"
 #include "../../Player/Components/PawnCameraComponent.h"
 #include "../../Player/GamePlayerController.h"
 #include "../../Player/Actions/GrenadeActionComponent.h"
@@ -37,7 +39,12 @@ void UCharAnimInstance::SetIsThrowing(bool value, EAttackType attackType) {
 	AttackType = attackType;
 	bIsThrowing = value;
 }
-
+void UCharAnimInstance::SetIsVaulting(bool val) {
+	bIsVaulting = val;
+}
+void UCharAnimInstance::SetIsCrouching(bool val) {
+	bIsCrouching = val;
+}
 void UCharAnimInstance::OnGunFire() {
 	auto owningActor = GetOwningActor();
 	auto equipmentComponent = owningActor->GetComponentByClass<UEquipmentComponent>();
@@ -100,6 +107,18 @@ void UCharAnimInstance::OnFinishMelee() {
 
 		},
 		TStatId(), nullptr, ENamedThreads::GameThread);*/
+}
+
+void UCharAnimInstance::OnFinishVault() {
+	bIsVaulting = false;
+
+	auto owningActor = GetOwningActor();
+	auto movementComponent = owningActor->GetComponentByClass<UGridMovementComponent>();
+	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([movementComponent]
+		{
+			movementComponent->ResetMovementSpeed();
+		},
+		TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
 void UCharAnimInstance::UpdateAnimPlayRate(float newRate) {

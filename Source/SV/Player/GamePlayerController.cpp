@@ -30,6 +30,7 @@
 #include "Actions/TargetAction.h"
 #include "Actions/RightClickAction.h"
 #include "Actions/GrenadeActionComponent.h"
+#include "Actions/ActivateToggleAction.h"
 
 #include "DrawDebugHelpers.h"
 
@@ -48,6 +49,7 @@ AGamePlayerController::AGamePlayerController() {
 	BeginTargetAction = LoadObject<UInputAction>(this, TEXT("/Script/EnhancedInput.InputAction'/Game/Controls/IA_BeginTarget.IA_BeginTarget'"));
 	CameraMoveAction = LoadObject<UInputAction>(this, TEXT("/Script/EnhancedInput.InputAction'/Game/Controls/IA_MouseMove.IA_MouseMove'"));
 	GrenadeAction = LoadObject<UInputAction>(this, TEXT("/Script/EnhancedInput.InputAction'/Game/Controls/IA_UseGrenade.IA_UseGrenade'"));
+	ActivateToggleAction = LoadObject<UInputAction>(this, TEXT("/Script/EnhancedInput.InputAction'/Game/Controls/IA_ActivateToggle.IA_ActivateToggle'"));
 
 	SelectionManager = CreateDefaultSubobject<USelectionManager>(TEXT("Selection"));
 	ControlManager = CreateDefaultSubobject<UControlManager>(TEXT("Control"));
@@ -56,6 +58,7 @@ AGamePlayerController::AGamePlayerController() {
 	RightClickActionComponent = CreateDefaultSubobject<URightClickAction>(TEXT("RightClickAction"));
 	TargetActionComponent = CreateDefaultSubobject<UTargetAction>(TEXT("TargetAction"));
 	GrenadeActionComponent = CreateDefaultSubobject<UGrenadeActionComponent>(TEXT("GrenadeAction"));
+	ActivateToggleActionComponent = CreateDefaultSubobject<UActivateToggleAction>(TEXT("ToggleAction"));
 }
 
 void AGamePlayerController::BeginPlay() {
@@ -143,6 +146,8 @@ void AGamePlayerController::SetupInputComponent() {
 
 		EnhancedInputComponent->BindAction(BeginTargetAction, ETriggerEvent::Started, TargetActionComponent, &UTargetAction::DoAction);
 		EnhancedInputComponent->BindAction(GrenadeAction, ETriggerEvent::Started, GrenadeActionComponent, &UGrenadeActionComponent::DoAction);
+
+		EnhancedInputComponent->BindAction(ActivateToggleAction, ETriggerEvent::Started, ActivateToggleActionComponent, &UActivateToggleAction::DoAction);
 	}
 	else
 	{

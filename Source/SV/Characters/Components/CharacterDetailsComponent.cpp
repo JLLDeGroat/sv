@@ -108,3 +108,10 @@ void UCharacterDetailsComponent::AddMaxActionPoints(int amount) {
 int UCharacterDetailsComponent::GetMaxActionPoints() const {
 	return MaxActionPoints;
 }
+
+void UCharacterDetailsComponent::SetCanVault(bool value) {
+	bCanVault = value;
+}
+bool UCharacterDetailsComponent::GetCanVault() {
+	return bCanVault;
+}

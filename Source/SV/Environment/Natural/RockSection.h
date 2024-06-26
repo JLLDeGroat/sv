@@ -20,7 +20,6 @@ public:
 
 	virtual void OnConstruction(const FTransform& Transform) override;
 
-
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) USceneComponent* Root;
