@@ -25,7 +25,7 @@ void ULevelSpawnerManager::BeginPlay()
 }
 
 void ULevelSpawnerManager::SpawnMajorWallAt(FVector loc, FRotator rot) {
-	UDebugMessages::LogDisplay(this, "spawning wall at " + loc.ToString());
+	//UDebugMessages::LogDisplay(this, "spawning wall at " + loc.ToString());
 	GetWorld()->SpawnActor<AWall>(loc, rot);
 
 }

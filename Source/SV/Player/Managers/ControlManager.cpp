@@ -79,6 +79,8 @@ void UControlManager::TickFindMovementPath(FVector localisedLocation) {
 	{
 		auto movableComponent = movable->GetGridMovementComponent();
 		auto startLocation = selected->GetSelectableGridLocation();
+		//TODO: remove 50 to get to feet of soldier
+		startLocation.Z -= 50;
 
 		auto gridSteps = movableComponent->FindRoute(startLocation, localisedLocation);
 		SelectionManager->SetLocationPath(gridSteps);

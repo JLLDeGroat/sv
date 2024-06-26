@@ -12,6 +12,8 @@
 #include "../Components/DamageRecieveComponent.h"
 #include "../Components/AnimSpeedComponent.h"
 #include "../Components/ThrowableComponent.h"
+#include "../Components/ActivateTogglesComponent.h"
+#include "../Components/VaultObstacleComponent.h"
 // Sets default values
 ASolder::ASolder(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(ObjectInitializer)
 {
@@ -50,8 +52,14 @@ ASolder::ASolder(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(O
 	DetailsComponent->AddMaxActionPoints(2);
 	DetailsComponent->AddActionPoints(2);
 
+	DetailsComponent->SetCanVault(true);
+
 	AnimSpeedComponent = CreateDefaultSubobject<UAnimSpeedComponent>(TEXT("AnimSpeed"));
 	ThrowableComponent = CreateDefaultSubobject<UThrowableComponent>(TEXT("Throwable"));
+
+	ActivateToggleComponent = CreateDefaultSubobject<UActivateTogglesComponent>(TEXT("ToggleComp"));
+
+	VaultingComponent = CreateDefaultSubobject<UVaultObstacleComponent>(TEXT("Vault"));
 }
 
 // Called when the game starts or when spawned

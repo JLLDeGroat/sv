@@ -27,6 +27,8 @@ public:
 	void UpdateSpeed(float value);
 	void SetIsAttacking(bool value, EAttackType attackType = EAttackType::AT_BasicFire);
 	void SetIsThrowing(bool value, EAttackType attackType = EAttackType::AT_BasicThrow);
+	void SetIsVaulting(bool val);
+	void SetIsCrouching(bool val);
 
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnGunFire();
@@ -40,6 +42,8 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnGrabbedThrowable();
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnReleasedThrowable();
 
+	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnFinishVault();
+
 	void UpdateAnimPlayRate(float newRate);
 
 protected:
@@ -50,4 +54,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsThrowing;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) EAttackType AttackType;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) float AnimPlayRate;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsCrouching;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsVaulting;
 };

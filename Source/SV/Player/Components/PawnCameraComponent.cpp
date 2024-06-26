@@ -65,6 +65,9 @@ void UPawnCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 			CurrentlyMoving = false;
 			CurrentRotateToLocation = FVector::ZeroVector;
 			SetComponentTickEnabled(false);
+		
+			if (CurrentCameraState == ECameraState::CS_ReTarget)
+				CurrentCameraState = ECameraState::CS_Control;
 		}
 	}
 }

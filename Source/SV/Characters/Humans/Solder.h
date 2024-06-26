@@ -14,6 +14,9 @@ class UAttackComponent;
 class UDamageRecieveComponent;
 class UAnimSpeedComponent;
 class UThrowableComponent;
+class UActivateTogglesComponent;
+class UVaultObstacleComponent;
+
 UCLASS()
 class SV_API ASolder : public ABaseCharacter, public IMovable
 {
@@ -40,6 +43,8 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UDamageRecieveComponent* DamageRecieveComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UAnimSpeedComponent* AnimSpeedComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UThrowableComponent* ThrowableComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UActivateTogglesComponent* ActivateToggleComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UVaultObstacleComponent* VaultingComponent;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

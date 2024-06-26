@@ -26,10 +26,13 @@ ABaseCharacter::ABaseCharacter(const FObjectInitializer& ObjectInitializer) : AC
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(USvUtilities::GetClickableChannel(), ECR_Block);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(USvUtilities::GetTriggerableChannel(), ECR_Overlap);
 
 	DetailsComponent = CreateDefaultSubobject<UCharacterDetailsComponent>(TEXT("DetailsComponent"));
 
 	SvCharId = FGuid::NewGuid();
+
+	SetActorScale3D(FVector(.8f));
 }
 
 // Called when the game starts or when spawned

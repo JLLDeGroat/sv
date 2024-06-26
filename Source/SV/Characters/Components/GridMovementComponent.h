@@ -6,6 +6,7 @@
 #include "Base/AnimAccessComponent.h"
 #include "GridMovementComponent.generated.h"
 
+class UBaseRunnable;
 class UCharAnimInstance;
 
 USTRUCT()
@@ -80,6 +81,11 @@ public:
 
 	bool GetMovableAdjacentTiles(FVector start, TArray<FVector>& ValidAdjacentTiles, FVector orderByDistanceLoc = FVector::ZeroVector);
 
+	void ResetMovementSpeed();
+	void UpdateMovementSpeed(float speed);
+
+	void PostMovementCrouch();
+
 private:
 
 	UPROPERTY() TArray<FVector> MovementLocations;
@@ -93,4 +99,9 @@ private:
 	
 	UPROPERTY() TArray<AActor*> TestActorList;
 	UPROPERTY() TArray<FMovementData> MovementData;
+
+	UPROPERTY() UBaseRunnable* PostMovementRunnable;
+
+	UPROPERTY() float MovementSpeed;
+	UPROPERTY() float DefaultMovementSpeed;
 };

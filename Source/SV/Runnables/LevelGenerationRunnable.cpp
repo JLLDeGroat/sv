@@ -10,6 +10,12 @@
 #include "../Utilities/RunnableUtilities.h"
 #include "../World/WorldGridItemActor.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
+#include "Generations/FenceGenerations.h"
+#include "Generations/BuildingGeneration.h"
+#include "Generations/RoadGenerations.h"
+#include "Generations/EnemyGeneration.h"
+#include "Generations/PlayerGeneration.h"
+#include "../Environment/Natural/RockSection.h"
 
 
 #pragma optimize("", off)
@@ -30,15 +36,15 @@ void ULevelGenerationRunnable::ActivateThread() {
 	GenerateBoundaryWalls();
 
 	TArray<FVector> spawnArr;
-	spawnArr.Emplace(SpawnZone[RandomStream.RandRange(0, SpawnZone.Num() - 1)]);
+	spawnArr.Emplace(GetRandomStartZoneLocation());
 
 	TArray<FVector> endArr;
-	endArr.Emplace(EndZone[RandomStream.RandRange(0, EndZone.Num() - 1)]);
+	endArr.Emplace(GetRandomEndZoneLocation());
 
 	//auto mainRoute = FindRouteBetweenRecursive(spawnArr, EndZone[RandomStream.RandRange(0, EndZone.Num() - 1)], TwoDGrid, MaxX + MaxY);
 
 	auto world = GetWorld();
-	auto spawnLocs = SpawnZone;
+	/*auto spawnLocs = SpawnZone;
 	FGraphEventRef spawnTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, spawnLocs] {
 
 		for (int i = 0; i < spawnLocs.Num(); i++) {
@@ -53,19 +59,102 @@ void ULevelGenerationRunnable::ActivateThread() {
 			auto actor = world->SpawnActor<AWorldGridItemActor>(endLocs[i], FRotator::ZeroRotator);
 			actor->SetIsEnd();
 		}
-		}, TStatId(), nullptr, ENamedThreads::GameThread);
+		}, TStatId(), nullptr, ENamedThreads::GameThread);*/
 
 
-	FindPrimaryRouteBetweenRecursive(spawnArr, EndZone[RandomStream.RandRange(0, EndZone.Num() - 1)], 80);
+	FindPrimaryRouteBetweenRecursive(spawnArr, EndZone[RandomStream.RandRange(0, EndZone.Num() - 1)], 80, 1);
 
-	for (int i = 0; i < PrimaryRoute.Num(); i++) {
+	/*for (int i = 0; i < PrimaryRoute.Num(); i++) {
 		auto thisRoute = PrimaryRoute[i];
 		FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, thisRoute] {
 			auto actor = world->SpawnActor<AWorldGridItemActor>(thisRoute, FRotator::ZeroRotator);
 			}, TStatId(), nullptr, ENamedThreads::GameThread);
+	}*/
+
+	FindPrimaryRouteBetweenRecursive(GetRandomLocationAlongPrimaryRoute(), GetRandomLocationWithinGrid(), 90, 2);
+
+	/*for (int i = 0; i < GetRouteById(2).Num(); i++) {
+		auto thisRoute = GetRouteById(2)[i];
+		FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, thisRoute] {
+			auto actor = world->SpawnActor<AWorldGridItemActor>(thisRoute, FRotator::ZeroRotator);
+			}, TStatId(), nullptr, ENamedThreads::GameThread);
+	}*/
+
+	FindPrimaryRouteBetweenRecursive(GetRandomLocationAlongPrimaryRoute(), GetRandomLocationWithinGrid(), 90, 3);
+	/*for (int i = 0; i < GetRouteById(3).Num(); i++) {
+		auto thisRoute = GetRouteById(3)[i];
+		FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, thisRoute] {
+			auto actor = world->SpawnActor<AWorldGridItemActor>(thisRoute, FRotator::ZeroRotator);
+			}, TStatId(), nullptr, ENamedThreads::GameThread);
+	}*/
+	FindPrimaryRouteBetweenRecursive(GetRandomLocationAlongPrimaryRoute(), GetRandomLocationWithinGrid(), 90, 4);
+	/*for (int i = 0; i < GetRouteById(4).Num(); i++) {
+		auto thisRoute = GetRouteById(4)[i];
+		FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, thisRoute] {
+			auto actor = world->SpawnActor<AWorldGridItemActor>(thisRoute, FRotator::ZeroRotator);
+			}, TStatId(), nullptr, ENamedThreads::GameThread);
+	}*/
+	FindPrimaryRouteBetweenRecursive(GetRandomLocationAlongPrimaryRoute(), GetRandomLocationWithinGrid(), 90, 5);
+	/*for (int i = 0; i < GetRouteById(5).Num(); i++) {
+		auto thisRoute = GetRouteById(5)[i];
+		FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, thisRoute] {
+			auto actor = world->SpawnActor<AWorldGridItemActor>(thisRoute, FRotator::ZeroRotator);
+			}, TStatId(), nullptr, ENamedThreads::GameThread);
+	}*/
+	FindPrimaryRouteBetweenRecursive(GetRandomLocationAlongPrimaryRoute(), GetRandomLocationWithinGrid(), 90, 6);
+	/*for (int i = 0; i < GetRouteById(6).Num(); i++) {
+		auto thisRoute = GetRouteById(6)[i];
+		FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, thisRoute] {
+			auto actor = world->SpawnActor<AWorldGridItemActor>(thisRoute, FRotator::ZeroRotator);
+			}, TStatId(), nullptr, ENamedThreads::GameThread);
+	}*/
+
+	GenerateCaveWalls();
+
+	for (int i = 0; i < WallLocations.Num(); i++) {
+		auto thisLoc = WallLocations[i];
+		FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, thisLoc] {
+			//auto actor = world->SpawnActor<ARockSection>(thisLoc + FVector(50, 50, 0), FRotator::ZeroRotator);
+			auto actor = world->SpawnActor<ARockSection>(thisLoc, FRotator::ZeroRotator);
+			}, TStatId(), nullptr, ENamedThreads::GameThread);
 	}
 
-	FPlatformProcess::Sleep(1);
+	FillAllObstacleAllowedLocations();
+
+	/*for (int i = 0; i < ObstacleAllowedLocations.Num(); i++) {
+		auto thisLoc = ObstacleAllowedLocations[i];
+		FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, thisLoc] {
+			auto actor = world->SpawnActor<AWorldGridItemActor>(thisLoc, FRotator::ZeroRotator);
+			actor->SetIsStart();
+			}, TStatId(), nullptr, ENamedThreads::GameThread);
+	}*/
+
+	auto fenceGen = NewObject<UFenceGenerations>(this)
+		->SetupGeneration(GetWorld(), RandomStream, ObstacleAllowedLocations)
+		->Generate();
+	ObstacleAllowedLocations = fenceGen->GetUnusedSpotsLeft();
+
+	auto buildinGen = NewObject<UBuildingGeneration>(this)
+		->SetupGeneration(GetWorld(), RandomStream, ObstacleAllowedLocations)
+		->Generate();
+	ObstacleAllowedLocations = buildinGen->GetUnusedSpotsLeft();
+
+	auto roadGen = NewObject<URoadGenerations>(this)
+		->SetupGeneration(GetWorld(), RandomStream, ObstacleAllowedLocations)
+		->SetRoadGenStartAndEndLocation(GetRandomStartZoneLocation(), GetRandomEndZoneLocation())
+		->SetStartAndEndZones(SpawnZone, EndZone)
+		->Generate();
+
+	auto enemyGen = NewObject<UEnemyGeneration>(this)
+		->SetTotalWalkingZombies(10)
+		->SetupGeneration(GetWorld(), RandomStream, ObstacleAllowedLocations)
+		->SetStartAndEndZones(SpawnZone, EndZone)
+		->Generate();
+
+	auto playerGen = NewObject<UPlayerGeneration>(this)
+		->SetupGeneration(GetWorld(), RandomStream, ObstacleAllowedLocations)
+		->SetStartAndEndZones(SpawnZone, EndZone)
+		->Generate();
 }
 
 ULevelGenerationRunnable* ULevelGenerationRunnable::InsertVariables() {
@@ -206,19 +295,16 @@ void ULevelGenerationRunnable::GenerateBoundaryWalls() {
 	}
 }
 
-void ULevelGenerationRunnable::FindPrimaryRouteBetweenRecursive(TArray<FVector> currentRoute, FVector end, int maxRoute) {
-	if (currentRoute.Num() > maxRoute) 
+void ULevelGenerationRunnable::FindPrimaryRouteBetweenRecursive(TArray<FVector> currentRoute, FVector end, int maxRoute, int routeId) {
+	if (currentRoute.Num() > maxRoute)
 		return;
 
 	auto lastRoute = currentRoute[currentRoute.Num() - 1];
 	auto adjacentGridItems = GetAdjacentGridItems(lastRoute);
 
 	for (int i = 0; i < adjacentGridItems.Num(); i++) {
-		if (!PrimaryRoute.IsEmpty())
+		if (!GetRouteById(routeId).IsEmpty())
 			return;
-
-		//if (!IsAValidRouteItem(adjacentGridItems[i]))
-		//	continue;
 
 		if (IsWithinList(currentRoute, adjacentGridItems[i]))
 			continue;
@@ -230,10 +316,12 @@ void ULevelGenerationRunnable::FindPrimaryRouteBetweenRecursive(TArray<FVector> 
 			continue;
 
 		if (adjacentGridItems[i] == end) {
+			TArray<FVector> finalRoute;
 			for (int x = 0; x < currentRoute.Num(); x++)
-				PrimaryRoute.Emplace(currentRoute[x]);
+				finalRoute.Emplace(currentRoute[x]);
 
-			PrimaryRoute.Emplace(adjacentGridItems[i]);
+			finalRoute.Emplace(adjacentGridItems[i]);
+			SetRouteById(routeId, finalRoute);
 			return;
 		}
 
@@ -242,25 +330,7 @@ void ULevelGenerationRunnable::FindPrimaryRouteBetweenRecursive(TArray<FVector> 
 
 		auto world = GetWorld();
 		auto owner = this;
-		FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, newRoute, owner] {
-
-			for (int i = 0; i < owner->DebugActors.Num(); i++) {
-				if (owner->DebugActors[i])
-					owner->DebugActors[i]->Destroy();
-			}
-			owner->DebugActors.Empty();
-
-			for (int i = 0; i < newRoute.Num(); i++) {
-				auto actor = world->SpawnActor<AWorldGridItemActor>(newRoute[i], FRotator::ZeroRotator);
-				if (actor) {
-					owner->AddDebugActor(actor);
-				}
-			}
-
-			}, TStatId(), nullptr, ENamedThreads::GameThread);
-		FPlatformProcess::Sleep(.5f);
-
-		FindPrimaryRouteBetweenRecursive(newRoute, end, maxRoute);
+		FindPrimaryRouteBetweenRecursive(newRoute, end, maxRoute, routeId);
 	}
 }
 
@@ -273,10 +343,17 @@ TArray<FVector> ULevelGenerationRunnable::GetAdjacentGridItems(FVector item) {
 
 	TArray<FVector> result;
 
-	if (left.X <= MaxX * 100 && left.Y <= MaxY * 100)		result.Emplace(left);
-	if (right.X <= MaxX * 100 && right.Y <= MaxY * 100)		result.Emplace(right);
-	if (up.X <= MaxX * 100 && up.Y <= MaxY * 100)			result.Emplace(up);
-	if (down.X <= MaxX * 100 && down.Y <= MaxY * 100)		result.Emplace(down);
+	if (left.X <= MaxX * 100 && left.Y <= MaxY * 100 && left.X >= 0 && left.Y >= 0)
+		result.Emplace(left);
+
+	if (right.X <= MaxX * 100 && right.Y <= MaxY * 100 && right.X >= 0 && right.Y >= 0)
+		result.Emplace(right);
+
+	if (up.X <= MaxX * 100 && up.Y <= MaxY * 100 && up.X >= 0 && up.Y >= 0)
+		result.Emplace(up);
+
+	if (down.X <= MaxX * 100 && down.Y <= MaxY * 100 && down.X >= 0 && down.Y >= 0)
+		result.Emplace(down);
 
 	if (result.Num() > 0)
 	{
@@ -307,7 +384,16 @@ bool ULevelGenerationRunnable::IsWithinList(TArray<FVector> locations, FVector l
 	return false;
 }
 
+bool ULevelGenerationRunnable::IsAnyWithinList(TArray<FVector> locations, TArray<FVector> testLocs) {
+	for (int i = 0; i < testLocs.Num(); i++)
+		if (IsWithinList(locations, testLocs[i]))
+			return true;
+
+	return false;
+}
+
 bool ULevelGenerationRunnable::CanReachDestination(FVector location, FVector end, int steps) {
+	auto stepBuffer = 3;
 
 	auto xmovement = location.X - end.X;
 	if (xmovement < 0) xmovement *= -1;
@@ -315,7 +401,7 @@ bool ULevelGenerationRunnable::CanReachDestination(FVector location, FVector end
 	auto ymovement = location.Y - end.Y;
 	if (ymovement < 0) ymovement *= -1;
 
-	if ((ymovement + xmovement) / 100 <= steps) {
+	if ((ymovement + xmovement) / 100 <= (steps - stepBuffer)) {
 		return true;
 	}
 	else return false;
@@ -326,8 +412,155 @@ bool ULevelGenerationRunnable::IsFurtherFromEnd(FVector last, FVector current, F
 	auto distFromNew = FVector::Dist(current, end);
 
 	auto difference = distFromNew - distFromLast;
-	UDebugMessages::LogDisplay(this, "diff " + FString::SanitizeFloat(difference, 2));
+	//UDebugMessages::LogDisplay(this, "diff " + FString::SanitizeFloat(difference, 2));
 	return difference > 75;
 }
 
+void ULevelGenerationRunnable::SetRouteById(int routeId, TArray<FVector> route) {
+	if (routeId == 1) PrimaryRoute = route;
+	else if (routeId == 2) OffshotRoute1 = route;
+	else if (routeId == 3) OffshotRoute2 = route;
+	else if (routeId == 4) OffshotRoute3 = route;
+	else if (routeId == 5) OffshotRoute4 = route;
+	else if (routeId == 6) OffshotRoute5 = route;
+}
+TArray<FVector> ULevelGenerationRunnable::GetRouteById(int routeId) {
+	if (routeId == 1) return PrimaryRoute;
+	else if (routeId == 2) return OffshotRoute1;
+	else if (routeId == 3) return OffshotRoute2;
+	else if (routeId == 4) return OffshotRoute3;
+	else if (routeId == 5) return OffshotRoute4;
+	else if (routeId == 6) return OffshotRoute5;
+
+	return PrimaryRoute;
+}
+
+TArray<FVector> ULevelGenerationRunnable::GetRandomLocationAlongPrimaryRoute() {
+	TArray<FVector> route;
+	auto gridItem = PrimaryRoute[RandomStream.RandRange(0, PrimaryRoute.Num() - 1)];
+	gridItem.Z = 0;
+	route.Emplace(gridItem);
+	return route;
+}
+
+TArray<FVector> ULevelGenerationRunnable::GetTotalRoutesList() {
+	TArray<FVector> total;
+	for (int i = 0; i < SpawnZone.Num(); i++) {
+		total.Emplace(SpawnZone[i]);
+	}
+	for (int i = 0; i < EndZone.Num(); i++) {
+		total.Emplace(EndZone[i]);
+	}
+	for (int i = 0; i < PrimaryRoute.Num(); i++) {
+		total.Emplace(PrimaryRoute[i]);
+	}
+	for (int i = 0; i < OffshotRoute1.Num(); i++) {
+		total.Emplace(OffshotRoute1[i]);
+	}
+	for (int i = 0; i < OffshotRoute2.Num(); i++) {
+		total.Emplace(OffshotRoute2[i]);
+	}
+	for (int i = 0; i < OffshotRoute3.Num(); i++) {
+		total.Emplace(OffshotRoute3[i]);
+	}
+	for (int i = 0; i < OffshotRoute4.Num(); i++) {
+		total.Emplace(OffshotRoute4[i]);
+	}
+	for (int i = 0; i < OffshotRoute5.Num(); i++) {
+		total.Emplace(OffshotRoute5[i]);
+	}
+	return total;
+}
+
+FVector ULevelGenerationRunnable::GetRandomLocationWithinGrid() {
+	auto gridItem = Grid[RandomStream.RandRange(0, Grid.Num() - 1)];
+	gridItem.Z = 0;
+	return gridItem;
+}
+
+
+void ULevelGenerationRunnable::GenerateCaveWalls() {
+	auto totalRoute = GetTotalRoutesList();
+
+	for (int i = 0; i < Grid.Num(); i++) {
+
+		if (Grid[i].Z != 0)
+			continue;
+
+		if (IsWithinList(PrimaryRoute, Grid[i]) || IsWithinList(OffshotRoute1, Grid[i]) ||
+			IsWithinList(OffshotRoute1, Grid[i]) || IsWithinList(OffshotRoute1, Grid[i]) ||
+			IsWithinList(OffshotRoute4, Grid[i]) || IsWithinList(OffshotRoute5, Grid[i])) {
+			continue;
+		}
+
+		TArray<FVector> cardinals;
+		cardinals.Emplace(Grid[i] + FVector(0, -300, 0));
+		cardinals.Emplace(Grid[i] + FVector(0, -200, 0));
+		cardinals.Emplace(Grid[i] + FVector(0, -100, 0));
+		cardinals.Emplace(Grid[i] + FVector(0, 300, 0));
+		cardinals.Emplace(Grid[i] + FVector(0, 200, 0));
+		cardinals.Emplace(Grid[i] + FVector(0, 100, 0));
+		cardinals.Emplace(Grid[i] + FVector(-300, 0, 0));
+		cardinals.Emplace(Grid[i] + FVector(-200, 0, 0));
+		cardinals.Emplace(Grid[i] + FVector(-100, 0, 0));
+		cardinals.Emplace(Grid[i] + FVector(300, 0, 0));
+		cardinals.Emplace(Grid[i] + FVector(200, 0, 0));
+		cardinals.Emplace(Grid[i] + FVector(100, 0, 0));
+
+		if (IsAnyWithinList(totalRoute, cardinals))
+			continue;
+
+		WallLocations.Emplace(Grid[i]);
+	}
+
+	AllWallLocations = WallLocations;
+	TArray<int> indexesToRemove;
+
+	for (int i = 0; i < WallLocations.Num(); i++)
+		if (CaveWallIsFullyEnclosed(WallLocations[i], WallLocations))
+			indexesToRemove.Emplace(i);
+
+	for (int i = WallLocations.Num(); i >= 0; i--)
+		for (int j = 0; j < indexesToRemove.Num(); j++) {
+			if (i == indexesToRemove[j]) {
+				WallLocations.RemoveAt(i);
+				break;
+			}
+		}
+}
+
+bool ULevelGenerationRunnable::CaveWallIsFullyEnclosed(FVector wall, TArray<FVector> allWalls) {
+	auto left = wall + FVector(0, -100, 0);
+	auto right = wall + FVector(0, 100, 0);
+	auto up = wall + FVector(-100, 0, 0);
+	auto down = wall + FVector(100, 0, 0);
+
+	if (IsWithinList(allWalls, left) &&
+		IsWithinList(allWalls, right) &&
+		IsWithinList(allWalls, up) &&
+		IsWithinList(allWalls, down)) {
+		return true;
+	}
+
+	return false;
+}
+
+void ULevelGenerationRunnable::FillAllObstacleAllowedLocations() {
+	for (int i = 0; i < Grid.Num(); i++) {
+		if (!IsWithinList(SpawnZone, Grid[i]) &&
+			!IsWithinList(EndZone, Grid[i]) &&
+			!IsWithinList(AllWallLocations, Grid[i]) &&
+			Grid[i].Z == 0)
+		{
+			ObstacleAllowedLocations.Emplace(Grid[i]);
+		}
+	}
+}
+
+FVector ULevelGenerationRunnable::GetRandomStartZoneLocation() {
+	return SpawnZone[RandomStream.RandRange(0, SpawnZone.Num() - 1)];
+}
+FVector ULevelGenerationRunnable::GetRandomEndZoneLocation() {
+	return EndZone[RandomStream.RandRange(0, EndZone.Num() - 1)];
+}
 #pragma optimize("", on)

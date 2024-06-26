@@ -39,7 +39,7 @@ void ARockSection::OnConstruction(const FTransform& Transform) {
 	auto rock3Mesh = USvUtilities::GetStaticMesh(rock3MeshRef);
 	auto rock4Mesh = USvUtilities::GetStaticMesh(rock4MeshRef);
 
-	SetActorScale3D(FVector(.8f, .8f, 1));
+	SetActorScale3D(FVector(1, 1, 1));
 
 	if (rock1Mesh) {
 		Rock1Mesh->SetStaticMesh(rock1Mesh);
@@ -76,10 +76,6 @@ void ARockSection::DictatePosition() {
 			}
 		}
 	}
-
-	/*Rock2Mesh->SetRelativeLocation(FVector(0, 0, 50));
-	Rock3Mesh->SetRelativeLocation(FVector(0, 0, 100));
-	Rock4Mesh->SetRelativeLocation(FVector(0, 0, 150));*/
 }
 void ARockSection::DictateRotation() {
 	auto randomRot1 = FRotator(0, FMath::RandRange(0, 360), 0);

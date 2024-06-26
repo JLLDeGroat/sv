@@ -26,6 +26,8 @@ public:
 
 	static ECollisionChannel GetWorldSelectChannel();
 
+	static ECollisionChannel GetTriggerableChannel();
+
 	static int FormatLocation(float val);
 
 	static UStaticMesh* GetStaticMesh(FString reference);
@@ -47,6 +49,9 @@ public:
 	static USvGameInstance* GetGameInstance(UWorld* world);
 
 	static int GetWorldMapGridMultiplier();
+
+	static TArray<FVector> RandomizeList(TArray<FVector> list, FRandomStream stream);
+	static TArray<FVector> RandomizeList(TArray<FVector> list);
 
 private:
 
