@@ -231,7 +231,7 @@ int UGridMovementComponent::GetMovementDataForGridItem(FVector gridItem, TArray<
 	return response;
 }
 
-bool UGridMovementComponent::GetMovableAdjacentTiles(FVector start, TArray<FVector>& ValidAdjacentTiles, FVector orderByDistanceLoc) {
+bool UGridMovementComponent::GetMovableAdjacentTiles(FVector start, TArray<FVector>& ValidAdjacentTiles, FVector orderByDistanceLoc, bool bIgnoreVaultables) {
 	TArray<FVector> unorderedLocations;
 	USvUtilities::GetAdjacentGridTiles(start, unorderedLocations);
 
@@ -273,20 +273,9 @@ bool UGridMovementComponent::GetMovableAdjacentTiles(FVector start, TArray<FVect
 		auto hasVaultComponentAndCanVault = EnvironmentHit.GetActor() && EnvironmentHit.GetActor()->GetComponentByClass<UVaultableComponent>()
 			&& detailsComponent && detailsComponent->GetCanVault();
 
-		bool testV = false;
-		if (EnvironmentHit.bBlockingHit && !hasVaultComponentAndCanVault) {
-			if (EnvironmentHit.GetActor()->GetComponentByClass<UVaultableComponent>()) {
-				UDebugMessages::LogError(this, "why 2");
-				testV = true;
-			}
-		}
-
 		if ((!EnvironmentHit.bBlockingHit && !EntityHit.bBlockingHit) || 
-			(EnvironmentHit.bBlockingHit && hasVaultComponentAndCanVault))
+			(EnvironmentHit.bBlockingHit && hasVaultComponentAndCanVault && !bIgnoreVaultables))
 		{
-			if (testV) {
-				UDebugMessages::LogError(this, "hello");
-			}
 			ValidAdjacentTiles.Emplace(adjacentTiles[i]);
 		}
 	}
