@@ -35,6 +35,13 @@ void ULevelGenerationRunnable::ActivateThread() {
 	//generate boundary walls
 	GenerateBoundaryWalls();
 
+
+	bool bDebug = true;
+	if (bDebug) {
+		return UDebugMessages::LogError(this, "Manual return out of level gen, this is for debug only");
+	}
+
+
 	TArray<FVector> spawnArr;
 	spawnArr.Emplace(GetRandomStartZoneLocation());
 

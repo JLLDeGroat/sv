@@ -79,7 +79,7 @@ public:
 
 	TArray<FVector> FindRoute(FVector start, FVector end, bool bisAI = false); 
 
-	bool GetMovableAdjacentTiles(FVector start, TArray<FVector>& ValidAdjacentTiles, FVector orderByDistanceLoc = FVector::ZeroVector);
+	bool GetMovableAdjacentTiles(FVector start, TArray<FVector>& ValidAdjacentTiles, FVector orderByDistanceLoc = FVector::ZeroVector, bool bIgnoreVaultables = false);
 
 	void ResetMovementSpeed();
 	void UpdateMovementSpeed(float speed);
