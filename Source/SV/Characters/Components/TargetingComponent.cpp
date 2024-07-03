@@ -50,7 +50,7 @@ FTargetData* UTargetingComponent::GetCurrentMainTarget() {
 	for (int i = 0; i < TargetData.Num(); i++)
 		if (TargetData[i].GetId() == CurrentMainTargetId)
 			return &TargetData[i];
-	
+
 	return nullptr;
 }
 
@@ -136,10 +136,13 @@ TArray<FVector> UTargetingComponent::GetPotentialShootingLocations() {
 	TArray<FVector> locations;
 
 	auto gridMovementComponent = GetOwner()->GetComponentByClass<UGridMovementComponent>();
-	if (gridMovementComponent) 
-		gridMovementComponent->GetMovableAdjacentTiles(svChar->GetSelectableGridLocation(), locations, FVector::ZeroVector, true);
+	if (gridMovementComponent)
+		gridMovementComponent->GetMovableAdjacentTiles(startingLocation, locations, FVector::ZeroVector, true);
 
-	locations.Emplace(svChar->GetSelectableGridLocation());
+	TArray<FVector> finalLocations;
+	finalLocations.Emplace(startingLocation);
+	for (int i = 0; i < locations.Num(); i++) 
+		finalLocations.Emplace(locations[i]);
 
-	return locations;
+	return finalLocations;
 }

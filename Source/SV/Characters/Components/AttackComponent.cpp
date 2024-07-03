@@ -12,6 +12,7 @@
 #include "AnimSpeedComponent.h"
 #include "CharacterDetailsComponent.h"
 #include "../../GameModes/Managers/CharacterManager.h"
+#include "../../Runnables/PostMovementRunnable.h"
 
 UAttackComponent::UAttackComponent(const FObjectInitializer& ObjectInitializer)
 	: UAnimAccessComponent(ObjectInitializer)
@@ -74,8 +75,16 @@ void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 		if ((newRotation.Yaw - 2.5f) < InitialRotation.Yaw &&
 			(newRotation.Yaw + 2.5f) > InitialRotation.Yaw &&
-			FVector::Dist(InitialLocation, GetOwner()->GetActorLocation()) < 5)
+			FVector::Dist(InitialLocation, GetOwner()->GetActorLocation()) < 5) 
+		{
 			SetComponentTickEnabled(false);
+			UDebugMessages::LogDisplay(this, "finished attacking");
+
+			PostShootRunnable = NewObject<UPostMovementRunnable>()
+				->InsertVariables(GetOwner())
+				->Initialise(GetWorld())
+				->Begin();
+		}
 	}
 }
 
@@ -119,6 +128,8 @@ void UAttackComponent::TryAttackLocation(FVector sourceGridLocation, FVector loc
 	auto gridLocation = UGridUtilities::GetNormalisedGridLocation(GetOwner()->GetActorLocation());
 
 	if (gridLocation == sourceGridLocation) {
+		InitialLocation = GetOwner()->GetActorLocation();
+		InitialRotation = GetOwner()->GetActorRotation();
 		CurrentAttackState = bIsRange ? EAttackState::CS_RotatingToShoot : EAttackState::CS_RotatingToMelee;
 		SetComponentTickEnabled(true);
 	}
@@ -147,6 +158,8 @@ void UAttackComponent::TryAttackLocation(FVector sourceGridLocation, FVector loc
 			}
 		}
 	}
+
+	AnimInstance->SetIsCrouching(false);
 }
 
 FVector UAttackComponent::GetCurrentTargetLocation() const {

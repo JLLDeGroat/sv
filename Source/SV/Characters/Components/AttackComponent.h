@@ -8,6 +8,7 @@
 #include "AttackComponent.generated.h"
 
 class ISvChar;
+class UBaseRunnable;
 /**
  * 
  */
@@ -51,5 +52,7 @@ private:
 	UPROPERTY() TScriptInterface<ISvChar> CurrentTargetCharacter;
 
 	EAttackType DetermineAttackStateFromDirection(FVector currentGridLoc, FVector movementLoc, FVector targetLoc);
+
+	UPROPERTY() UBaseRunnable* PostShootRunnable;
 
 };

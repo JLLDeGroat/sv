@@ -8,6 +8,7 @@
 #include "../Managers/ControlManager.h"
 #include "../../Utilities/SvUtilities.h"
 #include "../Components/PawnCameraComponent.h"
+#include "../Components/CameraOverlapComponent.h"
 #include "Camera/CameraComponent.h"
 #include "../../Characters/Components/EquipmentComponent.h"
 #include "../../Characters/Components/TargetingComponent.h"
@@ -19,6 +20,7 @@
 #include "../Components/WorldPawnMovementComponent.h"
 #include "../../GameModes/WorldGameMode.h"
 #include "../../GameModes/WorldManagers/WorldDirectionManager.h"
+#include "../../Delegates/HudDelegates.h"
 
 // Sets default values for this component's properties
 ULeftClickAction::ULeftClickAction(const FObjectInitializer& ObjectInitializer) : UBaseActionComponent(ObjectInitializer)
@@ -46,6 +48,7 @@ void ULeftClickAction::DoAction() {
 	auto controller = GetOwner<APlayerController>();
 	auto pawn = controller->GetPawn();
 	auto pawnCameraComponent = pawn->GetComponentByClass<UPawnCameraComponent>();
+	auto pawnOverlapCameraComponent = pawn->GetComponentByClass<UCameraOverlapComponent>();
 	auto pawnCamera = pawn->GetComponentByClass<UCameraComponent>();
 
 	if (!IsInValidCameraState(pawnCameraComponent->GetCurrentCameraState()))
@@ -57,9 +60,15 @@ void ULeftClickAction::DoAction() {
 	if (!pawn || !pawnCameraComponent || !pawnCamera)
 		return UDebugMessages::LogError(this, "could not get pawn, pawn camera or pawn camara component, stopping Action");
 
+	auto hudDelegates = UHudDelegates::GetInstance();
+	if(!hudDelegates)
+		return UDebugMessages::LogError(this, "failed to get hud delegates, cannot do left click action");
+
 	if (pawnCameraComponent->GetCurrentCameraState() == ECameraState::CS_GunTarget) {
 		auto cameraForwardVector = pawnCamera->GetForwardVector();
 		auto targetLocation = pawnCamera->GetComponentLocation() + (5000 * cameraForwardVector);
+
+		pawnOverlapCameraComponent->ShrinkOverlapComponent();
 
 		FHitResult TestHit;
 		FCollisionObjectQueryParams collisionParams;
@@ -71,6 +80,8 @@ void ULeftClickAction::DoAction() {
 			targetLocation = TestHit.Location;
 
 		DrawDebugLine(GetWorld(), pawnCamera->GetComponentLocation(), targetLocation, FColor::Cyan, false, 60.0f, 0, 5);
+
+		hudDelegates->_AimTargetVisibility.Broadcast(false);
 
 		auto selected = SelectionManager->GetSelected();
 		auto actor = selected->GetAsActor();

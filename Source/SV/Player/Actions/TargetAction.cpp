@@ -15,6 +15,7 @@
 #include "../../Interfaces/SvChar.h"
 #include "../../Interfaces/Selectable.h"
 #include "../GamePlayerController.h"
+#include "../../Delegates/HudDelegates.h"
 
 UTargetAction::UTargetAction(const FObjectInitializer& ObjectInitializer) :UBaseActionComponent(ObjectInitializer) {
 	ValidCameraStates.Emplace(ECameraState::CS_Control);
@@ -26,15 +27,20 @@ void UTargetAction::DoAction() {
 	auto pawn = owner->GetPawn();
 	auto pawnCameraComponent = pawn->GetComponentByClass<UPawnCameraComponent>();
 
-	if (!IsInValidCameraState(pawnCameraComponent->GetCurrentCameraState())) 
+	if (!IsInValidCameraState(pawnCameraComponent->GetCurrentCameraState()))
 		return;
 
 	auto selected = SelectionManager->GetSelected();
+
+	auto hudDelegates = UHudDelegates::GetInstance();
+	if (!hudDelegates) 
+		return UDebugMessages::LogError(this, "failed to get hud delegates, cannot do target action");
 
 	// reset values
 	if (pawnCameraComponent->GetCurrentCameraState() == ECameraState::CS_GunTarget) {
 		pawnCameraComponent->UpdateCameraState(ECameraState::CS_Control);
 		owner->SetMouseAsUi();
+		hudDelegates->_AimTargetVisibility.Broadcast(false);
 	}
 	else if (selected) {
 		auto actor = selected->GetAsActor();
@@ -59,6 +65,7 @@ void UTargetAction::DoAction() {
 				currentTargetData->GetCharacter()->GetSelectableGridLocation());
 
 			owner->SetMouseAsGame();
+			hudDelegates->_AimTargetVisibility.Broadcast(true);
 		}
 	}
 }

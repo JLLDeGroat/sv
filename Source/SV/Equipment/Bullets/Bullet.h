@@ -10,6 +10,7 @@ class UBulletCollisionComponent;
 class UStaticMeshComponent;
 class UTravelComponent;
 class UBulletDetailsComponent;
+class UBulletTrailComponent;
 
 UCLASS()
 class SV_API ABullet : public AActor
@@ -28,6 +29,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UBulletCollisionComponent* BulletCollisionComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UTravelComponent* TravelComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UBulletDetailsComponent* BulletDetailsComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UBulletTrailComponent* BulletTrailComponent;
 
 
 	UFUNCTION() void OnAutoDestroyCallback();

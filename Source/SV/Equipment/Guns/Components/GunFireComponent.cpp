@@ -9,6 +9,8 @@
 #include "../../Bullets/Components/BulletDetailsComponent.h"
 #include "../../../Utilities/GridUtilities.h"
 #include "../../Components/EquipmentDetailsComponent.h"
+#include "MuzzleFlashComponent.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values for this component's properties
 UGunFireComponent::UGunFireComponent()
@@ -16,8 +18,6 @@ UGunFireComponent::UGunFireComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
-
-	// ...
 }
 
 
@@ -53,21 +53,50 @@ void UGunFireComponent::SetMeshAndSocketName(UStaticMeshComponent* meshComponent
 	GunFireStartSocketName = socketName;
 }
 
-void UGunFireComponent::FireAtLocation(FVector location) {
+void UGunFireComponent::FireAtLocation(FVector location, float accuracyMultiplier) {
 	auto bulletStart = GetGunFireStartLocation();
 
-	auto bulletRotation = UGridUtilities::FindLookAtRotation(bulletStart, location);
+	auto equipmentDetails = GetOwner()->GetComponentByClass<UEquipmentDetailsComponent>();
+	auto accuracy = (FVector::Dist(bulletStart, location) * accuracyMultiplier) - equipmentDetails->GetAccuracy();
+	if (accuracy < 1)
+		accuracy = 1;
+
+	int deviation = 1;
+	for (int i = 0; i < (accuracy / 100.0f); i++) {
+		deviation += deviation * equipmentDetails->GetAccuracyDecay();
+	}
+
+	if (deviation > equipmentDetails->GetMaxAccuracyDeviation()) {
+		UDebugMessages::LogDisplay(this, "Deviation of bullet: " + FString::SanitizeFloat(deviation));
+		deviation = equipmentDetails->GetMaxAccuracyDeviation();
+	}
+
+	auto finalLoc = FVector(
+		location.X + FMath::RandRange(-deviation, deviation),
+		location.Y + FMath::RandRange(-deviation, deviation),
+		location.Z + FMath::RandRange(-deviation, deviation)
+	);
+
+	//DrawDebugLine(GetOwner()->GetWorld(), bulletStart, finalLoc, FColor::Green, true, 60, 0, 1);
+
+	auto bulletRotation = UGridUtilities::FindLookAtRotation(bulletStart, finalLoc);
+
+	UDebugMessages::LogDisplay(this, "spawning bullet at: " + bulletStart.ToString());
 
 	auto newBullet = GetOwner()->GetWorld()->SpawnActor<ABullet>(bulletStart, bulletRotation);
-	if (newBullet) {
 
-		auto equipmentDetails = GetOwner()->GetComponentByClass<UEquipmentDetailsComponent>();
+	auto muzzleFlash = GetOwner()->GetComponentByClass<UMuzzleFlashComponent>();
+
+	if (newBullet) {
 		auto bulletDetails = newBullet->GetComponentByClass<UBulletDetailsComponent>();
 		if (bulletDetails && equipmentDetails)
 			bulletDetails->SetBaseDamage(equipmentDetails->GetBaseDamage());
 
 		auto bulletTravel = newBullet->GetComponentByClass<UTravelComponent>();
 		if (bulletTravel)
-			bulletTravel->StartTravel(location);
+			bulletTravel->StartTravel(finalLoc);
+
+		if (muzzleFlash) 
+			muzzleFlash->ActivateMuzzleFlash();
 	}
 }

@@ -38,3 +38,10 @@ void UCameraOverlapComponent::OverlapEnded(UPrimitiveComponent* OverlappedComp, 
 		character->UpdateActorVisibility(true);
 	}
 }
+
+void UCameraOverlapComponent::ShrinkOverlapComponent() {
+	SetRelativeScale3D(FVector(.1f));
+}
+void UCameraOverlapComponent::ResetOverlapComponent() {
+	SetRelativeScale3D(FVector(1));
+}

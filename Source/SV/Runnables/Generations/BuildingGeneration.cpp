@@ -5,6 +5,7 @@
 #include "../../World/WorldGridItemActor.h"
 #include "../../Environment/Constructions/Wall.h"
 #include "../../Environment/Constructions/Door.h"
+#include "../../Environment/Constructions/WallWindow.h"
 
 #pragma optimize("", off)
 UBaseGenerations* UBuildingGeneration::Generate() {
@@ -25,6 +26,12 @@ UBaseGenerations* UBuildingGeneration::Generate() {
 						auto actor = world->SpawnActor<AWorldGridItemActor>(requiredLocs[i], FRotator::ZeroRotator);
 						actor->SetIsStart();
 					}}, TStatId(), nullptr, ENamedThreads::GameThread);*/
+
+				bool bgeneratedLeftWindows = false;
+				bool bgeneratedRighttWindows = false;
+				bool bgeneratedUpWindows = false;
+				bool bgeneratedDownWindows = false;
+
 
 				for (int x = 0; x < requiredLocs.Num(); x++) {
 					if (IsRequiredSpotBottomRight(requiredLocs[x])) {
@@ -50,28 +57,67 @@ UBaseGenerations* UBuildingGeneration::Generate() {
 								BuildDoor(requiredLocs[x] + FVector(50, 50, 0), FRotator(0, 90, 0));
 								generatedDoor = true;
 							}
-							else BuildWall(requiredLocs[x] + FVector(50, 50, 0), FRotator(0, 90, 0));
+							else {
+								if (!bgeneratedLeftWindows) {
+									if (!ShouldBuildWindow()) {
+										BuildWall(requiredLocs[x] + FVector(50, 50, 0), FRotator(0, 90, 0));
+										bgeneratedLeftWindows = true;
+									}
+									else BuildWindow(requiredLocs[x] + FVector(50, 50, 0), FRotator(0, 90, 0));
+								}
+								else BuildWall(requiredLocs[x] + FVector(50, 50, 0), FRotator(0, 90, 0));
+
+							}
 						}
 						else if (IsRequiredSpotRightWall(requiredLocs[x])) {
 							if (!generatedDoor) {
 								BuildDoor(requiredLocs[x] + FVector(50, 150, 0), FRotator(0, 90, 0));
 								generatedDoor = true;
 							}
-							else BuildWall(requiredLocs[x] + FVector(50, 150, 0), FRotator(0, 90, 0));
+							else {
+								if (!bgeneratedRighttWindows) {
+									if (!ShouldBuildWindow()) {
+										BuildWall(requiredLocs[x] + FVector(50, 150, 0), FRotator(0, 90, 0));
+										bgeneratedRighttWindows = true;
+									}
+									else BuildWindow(requiredLocs[x] + FVector(50, 150, 0), FRotator(0, 90, 0));
+								}
+								else BuildWall(requiredLocs[x] + FVector(50, 150, 0), FRotator(0, 90, 0));
+
+							}
 						}
 						else if (IsRequiredSpotBottomWall(requiredLocs[x])) {
 							if (!generatedDoor) {
 								BuildDoor(requiredLocs[x] + FVector(50, 50, 0), FRotator(0, 180, 0));
 								generatedDoor = true;
 							}
-							else BuildWall(requiredLocs[x] + FVector(50, 50, 0), FRotator(0, 180, 0));
+							else {
+								if (!bgeneratedDownWindows) {
+									if (!ShouldBuildWindow()) {
+										BuildWall(requiredLocs[x] + FVector(50, 50, 0), FRotator(0, 180, 0));
+										bgeneratedDownWindows = true;
+									}
+									else BuildWindow(requiredLocs[x] + FVector(50, 50, 0), FRotator(0, 180, 0));
+								}
+								else BuildWall(requiredLocs[x] + FVector(50, 50, 0), FRotator(0, 180, 0));
+
+							}
 						}
 						else if (IsRequiredSpotTopWall(requiredLocs[x])) {
 							if (!generatedDoor) {
 								BuildDoor(requiredLocs[x] + FVector(150, 50, 0), FRotator(0, 180, 0));
 								generatedDoor = true;
 							}
-							else BuildWall(requiredLocs[x] + FVector(150, 50, 0), FRotator(0, 180, 0));
+							else {
+								if (!bgeneratedUpWindows) {
+									if (!ShouldBuildWindow()) {
+										BuildWall(requiredLocs[x] + FVector(150, 50, 0), FRotator(0, 180, 0));
+										bgeneratedUpWindows = true;
+									}
+									else BuildWindow(requiredLocs[x] + FVector(150, 50, 0), FRotator(0, 180, 0));
+								}
+								else BuildWall(requiredLocs[x] + FVector(150, 50, 0), FRotator(0, 180, 0));
+							}
 						}
 					}
 				}
@@ -109,7 +155,6 @@ TArray<FVector> UBuildingGeneration::GetBuildingRequiredLocations() {
 			}
 		}
 	}
-
 	return result;
 }
 
@@ -126,5 +171,15 @@ void UBuildingGeneration::BuildDoor(FVector loc, FRotator rot) {
 		auto actor = world->SpawnActor<ADoor>(loc, rot);
 		}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
+void UBuildingGeneration::BuildWindow(FVector loc, FRotator rot) {
+	auto world = GetWorld();
+	FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, loc, rot] {
+		auto actor = world->SpawnActor<AWallWindow>(loc, rot);
+		}, TStatId(), nullptr, ENamedThreads::GameThread);
+}
 
+bool UBuildingGeneration::ShouldBuildWindow() {
+	auto num = RandomStream.RandRange(1, 1001);
+	return num > 400;
+}
 #pragma optimize("", on)

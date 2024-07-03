@@ -28,7 +28,9 @@ void UTravelComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	auto newLocation = UKismetMathLibrary::VInterpTo_Constant(GetOwner()->GetActorLocation(), TravelToLocation, DeltaTime, 10000);
+	//default speed was 10000
+
+	auto newLocation = UKismetMathLibrary::VInterpTo_Constant(GetOwner()->GetActorLocation(), TravelToLocation, DeltaTime, 5000);
 	//auto newLocation = UKismetMathLibrary::VInterpTo_Constant(GetOwner()->GetActorLocation(), TravelToLocation, DeltaTime, 200);
 	GetOwner()->SetActorLocation(newLocation);
 

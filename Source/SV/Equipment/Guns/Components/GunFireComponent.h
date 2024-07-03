@@ -17,7 +17,8 @@ public:
 	// Sets default values for this component's properties
 	UGunFireComponent();
 
-	void FireAtLocation(FVector location);
+	//Accuracy of 1 is default, multiplier is multiplied by distance 
+	void FireAtLocation(FVector location, float accuracyMultiplier = 1.0f);
 
 protected:
 	// Called when the game starts

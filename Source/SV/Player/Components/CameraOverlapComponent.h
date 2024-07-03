@@ -18,6 +18,9 @@ public:
 
 	UCameraOverlapComponent(const FObjectInitializer& ObjectInitializer);
 
+	void ShrinkOverlapComponent();
+	void ResetOverlapComponent();
+
 protected:
 
 	UFUNCTION() void Overlapped(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,

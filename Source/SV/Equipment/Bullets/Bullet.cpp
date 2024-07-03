@@ -7,6 +7,7 @@
 #include "Components/TravelComponent.h"
 #include "Components/BulletDetailsComponent.h"
 #include "../../Utilities/SvUtilities.h"
+#include "Components/BulletTrailComponent.h"
 
 // Sets default values
 ABullet::ABullet()
@@ -37,6 +38,8 @@ ABullet::ABullet()
 	}
 
 	BulletDetailsComponent = CreateDefaultSubobject<UBulletDetailsComponent>(TEXT("BulletDetails"));
+	BulletTrailComponent = CreateDefaultSubobject<UBulletTrailComponent>(TEXT("BulletTrail"));
+	BulletTrailComponent->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned

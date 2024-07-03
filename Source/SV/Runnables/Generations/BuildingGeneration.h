@@ -24,5 +24,8 @@ private:
 	TArray<FVector> GetBuildingRequiredLocations();
 	void BuildWall(FVector loc, FRotator rot = FRotator::ZeroRotator);
 	void BuildDoor(FVector loc, FRotator rot = FRotator::ZeroRotator);
+	void BuildWindow(FVector loc, FRotator rot = FRotator::ZeroRotator);
+
+	bool ShouldBuildWindow();
 
 };

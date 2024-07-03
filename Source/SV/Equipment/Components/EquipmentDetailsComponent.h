@@ -34,6 +34,15 @@ public:
 	void SetIsPrimaryEquipment(bool val);
 	bool GetIsPrimaryEquipment();
 
+	void SetAccuracy(float val);
+	float GetAccuracy();
+
+	void SetAccuracyDecay(float val);
+	float GetAccuracyDecay();
+
+	void SetMaxAccuracyDeviation(float maxDeviation);
+	float GetMaxAccuracyDeviation();
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -50,6 +59,10 @@ private:
 	UPROPERTY() float CritMultiplier;
 
 	UPROPERTY() int ApCost;
+
+	UPROPERTY() float Accuracy;
+	UPROPERTY() float AccuracyDecay;
+	UPROPERTY() float MaxAccuracyDeviation;
 
 	UPROPERTY() bool bIsPrimaryEquipment;
 };

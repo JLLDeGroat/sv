@@ -13,6 +13,9 @@ UEquipmentDetailsComponent::UEquipmentDetailsComponent()
 	bIsRange = false;
 	bIsMelee = false;
 	bIsPrimaryEquipment = false;
+	Accuracy = 500;
+	AccuracyDecay = 1;
+	MaxAccuracyDeviation = 75;
 }
 
 
@@ -69,4 +72,25 @@ void UEquipmentDetailsComponent::SetIsPrimaryEquipment(bool val) {
 }
 bool UEquipmentDetailsComponent::GetIsPrimaryEquipment() {
 	return bIsPrimaryEquipment;
+}
+
+void UEquipmentDetailsComponent::SetAccuracy(float val) {
+	Accuracy = val;
+}
+float UEquipmentDetailsComponent::GetAccuracy() {
+	return Accuracy;
+}
+
+void UEquipmentDetailsComponent::SetAccuracyDecay(float val) {
+	AccuracyDecay = val;
+}
+float UEquipmentDetailsComponent::GetAccuracyDecay() {
+	return AccuracyDecay;
+}
+
+void UEquipmentDetailsComponent::SetMaxAccuracyDeviation(float maxDeviation) {
+	MaxAccuracyDeviation = maxDeviation;
+}
+float UEquipmentDetailsComponent::GetMaxAccuracyDeviation() {
+	return MaxAccuracyDeviation;
 }

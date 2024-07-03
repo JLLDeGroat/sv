@@ -11,6 +11,7 @@
 #include "../Components/VaultObstacleComponent.h"
 #include "../Components/GridMovementComponent.h"
 #include "../../Player/Components/PawnCameraComponent.h"
+#include "../../Player/Components/CameraOverlapComponent.h"
 #include "../../Player/GamePlayerController.h"
 #include "../../Player/Actions/GrenadeActionComponent.h"
 #include "../../Equipment/Equipment.h"
@@ -65,19 +66,22 @@ void UCharAnimInstance::OnFinishFire() {
 	auto playerController = owningActor->GetWorld()->GetFirstPlayerController<AGamePlayerController>();
 	auto pawn = playerController->GetPawn();
 	auto cameraComponent = pawn->GetComponentByClass<UPawnCameraComponent>();
+	auto cameraOverlapComponent = pawn->GetComponentByClass<UCameraOverlapComponent>();
 
 	bIsAttacking = false;
 	auto currentAttackType = AttackType;
 
 	if (currentAttackType == EAttackType::AT_MoveAndFire_Right ||
-		currentAttackType == EAttackType::AT_MoveAndFire_Left &&
-		attackComponent && cameraComponent)
-		FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([attackComponent, cameraComponent, playerController]
+		currentAttackType == EAttackType::AT_MoveAndFire_Left  ||
+		currentAttackType == EAttackType::AT_BasicFire &&
+		(attackComponent && cameraComponent && cameraOverlapComponent))
+		FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([attackComponent, cameraComponent, playerController, cameraOverlapComponent]
 			{
 				attackComponent->ReturnCharacterAnimationSpeedsToNormal();
 				attackComponent->UpdateCurrentAttackState(EAttackState::CS_Return);
 				cameraComponent->UpdateCameraState(ECameraState::CS_Control);
 				playerController->SetMouseAsUi();
+				cameraOverlapComponent->ResetOverlapComponent();
 			},
 			TStatId(), nullptr, ENamedThreads::GameThread);
 }

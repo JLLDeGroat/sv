@@ -8,6 +8,7 @@
 #include "../../../Characters/Components/HitBoxComponent.h"
 #include "../../../Characters/Components/DamageRecieveComponent.h"
 #include "BulletDetailsComponent.h"
+#include "TravelComponent.h"
 
 #include "../../../Environment/EnvironmentActor.h"
 
@@ -41,17 +42,29 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent* OverlappedComp, 
 			return;
 		}
 
-		damageRecieve->DoDamage(hitComp->GetHitDamageMultiplier(), bulletDetails->GetBaseDamage(), 
+		damageRecieve->DoDamage(hitComp->GetHitDamageMultiplier(), bulletDetails->GetBaseDamage(),
 			GetOwner()->GetActorLocation(), bulletDetails->GetBaseImpulse());
-		
+
 		//TODO:
 		//Create Blood spatter
-		GetOwner()->Destroy();
+		GetWorld()->GetTimerManager().SetTimer(DestroyTimer, this, &UBulletCollisionComponent::OnDestroyCallback, 2.0f, false);
+		auto meshComponent = GetOwner()->GetComponentByClass<UStaticMeshComponent>();
+		if (meshComponent)
+			meshComponent->SetVisibility(false);
 	}
 
 	//TODO: change environment tests
 	else if (auto environment = Cast<AEnvironmentActor>(OtherActor)) {
 		//TODO: Create environment spatter
-		GetOwner()->Destroy();
+		GetWorld()->GetTimerManager().SetTimer(DestroyTimer, this, &UBulletCollisionComponent::OnDestroyCallback, 2.0f, false);
+		auto meshComponent = GetOwner()->GetComponentByClass<UStaticMeshComponent>();
+		if (meshComponent)
+			meshComponent->SetVisibility(false);
 	}
 }
+
+void UBulletCollisionComponent::OnDestroyCallback() {
+	GetOwner()->Destroy();
+}
+
+

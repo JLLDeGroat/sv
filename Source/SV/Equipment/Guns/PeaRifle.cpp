@@ -7,6 +7,7 @@
 #include "../../Utilities/SvUtilities.h"
 #include "../Components/EquipmentDetailsComponent.h"
 #include "../Components/AttachedVectorComponent.h"
+#include "Components/MuzzleFlashComponent.h"
 
 APeaRifle::APeaRifle(const FObjectInitializer& ObjectInitializer) : AEquipment(ObjectInitializer) {
 
@@ -25,9 +26,15 @@ APeaRifle::APeaRifle(const FObjectInitializer& ObjectInitializer) : AEquipment(O
 
 	EquipmentDetailsComponent->SetIsRange(true);
 	EquipmentDetailsComponent->SetBaseDamage(25);
+	EquipmentDetailsComponent->SetAccuracy(500);
+	EquipmentDetailsComponent->SetAccuracyDecay(2);
 
 	AttachedVectorComponent->SetAttachedVectors(FVector(4, 2, 0), FRotator(0, 112.5, 182));
 	AttachedVectorComponent->SetHolsteredVectors(FVector(0, 0, 0), FRotator(0, 100, 0));
+
+	MuzzleFlashComponent = CreateDefaultSubobject<UMuzzleFlashComponent>(TEXT("MuzzleFlash"));
+	MuzzleFlashComponent->SetupAttachment(GunMesh, FName("FireSocket"));
+	MuzzleFlashComponent->SetRelativeRotation(FRotator(0, 90, 0));
 }
 
 void APeaRifle::SetupAttachVector() {

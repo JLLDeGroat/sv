@@ -9,6 +9,8 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FClearTargetDataHud);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FAddTargetDataToHud, FGuid, Id, FVector, SourceLocation, FVector, TargetLocation);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FTargetIconClicked, FGuid, Id, FVector, Location);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAimTargetVisibility, bool, bVisibility);
+
 /**
  * 
  */
@@ -29,5 +31,5 @@ public:
 	FAddTargetDataToHud _AddTargetDataToHud;
 	FClearTargetDataHud _ClearTargetDataHud;
 	FTargetIconClicked _TargetIconClicked;
-
+	FAimTargetVisibility _AimTargetVisibility;
 };
