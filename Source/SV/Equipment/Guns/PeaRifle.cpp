@@ -4,6 +4,7 @@
 #include "PeaRifle.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/GunFireComponent.h"
+#include "Components/LightAttachmentComponent.h"
 #include "../../Utilities/SvUtilities.h"
 #include "../Components/EquipmentDetailsComponent.h"
 #include "../Components/AttachedVectorComponent.h"
@@ -35,6 +36,13 @@ APeaRifle::APeaRifle(const FObjectInitializer& ObjectInitializer) : AEquipment(O
 	MuzzleFlashComponent = CreateDefaultSubobject<UMuzzleFlashComponent>(TEXT("MuzzleFlash"));
 	MuzzleFlashComponent->SetupAttachment(GunMesh, FName("FireSocket"));
 	MuzzleFlashComponent->SetRelativeRotation(FRotator(0, 90, 0));
+
+	LightAttachmentComponent = CreateDefaultSubobject<ULightAttachmentComponent>(TEXT("LightAttachment"));
+	LightAttachmentComponent->SetupAttachment(GunMesh, FName("LightAttachmentSocket"));
+
+	LightAttachmentComponent->SetRelativeScale3D(FVector(.15f));
+	LightAttachmentComponent->SetRelativeRotation(FRotator(0, -90, 0));
+	LightAttachmentComponent->SetRelativeLocation(FVector(-2, 9, -2));
 }
 
 void APeaRifle::SetupAttachVector() {
