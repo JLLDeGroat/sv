@@ -38,13 +38,11 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent* OverlappedComp, 
 		auto damageRecieve = OtherActor->GetComponentByClass<UDamageRecieveComponent>();
 		if (!bulletDetails || !damageRecieve) {
 			UDebugMessages::LogError(this, "no bullet details or damage recieve, ERROR, will do no damage");
-			GetOwner()->Destroy();
-			return;
 		}
-
-		damageRecieve->DoDamage(hitComp->GetHitDamageMultiplier(), bulletDetails->GetBaseDamage(),
-			GetOwner()->GetActorLocation(), bulletDetails->GetBaseImpulse());
-
+		else {
+			damageRecieve->DoDamage(hitComp->GetHitDamageMultiplier(), bulletDetails->GetBaseDamage(),
+				GetOwner()->GetActorLocation(), bulletDetails->GetBaseImpulse());
+		}
 		//TODO:
 		//Create Blood spatter
 		GetWorld()->GetTimerManager().SetTimer(DestroyTimer, this, &UBulletCollisionComponent::OnDestroyCallback, 2.0f, false);
@@ -64,6 +62,7 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent* OverlappedComp, 
 }
 
 void UBulletCollisionComponent::OnDestroyCallback() {
+	UDebugMessages::LogDisplay(this, "Destroying bullet");
 	GetOwner()->Destroy();
 }
 
