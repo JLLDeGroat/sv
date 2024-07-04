@@ -9,6 +9,7 @@
 class UStaticMeshComponent;
 class UGunFireComponent;
 class UMuzzleFlashComponent;
+class ULightAttachmentComponent;
 /**
  * 
  */
@@ -28,6 +29,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* GunMesh;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UGunFireComponent* GunFireComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UMuzzleFlashComponent* MuzzleFlashComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) ULightAttachmentComponent* LightAttachmentComponent;
 
 	
 };
