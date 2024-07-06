@@ -40,18 +40,24 @@ ECharacterControl UCharacterDetailsComponent::GetCharacterControl() const {
 	return ControlType;
 }
 
-
 void UCharacterDetailsComponent::SetHealth(int health) {
 	Health = health;
+	MaxHealth = health;
 }
 int UCharacterDetailsComponent::GetHealth() const {
 	return Health;
 }
 
+void UCharacterDetailsComponent::SetMaxHealth(int health) {
+	MaxHealth = health;
+}
+int UCharacterDetailsComponent::GetMaxHealth() const {
+	return MaxHealth;
+}
+
 void UCharacterDetailsComponent::RemoveHealth(int health, bool& isDead) {
 	Health -= health;
-
-	if (Health < 0) {
+	if (Health <= 0) {
 		Health = 0;
 		isDead = true;
 	}
@@ -114,4 +120,14 @@ void UCharacterDetailsComponent::SetCanVault(bool value) {
 }
 bool UCharacterDetailsComponent::GetCanVault() {
 	return bCanVault;
+}
+
+void UCharacterDetailsComponent::SetCharacterName(FString name) {
+	CharacterName = name;
+}
+FString UCharacterDetailsComponent::GetCharacterName() {
+	return CharacterName;
+}
+float UCharacterDetailsComponent::GetHealthAsPercentage() const {
+	return (float)Health / (float)MaxHealth;
 }
