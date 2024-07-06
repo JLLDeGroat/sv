@@ -33,6 +33,9 @@ public:
 	void SetHealth(int health);
 	int GetHealth() const;
 
+	void SetMaxHealth(int health);
+	int GetMaxHealth() const;
+
 	void RemoveHealth(int health, bool& isDead);
 
 	void RemoveMovementPoints(int amount);
@@ -54,10 +57,15 @@ public:
 	void SetCanVault(bool value);
 	bool GetCanVault();
 
+	void SetCharacterName(FString name);
+	FString GetCharacterName();
+
+	float GetHealthAsPercentage() const;
 private:
 
 	UPROPERTY() ECharacterControl ControlType;
 	UPROPERTY() int Health;
+	UPROPERTY() int MaxHealth;
 
 	UPROPERTY() int MovementPoints;
 	UPROPERTY() int MaxMovementPoints;
@@ -66,4 +74,6 @@ private:
 	UPROPERTY() int MaxActionPoints;
 
 	UPROPERTY() bool bCanVault;
+
+	UPROPERTY() FString CharacterName;
 };

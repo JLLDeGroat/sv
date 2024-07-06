@@ -14,6 +14,7 @@
 #include "../Components/SkillsComponent.h"
 #include "../Components/AttackComponent.h"
 #include "../Components/AnimSpeedComponent.h"
+#include "../Components/HealthAndStatusWidgetComponent.h"
 
 AZombieGrunt::AZombieGrunt(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(ObjectInitializer) {
 
@@ -42,13 +43,12 @@ AZombieGrunt::AZombieGrunt(const FObjectInitializer& ObjectInitializer) : ABaseC
 
 	DetailsComponent->AddMaxMovementPoints(6);
 	DetailsComponent->AddMovementPoints(6);
+	DetailsComponent->SetCharacterName("Zombie Grunt");
 
 	EquipmentComponent = CreateDefaultSubobject<UEquipmentComponent>(TEXT("Equipment"));
 
 	SkillComponent = CreateDefaultSubobject<USkillsComponent>(TEXT("Skills"));
-
 	AttackComponent = CreateDefaultSubobject<UAttackComponent>(TEXT("Attack"));
-
 
 	LeftArmHitComponent = CreateDefaultSubobject<UHitCapsuleComponent>(TEXT("LeftUpperArmHit"));
 	LeftArmHitComponent->SetupAttachment(GetMesh(), FName("LeftArmSocket"));
@@ -127,6 +127,10 @@ AZombieGrunt::AZombieGrunt(const FObjectInitializer& ObjectInitializer) : ABaseC
 	//BodySocketTwo
 	//BodySocketOne
 	AnimSpeedComponent = CreateDefaultSubobject<UAnimSpeedComponent>(TEXT("AnimSpeed"));
+
+	HealthAndStatusComponent = CreateDefaultSubobject<UHealthAndStatusWidgetComponent>(TEXT("StatusComponent"));
+	HealthAndStatusComponent->SetupAttachment(RootComponent);
+	HealthAndStatusComponent->SetRelativeLocation(FVector(0, 0, 130));
 }
 
 UGridMovementComponent* AZombieGrunt::GetGridMovementComponent() {

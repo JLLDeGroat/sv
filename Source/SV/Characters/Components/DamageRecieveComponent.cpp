@@ -8,6 +8,7 @@
 #include "../../Interfaces/SvChar.h"
 #include "../../Interfaces/Gameplay.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "HealthAndStatusWidgetComponent.h"
 #include "../../GameModes/Managers/CharacterManager.h"
 #include "../../Utilities/SvUtilities.h"
 // Sets default values for this component's properties
@@ -50,6 +51,14 @@ void UDamageRecieveComponent::DoDamage(float multiplier, int damage, FVector loc
 	UDebugMessages::LogDisplay(this, "took " + FString::SanitizeFloat(total, 0) + " damage.");
 	bool isDead = false;
 	details->RemoveHealth(total, isDead);
+
+	auto statusComponent = GetOwner()->GetComponentByClass<UHealthAndStatusWidgetComponent>();
+	if (statusComponent) {
+		UDebugMessages::LogDisplay(this, "updating health change on status widget");
+		statusComponent->UpdateOnHealthChange();
+	}
+
+	UDebugMessages::LogDisplay(this, "health is now " + FString::SanitizeFloat(details->GetHealth()));
 
 	if (isDead) {
 		TScriptInterface<ISvChar> ownerAsCharacter = GetOwner();

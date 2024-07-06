@@ -154,7 +154,7 @@ TArray<FVector> UGridMovementComponent::FindRoute(FVector start, FVector end, bo
 		FindRouteRecursive(thisMovementData, end, bisAI);
 
 		if (HasFoundEnd()) {
-			UDebugMessages::LogDisplay(this, "found end");
+			//UDebugMessages::LogDisplay(this, "found end");
 			for (int i = 0; i < MovementData.Num(); i++) {
 				if (MovementData[i].GetIsEnd()) {
 					TArray<FVector> FinalMovement = MovementData[i].GetPrevious();
@@ -163,7 +163,7 @@ TArray<FVector> UGridMovementComponent::FindRoute(FVector start, FVector end, bo
 				}
 			}
 		}
-		else UDebugMessages::LogError(this, "could not find end");
+		//else UDebugMessages::LogError(this, "could not find end");
 	}
 
 	TArray<FVector> response;
@@ -179,7 +179,7 @@ void UGridMovementComponent::FindRouteRecursive(FMovementData* movementData, FVe
 		auto detailsComponent = GetOwner()->GetComponentByClass<UCharacterDetailsComponent>();
 
 		if (!detailsComponent || (newPrevious.Num() > detailsComponent->GetMovementPoints() + 1 && !bisAI)) {
-			UDebugMessages::LogError(this, "failed to get details component or no movement points left whilst not being AI, cannot move");
+			//UDebugMessages::LogError(this, "failed to get details component or no movement points left whilst not being AI, cannot move");
 			return;
 		}
 
