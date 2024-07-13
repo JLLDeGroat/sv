@@ -79,7 +79,7 @@ void ULeftClickAction::DoAction() {
 		if (TestHit.GetActor())
 			targetLocation = TestHit.Location;
 
-		DrawDebugLine(GetWorld(), pawnCamera->GetComponentLocation(), targetLocation, FColor::Cyan, false, 60.0f, 0, 5);
+		//DrawDebugLine(GetWorld(), pawnCamera->GetComponentLocation(), targetLocation, FColor::Cyan, false, 60.0f, 0, 5);
 
 		hudDelegates->_AimTargetVisibility.Broadcast(false);
 

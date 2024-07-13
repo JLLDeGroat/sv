@@ -74,8 +74,6 @@ void UPawnCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 				UGridUtilities::FindLookAtRotation(newLocation, CurrentRotateToLocation) :
 				FRotator(-70, 0, 0);
 
-			DrawDebugLine(GetWorld(), currentLocation, CurrentMoveTo, FColor::Cyan, true, 100, 0, 3);
-
 			newRotation = UKismetMathLibrary::RInterpTo_Constant(CameraComponent->GetComponentRotation(), requiredRotation, DeltaTime, 500);
 		}
 
