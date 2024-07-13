@@ -9,8 +9,9 @@
 #include "HAL/PlatformFileManager.h"
 #include "Misc/FileHelper.h"
 #include "Managers/RouteDataManager.h"
-#include "Managers/CrewDataManager.h"
 #include "Managers/LevelGenerationManager.h"
+#include "Managers/MissionDetailsManager.h"
+#include "Managers/CurrentGameDataManager.h"
 
 USvGameInstance::USvGameInstance() {
 
@@ -20,21 +21,11 @@ USvGameInstance::USvGameInstance() {
 	ReadFile("Base/sv_td", &ThrowableData);
 	ReadFile("Base/sv_gtd", &GameTypeDescriptions);
 	ReadFile("Base/sv_cmd", &CrewMemberData);
-	/*ReadModData("Base/sv_sd", skillStringData);
-	if (!UFileManagementUtilities::JsonToStruct(skillStringData, &SkillData)) {
-		UDebugMessages::LogError(this, "failed to load sv_sd");
-		return;
-	} */
 
-	/*FString throwableDataString;
-	ReadModData("Base/sv_td", throwableDataString);
-	if (!UFileManagementUtilities::JsonToStruct(throwableDataString, &ThrowableData)) {
-		UDebugMessages::LogError(this, "failed to load sv_td");
-		return;
-	}*/
 	RouteManager = NewObject<URouteDataManager>();
-	CrewDataManager = NewObject<UCrewDataManager>();
 	LevelGenManager = NewObject<ULevelGenerationManager>();
+	MissionManager = NewObject<UMissionDetailsManager>();
+	CurrentGameDataManager = NewObject<UCurrentGameDataManager>();
 }
 
 void USvGameInstance::ReadModData(FString modName, FString& fileText) {
@@ -76,10 +67,14 @@ URouteDataManager* USvGameInstance::GetRouteDataManager() {
 	return RouteManager;
 }
 
-UCrewDataManager* USvGameInstance::GetCrewManager() {
-	return CrewDataManager;
-}
-
 FCrewMemberData* USvGameInstance::GetPossibleCrewData() {
 	return &CrewMemberData;
+}
+
+UMissionDetailsManager* USvGameInstance::GetMissionDetailsManager() {
+	return MissionManager;
+}
+
+UCurrentGameDataManager* USvGameInstance::GetCurrentGameDataManager() {
+	return CurrentGameDataManager;
 }

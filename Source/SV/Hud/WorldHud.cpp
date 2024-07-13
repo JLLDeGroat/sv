@@ -7,7 +7,7 @@
 void AWorldHud::BeginPlay() {
 	Super::BeginPlay();
 
-	FSoftClassPath hudUIRef(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Widgets/World/MainWorldWdiget_Bp.MainWorldWdiget_Bp_C'"));
+	FSoftClassPath hudUIRef(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Widgets/World/MainWorldWidget_Bp.MainWorldWidget_Bp_C'"));
 	if (UClass* hudUIWidgetClass = hudUIRef.TryLoadClass<UMainWorldWidget>())
 	{
 		auto hudWidget = CreateWidget<UMainWorldWidget>(GetWorld(), hudUIWidgetClass);

@@ -22,7 +22,7 @@ public:
 	static UHudDelegates* GetInstance() {
 		static UHudDelegates* hudDelegates = 0; if (!hudDelegates)
 		{
-			hudDelegates = NewObject<UHudDelegates >();
+			hudDelegates = NewObject<UHudDelegates>();
 			hudDelegates->AddToRoot();
 		}
 		return hudDelegates;

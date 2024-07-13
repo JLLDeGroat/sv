@@ -11,6 +11,7 @@ class IGameplay;
 class UNiagaraSystem;
 class UCharacterManager;
 class USvGameInstance;
+class UTexture2D;
 
 UCLASS()
 class SV_API USvUtilities : public UObject
@@ -35,6 +36,8 @@ public:
 	static UNiagaraSystem* GetNiagaraSystem(FString reference);
 	static UMaterial* GetMaterial(FString reference);
 	static UClass* GetClass(FString reference);
+	static UTexture2D* GetTexture(FString reference);
+
 	static float GetGridGape();
 
 	static void GetAdjacentGridTiles(FVector location, TArray<FVector>& adjacentTiles);
@@ -42,7 +45,7 @@ public:
 	static int GetTileElevation(FVector loc);
 
 	static TArray<FVector> OrderByClosestTo(FVector location, TArray<FVector> locationArray);
-	
+
 	static TScriptInterface<IGameplay> GetGameMode(UWorld* world);
 	static UCharacterManager* GetGameModeCharacterManager(UWorld* world);
 

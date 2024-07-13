@@ -3,6 +3,7 @@
 
 #include "PawnCameraComponent.h"
 #include "Camera/CameraComponent.h"
+#include "../../Utilities/SvUtilities.h"
 #include "../../Utilities/GridUtilities.h"
 #include "Runtime/Engine/Classes/Kismet/KismetMathLibrary.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
@@ -26,6 +27,25 @@ void UPawnCameraComponent::BeginPlay()
 
 	if (!CameraComponent)
 		return UDebugMessages::LogError(this, "failed to get camera comonent");
+
+
+	auto currentLoc = CameraComponent->GetComponentLocation();
+	auto forwardVec = CameraComponent->GetForwardVector();
+
+	FHitResult hitResult;
+	GetWorld()->LineTraceSingleByChannel(hitResult, currentLoc, (currentLoc + (forwardVec * 5000)), USvUtilities::GetFloorTargetChannel());
+	if (hitResult.bBlockingHit || hitResult.GetActor()) {
+		//DrawDebugLine(GetWorld(), currentLoc, hitResult.Location, FColor::Red, true, 100, 0, 4);
+		DefaultCameraOffset = hitResult.Location - currentLoc;
+		UDebugMessages::LogDisplay(this, DefaultCameraOffset.ToString());
+		if (DefaultCameraOffset.X > 0)
+			DefaultCameraOffset.X = DefaultCameraOffset.X * -1;
+
+		if (DefaultCameraOffset.Y > 0)
+			DefaultCameraOffset.Y = DefaultCameraOffset.Y * -1;
+
+		DefaultCameraOffset.Z = currentLoc.Z;
+	}
 }
 
 
@@ -54,8 +74,14 @@ void UPawnCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 				UGridUtilities::FindLookAtRotation(newLocation, CurrentRotateToLocation) :
 				FRotator(-70, 0, 0);
 
+			DrawDebugLine(GetWorld(), currentLocation, CurrentMoveTo, FColor::Cyan, true, 100, 0, 3);
+
 			newRotation = UKismetMathLibrary::RInterpTo_Constant(CameraComponent->GetComponentRotation(), requiredRotation, DeltaTime, 500);
 		}
+
+		//UDebugMessages::LogDisplay(this, "moving from: " + CameraComponent->GetComponentLocation().ToString() + " to: " +
+		//	CurrentMoveTo.ToString() +
+		//	" newloc: " + newLocation.ToString());
 
 		CameraComponent->SetWorldLocation(newLocation);
 		CameraComponent->SetWorldRotation(newRotation);
@@ -65,7 +91,7 @@ void UPawnCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 			CurrentlyMoving = false;
 			CurrentRotateToLocation = FVector::ZeroVector;
 			SetComponentTickEnabled(false);
-		
+
 			if (CurrentCameraState == ECameraState::CS_ReTarget)
 				CurrentCameraState = ECameraState::CS_Control;
 		}
@@ -75,10 +101,10 @@ void UPawnCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 void UPawnCameraComponent::UpdateCameraState(ECameraState cameraState, FVector moveToLocation, FVector lookAtLocation, bool overrideCameraMovements) {
 	CurrentCameraState = cameraState;
 
-	if (overrideCameraMovements) 
+	if (overrideCameraMovements)
 		return;
 
-	if (cameraState == ECameraState::CS_Control) {
+	if (CurrentCameraState == ECameraState::CS_Control) {
 		CurrentMoveTo = ReturnLocation;
 		CurrentRotateToLocation = lookAtLocation;
 
@@ -90,8 +116,8 @@ void UPawnCameraComponent::UpdateCameraState(ECameraState cameraState, FVector m
 		CameraComponent->PostProcessSettings.DepthOfFieldFocalDistance = DefaultDepthOfFieldFocalDistance;
 		CameraComponent->PostProcessSettings.DepthOfFieldSensorWidth = DefaultDepthOfFieldSensorWidth;
 	}
-	else if (cameraState == ECameraState::CS_ReTarget) {
-		CurrentMoveTo = moveToLocation += DefaultCameraOffset;
+	else if (CurrentCameraState == ECameraState::CS_ReTarget) {
+		CurrentMoveTo = moveToLocation + DefaultCameraOffset;
 	}
 	else {
 		ReturnLocation = CameraComponent->GetComponentLocation();
@@ -129,7 +155,7 @@ void UPawnCameraComponent::SetDefaultCameraOffset(FVector defaultValue) {
 
 bool UPawnCameraComponent::ShoudUseSetRotation() const {
 	if (CurrentCameraState == ECameraState::CS_Control ||
-		CurrentCameraState == ECameraState::CS_ReTarget || 
+		CurrentCameraState == ECameraState::CS_ReTarget ||
 		CurrentCameraState == ECameraState::CS_ThrowTarget)
 		return false;
 

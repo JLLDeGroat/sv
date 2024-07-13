@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "../../Enums/EEquipmentEnums.h"
 #include "CharacterSpawnerActor.generated.h"
 
 class ABaseCharacter;
@@ -13,8 +14,8 @@ UCLASS()
 class SV_API ACharacterSpawnerActor : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	ACharacterSpawnerActor();
 
@@ -22,13 +23,15 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) TSubclassOf<ABaseCharacter> CharacterClass;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) EGun GunType;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* RootMesh;
 
 };

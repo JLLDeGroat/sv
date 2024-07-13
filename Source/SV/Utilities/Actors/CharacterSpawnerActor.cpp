@@ -3,6 +3,7 @@
 
 #include "CharacterSpawnerActor.h"
 #include "../../Characters/BaseCharacter.h"
+#include "../../Characters/Components/EquipmentComponent.h"
 #include "../SvUtilities.h"
 #include "Components/StaticMeshComponent.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
@@ -21,7 +22,6 @@ ACharacterSpawnerActor::ACharacterSpawnerActor()
 	auto mesh = USvUtilities::GetStaticMesh("/Script/Engine.StaticMesh'/Engine/BasicShapes/Sphere.Sphere'");
 	if (mesh)
 		RootMesh->SetStaticMesh(mesh);
-
 }
 
 // Called when the game starts or when spawned
@@ -36,6 +36,12 @@ void ACharacterSpawnerActor::BeginPlay()
 		auto actor = GetWorld()->SpawnActor<ABaseCharacter>(CharacterClass, GetActorLocation(), FRotator::ZeroRotator, params);
 		if (!actor) {
 			UDebugMessages::LogError(this, "failed to spawn actor " + GetName());
+		}
+		else {
+			auto equipmentComponent = actor->GetComponentByClass<UEquipmentComponent>();
+			if (GunType != EGun::INVALID && equipmentComponent) {
+				equipmentComponent->EquipPrimary(GunType);
+			}
 		}
 		Destroy();
 	}

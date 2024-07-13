@@ -25,6 +25,21 @@ enum class EThrowable : uint8 {
 };
 
 UENUM(BlueprintType)
+enum class EGun : uint8 {
+	INVALID = 0,
+	G_PeaRifle = 1
+};
+
+
+UENUM(BlueprintType)
+enum class EToolType : uint8 {
+	INVALID = 0,
+	TT_Throwable = 1,
+	TT_HealthKit = 2,
+};
+
+
+UENUM(BlueprintType)
 enum class EAttachType : uint8 {
 	INVALID = 0,
 	AT_Backpack,

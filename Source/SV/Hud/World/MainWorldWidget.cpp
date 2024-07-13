@@ -6,6 +6,5 @@
 void UMainWorldWidget::NativeConstruct() {
 	Super::NativeConstruct();
 
-	auto widget = GetWidgetFromName("MissionDescriptionWidget");
-	DescriptionWidget = (UMissionDescriptionWidget*)widget;
+
 }

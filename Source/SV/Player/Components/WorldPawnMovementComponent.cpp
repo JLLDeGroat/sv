@@ -7,6 +7,8 @@
 #include "../../Utilities/SvUtilities.h"
 #include "../../Instance/SvGameInstance.h"
 #include "../../Instance/Managers/RouteDataManager.h"
+#include "../../Delegates/WorldDelegates.h"
+#include "VgCore/Domain/Debug/DebugMessages.h"
 
 // Sets default values for this component's properties
 UWorldPawnMovementComponent::UWorldPawnMovementComponent()
@@ -54,6 +56,12 @@ void UWorldPawnMovementComponent::TickComponent(float DeltaTime, ELevelTick Tick
 		auto gameInstance = USvUtilities::GetGameInstance(GetWorld());
 		auto routeData = gameInstance->GetRouteDataManager();
 		routeData->SetCurrentLocationOnRoute(newGridLocation);
+
+		auto worldDelegates = UWorldDelegates::GetInstance();
+		if (!worldDelegates)
+			return UDebugMessages::LogError(this, "failed to get world delegates");
+
+		worldDelegates->_OnWorldMovementComplete.Broadcast();
 	}
 }
 

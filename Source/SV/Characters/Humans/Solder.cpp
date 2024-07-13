@@ -14,6 +14,7 @@
 #include "../Components/ThrowableComponent.h"
 #include "../Components/ActivateTogglesComponent.h"
 #include "../Components/VaultObstacleComponent.h"
+#include "../Components/HealthAndStatusWidgetComponent.h"
 // Sets default values
 ASolder::ASolder(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(ObjectInitializer)
 {
@@ -21,8 +22,6 @@ ASolder::ASolder(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(O
 	PrimaryActorTick.bCanEverTick = true;
 
 	GridMovementComponent = CreateDefaultSubobject<UGridMovementComponent>(TEXT("GridMovement"));
-
-
 
 	DetailsComponent->SetCharacterControl(ECharacterControl::CC_Player);
 	DetailsComponent->SetHealth(100);
@@ -60,6 +59,10 @@ ASolder::ASolder(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(O
 	ActivateToggleComponent = CreateDefaultSubobject<UActivateTogglesComponent>(TEXT("ToggleComp"));
 
 	VaultingComponent = CreateDefaultSubobject<UVaultObstacleComponent>(TEXT("Vault"));
+
+	HealthAndStatusComponent = CreateDefaultSubobject<UHealthAndStatusWidgetComponent>(TEXT("StatusWidget"));
+	HealthAndStatusComponent->SetupAttachment(RootComponent);
+	HealthAndStatusComponent->SetRelativeLocation(FVector(0, 0, 130));
 }
 
 // Called when the game starts or when spawned

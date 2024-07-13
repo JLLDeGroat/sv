@@ -68,6 +68,10 @@ UClass* USvUtilities::GetClass(FString reference) {
 	return Cast<UClass>(StaticLoadObject(UClass::StaticClass(), NULL, *reference, NULL, LOAD_None, NULL));
 }
 
+UTexture2D* USvUtilities::GetTexture(FString reference) {
+	return Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), NULL, *reference, NULL, LOAD_None, NULL));
+}
+
 float USvUtilities::GetGridGape() { return 100.0f; }
 
 TScriptInterface<IGameplay> USvUtilities::GetGameMode(UWorld* world) {

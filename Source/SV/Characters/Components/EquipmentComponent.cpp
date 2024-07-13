@@ -29,17 +29,26 @@ UEquipmentComponent::UEquipmentComponent()
 void UEquipmentComponent::BeginPlay()
 {
 	Super::BeginPlay();
+}
 
-	// ths needs major improvement in order to handle multiple equipment
-	auto gun = GetOwner()->GetWorld()->SpawnActor<AEquipment>(APeaRifle::StaticClass());
+void UEquipmentComponent::EquipPrimary(EGun gunType) {
+	if (gunType == EGun::INVALID)
+		return UDebugMessages::LogError(this, "Attempted to equip a invalid guntype");
 
+	UClass* cls = nullptr;
+	switch (gunType) {
+	case EGun::G_PeaRifle:
+		cls = APeaRifle::StaticClass();
+	}
+
+	if (!cls) return UDebugMessages::LogError(this, "Invalid primary set, will not attach primary");
+
+	auto gun = GetOwner()->GetWorld()->SpawnActor<AEquipment>(cls);
 	auto skeleMesh = GetOwner()->GetComponentByClass<USkeletalMeshComponent>();
 	if (skeleMesh) {
 		gun->AttachToComponent(skeleMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("RightHandSocket"));
 		gun->SetupAttachVector();
-
 		Equipment.Emplace(gun);
-
 		auto details = gun->GetComponentByClass<UEquipmentDetailsComponent>();
 		details->SetIsPrimaryEquipment(true);
 	}
@@ -115,7 +124,7 @@ void UEquipmentComponent::AttachEquipmentToSocket(EAttachType attachmentType, AE
 	equipment->AttachToComponent(skeleMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName(socketName));
 
 	auto vectorComponent = equipment->GetComponentByClass<UAttachedVectorComponent>();
-	
+
 	FVector loc;
 	FRotator rot;
 	if (vectorComponent->GetAttachmentsForType(attachmentType, loc, rot)) {

@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 
 /**
- * 
+ *
  */
 class SV_API EWorldEnums
 {
@@ -23,4 +23,14 @@ enum class EGridStoryType : uint8 {
 	INVALID = 0,
 	GST_Decision = 1,
 	GST_Battle = 2,
+};
+
+
+UENUM(BlueprintType)
+enum class EMissionType : uint8 {
+	INVALID = 0,
+	MT_Survive = 1,
+	MT_Extraction = 2,
+	MT_Traverse = 3,
+	MT_Exterminate = 4
 };

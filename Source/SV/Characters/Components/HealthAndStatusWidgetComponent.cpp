@@ -18,7 +18,7 @@ UHealthAndStatusWidgetComponent::UHealthAndStatusWidgetComponent() {
 	}
 	SetDrawSize(FVector2D(100, 50));
 
-	HealthChangeDelay = 3.0f;
+	HealthChangeDelay = .75f;
 }
 
 void UHealthAndStatusWidgetComponent::BeginPlay() {
@@ -64,18 +64,8 @@ void UHealthAndStatusWidgetComponent::SetPercentage(float value) const {
 	if (progressBar)
 		progressBar->SetPercent(value);
 }
-#pragma optimize("", off)
+
 void UHealthAndStatusWidgetComponent::UpdateOnHealthChange() {
-	/*auto characterComponent = GetOwner()->GetComponentByClass<UCharacterDetailsComponent>();
-	if (characterComponent) {
-		auto percentage = characterComponent->GetHealthAsPercentage();
-
-		if (percentage <= 0)
-			GetWidget()->SetVisibility(ESlateVisibility::Hidden);
-		SetPercentage(percentage);
-	}*/
-
-
 	auto characterComponent = GetOwner()->GetComponentByClass<UCharacterDetailsComponent>();
 	if (!characterComponent)
 		return UDebugMessages::LogError(this, "failed to get character component, cannot update health and status component");
@@ -150,4 +140,3 @@ float UHealthAndStatusWidgetComponent::GetCurrentPercentage() {
 float UHealthAndStatusWidgetComponent::GetPercentageOfHealth(float value, float maxValue) {
 	return value / maxValue;
 }
-#pragma optimize("", on)

@@ -23,6 +23,8 @@ public:
 	TArray<AEquipment*> GetAllMeleeEquipment();
 
 	AEquipment* GetPrimaryEquipment();
+
+	void EquipPrimary(EGun gunType);
 	void AttachEquipmentToSocket(EAttachType attachmentType, AEquipment* equipment, FString socketName);
 
 protected:

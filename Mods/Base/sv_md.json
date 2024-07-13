@@ -1,0 +1,32 @@
+{
+    "MissionTitles": {
+        "MissionAdjectives": [
+            "Nomadic"
+        ],
+        "MissionNouns": [
+            "Trunchent"
+        ]
+    },
+    "MissionDescriptions": [
+        {
+            "Description": "Survival, last a certain amount of rounds",
+            "MissionType": "MT_Survive",
+            "MissionName": "Survival"
+        },
+        {
+            "Description": "Get the objective item and run to the exit",
+            "MissionType": "MT_Extraction",
+            "MissionName": "Extraction"
+        },
+        {
+            "Description": "Get to the other end of the world",
+            "MissionType": "MT_Traverse",
+            "MissionName": "Traversal"
+        },
+        {
+            "Description": "Kill every enemy on the map",
+            "MissionType": "MT_Exterminate",
+            "MissionName": "Exterminate"
+        }
+    ]
+}

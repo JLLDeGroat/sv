@@ -5,8 +5,7 @@
 #include "../Hud/MenuHuds/Components/NewGameOptionsWidget.h"
 #include "../Instance/SvGameInstance.h"
 #include "../Instance/Managers/RouteDataManager.h"
-#include "../Instance/Managers/CrewDataManager.h"
-#include "../Data/FGameData.h"
+#include "../Instance/Managers/CurrentGameDataManager.h"
 #include "../Utilities/SvUtilities.h"
 #include "../Utilities/RunnableUtilities.h"
 
@@ -20,13 +19,21 @@ void UClassicGameMapGenerationRunnable::ActivateThread() {
 
 	auto widget = GameModeWidget;
 
+	UDebugMessages::LogDisplay(this, "finding valid Routes");
 	FindValidRoutes();
+	UDebugMessages::LogDisplay(this, "finding valid off shoots Routes");
 	FindValidOffshoots();
 
 	auto instance = USvUtilities::GetGameInstance(GetWorld());
+
+	if (!instance) return UDebugMessages::LogError(this, "failed to get svUtilities");
+
 	auto routeManager = instance->GetRouteDataManager();
 
-	if (!routeManager) UDebugMessages::LogError(this, "failed to get route data manager");
+	if (!routeManager)
+		return UDebugMessages::LogError(this, "failed to get route data manager");
+
+
 	routeManager->SetCurrentRoute(ChosenPrimaryRoute);
 	routeManager->SetCurrentOffshoots(Offshoots);
 	routeManager->SetCurrentLocationOnRoute(ChosenPrimaryRoute[0]);
@@ -145,7 +152,7 @@ void UClassicGameMapGenerationRunnable::FindValidOffshootsRecursive(TArray<FVect
 
 	auto lastRoute = currentOffshoot[currentOffshoot.Num() - 1];
 	auto adjacentGridItems = URunnableUtilities::GetPassableAdjacentGridItems(&CurrentMapGrid, lastRoute);
-	
+
 	if (isInitial)
 		currentOffshoot.RemoveAt(0);
 
@@ -224,17 +231,39 @@ bool UClassicGameMapGenerationRunnable::IsAdjacentToOtherOffshoots(FVector2D vec
 void UClassicGameMapGenerationRunnable::GenerateCrewMembers(int amount) {
 	auto instance = USvUtilities::GetGameInstance(GetWorld());
 	auto crewData = instance->GetPossibleCrewData();
-	auto currentCrewData = instance->GetCrewManager();
+	auto currentGameManager = instance->GetCurrentGameDataManager();
+
+	auto gameData = currentGameManager->GetCurrentGameData();
 
 	auto allFirstNames = crewData->GetFirstNames();
 	auto allLastNames = crewData->GetLastNames();
 	auto allBios = crewData->GetBios();
+
 	for (int i = 0; i < amount; i++) {
-		FCrewMember newMember = FCrewMember();
-		newMember.SetName(allFirstNames[RandomStream.RandRange(1, allFirstNames.Num() - 1)]);
-		newMember.SetLastName(allLastNames[RandomStream.RandRange(1, allLastNames.Num() - 1)]);
-		newMember.SetBio(allBios[RandomStream.RandRange(1, allBios.Num() - 1)]);
-		currentCrewData->AddCrewMember(&newMember);
+		auto crewMemberId = gameData->AddCrewMember(
+			allFirstNames[RandomStream.RandRange(1, allFirstNames.Num() - 1)],
+			allLastNames[RandomStream.RandRange(1, allLastNames.Num() - 1)],
+			allBios[RandomStream.RandRange(1, allBios.Num() - 1)],
+			100,
+			100
+		);
+		auto primaryId = gameData->AddPrimaryToCrew(EGun::G_PeaRifle);
+		gameData->AssignPrimaryToCrew(primaryId, crewMemberId);
+
+		if (i == 0) {
+			auto toolAdded = gameData->AddToolToCrew(EToolType::TT_Throwable, (uint8)EThrowable::T_Grenade);
+			gameData->AssignToolToCrew(toolAdded, crewMemberId);
+		}
 	}
+
+	gameData->AddPrimaryToCrew(EGun::G_PeaRifle);
+	gameData->AddPrimaryToCrew(EGun::G_PeaRifle);
+	gameData->AddPrimaryToCrew(EGun::G_PeaRifle);
+
+	gameData->AddToolToCrew(EToolType::TT_Throwable, (uint8)EThrowable::T_Grenade);
+	gameData->AddToolToCrew(EToolType::TT_Throwable, (uint8)EThrowable::T_Grenade);
+	gameData->AddToolToCrew(EToolType::TT_Throwable, (uint8)EThrowable::T_Grenade);
+	gameData->AddToolToCrew(EToolType::TT_Throwable, (uint8)EThrowable::T_Grenade);
+	gameData->AddToolToCrew(EToolType::TT_Throwable, (uint8)EThrowable::T_Grenade);
 }
 #pragma optimize("", on)

@@ -6,8 +6,6 @@
 #include "Blueprint/UserWidget.h"
 #include "MainWorldWidget.generated.h"
 
-
-class UMissionDescriptionWidget;
 /**
  *
  */
@@ -19,9 +17,5 @@ class SV_API UMainWorldWidget : public UUserWidget
 public:
 
 	virtual void NativeConstruct()override;
-
-private:
-
-	UPROPERTY() UMissionDescriptionWidget* DescriptionWidget;
 
 };
