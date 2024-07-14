@@ -16,6 +16,7 @@
 #include "Components/HitBoxComponent.h"
 #include "Components/HitCapsuleComponent.h"
 #include "Components/EquipmentComponent.h"
+#include "Components/HealthAndStatusWidgetComponent.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter(const FObjectInitializer& ObjectInitializer) : ACharacter(ObjectInitializer)
@@ -41,9 +42,9 @@ void ABaseCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	auto gameMode = USvUtilities::GetGameMode(GetOwner()->GetWorld());
-	if (!gameMode) 
+	if (!gameMode)
 		return UDebugMessages::LogError(this, "spawned under the wrong game mode");
-	
+
 	auto characterManager = gameMode->GetCharacterManager();
 	characterManager->ReceiveNewCharacter(this);
 }
@@ -106,4 +107,7 @@ void ABaseCharacter::UpdateActorVisibility(bool value) {
 
 	auto equipmentComponent = GetComponentByClass<UEquipmentComponent>();
 	if (equipmentComponent) equipmentComponent->UpdateActorVisibility(value);
+
+	auto healthAndStatus = GetComponentByClass<UHealthAndStatusWidgetComponent>();
+	if (healthAndStatus) healthAndStatus->SetVisibility(value);
 }

@@ -63,4 +63,6 @@ private:
 	UPROPERTY() float DefaultDepthOfFieldSensorWidth = 0.0f;
 	UPROPERTY() float DefaultDepthOfFieldFocalDistance = 0.0f;
 		
+
+	void AttemptToAlterAttackerStatusWidgetVisibility(bool val);
 };

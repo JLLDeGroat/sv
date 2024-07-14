@@ -37,6 +37,9 @@ public:
 	void SetAccuracy(float val);
 	float GetAccuracy();
 
+	void SetBaseAccuracy(float val);
+	float GetBaseAccuracy();
+
 	void SetAccuracyDecay(float val);
 	float GetAccuracyDecay();
 
@@ -60,6 +63,7 @@ private:
 
 	UPROPERTY() int ApCost;
 
+	UPROPERTY() float BaseAccuracy;
 	UPROPERTY() float Accuracy;
 	UPROPERTY() float AccuracyDecay;
 	UPROPERTY() float MaxAccuracyDeviation;

@@ -24,6 +24,8 @@ void UGrenadeActionComponent::SetGrenadeIndicatorActor(AGrenadeIndicatorActor* a
 }
 
 void UGrenadeActionComponent::DoAction() {
+	ResetActionEffects();
+
 	auto pawn = GetOwningController()->GetPawn();
 	auto pawnCamera = pawn->GetComponentByClass<UPawnCameraComponent>();
 

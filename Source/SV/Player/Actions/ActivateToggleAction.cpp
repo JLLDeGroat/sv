@@ -14,6 +14,8 @@ UActivateToggleAction::UActivateToggleAction(const FObjectInitializer& ObjectIni
 }
 
 void UActivateToggleAction::DoAction() {
+	ResetActionEffects();
+
 	auto selected = SelectionManager->GetSelected();
 
 	if (selected) {

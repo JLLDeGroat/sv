@@ -12,20 +12,57 @@
 #include "../../Characters/Components/TargetingComponent.h"
 #include "../../Characters/Components/CharacterDetailsComponent.h"
 #include "../../Characters/Components/AttackComponent.h"
+#include "../../Characters/Components/EquipmentComponent.h"
+#include "../../Equipment/Components/EquipmentDetailsComponent.h"
+#include "../../Equipment/Equipment.h"
 #include "../../Interfaces/SvChar.h"
 #include "../../Interfaces/Selectable.h"
 #include "../GamePlayerController.h"
 #include "../../Delegates/HudDelegates.h"
+#include "Components/SphereComponent.h"
+#include "../Utility/TargetingIndicatorActor.h"
 
 UTargetAction::UTargetAction(const FObjectInitializer& ObjectInitializer) :UBaseActionComponent(ObjectInitializer) {
 	ValidCameraStates.Emplace(ECameraState::CS_Control);
 	ValidCameraStates.Emplace(ECameraState::CS_GunTarget);
+
+	PrimaryComponentTick.bCanEverTick = true;
+}
+
+void UTargetAction::BeginPlay() {
+	Super::BeginPlay();
+	SetComponentTickEnabled(false);
+	if (!TargetingIndicator) {
+		TargetingIndicator = GetWorld()->SpawnActor<ATargetingIndicatorActor>();
+		TargetingIndicator->SetActorLocation(FVector(0, 0, -1000));
+	}
+}
+
+void UTargetAction::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	FHitResult hit;
+	FVector targetLocation = FVector::ZeroVector;
+	GetTargetLocation(hit, targetLocation, PawnCameraComponent);
+	TargetingIndicator->SetActorLocation(targetLocation);
+
+	auto accuracy = (FVector::Dist(PawnCameraComponent->GetComponentLocation(), targetLocation) * 1.00f) - CurrentTargetAccuracy;
+
+	if (accuracy < 1) accuracy = 1;
+
+	accuracy = accuracy * CurrentTargetAccuracyDecay;
+	TargetingIndicator->SetActorScale3D(FVector(accuracy / 100) + FVector(CurrentTargetBaseAccuracy));
 }
 
 void UTargetAction::DoAction() {
+	ResetActionEffects();
+
 	auto owner = GetOwner<AGamePlayerController>();
 	auto pawn = owner->GetPawn();
 	auto pawnCameraComponent = pawn->GetComponentByClass<UPawnCameraComponent>();
+
+	if (!PawnCameraComponent)
+		PawnCameraComponent = pawn->GetComponentByClass<UCameraComponent>();
 
 	if (!IsInValidCameraState(pawnCameraComponent->GetCurrentCameraState()))
 		return;
@@ -33,7 +70,7 @@ void UTargetAction::DoAction() {
 	auto selected = SelectionManager->GetSelected();
 
 	auto hudDelegates = UHudDelegates::GetInstance();
-	if (!hudDelegates) 
+	if (!hudDelegates)
 		return UDebugMessages::LogError(this, "failed to get hud delegates, cannot do target action");
 
 	// reset values
@@ -65,7 +102,38 @@ void UTargetAction::DoAction() {
 				currentTargetData->GetCharacter()->GetSelectableGridLocation());
 
 			owner->SetMouseAsGame();
-			hudDelegates->_AimTargetVisibility.Broadcast(true);
+
+			SetCurrentEquipmentAccuracy(actor);
+
+			//shows the hud on screen
+			//hudDelegates->_AimTargetVisibility.Broadcast(true);
+			SetComponentTickEnabled(true);
+		}
+	}
+}
+
+float UTargetAction::GetTargetingIndicatorRadius() {
+	return TargetingIndicator->GetSphereScaledRadius();
+}
+
+void UTargetAction::ResetTargetingActor() {
+	SetComponentTickEnabled(false);
+	TargetingIndicator->SetActorLocation(FVector(0, 0, 5000));
+}
+
+void UTargetAction::SetCurrentEquipmentAccuracy(AActor* actor) {
+	CurrentTargetAccuracy = 0;
+	CurrentTargetAccuracyDecay = 0;
+	CurrentTargetBaseAccuracy = 0;
+
+	auto equipmentComponent = actor->GetComponentByClass<UEquipmentComponent>();
+	if (equipmentComponent) {
+		auto targetingEquipment = equipmentComponent->GetPrimaryEquipment();
+		auto equipmentDetails = targetingEquipment->GetComponentByClass<UEquipmentDetailsComponent>();
+		if (equipmentComponent) {
+			CurrentTargetAccuracyDecay = equipmentDetails->GetAccuracyDecay();
+			CurrentTargetAccuracy = equipmentDetails->GetAccuracy();
+			CurrentTargetBaseAccuracy = equipmentDetails->GetBaseAccuracy();
 		}
 	}
 }

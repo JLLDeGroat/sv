@@ -48,7 +48,8 @@ void UHealthAndStatusWidgetComponent::BeginPlay() {
 
 void UHealthAndStatusWidgetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	SetWorldRotation(UGridUtilities::FindLookAtRotation(GetComponentLocation(), CameraComponent->GetComponentLocation()));
+	if (CameraComponent)
+		SetWorldRotation(UGridUtilities::FindLookAtRotation(GetComponentLocation(), CameraComponent->GetComponentLocation()));
 }
 
 void UHealthAndStatusWidgetComponent::SetName(FString name) const {
@@ -96,11 +97,11 @@ void UHealthAndStatusWidgetComponent::UpdateOnHealthChange() {
 
 		if (auto cPanelSlot = Cast<UGridSlot>(DynamicHealthProgressBar->Slot)) {
 			UDebugMessages::LogDisplay(GetOwner(), cPanelSlot->GetName());
-			
+
 			auto baseMargin = 0.0f;
-			
+
 			FMargin margin = FMargin(cPanelSlot->GetPadding());
-			
+
 			margin.Left = baseMargin + newHealthWidth;
 			margin.Right = baseMargin + (fullWidth.X - (newHealthWidth + differenceWidth));
 
@@ -133,7 +134,7 @@ float UHealthAndStatusWidgetComponent::GetCurrentPercentage() {
 	UProgressBar* progressBar = (UProgressBar*)progressWidget;
 	if (progressBar)
 		return progressBar->GetPercent();
-	else 
+	else
 		return 0.0f;
 }
 

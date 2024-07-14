@@ -11,6 +11,7 @@
 class USelectionManager;
 class UControlManager;
 class AGamePlayerController;
+class UCameraComponent;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SV_API UBaseActionComponent : public UActorComponent
@@ -26,7 +27,11 @@ protected:
 	virtual void BeginPlay() override;
 	AGamePlayerController* GetOwningController();
 
+	void ResetActionEffects();
+
 	bool IsInValidCameraState(ECameraState currentCameraState);
+
+	void GetTargetLocation(FHitResult& hit, FVector& targetLocation, UCameraComponent* cameraComp);
 
 
 	UPROPERTY() USelectionManager* SelectionManager;

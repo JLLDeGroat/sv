@@ -75,7 +75,7 @@ void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 		if ((newRotation.Yaw - 2.5f) < InitialRotation.Yaw &&
 			(newRotation.Yaw + 2.5f) > InitialRotation.Yaw &&
-			FVector::Dist(InitialLocation, GetOwner()->GetActorLocation()) < 5) 
+			FVector::Dist(InitialLocation, GetOwner()->GetActorLocation()) < 5)
 		{
 			SetComponentTickEnabled(false);
 			UDebugMessages::LogDisplay(this, "finished attacking");
@@ -90,14 +90,13 @@ void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 void UAttackComponent::UpdateCurrentAttackState(EAttackState attackState) {
 	CurrentAttackState = attackState;
-
 	CurrentTargetCharacter = nullptr;
 	SetComponentTickEnabled(true);
 }
 
 void UAttackComponent::TryAttackTarget(FVector sourceGridLocation, TScriptInterface<ISvChar> targetCharacter, bool bIsRange) {
 	CurrentTargetCharacter = targetCharacter;
-	TryAttackLocation(sourceGridLocation, UGridUtilities::GetNormalisedGridLocation(targetCharacter->GetAsActor()->GetActorLocation()), bIsRange);
+	TryAttackLocation(sourceGridLocation, UGridUtilities::GetNormalisedGridLocation(targetCharacter->GetAsActor()->GetActorLocation()), 0, bIsRange);
 }
 
 void UAttackComponent::ReturnCharacterAnimationSpeedsToNormal() {
@@ -120,10 +119,11 @@ void UAttackComponent::ReturnCharacterAnimationSpeedsToNormal() {
 	}
 }
 
-void UAttackComponent::TryAttackLocation(FVector sourceGridLocation, FVector location, bool bIsRange) {
+void UAttackComponent::TryAttackLocation(FVector sourceGridLocation, FVector location, float locationRadius, bool bIsRange) {
 	//assuming the gun is a AR
 	//assuming we dont have to move
 	CurrentTargetLocation = location;
+	CurrentAttackRandomRadius = locationRadius;
 
 	auto gridLocation = UGridUtilities::GetNormalisedGridLocation(GetOwner()->GetActorLocation());
 
@@ -205,4 +205,8 @@ EAttackType UAttackComponent::DetermineAttackStateFromDirection(FVector currentG
 
 TScriptInterface<ISvChar> UAttackComponent::GetCurrentTargetCharacter() {
 	return CurrentTargetCharacter;
+}
+
+float UAttackComponent::GetCurrentAttackRandomRadius() const {
+	return CurrentAttackRandomRadius;
 }

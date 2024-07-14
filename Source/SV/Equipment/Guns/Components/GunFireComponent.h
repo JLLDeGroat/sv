@@ -18,7 +18,7 @@ public:
 	UGunFireComponent();
 
 	//Accuracy of 1 is default, multiplier is multiplied by distance 
-	void FireAtLocation(FVector location, float accuracyMultiplier = 1.0f);
+	void FireAtLocation(FVector location, float accuracyRadius = 0);
 
 protected:
 	// Called when the game starts

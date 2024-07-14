@@ -22,7 +22,7 @@ public:
 	UAttackComponent(const FObjectInitializer& ObjectInitializer);
 
 	void TryAttackTarget(FVector sourceGridLocation, TScriptInterface<ISvChar> targetCharacter, bool bIsRange = true);
-	void TryAttackLocation(FVector sourceGridLocation, FVector location, bool bIsRange = true);
+	void TryAttackLocation(FVector sourceGridLocation, FVector location, float locationRadius, bool bIsRange = true);
 
 	void ReturnCharacterAnimationSpeedsToNormal();
 
@@ -32,6 +32,7 @@ public:
 
 	TScriptInterface<ISvChar> GetCurrentTargetCharacter();
 
+	float GetCurrentAttackRandomRadius() const;
 protected:
 
 	virtual void BeginPlay() override;
@@ -54,5 +55,7 @@ private:
 	EAttackType DetermineAttackStateFromDirection(FVector currentGridLoc, FVector movementLoc, FVector targetLoc);
 
 	UPROPERTY() UBaseRunnable* PostShootRunnable;
+
+	UPROPERTY() float CurrentAttackRandomRadius;
 
 };

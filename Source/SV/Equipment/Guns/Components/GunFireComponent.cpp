@@ -53,29 +53,14 @@ void UGunFireComponent::SetMeshAndSocketName(UStaticMeshComponent* meshComponent
 	GunFireStartSocketName = socketName;
 }
 
-void UGunFireComponent::FireAtLocation(FVector location, float accuracyMultiplier) {
+void UGunFireComponent::FireAtLocation(FVector location, float accuracyRadius) {
 	auto bulletStart = GetGunFireStartLocation();
 
 	auto equipmentDetails = GetOwner()->GetComponentByClass<UEquipmentDetailsComponent>();
-	auto accuracy = (FVector::Dist(bulletStart, location) * accuracyMultiplier) - equipmentDetails->GetAccuracy();
-	if (accuracy < 1)
-		accuracy = 1;
-
-	int deviation = 1;
-	for (int i = 0; i < (accuracy / 100.0f); i++) {
-		deviation += deviation * equipmentDetails->GetAccuracyDecay();
-	}
-
-	if (deviation > equipmentDetails->GetMaxAccuracyDeviation()) {
-		UDebugMessages::LogDisplay(this, "Deviation of bullet: " + FString::SanitizeFloat(deviation));
-		deviation = equipmentDetails->GetMaxAccuracyDeviation();
-	}
-
-	auto finalLoc = FVector(
-		location.X + FMath::RandRange(-deviation, deviation),
-		location.Y + FMath::RandRange(-deviation, deviation),
-		location.Z + FMath::RandRange(-deviation, deviation)
-	);
+	auto randomUnitVector = FVector(FMath::RandRange(0, 1), FMath::RandRange(0, 1), FMath::RandRange(0, 1));
+	auto randomFloatInRange = FMath::RandRange(0.00f, accuracyRadius);
+	auto offsetLoc = randomUnitVector * randomFloatInRange;
+	auto finalLoc = location + offsetLoc;
 
 	//DrawDebugLine(GetOwner()->GetWorld(), bulletStart, finalLoc, FColor::Green, true, 60, 0, 1);
 
@@ -96,7 +81,7 @@ void UGunFireComponent::FireAtLocation(FVector location, float accuracyMultiplie
 		if (bulletTravel)
 			bulletTravel->StartTravel(finalLoc);
 
-		if (muzzleFlash) 
+		if (muzzleFlash)
 			muzzleFlash->ActivateMuzzleFlash();
 	}
 }

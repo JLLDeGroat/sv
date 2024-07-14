@@ -74,6 +74,13 @@ bool UEquipmentDetailsComponent::GetIsPrimaryEquipment() {
 	return bIsPrimaryEquipment;
 }
 
+void UEquipmentDetailsComponent::SetBaseAccuracy(float val) {
+	BaseAccuracy = val;
+}
+float UEquipmentDetailsComponent::GetBaseAccuracy() {
+	return BaseAccuracy;
+}
+
 void UEquipmentDetailsComponent::SetAccuracy(float val) {
 	Accuracy = val;
 }

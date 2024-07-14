@@ -84,6 +84,7 @@ void AGamePlayerController::BeginPlay() {
 		GrenadeIndicator = GetWorld()->SpawnActor<AGrenadeIndicatorActor>();
 		ControlManager->SetGrenadeIndicatorActor(GrenadeIndicator);
 		GrenadeActionComponent->SetGrenadeIndicatorActor(GrenadeIndicator);
+		GrenadeIndicator->SetActorLocation(FVector(0, 0, -1000));
 	}
 }
 
@@ -143,17 +144,14 @@ void AGamePlayerController::SetupInputComponent() {
 		EnhancedInputComponent->BindAction(MoveUpAction, ETriggerEvent::Triggered, this, &AGamePlayerController::MoveUp_Started);
 		EnhancedInputComponent->BindAction(MoveRightAction, ETriggerEvent::Triggered, this, &AGamePlayerController::MoveRight_Started);
 		EnhancedInputComponent->BindAction(CameraMoveAction, ETriggerEvent::Triggered, this, &AGamePlayerController::MouseMove);
-
 		EnhancedInputComponent->BindAction(BeginTargetAction, ETriggerEvent::Started, TargetActionComponent, &UTargetAction::DoAction);
 		EnhancedInputComponent->BindAction(GrenadeAction, ETriggerEvent::Started, GrenadeActionComponent, &UGrenadeActionComponent::DoAction);
-
 		EnhancedInputComponent->BindAction(ActivateToggleAction, ETriggerEvent::Started, ActivateToggleActionComponent, &UActivateToggleAction::DoAction);
 	}
 	else
 	{
 		UDebugMessages::LogError(this, "Failed to ru, enhanced Input Component");
 	}
-
 }
 
 

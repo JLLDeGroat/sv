@@ -21,6 +21,7 @@
 #include "../../GameModes/WorldGameMode.h"
 #include "../../GameModes/WorldManagers/WorldDirectionManager.h"
 #include "../../Delegates/HudDelegates.h"
+#include "TargetAction.h"
 
 // Sets default values for this component's properties
 ULeftClickAction::ULeftClickAction(const FObjectInitializer& ObjectInitializer) : UBaseActionComponent(ObjectInitializer)
@@ -45,6 +46,8 @@ void ULeftClickAction::BeginPlay()
 }
 
 void ULeftClickAction::DoAction() {
+	ResetActionEffects();
+
 	auto controller = GetOwner<APlayerController>();
 	auto pawn = controller->GetPawn();
 	auto pawnCameraComponent = pawn->GetComponentByClass<UPawnCameraComponent>();
@@ -61,24 +64,15 @@ void ULeftClickAction::DoAction() {
 		return UDebugMessages::LogError(this, "could not get pawn, pawn camera or pawn camara component, stopping Action");
 
 	auto hudDelegates = UHudDelegates::GetInstance();
-	if(!hudDelegates)
+	if (!hudDelegates)
 		return UDebugMessages::LogError(this, "failed to get hud delegates, cannot do left click action");
 
 	if (pawnCameraComponent->GetCurrentCameraState() == ECameraState::CS_GunTarget) {
-		auto cameraForwardVector = pawnCamera->GetForwardVector();
-		auto targetLocation = pawnCamera->GetComponentLocation() + (5000 * cameraForwardVector);
+		auto targetLocation = FVector::ZeroVector;
+		FHitResult TestHit;
+		GetTargetLocation(TestHit, targetLocation, pawnCamera);
 
 		pawnOverlapCameraComponent->ShrinkOverlapComponent();
-
-		FHitResult TestHit;
-		FCollisionObjectQueryParams collisionParams;
-		collisionParams.AddObjectTypesToQuery(USvUtilities::GetBulletCollisionObjectChannel());
-		collisionParams.AddObjectTypesToQuery(USvUtilities::GetEnvironmentChannel());
-		GetWorld()->LineTraceSingleByObjectType(TestHit, pawnCamera->GetComponentLocation(), targetLocation, collisionParams);
-
-		if (TestHit.GetActor())
-			targetLocation = TestHit.Location;
-
 		//DrawDebugLine(GetWorld(), pawnCamera->GetComponentLocation(), targetLocation, FColor::Cyan, false, 60.0f, 0, 5);
 
 		hudDelegates->_AimTargetVisibility.Broadcast(false);
@@ -98,7 +92,12 @@ void ULeftClickAction::DoAction() {
 			detailsComponent->RemoveActionPoints(equipmentComponent->GetActionPointsNeededToUseEquipment());
 
 			auto attackComponent = selected->GetAsActor()->GetComponentByClass<UAttackComponent>();
-			attackComponent->TryAttackLocation(currentTargetData->GetShootLocation(), targetLocation);
+
+			auto targetAction = controller->GetComponentByClass<UTargetAction>();
+			if (!targetAction) 
+				return UDebugMessages::LogError(this, "no targeting action, failed");
+			
+			attackComponent->TryAttackLocation(currentTargetData->GetShootLocation(), targetLocation, targetAction->GetTargetingIndicatorRadius());
 
 			pawnCameraComponent->DoCinematicAttackCameraMovement(selected->GetAsActor(), currentTargetData->GetCharacter()->GetAsActor());
 		}

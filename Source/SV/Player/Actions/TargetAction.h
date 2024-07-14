@@ -6,6 +6,8 @@
 #include "Base/BaseActionComponent.h"
 #include "TargetAction.generated.h"
 
+class ATargetingIndicatorActor;
+class UCameraComponent;
 /**
  * 
  */
@@ -19,4 +21,24 @@ public:
 	UTargetAction(const FObjectInitializer& ObjectInitializer);
 
 	void DoAction();
+	void ResetTargetingActor();
+
+	float GetTargetingIndicatorRadius();
+
+protected:
+
+	virtual void BeginPlay() override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UCameraComponent* PawnCameraComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) ATargetingIndicatorActor* TargetingIndicator;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float CurrentTargetAccuracy;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float CurrentTargetAccuracyDecay;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float CurrentTargetBaseAccuracy;
+
+private:
+
+	void SetCurrentEquipmentAccuracy(AActor* actor);
+
 };

@@ -5,6 +5,13 @@
 #include "../../Managers/SelectionManager.h"
 #include "../../Managers/ControlManager.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
+#include "Camera/CameraComponent.h"
+#include "../../../Utilities/SvUtilities.h"
+#include "../TargetAction.h"
+#include "../ActivateToggleAction.h"
+#include "../GrenadeActionComponent.h"
+#include "../LeftClickAction.h"
+#include "../RightClickAction.h"
 // Sets default values for this component's properties
 UBaseActionComponent::UBaseActionComponent(const FObjectInitializer& ObjectInitializer) : UActorComponent(ObjectInitializer)
 {
@@ -40,4 +47,26 @@ bool UBaseActionComponent::IsInValidCameraState(ECameraState currentCameraState)
 
 	UDebugMessages::LogWarning(this, "not in valid camera state to do action");
 	return false;
+}
+
+void UBaseActionComponent::GetTargetLocation(FHitResult& hit, FVector& targetLocation, UCameraComponent* cameraComp) {
+	auto cameraForwardVector = cameraComp->GetForwardVector();
+	targetLocation = cameraComp->GetComponentLocation() + (5000 * cameraForwardVector);
+	FCollisionObjectQueryParams collisionParams;
+	collisionParams.AddObjectTypesToQuery(USvUtilities::GetBulletCollisionObjectChannel());
+	collisionParams.AddObjectTypesToQuery(USvUtilities::GetEnvironmentChannel());
+	collisionParams.AddObjectTypesToQuery(USvUtilities::GetFloorTargetChannel());
+	GetWorld()->LineTraceSingleByObjectType(hit, cameraComp->GetComponentLocation(), targetLocation, collisionParams);
+
+	if (hit.GetActor())
+		targetLocation = hit.Location;
+}
+
+void UBaseActionComponent::ResetActionEffects() {
+	auto controller = GetOwningController();
+
+	auto targetAction = controller->GetComponentByClass<UTargetAction>();
+	if (targetAction) {
+		targetAction->ResetTargetingActor();
+	}
 }

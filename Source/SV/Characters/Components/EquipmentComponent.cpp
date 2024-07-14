@@ -79,7 +79,7 @@ void UEquipmentComponent::FireEquippedGun() {
 
 		auto gunFire = equipment->GetComponentByClass<UGunFireComponent>();
 		if (gunFire)
-			gunFire->FireAtLocation(attackComponent->GetCurrentTargetLocation());
+			gunFire->FireAtLocation(attackComponent->GetCurrentTargetLocation(), attackComponent->GetCurrentAttackRandomRadius());
 	}
 }
 

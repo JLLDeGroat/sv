@@ -75,6 +75,10 @@ void UTargetingComponent::DetermineTargetData() {
 			auto characterLocation = characters[i]->GetSelectableGridLocation();
 			bool canTarget = false;
 
+			possibleLocations.Sort([possibleLocations, characterLocation](const FVector A, const FVector B) {
+				return FVector::DistSquared(characterLocation, A) < FVector::DistSquared(characterLocation, B);
+				});
+
 			for (int j = 0; j < possibleLocations.Num(); j++) {
 
 				auto hitComponents = characters[i]->GetHitComponents();
@@ -141,7 +145,7 @@ TArray<FVector> UTargetingComponent::GetPotentialShootingLocations() {
 
 	TArray<FVector> finalLocations;
 	finalLocations.Emplace(startingLocation);
-	for (int i = 0; i < locations.Num(); i++) 
+	for (int i = 0; i < locations.Num(); i++)
 		finalLocations.Emplace(locations[i]);
 
 	return finalLocations;

@@ -7,6 +7,7 @@
 #include "../../Utilities/GridUtilities.h"
 #include "Runtime/Engine/Classes/Kismet/KismetMathLibrary.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
+#include "../../Characters/Components/HealthAndStatusWidgetComponent.h"
 
 // Sets default values for this component's properties
 UPawnCameraComponent::UPawnCameraComponent()
@@ -113,9 +114,12 @@ void UPawnCameraComponent::UpdateCameraState(ECameraState cameraState, FVector m
 		CameraComponent->PostProcessSettings.DepthOfFieldMinFstop = DefaultDepthOfFieldFstopValue;
 		CameraComponent->PostProcessSettings.DepthOfFieldFocalDistance = DefaultDepthOfFieldFocalDistance;
 		CameraComponent->PostProcessSettings.DepthOfFieldSensorWidth = DefaultDepthOfFieldSensorWidth;
+
+		AttemptToAlterAttackerStatusWidgetVisibility(true);
 	}
 	else if (CurrentCameraState == ECameraState::CS_ReTarget) {
 		CurrentMoveTo = moveToLocation + DefaultCameraOffset;
+		AttemptToAlterAttackerStatusWidgetVisibility(true);
 	}
 	else {
 		ReturnLocation = CameraComponent->GetComponentLocation();
@@ -133,6 +137,8 @@ void UPawnCameraComponent::DoCinematicAttackCameraMovement(AActor* attacker, AAc
 
 	CinematicActorAttacker = attacker;
 	CinematicActorTarget = target;
+
+	AttemptToAlterAttackerStatusWidgetVisibility(false);
 
 	CurrentlyMoving = true;
 	SetComponentTickEnabled(true);
@@ -172,4 +178,12 @@ bool UPawnCameraComponent::GetValidCinematicLocation(FVector& location) {
 		return false;
 
 	return true;
+}
+
+void UPawnCameraComponent::AttemptToAlterAttackerStatusWidgetVisibility(bool val) {
+	if (CinematicActorAttacker) {
+		auto healthAndStatusComponent = CinematicActorAttacker->GetComponentByClass<UHealthAndStatusWidgetComponent>();
+		if (healthAndStatusComponent)
+			healthAndStatusComponent->SetVisibility(val);
+	}
 }

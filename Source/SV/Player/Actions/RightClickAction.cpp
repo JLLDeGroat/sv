@@ -32,6 +32,8 @@ void URightClickAction::BeginPlay()
 }
 
 void URightClickAction::DoAction() {
+	ResetActionEffects();
+
 	auto owner = GetOwner<AGamePlayerController>();
 	auto pawn = owner->GetPawn();
 	auto pawnCameraComponent = pawn->GetComponentByClass<UPawnCameraComponent>();
