@@ -14,6 +14,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAimTargetVisibility, bool, bVisibil
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FAddActionIconToHud, EActionType, ActionType, FString, ShortCutLetter);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FResetActionIcons);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAddSoldierToCharacterTileWidget, AActor*, Actor);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCheckCharacterTileIsActive, AActor*, Actor);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAddSoldierToCharacterDetailsWidget, AActor*, Actor);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRefreshCharacterDetailsWidget);
 
@@ -46,6 +47,7 @@ public:
 	FAddActionIconToHud _AddActionIconToHud;
 	FResetActionIcons _ResetActionIcons;
 	FAddSoldierToCharacterTileWidget _AddSoldierToCharacterTileWidget;
+	FCheckCharacterTileIsActive _CheckCharacterTileIsActive;
 	FAddSoldierToCharacterDetailsWidget _AddSoldierToCharacterDetailsWidget;
 	FRefreshCharacterDetailsWidget _RefreshCharacterDetailsWidget;
 	FHideOrResetUIWidget _HideOrResetUIWidget;

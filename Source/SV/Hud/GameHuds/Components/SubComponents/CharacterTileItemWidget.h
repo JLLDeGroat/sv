@@ -23,6 +23,7 @@ public:
 protected:
 
 	UFUNCTION() void OnCharacterButtonClicked();
+	UFUNCTION() void SimulateOnCharacterButtonClicked(AActor* actor);
 	UPROPERTY() AActor* RepresentedActor;
 
 	UPROPERTY(BlueprintReadOnly, Transient, meta = (BindWidgetAnim)) UWidgetAnimation* AnimateIn;

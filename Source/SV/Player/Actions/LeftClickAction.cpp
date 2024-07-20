@@ -136,6 +136,7 @@ void ULeftClickAction::DoAction() {
 				return UDebugMessages::LogError(this, "failed to get actions component");
 
 			actionsComponent->SendActionsToUI();
+			hudDelegates->_CheckCharacterTileIsActive.Broadcast(Hit.GetActor());
 		}
 		else {
 			hudDelegates->_HideOrResetUIWidget.Broadcast();

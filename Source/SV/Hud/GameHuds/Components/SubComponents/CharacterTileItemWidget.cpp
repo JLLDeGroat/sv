@@ -30,10 +30,16 @@ void UCharacterTileItemWidget::NativeConstruct() {
 		return UDebugMessages::LogError(this, "could not find hud delegates");
 
 	hudDelegates->_ResetCharacterTileWidget.AddDynamic(this, &UCharacterTileItemWidget::Deactivate);
+	hudDelegates->_CheckCharacterTileIsActive.AddDynamic(this, &UCharacterTileItemWidget::SimulateOnCharacterButtonClicked);
 }
 
 void UCharacterTileItemWidget::SetRepresentedActor(AActor* actor) {
 	RepresentedActor = actor;
+}
+
+void UCharacterTileItemWidget::SimulateOnCharacterButtonClicked(AActor* actor) {
+	if (actor == RepresentedActor) 
+		OnCharacterButtonClicked();
 }
 
 void UCharacterTileItemWidget::OnCharacterButtonClicked() {
