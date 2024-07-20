@@ -47,10 +47,10 @@ void UGridMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		normalisedMovementLocation.Z = GetOwner()->GetActorLocation().Z;
 
 		auto newLocation = UKismetMathLibrary::VInterpTo_Constant(GetOwner()->GetActorLocation(), normalisedMovementLocation, DeltaTime, MovementSpeed);
-		
+
 		GetOwner()->SetActorLocation(newLocation);
 
-		if(AnimInstance) 
+		if (AnimInstance)
 			AnimInstance->UpdateSpeed(200);
 
 		auto lookAtRot = UGridUtilities::FindLookAtRotation(newLocation, normalisedMovementLocation);
@@ -66,10 +66,10 @@ void UGridMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	}
 	else {
 		SetComponentTickEnabled(false);
-		
-		if (AnimInstance) 
+
+		if (AnimInstance)
 			AnimInstance->UpdateSpeed(0);
-		
+
 		auto targeting = GetOwner()->GetComponentByClass<UTargetingComponent>();
 		if (targeting) {
 			targeting->DetermineTargetData();
@@ -178,8 +178,8 @@ void UGridMovementComponent::FindRouteRecursive(FMovementData* movementData, FVe
 
 		auto detailsComponent = GetOwner()->GetComponentByClass<UCharacterDetailsComponent>();
 
-		if (!detailsComponent || (newPrevious.Num() > detailsComponent->GetMovementPoints() + 1 && !bisAI)) {
-			//UDebugMessages::LogError(this, "failed to get details component or no movement points left whilst not being AI, cannot move");
+		/*if (!detailsComponent || (newPrevious.Num() > detailsComponent->GetMovementPoints() + 1 && !bisAI)) {*/
+		if (!detailsComponent || (newPrevious.Num() > detailsComponent->GetMovementPoints() && !bisAI)) {
 			return;
 		}
 
@@ -273,7 +273,7 @@ bool UGridMovementComponent::GetMovableAdjacentTiles(FVector start, TArray<FVect
 		auto hasVaultComponentAndCanVault = EnvironmentHit.GetActor() && EnvironmentHit.GetActor()->GetComponentByClass<UVaultableComponent>()
 			&& detailsComponent && detailsComponent->GetCanVault();
 
-		if ((!EnvironmentHit.bBlockingHit && !EntityHit.bBlockingHit) || 
+		if ((!EnvironmentHit.bBlockingHit && !EntityHit.bBlockingHit) ||
 			(EnvironmentHit.bBlockingHit && hasVaultComponentAndCanVault && !bIgnoreVaultables))
 		{
 			ValidAdjacentTiles.Emplace(adjacentTiles[i]);

@@ -101,3 +101,38 @@ void UEquipmentDetailsComponent::SetMaxAccuracyDeviation(float maxDeviation) {
 float UEquipmentDetailsComponent::GetMaxAccuracyDeviation() {
 	return MaxAccuracyDeviation;
 }
+void UEquipmentDetailsComponent::RemoveFromRounds(int amount) {
+	Rounds -= amount;
+	if (Rounds < 0) Rounds = 0;
+}
+int UEquipmentDetailsComponent::GetRounds() {
+	return Rounds;
+}
+void UEquipmentDetailsComponent::FillRounds() {
+	Rounds = MaxRounds;
+}
+int UEquipmentDetailsComponent::GetMaxRounds() {
+	return MaxRounds;
+}
+void UEquipmentDetailsComponent::SetMaxRounds(int maxRounds) {
+	MaxRounds = maxRounds;
+	Rounds = maxRounds;
+}
+int UEquipmentDetailsComponent::GetReloadApCost() {
+	return ReloadApCost;
+}
+void UEquipmentDetailsComponent::SetReloadApCost(int cost) {
+	ReloadApCost = cost;
+}
+bool UEquipmentDetailsComponent::CanReloadWeapon() {
+	return Rounds < MaxRounds;
+}
+void UEquipmentDetailsComponent::SetGunType(EGun gunType) {
+	GunType = gunType;
+}
+EGun UEquipmentDetailsComponent::GetGunType() {
+	return GunType;
+}
+bool UEquipmentDetailsComponent::GetIsGun() {
+	return GunType != EGun::INVALID;
+}

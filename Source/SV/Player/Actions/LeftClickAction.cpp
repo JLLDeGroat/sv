@@ -15,8 +15,11 @@
 #include "../../Characters/Components/CharacterDetailsComponent.h"
 #include "../../Characters/Components/AttackComponent.h"
 #include "../../Characters/Components/ThrowableComponent.h"
+#include "../../Characters/Components/ActionsComponent.h"
 #include "../../Interfaces/SvChar.h"
 #include "../../Interfaces/Selectable.h"
+#include "../../Equipment/Equipment.h"
+#include "../../Equipment/Components/EquipmentDetailsComponent.h"
 #include "../Components/WorldPawnMovementComponent.h"
 #include "../../GameModes/WorldGameMode.h"
 #include "../../GameModes/WorldManagers/WorldDirectionManager.h"
@@ -86,19 +89,26 @@ void ULeftClickAction::DoAction() {
 			auto equipmentComponent = actor->GetComponentByClass<UEquipmentComponent>();
 			auto detailsComponent = actor->GetComponentByClass<UCharacterDetailsComponent>();
 
-			if (!equipmentComponent || !detailsComponent)
-				return UDebugMessages::LogError(this, "could not get equpiment or details component, will not begin try attack");
+			auto equipment = equipmentComponent->GetPrimaryEquipment();
 
+			if (!equipmentComponent || !detailsComponent || !equipment)
+				return UDebugMessages::LogError(this, "could not get equipment or details component, will not begin try attack");
+
+			auto equipmentDetails = equipment->GetComponentByClass<UEquipmentDetailsComponent>();
+
+			if (!equipmentDetails)
+				return UDebugMessages::LogError(this, "could not get equipment details component");
+
+			equipmentDetails->RemoveFromRounds(1);
 			detailsComponent->RemoveActionPoints(equipmentComponent->GetActionPointsNeededToUseEquipment());
 
 			auto attackComponent = selected->GetAsActor()->GetComponentByClass<UAttackComponent>();
 
 			auto targetAction = controller->GetComponentByClass<UTargetAction>();
-			if (!targetAction) 
+			if (!targetAction)
 				return UDebugMessages::LogError(this, "no targeting action, failed");
-			
-			attackComponent->TryAttackLocation(currentTargetData->GetShootLocation(), targetLocation, targetAction->GetTargetingIndicatorRadius());
 
+			attackComponent->TryAttackLocation(currentTargetData->GetShootLocation(), targetLocation, targetAction->GetTargetingIndicatorRadius());
 			pawnCameraComponent->DoCinematicAttackCameraMovement(selected->GetAsActor(), currentTargetData->GetCharacter()->GetAsActor());
 		}
 	}
@@ -119,6 +129,16 @@ void ULeftClickAction::DoAction() {
 	else {
 		if (Hit.GetActor() && SelectionManager->TrySetSelected(Hit.GetActor())) {
 			SelectionManager->GetSelected()->TryVisualiseTargets();
+
+			auto actionsComponent = Hit.GetActor()->GetComponentByClass<UActionsComponent>();
+
+			if (!actionsComponent)
+				return UDebugMessages::LogError(this, "failed to get actions component");
+
+			actionsComponent->SendActionsToUI();
+		}
+		else {
+			hudDelegates->_HideOrResetUIWidget.Broadcast();
 		}
 	}
 }

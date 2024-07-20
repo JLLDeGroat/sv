@@ -31,7 +31,8 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) TSubclassOf<ABaseCharacter> CharacterClass;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) EGun GunType;
-
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) FString OverrideCharacterName;
+ 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* RootMesh;
 
 };

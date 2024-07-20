@@ -57,5 +57,4 @@ private:
 	UPROPERTY() UBaseRunnable* PostShootRunnable;
 
 	UPROPERTY() float CurrentAttackRandomRadius;
-
 };

@@ -25,6 +25,9 @@ void UTargetDetailsWidget::NativeConstruct() {
 	hudDelegates->_AddTargetDataToHud.AddDynamic(this, &UTargetDetailsWidget::OnAddTargetData);
 	hudDelegates->_ClearTargetDataHud.AddDynamic(this, &UTargetDetailsWidget::OnClearTargetData);
 	hudDelegates->_TargetIconClicked.AddDynamic(this, &UTargetDetailsWidget::OnTargetIconClicked);
+
+	hudDelegates->_HideOrResetUIWidget.AddDynamic(this, &UTargetDetailsWidget::HideOrReset);
+	hudDelegates->_CycleToNextTarget.AddDynamic(this, &UTargetDetailsWidget::CycleTarget);
 }
 
 void UTargetDetailsWidget::OnAddTargetData(FGuid Id, FVector SourceLocation, FVector TargetLocation) {
@@ -89,7 +92,7 @@ void UTargetDetailsWidget::OnTargetIconClicked(FGuid Id, FVector Location) {
 	}
 
 	auto playerController = GetWorld()->GetFirstPlayerController<AGamePlayerController>();
-	if (!playerController) 
+	if (!playerController)
 		return UDebugMessages::LogError(this, "failed to get player controller, will not set targetdata");
 
 	auto selectionManager = playerController->GetSelectionManager();
@@ -97,10 +100,91 @@ void UTargetDetailsWidget::OnTargetIconClicked(FGuid Id, FVector Location) {
 	if (selectedActor && selectedActor->GetComponentByClass<UTargetingComponent>()) {
 		auto targetComponent = selectedActor->GetComponentByClass<UTargetingComponent>();
 		targetComponent->SetCurrentMainTargetId(Id);
-		
+
 		auto pawn = playerController->GetPawn<APlayerPawn>();
 		if (pawn && pawn->GetComponentByClass<UPawnCameraComponent>())
 			pawn->GetComponentByClass<UPawnCameraComponent>()->UpdateCameraState(ECameraState::CS_ReTarget, Location);
+	}
+}
+
+void UTargetDetailsWidget::HideOrReset() {
+	OnClearTargetData();
+}
+
+void UTargetDetailsWidget::CycleTarget() {
+	auto detailBox = GetDetailsBox();
+
+	auto playerController = GetWorld()->GetFirstPlayerController<AGamePlayerController>();
+	if (!playerController)
+		return UDebugMessages::LogError(this, "failed to get player controller, will not set targetdata");
+
+	FGuid currentId = FGuid::NewGuid();
+	auto selectionManager = playerController->GetSelectionManager();
+	auto selectedActor = selectionManager->GetSelected()->GetAsActor();
+
+	if (!selectedActor)
+		return UDebugMessages::LogError(this, "failed to get selected actor");
+
+	auto targetingComponent = selectedActor->GetComponentByClass<UTargetingComponent>();
+
+	if (!targetingComponent)
+		return UDebugMessages::LogError(this, "failed to get targeting component");
+
+	targetingComponent = selectedActor->GetComponentByClass<UTargetingComponent>();
+	auto currentTarget = targetingComponent->GetCurrentMainTarget();
+
+	if (currentTarget)
+		currentId = currentTarget->GetId();
+
+
+	auto detailsBox = GetDetailsBox();
+	auto detailChildren = detailsBox->GetAllChildren();
+
+	TArray<UTargetDetailsRowItemWidget*> items;
+	for (int i = 0; i < detailChildren.Num(); i++) {
+		auto horizontalBox = GetHorizontalBoxFromWidget((UUserWidget*)detailChildren[i]);
+		auto res = GetItemsFromHorizontalBox(horizontalBox);
+		for (int x = 0; x < res.Num(); x++)
+			items.Emplace(res[x]);
+
+	}
+
+	bool foundCurrent = false;
+	bool foundNew = false;
+	for (int i = 0; i < items.Num(); i++) {
+		if (foundCurrent) {
+			targetingComponent->SetCurrentMainTargetId(items[i]->GetId());
+
+			auto itemWidgetButton = items[i]->GetItemButton();
+			itemWidgetButton->WidgetStyle.Normal.TintColor = FSlateColor(FLinearColor(0, 175, 175, 1));
+			itemWidgetButton->WidgetStyle.Normal.OutlineSettings.Color = FSlateColor(FLinearColor(0, 55, 255, 1));
+
+			auto pawn = playerController->GetPawn<APlayerPawn>();
+			if (pawn && pawn->GetComponentByClass<UPawnCameraComponent>())
+				pawn->GetComponentByClass<UPawnCameraComponent>()->UpdateCameraState(ECameraState::CS_ReTarget, items[i]->GetTargetLocation());
+
+			foundNew = true;
+			break;
+		}
+
+		if (items[i]->GetId() == currentId) {
+			foundCurrent = true;
+			auto itemWidgetButton = items[i]->GetItemButton();
+			itemWidgetButton->WidgetStyle.Normal.TintColor = FSlateColor(FLinearColor(0, 175, 175, 0));
+			itemWidgetButton->WidgetStyle.Normal.OutlineSettings.Color = FSlateColor(FLinearColor(0, 55, 255, 0));
+		}
+	}
+
+	if (!foundNew && items.Num() > 0) {
+		targetingComponent->SetCurrentMainTargetId(items[0]->GetId());
+
+		auto itemWidgetButton = items[0]->GetItemButton();
+		itemWidgetButton->WidgetStyle.Normal.TintColor = FSlateColor(FLinearColor(0, 175, 175, 1));
+		itemWidgetButton->WidgetStyle.Normal.OutlineSettings.Color = FSlateColor(FLinearColor(0, 55, 255, 1));
+
+		auto pawn = playerController->GetPawn<APlayerPawn>();
+		if (pawn && pawn->GetComponentByClass<UPawnCameraComponent>())
+			pawn->GetComponentByClass<UPawnCameraComponent>()->UpdateCameraState(ECameraState::CS_ReTarget, items[0]->GetTargetLocation());
 	}
 }
 
@@ -125,6 +209,20 @@ UHorizontalBox* UTargetDetailsWidget::GetHorizontalBoxFromWidget(UUserWidget* ta
 	auto widget = targetDetailsRowWidget->GetWidgetFromName("HorizontalBox");
 	if (widget) return (UHorizontalBox*)widget;
 	else return nullptr;
+}
+
+TArray<UTargetDetailsRowItemWidget*> UTargetDetailsWidget::GetItemsFromHorizontalBox(UHorizontalBox* box) {
+	TArray<UTargetDetailsRowItemWidget*> result;
+	if (!box) return result;
+
+	auto children = box->GetAllChildren();
+	for (int i = 0; i < children.Num(); i++) {
+		auto thisChildAsRowItem = (UTargetDetailsRowItemWidget*)children[i];
+		if (thisChildAsRowItem)
+			result.Emplace(thisChildAsRowItem);
+	}
+
+	return result;
 }
 
 UTargetDetailsRowWidget* UTargetDetailsWidget::CreateTargetDetailsRowWidget() const {

@@ -30,6 +30,9 @@ APeaRifle::APeaRifle(const FObjectInitializer& ObjectInitializer) : AEquipment(O
 	EquipmentDetailsComponent->SetAccuracy(500);
 	EquipmentDetailsComponent->SetAccuracyDecay(.2f);
 	EquipmentDetailsComponent->SetBaseAccuracy(.35f);
+	EquipmentDetailsComponent->SetMaxRounds(3);
+	EquipmentDetailsComponent->SetReloadApCost(1);
+	EquipmentDetailsComponent->SetGunType(EGun::G_PeaRifle);
 
 	AttachedVectorComponent->SetAttachedVectors(FVector(4, 2, 0), FRotator(0, 112.5, 182));
 	AttachedVectorComponent->SetHolsteredVectors(FVector(0, 0, 0), FRotator(0, 100, 0));

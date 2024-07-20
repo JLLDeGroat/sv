@@ -17,9 +17,9 @@ class AGrenadeIndicatorActor;
 
 struct FInputActionValue;
 
+class UActionManager;
 class ULeftClickAction;
 class URightClickAction;
-class UTargetAction;
 class UGrenadeActionComponent;
 class UActivateToggleAction;
 /**
@@ -58,14 +58,13 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true")) UInputAction* CameraMoveAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true")) UInputAction* GrenadeAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true")) UInputAction* ActivateToggleAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true")) UInputAction* SleepAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true")) UInputAction* ReloadAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true")) UInputAction* CycleAction;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) AGridSelectionActor* GridSelection;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) AGrenadeIndicatorActor* GrenadeIndicator;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) ULeftClickAction* LeftClickActionComponent;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) URightClickAction* RightClickActionComponent;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) UTargetAction* TargetActionComponent;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) UGrenadeActionComponent* GrenadeActionComponent;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) UActivateToggleAction* ActivateToggleActionComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UActionManager* ActionManager;
 
 	void MoveUp_Started(const FInputActionValue& Value);
 	void MoveRight_Started(const FInputActionValue& Value);

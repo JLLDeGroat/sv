@@ -3,7 +3,9 @@
 
 #include "CharacterSpawnerActor.h"
 #include "../../Characters/BaseCharacter.h"
+#include "../../Characters/Components/CharacterDetailsComponent.h"
 #include "../../Characters/Components/EquipmentComponent.h"
+#include "../../Characters/Components/HealthAndStatusWidgetComponent.h"
 #include "../SvUtilities.h"
 #include "Components/StaticMeshComponent.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
@@ -41,6 +43,18 @@ void ACharacterSpawnerActor::BeginPlay()
 			auto equipmentComponent = actor->GetComponentByClass<UEquipmentComponent>();
 			if (GunType != EGun::INVALID && equipmentComponent) {
 				equipmentComponent->EquipPrimary(GunType);
+			}
+
+			if (OverrideCharacterName.Len() > 0) {
+				auto characterDetails = actor->GetComponentByClass<UCharacterDetailsComponent>();
+				if (characterDetails) {
+					characterDetails->SetCharacterName(OverrideCharacterName);
+				}
+
+				auto statusWidget = actor->GetComponentByClass<UHealthAndStatusWidgetComponent>();
+				if (statusWidget) {
+					statusWidget->SetName(OverrideCharacterName);
+				}
 			}
 		}
 		Destroy();
