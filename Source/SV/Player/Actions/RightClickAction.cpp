@@ -13,7 +13,7 @@
 
 
 // Sets default values for this component's properties
-URightClickAction::URightClickAction(const FObjectInitializer& ObjectInitializer) : UBaseActionComponent(ObjectInitializer) 
+URightClickAction::URightClickAction(const FObjectInitializer& ObjectInitializer) : UBaseActionComponent(ObjectInitializer)
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -28,7 +28,7 @@ void URightClickAction::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
+
 }
 
 void URightClickAction::DoAction() {
@@ -62,9 +62,16 @@ void URightClickAction::DoAction() {
 			auto gridSteps = movable->GetGridMovementComponent()->FindRoute(currentActorGridLocation, selectedMouseLocation);
 			//
 
-			int stepsTaken = gridSteps.Num();
+			int stepsTaken = gridSteps.Num() - 1;
+			if (stepsTaken == 0)
+				stepsTaken = 1;
 
 			selectedDetails->RemoveMovementPoints(stepsTaken);
+
+			UDebugMessages::LogDisplay(this, "removing " + FString::SanitizeFloat(stepsTaken) +
+				" movement points, has " +
+				FString::SanitizeFloat(selectedDetails->GetMovementPoints()) +
+				"left.");
 
 			UDebugMessages::LogDisplay(this, "moving");
 			movable->GetGridMovementComponent()->MoveAcrossGrid(SelectionManager->GetLocationPath());

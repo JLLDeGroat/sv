@@ -28,6 +28,9 @@ protected:
 	UFUNCTION() void OnAddTargetData(FGuid Id, FVector SourceLocation, FVector TargetLocation);
 	UFUNCTION() void OnClearTargetData();
 	UFUNCTION() void OnTargetIconClicked(FGuid Id, FVector Location);
+	UFUNCTION() void HideOrReset();
+
+	UFUNCTION() void CycleTarget();
 
 private:
 
@@ -35,6 +38,7 @@ private:
 	UHorizontalBox* GetLatestHorizontalBox(UVerticalBox* box);
 	UHorizontalBox* GetHorizontalBoxFromWidget(UUserWidget* targetDetailsRowWidget);
 
+	TArray<UTargetDetailsRowItemWidget*> GetItemsFromHorizontalBox(UHorizontalBox* box);
 
 	UTargetDetailsRowWidget* CreateTargetDetailsRowWidget() const;
 	UTargetDetailsRowItemWidget* CreateTargetDetailsRowItemWidget() const;

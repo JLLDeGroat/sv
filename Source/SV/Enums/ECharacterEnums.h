@@ -60,3 +60,12 @@ enum class EAttackState : uint8 {
 	CS_Return = 5,
 	CS_RotatingToShoot = 6,
 };
+
+UENUM(BlueprintType)
+enum class EActionType :uint8 {
+	INVALiD = 0,
+	AT_Shoot = 1,
+	AT_Grenade = 2,
+	AT_Sleep = 3,
+	AT_Reload = 4,
+};

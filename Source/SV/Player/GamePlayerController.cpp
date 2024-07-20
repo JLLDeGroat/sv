@@ -26,11 +26,15 @@
 #include "../Characters/Components/ThrowableComponent.h"
 #include "Components/PawnCameraComponent.h"
 #include "Camera/CameraComponent.h"
-#include "Actions/LeftClickAction.h"
-#include "Actions/TargetAction.h"
-#include "Actions/RightClickAction.h"
+#include "Actions/Base/ActionManager.h"
 #include "Actions/GrenadeActionComponent.h"
+#include "Actions/LeftClickAction.h"
+#include "Actions/RightClickAction.h"
+#include "Actions/TargetAction.h"
 #include "Actions/ActivateToggleAction.h"
+#include "Actions/SleepAction.h"
+#include "Actions/ReloadAction.h"
+#include "Actions/CycleTargetAction.h"
 
 #include "DrawDebugHelpers.h"
 
@@ -50,15 +54,13 @@ AGamePlayerController::AGamePlayerController() {
 	CameraMoveAction = LoadObject<UInputAction>(this, TEXT("/Script/EnhancedInput.InputAction'/Game/Controls/IA_MouseMove.IA_MouseMove'"));
 	GrenadeAction = LoadObject<UInputAction>(this, TEXT("/Script/EnhancedInput.InputAction'/Game/Controls/IA_UseGrenade.IA_UseGrenade'"));
 	ActivateToggleAction = LoadObject<UInputAction>(this, TEXT("/Script/EnhancedInput.InputAction'/Game/Controls/IA_ActivateToggle.IA_ActivateToggle'"));
+	SleepAction = LoadObject<UInputAction>(this, TEXT("/Script/EnhancedInput.InputAction'/Game/Controls/IA_SleepAction.IA_SleepAction'"));
+	ReloadAction = LoadObject<UInputAction>(this, TEXT("/Script/EnhancedInput.InputAction'/Game/Controls/IA_Reload.IA_Reload'"));
+	CycleAction = LoadObject<UInputAction>(this, TEXT("/Script/EnhancedInput.InputAction'/Game/Controls/IA_CycleTarget.IA_CycleTarget'"));
 
 	SelectionManager = CreateDefaultSubobject<USelectionManager>(TEXT("Selection"));
 	ControlManager = CreateDefaultSubobject<UControlManager>(TEXT("Control"));
-
-	LeftClickActionComponent = CreateDefaultSubobject<ULeftClickAction>(TEXT("LeftClickAction"));
-	RightClickActionComponent = CreateDefaultSubobject<URightClickAction>(TEXT("RightClickAction"));
-	TargetActionComponent = CreateDefaultSubobject<UTargetAction>(TEXT("TargetAction"));
-	GrenadeActionComponent = CreateDefaultSubobject<UGrenadeActionComponent>(TEXT("GrenadeAction"));
-	ActivateToggleActionComponent = CreateDefaultSubobject<UActivateToggleAction>(TEXT("ToggleAction"));
+	ActionManager = CreateDefaultSubobject<UActionManager>(TEXT("ActionManager"));
 }
 
 void AGamePlayerController::BeginPlay() {
@@ -83,7 +85,7 @@ void AGamePlayerController::BeginPlay() {
 	if (!GrenadeIndicator) {
 		GrenadeIndicator = GetWorld()->SpawnActor<AGrenadeIndicatorActor>();
 		ControlManager->SetGrenadeIndicatorActor(GrenadeIndicator);
-		GrenadeActionComponent->SetGrenadeIndicatorActor(GrenadeIndicator);
+		ActionManager->GetGrenadeAction()->SetGrenadeIndicatorActor(GrenadeIndicator);
 		GrenadeIndicator->SetActorLocation(FVector(0, 0, -1000));
 	}
 }
@@ -139,14 +141,17 @@ void AGamePlayerController::SetupInputComponent() {
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 	{
 		// Setup touch input events
-		EnhancedInputComponent->BindAction(ClickAction, ETriggerEvent::Started, LeftClickActionComponent, &ULeftClickAction::DoAction);
-		EnhancedInputComponent->BindAction(RightClickAction, ETriggerEvent::Started, RightClickActionComponent, &URightClickAction::DoAction);
+		EnhancedInputComponent->BindAction(ClickAction, ETriggerEvent::Started, ActionManager->GetLeftClickAction(), &ULeftClickAction::DoAction);
+		EnhancedInputComponent->BindAction(RightClickAction, ETriggerEvent::Started, ActionManager->GetGetRightClickAction(), &URightClickAction::DoAction);
 		EnhancedInputComponent->BindAction(MoveUpAction, ETriggerEvent::Triggered, this, &AGamePlayerController::MoveUp_Started);
 		EnhancedInputComponent->BindAction(MoveRightAction, ETriggerEvent::Triggered, this, &AGamePlayerController::MoveRight_Started);
 		EnhancedInputComponent->BindAction(CameraMoveAction, ETriggerEvent::Triggered, this, &AGamePlayerController::MouseMove);
-		EnhancedInputComponent->BindAction(BeginTargetAction, ETriggerEvent::Started, TargetActionComponent, &UTargetAction::DoAction);
-		EnhancedInputComponent->BindAction(GrenadeAction, ETriggerEvent::Started, GrenadeActionComponent, &UGrenadeActionComponent::DoAction);
-		EnhancedInputComponent->BindAction(ActivateToggleAction, ETriggerEvent::Started, ActivateToggleActionComponent, &UActivateToggleAction::DoAction);
+		EnhancedInputComponent->BindAction(BeginTargetAction, ETriggerEvent::Started, ActionManager->GetTargetAction(), &UTargetAction::DoAction);
+		EnhancedInputComponent->BindAction(GrenadeAction, ETriggerEvent::Started, ActionManager->GetGrenadeAction(), &UGrenadeActionComponent::DoAction);
+		EnhancedInputComponent->BindAction(ActivateToggleAction, ETriggerEvent::Started, ActionManager->GetActivateToggleAction(), &UActivateToggleAction::DoAction);
+		EnhancedInputComponent->BindAction(SleepAction, ETriggerEvent::Started, ActionManager->GetSleepAction(), &USleepAction::DoAction);
+		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Started, ActionManager->GetReloadAction(), &UReloadAction::DoAction);
+		EnhancedInputComponent->BindAction(CycleAction, ETriggerEvent::Started, ActionManager->GetCycleTargetAction(), &UCycleTargetAction::DoAction);
 	}
 	else
 	{

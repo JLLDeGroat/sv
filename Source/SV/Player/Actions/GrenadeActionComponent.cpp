@@ -41,6 +41,10 @@ void UGrenadeActionComponent::DoAction() {
 	}
 	else {
 		auto selected = SelectionManager->GetSelected();
+
+		if (!selected)
+			return UDebugMessages::LogError(this, "no selected user, cannot throw grenade");
+
 		auto actor = selected->GetAsActor();
 		auto throwableComponent = selected->GetAsActor()->GetComponentByClass<UThrowableComponent>();
 		ThrowableChosen = EThrowable::T_Grenade;

@@ -15,6 +15,9 @@
 #include "../Components/ActivateTogglesComponent.h"
 #include "../Components/VaultObstacleComponent.h"
 #include "../Components/HealthAndStatusWidgetComponent.h"
+#include "../Components/ActionsComponent.h"
+#include "../Components/UI/CharacterTileUIComponent.h"
+
 // Sets default values
 ASolder::ASolder(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(ObjectInitializer)
 {
@@ -43,6 +46,7 @@ ASolder::ASolder(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(O
 
 	EquipmentComponent = CreateDefaultSubobject<UEquipmentComponent>(TEXT("Equipment"));
 	AttackComponent = CreateDefaultSubobject<UAttackComponent>(TEXT("Attack"));
+
 	DamageRecieveComponent = CreateDefaultSubobject<UDamageRecieveComponent>(TEXT("DamageRecieve"));
 
 	DetailsComponent->AddMaxMovementPoints(5);
@@ -63,6 +67,10 @@ ASolder::ASolder(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(O
 	HealthAndStatusComponent = CreateDefaultSubobject<UHealthAndStatusWidgetComponent>(TEXT("StatusWidget"));
 	HealthAndStatusComponent->SetupAttachment(RootComponent);
 	HealthAndStatusComponent->SetRelativeLocation(FVector(0, 0, 130));
+
+	ActionsComponent = CreateDefaultSubobject<UActionsComponent>(TEXT("Actions"));
+
+	CharacterTileUIComponent = CreateDefaultSubobject<UCharacterTileUIComponent>(TEXT("UITile"));
 }
 
 // Called when the game starts or when spawned

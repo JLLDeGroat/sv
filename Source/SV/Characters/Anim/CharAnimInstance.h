@@ -29,6 +29,7 @@ public:
 	void SetIsThrowing(bool value, EAttackType attackType = EAttackType::AT_BasicThrow);
 	void SetIsVaulting(bool val);
 	void SetIsCrouching(bool val);
+	void SetIsReloading(bool val);
 
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnGunFire();
@@ -41,6 +42,8 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnUnholsteredWeapon();
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnGrabbedThrowable();
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnReleasedThrowable();
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnReloadFinish();
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnFinishVault();
 
@@ -57,4 +60,5 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsCrouching;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsVaulting;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsReloading;
 };

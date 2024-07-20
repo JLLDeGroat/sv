@@ -8,6 +8,7 @@
 #include "../../Utilities/SvUtilities.h"
 #include "../Anim/CharAnimInstance.h"
 #include "../../Interfaces/SvChar.h"
+#include "../../Delegates/HudDelegates.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "AnimSpeedComponent.h"
 #include "CharacterDetailsComponent.h"

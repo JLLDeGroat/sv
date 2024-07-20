@@ -4,15 +4,26 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "../Enums/ECharacterEnums.h"
 #include "HudDelegates.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FClearTargetDataHud);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FAddTargetDataToHud, FGuid, Id, FVector, SourceLocation, FVector, TargetLocation);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FTargetIconClicked, FGuid, Id, FVector, Location);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAimTargetVisibility, bool, bVisibility);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FAddActionIconToHud, EActionType, ActionType, FString, ShortCutLetter);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FResetActionIcons);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAddSoldierToCharacterTileWidget, AActor*, Actor);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAddSoldierToCharacterDetailsWidget, AActor*, Actor);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRefreshCharacterDetailsWidget);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHideOrResetUIWidget);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FResetCharacterTileWidget);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCycleToNextTarget);
 /**
- * 
+ *
  */
 UCLASS()
 class SV_API UHudDelegates : public UObject
@@ -32,4 +43,12 @@ public:
 	FClearTargetDataHud _ClearTargetDataHud;
 	FTargetIconClicked _TargetIconClicked;
 	FAimTargetVisibility _AimTargetVisibility;
+	FAddActionIconToHud _AddActionIconToHud;
+	FResetActionIcons _ResetActionIcons;
+	FAddSoldierToCharacterTileWidget _AddSoldierToCharacterTileWidget;
+	FAddSoldierToCharacterDetailsWidget _AddSoldierToCharacterDetailsWidget;
+	FRefreshCharacterDetailsWidget _RefreshCharacterDetailsWidget;
+	FHideOrResetUIWidget _HideOrResetUIWidget;
+	FResetCharacterTileWidget _ResetCharacterTileWidget;
+	FCycleToNextTarget _CycleToNextTarget;
 };

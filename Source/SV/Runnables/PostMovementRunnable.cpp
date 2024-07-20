@@ -7,7 +7,8 @@
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "../Environment/Components/VaultableComponent.h"
 #include "../Characters/Components/GridMovementComponent.h"
-
+#include "../Characters/Components/CharacterDetailsComponent.h"
+#include "../Delegates/HudDelegates.h"
 #include "DrawDebugHelpers.h"
 
 void UPostMovementRunnable::ActivateThread() {
@@ -27,11 +28,22 @@ void UPostMovementRunnable::ActivateThread() {
 
 			if (Hit.GetActor()->GetComponentByClass<UVaultableComponent>()) {
 				auto movementComponent = MovedActor->GetComponentByClass<UGridMovementComponent>();
-				
+
 				if (movementComponent)
 					movementComponent->PostMovementCrouch();
 			}
 		}
+	}
+
+	auto details = MovedActor->GetComponentByClass<UCharacterDetailsComponent>();
+	if (details && details->GetCharacterControl() == ECharacterControl::CC_Player) {
+		auto hudDelegates = UHudDelegates::GetInstance();
+		if (!hudDelegates)
+			return UDebugMessages::LogError(this, "failed to get hudDelegates");
+
+		FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([hudDelegates] {
+			hudDelegates->_RefreshCharacterDetailsWidget.Broadcast();
+			}, TStatId(), nullptr, ENamedThreads::GameThread);
 	}
 }
 

@@ -17,6 +17,10 @@ AGrenade::AGrenade(const FObjectInitializer& ObjectInitializer)
 	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComponent"));
 	RootComponent = CapsuleComponent;
 	CapsuleComponent->InitCapsuleSize(4, 7);
+	
+	SetActorEnableCollision(true);
+	CapsuleComponent->SetCollisionResponseToChannel(USvUtilities::GetEnvironmentChannel(), ECR_Block);
+	CapsuleComponent->SetCollisionResponseToChannel(USvUtilities::GetFloorTargetChannel(), ECR_Block);
 
 	GrenadeMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	GrenadeMesh->SetupAttachment(RootComponent);

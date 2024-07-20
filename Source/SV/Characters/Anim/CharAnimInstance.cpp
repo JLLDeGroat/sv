@@ -10,12 +10,14 @@
 #include "../Components/ThrowableComponent.h"
 #include "../Components/VaultObstacleComponent.h"
 #include "../Components/GridMovementComponent.h"
+#include "../Components/CharacterDetailsComponent.h"
 #include "../../Player/Components/PawnCameraComponent.h"
 #include "../../Player/Components/CameraOverlapComponent.h"
 #include "../../Player/GamePlayerController.h"
 #include "../../Player/Actions/GrenadeActionComponent.h"
 #include "../../Equipment/Equipment.h"
 #include "../../Equipment/Throwable/Components/ThrowTravelComponent.h"
+#include "../../Equipment/Components/EquipmentDetailsComponent.h"
 
 UCharAnimInstance::UCharAnimInstance(const FObjectInitializer& ObjectInitializer)
 	: UAnimInstance(ObjectInitializer) {
@@ -46,6 +48,9 @@ void UCharAnimInstance::SetIsVaulting(bool val) {
 void UCharAnimInstance::SetIsCrouching(bool val) {
 	bIsCrouching = val;
 }
+void UCharAnimInstance::SetIsReloading(bool val) {
+	bIsReloading = val;
+}
 void UCharAnimInstance::OnGunFire() {
 	auto owningActor = GetOwningActor();
 	auto equipmentComponent = owningActor->GetComponentByClass<UEquipmentComponent>();
@@ -72,7 +77,7 @@ void UCharAnimInstance::OnFinishFire() {
 	auto currentAttackType = AttackType;
 
 	if (currentAttackType == EAttackType::AT_MoveAndFire_Right ||
-		currentAttackType == EAttackType::AT_MoveAndFire_Left  ||
+		currentAttackType == EAttackType::AT_MoveAndFire_Left ||
 		currentAttackType == EAttackType::AT_BasicFire &&
 		(attackComponent && cameraComponent && cameraOverlapComponent))
 		FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([attackComponent, cameraComponent, playerController, cameraOverlapComponent]
@@ -135,7 +140,7 @@ void UCharAnimInstance::OnHolsterWeapon() {
 
 	auto equipmentComponent = owningActor->GetComponentByClass<UEquipmentComponent>();
 
-	if (!equipmentComponent) 
+	if (!equipmentComponent)
 		return UDebugMessages::LogError(this, "failed to get equipmentcomponent");
 
 	auto primaryEquipment = equipmentComponent->GetPrimaryEquipment();
@@ -172,7 +177,7 @@ void UCharAnimInstance::OnGrabbedThrowable() {
 
 	auto controller = owningActor->GetWorld()->GetFirstPlayerController<AGamePlayerController>();
 
-	
+
 	if (!controller || !controller->GetComponentByClass<UGrenadeActionComponent>() || !throwableComponent)
 		return UDebugMessages::LogError(this, "failed to get controller or no grenade action component, or no throwable component found");
 
@@ -198,4 +203,27 @@ void UCharAnimInstance::OnReleasedThrowable() {
 			travelComponent->BeginTravel();
 		},
 		TStatId(), nullptr, ENamedThreads::GameThread);
+}
+
+void UCharAnimInstance::OnReloadFinish() {
+	bIsReloading = false;
+	auto owningActor = GetOwningActor();
+
+	auto equipmentComponent = owningActor->GetComponentByClass<UEquipmentComponent>();
+	if (!equipmentComponent)
+		return UDebugMessages::LogError(this, "failed to get equipment component");
+
+	auto primaryEquipment = equipmentComponent->GetPrimaryEquipment();
+	if (!primaryEquipment)
+		return UDebugMessages::LogError(this, "failed to get primaryEquipment");
+
+	auto equipmentDetailsComponent = primaryEquipment->GetComponentByClass<UEquipmentDetailsComponent>();
+	equipmentDetailsComponent->FillRounds();
+
+	auto characterDetails = owningActor->GetComponentByClass<UCharacterDetailsComponent>();
+
+	if (!characterDetails)
+		return UDebugMessages::LogError(this, "failed to get character details component");
+
+	characterDetails->RemoveActionPoints(equipmentDetailsComponent->GetReloadApCost());
 }

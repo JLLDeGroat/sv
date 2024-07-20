@@ -42,13 +42,17 @@ void UThrowTravelComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 			Trajectories.RemoveAt(0);
 	}
 	else {
+		UDebugMessages::LogDisplay(this, "grenade using physics");
 		SetComponentTickEnabled(false);
 		auto capsuleComponent = GetOwner()->GetComponentByClass<UCapsuleComponent>();
 		if (capsuleComponent) {
+			capsuleComponent->SetSimulatePhysics(true);
 			capsuleComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 			capsuleComponent->SetCollisionResponseToChannel(USvUtilities::GetEnvironmentChannel(), ECR_Block);
+			capsuleComponent->SetCollisionResponseToChannel(USvUtilities::GetFloorTargetChannel(), ECR_Block);
 			capsuleComponent->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
-			capsuleComponent->SetSimulatePhysics(true);
+			capsuleComponent->UpdateOverlaps();
+			UDebugMessages::LogDisplay(this, "set to simulate physics");
 
 			auto lookat = UGridUtilities::FindLookAtRotation(GetOwner()->GetActorLocation(), BeginningLocation);
 			auto currentLoc = GetOwner()->GetActorLocation();
@@ -57,7 +61,8 @@ void UThrowTravelComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 		}
 
 		auto explosionComponent = GetOwner()->GetComponentByClass<UThrowExplosionComponent>();
-		if (explosionComponent) explosionComponent->BeginExplosion();
+		if (explosionComponent) 
+			explosionComponent->BeginExplosion();
 	}
 }
 void UThrowTravelComponent::SetDestination(FVector location, FVector currentLocation) {
@@ -86,7 +91,7 @@ void UThrowTravelComponent::BeginTravel() {
 			Trajectories.Emplace(quater1);
 			Trajectories.Emplace(halfway);
 			Trajectories.Emplace(quater3);
-			Trajectories.Emplace(Destination);
+			Trajectories.Emplace(Destination + FVector(0, 0, 20));
 		}
 	}
 

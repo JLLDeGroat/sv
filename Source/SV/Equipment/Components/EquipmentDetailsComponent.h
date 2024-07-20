@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "../../Enums/EEquipmentEnums.h"
 #include "EquipmentDetailsComponent.generated.h"
 
 
@@ -15,6 +16,7 @@ class SV_API UEquipmentDetailsComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UEquipmentDetailsComponent();
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	bool GetIsMelee() const;
 	void SetIsMelee(bool val);
@@ -46,27 +48,43 @@ public:
 	void SetMaxAccuracyDeviation(float maxDeviation);
 	float GetMaxAccuracyDeviation();
 
+	void RemoveFromRounds(int amount);
+	int GetRounds();
+	void FillRounds();
+
+	int GetMaxRounds();
+	void SetMaxRounds(int maxRounds);
+
+	int GetReloadApCost();
+	void SetReloadApCost(int cost);
+
+	bool CanReloadWeapon();
+
+	void SetGunType(EGun gunType);
+	EGun GetGunType();
+	bool GetIsGun();
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsRange;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsMelee;
 
-private:
-	UPROPERTY() bool bIsRange;
-	UPROPERTY() bool bIsMelee;		
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) int BaseDamage;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) float CritMultiplier;
 
-	UPROPERTY() int BaseDamage;
-	UPROPERTY() float CritMultiplier;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) int ApCost;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) int ReloadApCost;
 
-	UPROPERTY() int ApCost;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) float BaseAccuracy;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) float Accuracy;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) float AccuracyDecay;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) float MaxAccuracyDeviation;
 
-	UPROPERTY() float BaseAccuracy;
-	UPROPERTY() float Accuracy;
-	UPROPERTY() float AccuracyDecay;
-	UPROPERTY() float MaxAccuracyDeviation;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsPrimaryEquipment;
 
-	UPROPERTY() bool bIsPrimaryEquipment;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) int Rounds;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) int MaxRounds;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) EGun GunType;
 };
