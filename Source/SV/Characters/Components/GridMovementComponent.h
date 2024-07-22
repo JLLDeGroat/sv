@@ -86,6 +86,8 @@ public:
 
 	void PostMovementCrouch();
 
+	void SetMovementForOverwatchResponse();
+	void ResetMovementAndAnimPlayBack();
 private:
 
 	UPROPERTY() TArray<FVector> MovementLocations;
@@ -103,5 +105,7 @@ private:
 	UPROPERTY() UBaseRunnable* PostMovementRunnable;
 
 	UPROPERTY() float MovementSpeed;
+	UPROPERTY() float RotationSpeed;
 	UPROPERTY() float DefaultMovementSpeed;
+	UPROPERTY() float DefaultRotationSpeed;
 };

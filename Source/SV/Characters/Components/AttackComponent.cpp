@@ -3,10 +3,14 @@
 
 #include "AttackComponent.h"
 #include "EquipmentComponent.h"
+#include "TargetingComponent.h"
+#include "GridMovementComponent.h"
 #include "Runtime/Engine/Classes/Kismet/KismetMathLibrary.h"
 #include "../../Utilities/GridUtilities.h"
 #include "../../Utilities/SvUtilities.h"
 #include "../Anim/CharAnimInstance.h"
+#include "../../Equipment/Equipment.h"
+#include "../../Equipment/Components/EquipmentDetailsComponent.h"
 #include "../../Interfaces/SvChar.h"
 #include "../../Delegates/HudDelegates.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
@@ -14,6 +18,9 @@
 #include "CharacterDetailsComponent.h"
 #include "../../GameModes/Managers/CharacterManager.h"
 #include "../../Runnables/PostMovementRunnable.h"
+#include "../../Player/Actions/TargetAction.h"
+#include "../../Player/Components/PawnCameraComponent.h"
+#include "../../Player/Utility/TargetingIndicatorActor.h"
 
 UAttackComponent::UAttackComponent(const FObjectInitializer& ObjectInitializer)
 	: UAnimAccessComponent(ObjectInitializer)
@@ -113,11 +120,56 @@ void UAttackComponent::ReturnCharacterAnimationSpeedsToNormal() {
 
 		for (int i = 0; i < charactersToSlow.Num(); i++) {
 			if (charactersToSlow[i]) {
-				auto animSpeed = charactersToSlow[i]->GetAsActor()->GetComponentByClass<UAnimSpeedComponent>();
-				if (animSpeed) animSpeed->ReturnToNormalAnimSpeed();
+				auto gridMovement = charactersToSlow[i]->GetAsActor()->GetComponentByClass<UGridMovementComponent>();
+				if (gridMovement) gridMovement->ResetMovementAndAnimPlayBack();
 			}
 		}
 	}
+}
+
+void UAttackComponent::TryActivateOverwatch(AActor* targetActor, UPrimitiveComponent* componentWithinOverwatch) {
+	auto owner = GetOwner();
+
+	auto targetComponent = owner->GetComponentByClass<UTargetingComponent>();
+
+	if (!targetComponent)
+		return UDebugMessages::LogError(this, "could not find target component");
+
+	targetComponent->DetermineTargetData();
+	auto targetData = targetComponent->GetTargetDataForActor(targetActor);
+	if (!targetData) return UDebugMessages::LogWarning(this, "could not find target data, TODO set retry for hal fa second");
+
+	auto attackComponent = owner->GetComponentByClass<UAttackComponent>();
+	if (!attackComponent) return UDebugMessages::LogError(this, "could not get attak component");
+
+	auto equpmentComponent = owner->GetComponentByClass<UEquipmentComponent>();
+	if (!equpmentComponent) return UDebugMessages::LogError(this, "could not get equipment component");
+
+	if (!equpmentComponent->GetPrimaryEquipment() || !equpmentComponent->GetPrimaryEquipment()->GetComponentByClass<UEquipmentDetailsComponent>())
+		return UDebugMessages::LogError(this, "could not get equipment component");
+
+	auto equipmentDetails = equpmentComponent->GetPrimaryEquipment()->GetComponentByClass<UEquipmentDetailsComponent>();
+
+	auto movementComponent = targetActor->GetComponentByClass<UGridMovementComponent>();
+	if (!movementComponent)
+		return UDebugMessages::LogError(this, "failed to get grid movement of other actor");
+
+	movementComponent->SetMovementForOverwatchResponse();
+
+	auto accuracy = USvUtilities::DetermineAccuracyInidicatorScale(owner->GetActorLocation(), targetActor->GetActorLocation(), equipmentDetails->GetAccuracy(),
+		equipmentDetails->GetAccuracyDecay(), equipmentDetails->GetBaseAccuracy());
+
+	auto controller = GetWorld()->GetFirstPlayerController();
+	auto pawnCameraComponent = controller->GetPawn()->GetComponentByClass<UPawnCameraComponent>();
+	auto targetAction = controller->GetComponentByClass<UTargetAction>();
+	if (!targetAction || !pawnCameraComponent)
+		return UDebugMessages::LogError(this, "no targeting action or pawn camera compoment, failed");
+
+
+	attackComponent->TryAttackLocation(targetData->GetShootLocation(), componentWithinOverwatch->GetComponentLocation(),
+		targetAction->SetScaleAndGetTargetingRadius(FVector(accuracy)));
+
+	pawnCameraComponent->DoOverwatchCinematicAttackCameraMovement(owner, targetActor);
 }
 
 void UAttackComponent::TryAttackLocation(FVector sourceGridLocation, FVector location, float locationRadius, bool bIsRange) {
@@ -159,7 +211,6 @@ void UAttackComponent::TryAttackLocation(FVector sourceGridLocation, FVector loc
 			}
 		}
 	}
-
 	AnimInstance->SetIsCrouching(false);
 }
 

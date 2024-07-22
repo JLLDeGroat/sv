@@ -10,6 +10,7 @@
 #include "../SleepAction.h"
 #include "../ReloadAction.h"
 #include "../CycleTargetAction.h"
+#include "../OverwatchAction.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 
 // Sets default values for this component's properties
@@ -27,6 +28,7 @@ UActionManager::UActionManager()
 	SleepActionComponent = CreateDefaultSubobject<USleepAction>(TEXT("SleepAction"));
 	ReloadActionComponent = CreateDefaultSubobject<UReloadAction>(TEXT("ReloadAction"));
 	CycleTargetComponent = CreateDefaultSubobject<UCycleTargetAction>(TEXT("CycleTargetAction"));
+	OverwatchComponent = CreateDefaultSubobject<UOverwatchAction>(TEXT("OverwatchAction"));
 }
 
 
@@ -60,6 +62,10 @@ void UActionManager::DoActionFromUI(EActionType actionType) {
 	{
 		ReloadActionComponent->DoAction();
 	}
+	case EActionType::AT_Overwatch:
+	{
+		OverwatchComponent->DoAction();
+	}
 	default:
 	{
 		UDebugMessages::LogDisplay(this, "Failed to get an action");
@@ -92,4 +98,7 @@ UReloadAction* UActionManager::GetReloadAction() {
 }
 UCycleTargetAction* UActionManager::GetCycleTargetAction() {
 	return CycleTargetComponent;
+}
+UOverwatchAction* UActionManager::GetOverwatchAction() {
+	return OverwatchComponent;
 }

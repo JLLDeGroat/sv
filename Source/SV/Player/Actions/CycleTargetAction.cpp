@@ -14,11 +14,13 @@ UCycleTargetAction::UCycleTargetAction(const FObjectInitializer& ObjectInitializ
 
 void UCycleTargetAction::DoAction() {
 	auto selected = SelectionManager->GetSelected();
-	if (selected) {
-		auto hudDelegates = UHudDelegates::GetInstance();
-		if (!hudDelegates)
-			return UDebugMessages::LogError(this, "failed to get hud delegates");
 
+	auto hudDelegates = UHudDelegates::GetInstance();
+	if (!hudDelegates)
+		return UDebugMessages::LogError(this, "failed to get hud delegates");
+
+	if (selected)
 		hudDelegates->_CycleToNextTarget.Broadcast();
-	}
+	else
+		hudDelegates->_SelectNextCharacterWithAp.Broadcast();
 }

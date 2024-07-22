@@ -25,6 +25,7 @@
 #include "../../GameModes/WorldManagers/WorldDirectionManager.h"
 #include "../../Delegates/HudDelegates.h"
 #include "TargetAction.h"
+#include "OverwatchAction.h"
 
 // Sets default values for this component's properties
 ULeftClickAction::ULeftClickAction(const FObjectInitializer& ObjectInitializer) : UBaseActionComponent(ObjectInitializer)
@@ -36,6 +37,7 @@ ULeftClickAction::ULeftClickAction(const FObjectInitializer& ObjectInitializer) 
 	ValidCameraStates.Emplace(ECameraState::CS_Control);
 	ValidCameraStates.Emplace(ECameraState::CS_GunTarget);
 	ValidCameraStates.Emplace(ECameraState::CS_ThrowTarget);
+	ValidCameraStates.Emplace(ECameraState::CS_Overwatch);
 	// ...
 }
 
@@ -126,6 +128,14 @@ void ULeftClickAction::DoAction() {
 
 		pawnCameraComponent->UpdateCameraState(ECameraState::CS_Throw, FVector::ZeroVector, FVector::ZeroVector, true);
 	}
+	else if (pawnCameraComponent->GetCurrentCameraState() == ECameraState::CS_Overwatch) {
+		auto overwatchAction = controller->GetComponentByClass<UOverwatchAction>();
+		if (!overwatchAction)
+			return UDebugMessages::LogError(this, "failed to get overwatch action");
+
+		overwatchAction->SetOverwatch();
+		pawnCameraComponent->UpdateCameraState(ECameraState::CS_Control, FVector::ZeroVector, FVector::ZeroVector, true);
+	}
 	else {
 		if (Hit.GetActor() && SelectionManager->TrySetSelected(Hit.GetActor())) {
 			SelectionManager->GetSelected()->TryVisualiseTargets();
@@ -140,6 +150,7 @@ void ULeftClickAction::DoAction() {
 		}
 		else {
 			hudDelegates->_HideOrResetUIWidget.Broadcast();
+			hudDelegates->_ResetCharacterTileWidget.Broadcast();
 		}
 	}
 }

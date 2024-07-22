@@ -40,13 +40,15 @@ enum class EAttackType : uint8 {
 UENUM(BlueprintType)
 enum class ECameraState : uint8 {
 	INVALID = 0,
-	CS_Control = 1,
-	CS_GunTarget = 2,
-	CS_GunShoot = 3,
-	CS_ReTarget = 4,
-	CS_CinematicShoot = 5,
-	CS_ThrowTarget = 6,
-	CS_Throw = 7
+	CS_Control,
+	CS_GunTarget,
+	CS_GunShoot,
+	CS_ReTarget,
+	CS_CinematicShoot,
+	CS_OverwatchCinematicShoot,
+	CS_ThrowTarget,
+	CS_Throw,
+	CS_Overwatch,
 };
 
 
@@ -68,4 +70,5 @@ enum class EActionType :uint8 {
 	AT_Grenade = 2,
 	AT_Sleep = 3,
 	AT_Reload = 4,
+	AT_Overwatch = 5
 };

@@ -21,6 +21,7 @@ public:
 
 	UAttackComponent(const FObjectInitializer& ObjectInitializer);
 
+	void TryActivateOverwatch(AActor* targetActor, UPrimitiveComponent* OtherComp);
 	void TryAttackTarget(FVector sourceGridLocation, TScriptInterface<ISvChar> targetCharacter, bool bIsRange = true);
 	void TryAttackLocation(FVector sourceGridLocation, FVector location, float locationRadius, bool bIsRange = true);
 
@@ -42,19 +43,15 @@ protected:
 private:
 
 	UPROPERTY() EAttackState CurrentAttackState;
-
 	UPROPERTY() FVector CurrentTargetLocation;
-
 	UPROPERTY() FVector InitialLocation;
 	UPROPERTY() FRotator InitialRotation;
 	UPROPERTY() FVector MoveToLocation;
 	UPROPERTY() FRotator AdditionalRotation;
-
 	UPROPERTY() TScriptInterface<ISvChar> CurrentTargetCharacter;
 
 	EAttackType DetermineAttackStateFromDirection(FVector currentGridLoc, FVector movementLoc, FVector targetLoc);
 
 	UPROPERTY() UBaseRunnable* PostShootRunnable;
-
 	UPROPERTY() float CurrentAttackRandomRadius;
 };

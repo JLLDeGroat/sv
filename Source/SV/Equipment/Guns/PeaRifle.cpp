@@ -28,11 +28,13 @@ APeaRifle::APeaRifle(const FObjectInitializer& ObjectInitializer) : AEquipment(O
 	EquipmentDetailsComponent->SetIsRange(true);
 	EquipmentDetailsComponent->SetBaseDamage(25);
 	EquipmentDetailsComponent->SetAccuracy(500);
-	EquipmentDetailsComponent->SetAccuracyDecay(.2f);
+	EquipmentDetailsComponent->SetAccuracyDecay(.075f);
 	EquipmentDetailsComponent->SetBaseAccuracy(.35f);
 	EquipmentDetailsComponent->SetMaxRounds(3);
 	EquipmentDetailsComponent->SetReloadApCost(1);
 	EquipmentDetailsComponent->SetGunType(EGun::G_PeaRifle);
+	EquipmentDetailsComponent->SetCanOverwatch(true);
+	EquipmentDetailsComponent->SetOverwatchApCost(2);
 
 	AttachedVectorComponent->SetAttachedVectors(FVector(4, 2, 0), FRotator(0, 112.5, 182));
 	AttachedVectorComponent->SetHolsteredVectors(FVector(0, 0, 0), FRotator(0, 100, 0));

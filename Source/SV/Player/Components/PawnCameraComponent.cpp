@@ -61,7 +61,9 @@ void UPawnCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 		FRotator newRotation = CameraComponent->GetComponentRotation();
 		FRotator requiredRotation = newRotation;
 
-		if (CurrentCameraState == ECameraState::CS_CinematicShoot) {
+		if (CurrentCameraState == ECameraState::CS_CinematicShoot ||
+			CurrentCameraState == ECameraState::CS_OverwatchCinematicShoot)
+		{
 			if (GetValidCinematicLocation(newLocation)) {
 				requiredRotation = UGridUtilities::FindLookAtRotation(newLocation, CinematicActorTarget->GetActorLocation());
 				newRotation = UKismetMathLibrary::RInterpTo_Constant(CameraComponent->GetComponentRotation(), requiredRotation, DeltaTime, 500);
@@ -134,11 +136,18 @@ void UPawnCameraComponent::UpdateCameraState(ECameraState cameraState, FVector m
 
 void UPawnCameraComponent::DoCinematicAttackCameraMovement(AActor* attacker, AActor* target) {
 	CurrentCameraState = ECameraState::CS_CinematicShoot;
+	CinematicAttackCameraMovement(attacker, target);
+}
+void UPawnCameraComponent::DoOverwatchCinematicAttackCameraMovement(AActor* attacker, AActor* target) {
+	CurrentCameraState = ECameraState::CS_OverwatchCinematicShoot;
+	ReturnLocation = CameraComponent->GetComponentLocation();
+	CinematicAttackCameraMovement(attacker, target);
+}
+void UPawnCameraComponent::CinematicAttackCameraMovement(AActor* attacker, AActor* target) {
+	AttemptToAlterAttackerStatusWidgetVisibility(false);
 
 	CinematicActorAttacker = attacker;
 	CinematicActorTarget = target;
-
-	AttemptToAlterAttackerStatusWidgetVisibility(false);
 
 	CurrentlyMoving = true;
 	SetComponentTickEnabled(true);

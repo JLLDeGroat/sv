@@ -56,6 +56,9 @@ public:
 	static TArray<FVector> RandomizeList(TArray<FVector> list, FRandomStream stream);
 	static TArray<FVector> RandomizeList(TArray<FVector> list);
 
+
+	static FVector DetermineAccuracyInidicatorScale(FVector source, FVector target, float accuracy, float accuracyDecay, float baseAccuracy, float distanceModifier = 1.0f);
+
 private:
 
 	static bool IsInBounds(FVector location);

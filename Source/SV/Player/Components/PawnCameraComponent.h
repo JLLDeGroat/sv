@@ -23,6 +23,7 @@ public:
 	ECameraState GetCurrentCameraState();
 
 	void DoCinematicAttackCameraMovement(AActor* attacker, AActor* target);
+	void DoOverwatchCinematicAttackCameraMovement(AActor* attacker, AActor* target);
 
 	void SetDefaultCameraOffset(FVector defaultValue);
 
@@ -36,6 +37,9 @@ public:
 
 
 private:
+
+	void CinematicAttackCameraMovement(AActor* attacker, AActor* target);
+
 	UPROPERTY() FVector MoveToLocation;
 	UPROPERTY() FVector LookToLocation;
 	

@@ -3,6 +3,7 @@
 
 #include "CharacterTileWidget.h"
 #include "../../../Delegates/HudDelegates.h"
+#include "../../../Characters/Components/CharacterDetailsComponent.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "Components/HorizontalBox.h"
 #include "SubComponents/CharacterTileItemWidget.h"
@@ -15,6 +16,7 @@ void UCharacterTileWidget::NativeConstruct() {
 		return UDebugMessages::LogError(this, "failed to get hudDelegates");
 
 	hudDelegates->_AddSoldierToCharacterTileWidget.AddDynamic(this, &UCharacterTileWidget::RecieveCharacter);
+	hudDelegates->_SelectNextCharacterWithAp.AddDynamic(this, &UCharacterTileWidget::AttemptToSelectNextUnitWithAP);
 }
 
 void UCharacterTileWidget::RecieveCharacter(AActor* actor) {
@@ -27,6 +29,30 @@ void UCharacterTileWidget::RecieveCharacter(AActor* actor) {
 
 		createdWidget->SetRepresentedActor(actor);
 		horizontalBox->AddChildToHorizontalBox(createdWidget);
+	}
+}
+
+void UCharacterTileWidget::AttemptToSelectNextUnitWithAP() {
+	auto horizontalBox = (UHorizontalBox*)GetWidgetFromName("HorizontalBox");
+
+	if (horizontalBox) {
+		auto children = horizontalBox->GetAllChildren();
+		for (int i = 0; i < children.Num(); i++) {
+			UCharacterTileItemWidget* item = (UCharacterTileItemWidget*)children[i];
+
+			auto actor = item->GetRepresentedActor();
+			if (!actor)
+				continue;
+
+			auto details = actor->GetComponentByClass<UCharacterDetailsComponent>();
+			if (details) {
+				auto ap = details->GetActionPoints();
+				if (ap > 0) {
+					item->SimulateOnCharacterButtonClicked(item->GetRepresentedActor());
+					break;
+				}
+			}
+		}
 	}
 }
 

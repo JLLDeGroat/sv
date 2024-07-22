@@ -29,9 +29,15 @@ public:
 
 	float GetCritMultiplier() const;
 	void SetCritMultiplier(float amount);
-
+	
 	void SetApCost(int amount);
 	int GetApCost() const;
+
+	bool GetCanOverwatch();
+	void SetCanOverwatch(bool val);
+
+	void SetOverwatchApCost(int amount);
+	int GetOverwatchApCost() const;
 
 	void SetIsPrimaryEquipment(bool val);
 	bool GetIsPrimaryEquipment();
@@ -73,7 +79,10 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) int BaseDamage;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) float CritMultiplier;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bCanOverwatch;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) int ApCost;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) int OverwatchApCost;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) int ReloadApCost;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) float BaseAccuracy;

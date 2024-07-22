@@ -36,9 +36,11 @@ void UCharacterTileItemWidget::NativeConstruct() {
 void UCharacterTileItemWidget::SetRepresentedActor(AActor* actor) {
 	RepresentedActor = actor;
 }
-
+AActor* UCharacterTileItemWidget::GetRepresentedActor() {
+	return RepresentedActor;
+}
 void UCharacterTileItemWidget::SimulateOnCharacterButtonClicked(AActor* actor) {
-	if (actor == RepresentedActor) 
+	if (actor == RepresentedActor)
 		OnCharacterButtonClicked();
 }
 

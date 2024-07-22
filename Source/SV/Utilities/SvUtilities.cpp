@@ -197,3 +197,10 @@ TArray<FVector> USvUtilities::RandomizeList(TArray<FVector> list) {
 int USvUtilities::GetWorldMapGridMultiplier() {
 	return 100;
 }
+
+FVector USvUtilities::DetermineAccuracyInidicatorScale(FVector source, FVector target, float accuracy, float accuracyDecay, float baseAccuracy, float distanceModifier) {
+	auto gunAccuracy = (FVector::Dist(source, target) * distanceModifier) - accuracy;
+	if (gunAccuracy < 1) gunAccuracy = 1;
+	gunAccuracy = gunAccuracy * accuracyDecay;
+	return FVector(gunAccuracy / 100) + FVector(baseAccuracy);
+}

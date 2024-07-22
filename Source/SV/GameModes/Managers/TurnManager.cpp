@@ -6,6 +6,7 @@
 #include "../../Interfaces/SvChar.h"
 #include "../../Runnables/AITurnRunnable.h"
 #include "../../Characters/Components/CharacterDetailsComponent.h"
+#include "../../Delegates/GameplayDelegates.h"
 #include "../GameplayMode.h"
 #include "CharacterManager.h"
 
@@ -14,6 +15,14 @@ UTurnManager::UTurnManager(const FObjectInitializer& ObjectInitializer) : UObjec
 }
 
 void UTurnManager::BeginAITurn() {
+
+	auto gameplayDelegates = UGameplayDelegates::GetInstance();
+	if (!gameplayDelegates)
+		return UDebugMessages::LogError(this, "failed to get gameplay delegates");
+
+	gameplayDelegates->_ActivateOverwatchActors.Broadcast(ECharacterControl::CC_Player);
+	gameplayDelegates->_RemoveUnusedOverwatchActors.Broadcast(ECharacterControl::CC_AI);
+
 	NewObject<UAITurnRunnable>()
 		->Initialise(GetWorld())
 		->Begin();
@@ -30,6 +39,14 @@ void UTurnManager::BeginPlayerTurn() {
 		UDebugMessages::LogDisplay(this, "failed to get characterManager to start player turn");
 		return;
 	}
+
+	auto gameplayDelegates = UGameplayDelegates::GetInstance();
+	if (!gameplayDelegates)
+		return UDebugMessages::LogError(this, "failed to get gameplay delegates");
+
+	UDebugMessages::LogError(this, "TODO current activations are commented out");
+	//gameplayDelegates->_ActivateOverwatchActors.Broadcast(ECharacterControl::CC_AI);
+	//gameplayDelegates->_RemoveUnusedOverwatchActors.Broadcast(ECharacterControl::CC_Player);
 
 	TArray<TScriptInterface<ISvChar>> foundCharacters;
 	characterManager->GetCharacterListOfCharacterType(ECharacterControl::CC_Player, foundCharacters);

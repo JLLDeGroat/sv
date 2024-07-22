@@ -67,6 +67,20 @@ int UEquipmentDetailsComponent::GetApCost() const {
 	return ApCost;
 }
 
+void UEquipmentDetailsComponent::SetOverwatchApCost(int amount) {
+	OverwatchApCost = amount;
+}
+int UEquipmentDetailsComponent::GetOverwatchApCost() const {
+	return OverwatchApCost;
+}
+
+bool UEquipmentDetailsComponent::GetCanOverwatch() {
+	return bCanOverwatch;
+}
+void UEquipmentDetailsComponent::SetCanOverwatch(bool val) {
+	bCanOverwatch = val;
+}
+
 void UEquipmentDetailsComponent::SetIsPrimaryEquipment(bool val) {
 	bIsPrimaryEquipment = val;
 }

@@ -61,6 +61,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true")) UInputAction* SleepAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true")) UInputAction* ReloadAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true")) UInputAction* CycleAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true")) UInputAction* OverwatchAction;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) AGridSelectionActor* GridSelection;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) AGrenadeIndicatorActor* GrenadeIndicator;
 

@@ -58,6 +58,14 @@ void UTargetingComponent::SetCurrentMainTargetId(FGuid targetId) {
 	CurrentMainTargetId = targetId;
 }
 
+FTargetData* UTargetingComponent::GetTargetDataForActor(AActor* actor) {
+	for (int i = 0; i < TargetData.Num(); i++)
+		if (TargetData[i].GetCharacter() && TargetData[i].GetCharacter()->GetAsActor() == actor)
+			return &TargetData[i];
+
+	return nullptr;
+}
+
 void UTargetingComponent::DetermineTargetData() {
 	TargetData.Empty();
 

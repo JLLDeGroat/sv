@@ -35,6 +35,7 @@
 #include "Actions/SleepAction.h"
 #include "Actions/ReloadAction.h"
 #include "Actions/CycleTargetAction.h"
+#include "Actions/OverwatchAction.h"
 
 #include "DrawDebugHelpers.h"
 
@@ -57,6 +58,7 @@ AGamePlayerController::AGamePlayerController() {
 	SleepAction = LoadObject<UInputAction>(this, TEXT("/Script/EnhancedInput.InputAction'/Game/Controls/IA_SleepAction.IA_SleepAction'"));
 	ReloadAction = LoadObject<UInputAction>(this, TEXT("/Script/EnhancedInput.InputAction'/Game/Controls/IA_Reload.IA_Reload'"));
 	CycleAction = LoadObject<UInputAction>(this, TEXT("/Script/EnhancedInput.InputAction'/Game/Controls/IA_CycleTarget.IA_CycleTarget'"));
+	OverwatchAction = LoadObject<UInputAction>(this, TEXT("/Script/EnhancedInput.InputAction'/Game/Controls/IA_Overwatch.IA_Overwatch'"));
 
 	SelectionManager = CreateDefaultSubobject<USelectionManager>(TEXT("Selection"));
 	ControlManager = CreateDefaultSubobject<UControlManager>(TEXT("Control"));
@@ -152,6 +154,7 @@ void AGamePlayerController::SetupInputComponent() {
 		EnhancedInputComponent->BindAction(SleepAction, ETriggerEvent::Started, ActionManager->GetSleepAction(), &USleepAction::DoAction);
 		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Started, ActionManager->GetReloadAction(), &UReloadAction::DoAction);
 		EnhancedInputComponent->BindAction(CycleAction, ETriggerEvent::Started, ActionManager->GetCycleTargetAction(), &UCycleTargetAction::DoAction);
+		EnhancedInputComponent->BindAction(OverwatchAction, ETriggerEvent::Started, ActionManager->GetOverwatchAction(), &UOverwatchAction::DoAction);
 	}
 	else
 	{

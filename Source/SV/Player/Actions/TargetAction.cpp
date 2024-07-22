@@ -45,13 +45,11 @@ void UTargetAction::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 	FVector targetLocation = FVector::ZeroVector;
 	GetTargetLocation(hit, targetLocation, PawnCameraComponent);
 	TargetingIndicator->SetActorLocation(targetLocation);
+	
+	auto gunAccuracy = USvUtilities::DetermineAccuracyInidicatorScale(PawnCameraComponent->GetComponentLocation(), targetLocation,
+		CurrentTargetAccuracy, CurrentTargetAccuracyDecay, CurrentTargetBaseAccuracy);
 
-	auto accuracy = (FVector::Dist(PawnCameraComponent->GetComponentLocation(), targetLocation) * 1.00f) - CurrentTargetAccuracy;
-
-	if (accuracy < 1) accuracy = 1;
-
-	accuracy = accuracy * CurrentTargetAccuracyDecay;
-	TargetingIndicator->SetActorScale3D(FVector(accuracy / 100) + FVector(CurrentTargetBaseAccuracy));
+	TargetingIndicator->SetActorScale3D(gunAccuracy);
 }
 
 void UTargetAction::DoAction() {
@@ -114,6 +112,15 @@ void UTargetAction::DoAction() {
 
 float UTargetAction::GetTargetingIndicatorRadius() {
 	return TargetingIndicator->GetSphereScaledRadius();
+}
+
+float UTargetAction::SetScaleAndGetTargetingRadius(FVector scale) {
+	TargetingIndicator->SetActorScale3D(scale);
+	return GetTargetingIndicatorRadius();
+}
+
+ATargetingIndicatorActor* UTargetAction::GetTargetingIndicatorActor() {
+	return TargetingIndicator;
 }
 
 void UTargetAction::ResetTargetingActor() {

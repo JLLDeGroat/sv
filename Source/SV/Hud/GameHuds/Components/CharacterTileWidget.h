@@ -22,6 +22,7 @@ public:
 protected:
 
 	UFUNCTION() void RecieveCharacter(AActor* actor);
+	UFUNCTION() void AttemptToSelectNextUnitWithAP();
 
 private:
 

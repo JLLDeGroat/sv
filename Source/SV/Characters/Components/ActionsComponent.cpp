@@ -8,6 +8,7 @@
 #include "../../Equipment/Equipment.h"
 #include "../../Equipment/Components/EquipmentDetailsComponent.h"
 #include "../../Delegates/HudDelegates.h"
+#include "../../Characters/Components/CharacterDetailsComponent.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 
 // Sets default values for this component's properties
@@ -33,6 +34,11 @@ void UActionsComponent::SendActionsToUI() {
 
 	hudDelegates->_ResetActionIcons.Broadcast();
 
+	auto currentCharacterDetails = GetOwner()->GetComponentByClass<UCharacterDetailsComponent>();
+
+	if (!currentCharacterDetails)
+		return UDebugMessages::LogError(this, "could not find character details");
+
 	auto targetingComponent = GetOwner()->GetComponentByClass<UTargetingComponent>();
 	if (targetingComponent && targetingComponent->GetCurrentTargetData().Num() > 0)
 		hudDelegates->_AddActionIconToHud.Broadcast(EActionType::AT_Shoot, "F");
@@ -46,8 +52,13 @@ void UActionsComponent::SendActionsToUI() {
 		auto primaryEquipment = equipmentComponent->GetPrimaryEquipment();
 		if (primaryEquipment) {
 			auto primaryEquipmentDetails = primaryEquipment->GetComponentByClass<UEquipmentDetailsComponent>();
-			if (primaryEquipmentDetails && primaryEquipmentDetails->CanReloadWeapon()) {
-				hudDelegates->_AddActionIconToHud.Broadcast(EActionType::AT_Reload, "R");
+			if (primaryEquipmentDetails) {
+				if (primaryEquipmentDetails->CanReloadWeapon())
+					hudDelegates->_AddActionIconToHud.Broadcast(EActionType::AT_Reload, "R");
+
+				if (currentCharacterDetails->GetActionPoints() >= primaryEquipmentDetails->GetOverwatchApCost() &&
+					primaryEquipmentDetails->GetCanOverwatch())
+					hudDelegates->_AddActionIconToHud.Broadcast(EActionType::AT_Overwatch, "O");
 			}
 		}
 	}

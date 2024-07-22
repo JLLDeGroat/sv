@@ -17,7 +17,7 @@ void UWorldMapWallManager::SetFullRouteList(TArray<FVector2D> route) {
 TArray<FVector2D> UWorldMapWallManager::GetFullRouteList() {
 	return FullRouteList;
 }
-#pragma optimize("", off)
+
 void UWorldMapWallManager::GenerateWalls() {
 	auto multipler = USvUtilities::GetWorldMapGridMultiplier();
 

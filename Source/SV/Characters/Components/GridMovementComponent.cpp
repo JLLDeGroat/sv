@@ -24,7 +24,10 @@ UGridMovementComponent::UGridMovementComponent(const FObjectInitializer& ObjectI
 
 	// ...
 	DefaultMovementSpeed = 350;
+	DefaultRotationSpeed = 200;
+	RotationSpeed = DefaultRotationSpeed;
 	MovementSpeed = DefaultMovementSpeed;
+	
 }
 
 
@@ -56,7 +59,7 @@ void UGridMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		auto lookAtRot = UGridUtilities::FindLookAtRotation(newLocation, normalisedMovementLocation);
 		lookAtRot.Pitch = GetOwner()->GetActorRotation().Pitch;
 		lookAtRot.Roll = GetOwner()->GetActorRotation().Roll;
-		auto newRotation = UKismetMathLibrary::RInterpTo_Constant(GetOwner()->GetActorRotation(), lookAtRot, DeltaTime, 200);
+		auto newRotation = UKismetMathLibrary::RInterpTo_Constant(GetOwner()->GetActorRotation(), lookAtRot, DeltaTime, RotationSpeed);
 		GetOwner()->SetActorRotation(newRotation);
 
 		auto dist = FVector::Distance(GetOwner()->GetActorLocation(), normalisedMovementLocation);
@@ -285,10 +288,24 @@ bool UGridMovementComponent::GetMovableAdjacentTiles(FVector start, TArray<FVect
 
 void UGridMovementComponent::ResetMovementSpeed() {
 	MovementSpeed = DefaultMovementSpeed;
+	RotationSpeed = DefaultRotationSpeed;
 }
 void UGridMovementComponent::UpdateMovementSpeed(float speed) {
 	MovementSpeed = speed;
+	RotationSpeed = speed / 2;
 }
+
+void UGridMovementComponent::SetMovementForOverwatchResponse() {
+	MovementSpeed = MovementSpeed / 100;
+	RotationSpeed = RotationSpeed / 100;
+	AnimInstance->UpdateAnimPlayRate(.05);
+}
+void UGridMovementComponent::ResetMovementAndAnimPlayBack() {
+	MovementSpeed = DefaultMovementSpeed;
+	RotationSpeed = DefaultRotationSpeed;
+	AnimInstance->UpdateAnimPlayRate(1);
+}
+
 void UGridMovementComponent::PostMovementCrouch() {
 	AnimInstance->SetIsCrouching(true);
 }

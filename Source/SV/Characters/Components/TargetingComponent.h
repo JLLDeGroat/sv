@@ -51,6 +51,7 @@ public:
 
 	TArray<FTargetData> GetCurrentTargetData();
 	FTargetData* GetCurrentMainTarget();
+	FTargetData* GetTargetDataForActor(AActor* actor);
 
 	void SetCurrentMainTargetId(FGuid targetId);
 

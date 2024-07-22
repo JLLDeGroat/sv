@@ -23,7 +23,11 @@ public:
 	void DoAction();
 	void ResetTargetingActor();
 
+	float SetScaleAndGetTargetingRadius(FVector scale);
+
 	float GetTargetingIndicatorRadius();
+
+	ATargetingIndicatorActor* GetTargetingIndicatorActor();
 
 protected:
 

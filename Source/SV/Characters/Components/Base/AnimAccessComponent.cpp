@@ -33,3 +33,6 @@ void UAnimAccessComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	// ...
 }
 
+void UAnimAccessComponent::SetAnimInstanceRate(float rate) {
+	AnimInstance->UpdateAnimPlayRate(rate);
+}
