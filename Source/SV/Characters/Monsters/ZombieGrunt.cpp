@@ -15,6 +15,7 @@
 #include "../Components/AttackComponent.h"
 #include "../Components/AnimSpeedComponent.h"
 #include "../Components/HealthAndStatusWidgetComponent.h"
+#include "../Components/AIComponent.h"
 
 AZombieGrunt::AZombieGrunt(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(ObjectInitializer) {
 
@@ -131,6 +132,8 @@ AZombieGrunt::AZombieGrunt(const FObjectInitializer& ObjectInitializer) : ABaseC
 	HealthAndStatusComponent = CreateDefaultSubobject<UHealthAndStatusWidgetComponent>(TEXT("StatusComponent"));
 	HealthAndStatusComponent->SetupAttachment(RootComponent);
 	HealthAndStatusComponent->SetRelativeLocation(FVector(0, 0, 130));
+
+	AiComponent = CreateDefaultSubobject<UAIComponent>(TEXT("AiComponent"));
 }
 
 UGridMovementComponent* AZombieGrunt::GetGridMovementComponent() {

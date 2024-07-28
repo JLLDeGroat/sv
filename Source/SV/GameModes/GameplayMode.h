@@ -32,6 +32,8 @@ public:
 
 	ULevelSpawnerManager* GetLevelSpawnerManager();
 
+	virtual void BeginDestroy() override;
+
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UCharacterManager* CharacterManager;

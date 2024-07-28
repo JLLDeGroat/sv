@@ -181,9 +181,16 @@ void UAttackComponent::TryAttackLocation(FVector sourceGridLocation, FVector loc
 	auto gridLocation = UGridUtilities::GetNormalisedGridLocation(GetOwner()->GetActorLocation());
 
 	if (gridLocation == sourceGridLocation) {
-		InitialLocation = GetOwner()->GetActorLocation();
-		InitialRotation = GetOwner()->GetActorRotation();
-		CurrentAttackState = bIsRange ? EAttackState::CS_RotatingToShoot : EAttackState::CS_RotatingToMelee;
+		if (bIsRange) {
+			InitialLocation = GetOwner()->GetActorLocation();
+			InitialRotation = GetOwner()->GetActorRotation();
+			CurrentAttackState = EAttackState::CS_RotatingToShoot;
+		}
+		else {
+			InitialLocation = GetOwner()->GetActorLocation();
+			InitialRotation = UGridUtilities::FindLookAtRotation(gridLocation, location);
+			CurrentAttackState = EAttackState::CS_RotatingToMelee;
+		}
 		SetComponentTickEnabled(true);
 	}
 	else {

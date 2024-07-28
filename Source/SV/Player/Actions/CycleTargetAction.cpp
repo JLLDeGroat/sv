@@ -13,6 +13,8 @@ UCycleTargetAction::UCycleTargetAction(const FObjectInitializer& ObjectInitializ
 }
 
 void UCycleTargetAction::DoAction() {
+	ResetActionEffects();
+
 	auto selected = SelectionManager->GetSelected();
 
 	auto hudDelegates = UHudDelegates::GetInstance();
