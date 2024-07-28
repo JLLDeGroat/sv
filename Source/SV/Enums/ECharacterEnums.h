@@ -70,5 +70,6 @@ enum class EActionType :uint8 {
 	AT_Grenade = 2,
 	AT_Sleep = 3,
 	AT_Reload = 4,
-	AT_Overwatch = 5
+	AT_Overwatch = 5,
+	AT_Extract = 6
 };

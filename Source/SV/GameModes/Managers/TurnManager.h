@@ -6,6 +6,7 @@
 #include "UObject/NoExportTypes.h"
 #include "TurnManager.generated.h"
 
+class UBaseRunnable;
 /**
  * 
  */
@@ -18,4 +19,11 @@ public:
 	UTurnManager(const FObjectInitializer& ObjectInitializer);
 	void BeginAITurn();
 	void BeginPlayerTurn();
+
+	void KillRunnable();
+
+private:
+
+	UPROPERTY() UBaseRunnable* Runnable;
+
 };

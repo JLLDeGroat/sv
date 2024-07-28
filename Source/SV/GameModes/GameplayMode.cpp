@@ -46,3 +46,8 @@ void AGameplayMode::BeginPlayerTurn() {
 ULevelSpawnerManager* AGameplayMode::GetLevelSpawnerManager() {
 	return LevelSpawnerManager;
 }
+
+void AGameplayMode::BeginDestroy() {
+	TurnManager->KillRunnable();
+	Super::BeginDestroy();
+}

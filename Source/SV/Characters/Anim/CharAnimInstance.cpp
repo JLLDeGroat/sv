@@ -18,6 +18,7 @@
 #include "../../Equipment/Equipment.h"
 #include "../../Equipment/Throwable/Components/ThrowTravelComponent.h"
 #include "../../Equipment/Components/EquipmentDetailsComponent.h"
+#include "../Components/AIComponent.h"
 
 UCharAnimInstance::UCharAnimInstance(const FObjectInitializer& ObjectInitializer)
 	: UAnimInstance(ObjectInitializer) {
@@ -110,12 +111,17 @@ void UCharAnimInstance::OnMeleeHit() {
 }
 void UCharAnimInstance::OnFinishMelee() {
 	bIsAttacking = false;
+	auto owningActor = GetOwningActor();
+	auto attackComponent = owningActor->GetComponentByClass<UAttackComponent>();
 
-	/*FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([]
+	if (!attackComponent)
+		return UDebugMessages::LogError(this, "finished melee without an attack component");
+
+	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([attackComponent]
 		{
-
+			attackComponent->UpdateCurrentAttackState(EAttackState::CS_Return);
 		},
-		TStatId(), nullptr, ENamedThreads::GameThread);*/
+		TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
 void UCharAnimInstance::OnFinishVault() {

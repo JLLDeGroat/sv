@@ -24,6 +24,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHideOrResetUIWidget);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FResetCharacterTileWidget);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCycleToNextTarget);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterTileVisibility, bool, bVisibility);
 /**
  *
  */
@@ -55,4 +57,6 @@ public:
 	FResetCharacterTileWidget _ResetCharacterTileWidget;
 	FCycleToNextTarget _CycleToNextTarget;
 	FSelectNextCharacterWithAp _SelectNextCharacterWithAp;
+
+	FCharacterTileVisibility _CharacterTileVisibility;
 };

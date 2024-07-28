@@ -18,8 +18,16 @@ public:
 
 	void SendActionsToUI();
 
+	void SetCanExtract(bool val);
+	bool GetCanExtract();
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+
+
+private:
+
+	UPROPERTY() bool bCanExtract;
 		
 };

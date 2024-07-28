@@ -17,6 +17,8 @@ void UCharacterTileWidget::NativeConstruct() {
 
 	hudDelegates->_AddSoldierToCharacterTileWidget.AddDynamic(this, &UCharacterTileWidget::RecieveCharacter);
 	hudDelegates->_SelectNextCharacterWithAp.AddDynamic(this, &UCharacterTileWidget::AttemptToSelectNextUnitWithAP);
+
+	hudDelegates->_CharacterTileVisibility.AddDynamic(this, &UCharacterTileWidget::SetCharacterTileVisibility);
 }
 
 void UCharacterTileWidget::RecieveCharacter(AActor* actor) {
@@ -62,4 +64,9 @@ UCharacterTileItemWidget* UCharacterTileWidget::CreateItemWidget() {
 		return CreateWidget<UCharacterTileItemWidget>(this, hudUIWidgetClass);
 
 	return nullptr;
+}
+
+void UCharacterTileWidget::SetCharacterTileVisibility(bool bVisible) {
+	if (bVisible) SetVisibility(ESlateVisibility::Visible);
+	else SetVisibility(ESlateVisibility::Hidden);
 }

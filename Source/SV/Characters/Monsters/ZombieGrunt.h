@@ -16,6 +16,7 @@ class USkillsComponent;
 class UAttackComponent;
 class UAnimSpeedComponent;
 class UHealthAndStatusWidgetComponent;
+class UAIComponent;
 
 /**
  * 
@@ -58,5 +59,5 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UAnimSpeedComponent* AnimSpeedComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UHealthAndStatusWidgetComponent* HealthAndStatusComponent;
-	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UAIComponent* AiComponent;
 };

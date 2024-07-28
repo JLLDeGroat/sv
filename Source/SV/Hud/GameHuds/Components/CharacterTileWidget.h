@@ -24,6 +24,8 @@ protected:
 	UFUNCTION() void RecieveCharacter(AActor* actor);
 	UFUNCTION() void AttemptToSelectNextUnitWithAP();
 
+	UFUNCTION() void SetCharacterTileVisibility(bool bVisible);
+
 private:
 
 	UCharacterTileItemWidget* CreateItemWidget();
