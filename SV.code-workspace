@@ -1,0 +1,613 @@
+{
+	"folders": [
+		{
+			"name": "SV",
+			"path": "."
+		},
+		{
+			"name": "UE5",
+			"path": "D:\\Epic\\UE_5.4"
+		}
+	],
+	"settings": {
+		"typescript.tsc.autoDetect": "off",
+		"npm.autoDetect": "off"
+	},
+	"extensions": {
+		"recommendations": [
+			"ms-vscode.cpptools",
+			"ms-dotnettools.csharp"
+		]
+	},
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "SV Win64 Debug Build",
+				"group": "build",
+				"command": "Engine\\Build\\BatchFiles\\Build.bat",
+				"args": [
+					"SV",
+					"Win64",
+					"Debug",
+					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "D:\\Epic\\UE_5.4"
+				}
+			},
+			{
+				"label": "SV Win64 Debug Rebuild",
+				"group": "build",
+				"command": "Engine\\Build\\BatchFiles\\Build.bat",
+				"args": [
+					"SV",
+					"Win64",
+					"Debug",
+					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"SV Win64 Debug Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "D:\\Epic\\UE_5.4"
+				}
+			},
+			{
+				"label": "SV Win64 Debug Clean",
+				"group": "build",
+				"command": "Engine\\Build\\BatchFiles\\Clean.bat",
+				"args": [
+					"SV",
+					"Win64",
+					"Debug",
+					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "D:\\Epic\\UE_5.4"
+				}
+			},
+			{
+				"label": "SV Win64 DebugGame Build",
+				"group": "build",
+				"command": "Engine\\Build\\BatchFiles\\Build.bat",
+				"args": [
+					"SV",
+					"Win64",
+					"DebugGame",
+					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "D:\\Epic\\UE_5.4"
+				}
+			},
+			{
+				"label": "SV Win64 DebugGame Rebuild",
+				"group": "build",
+				"command": "Engine\\Build\\BatchFiles\\Build.bat",
+				"args": [
+					"SV",
+					"Win64",
+					"DebugGame",
+					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"SV Win64 DebugGame Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "D:\\Epic\\UE_5.4"
+				}
+			},
+			{
+				"label": "SV Win64 DebugGame Clean",
+				"group": "build",
+				"command": "Engine\\Build\\BatchFiles\\Clean.bat",
+				"args": [
+					"SV",
+					"Win64",
+					"DebugGame",
+					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "D:\\Epic\\UE_5.4"
+				}
+			},
+			{
+				"label": "SV Win64 Development Build",
+				"group": "build",
+				"command": "Engine\\Build\\BatchFiles\\Build.bat",
+				"args": [
+					"SV",
+					"Win64",
+					"Development",
+					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "D:\\Epic\\UE_5.4"
+				}
+			},
+			{
+				"label": "SV Win64 Development Rebuild",
+				"group": "build",
+				"command": "Engine\\Build\\BatchFiles\\Build.bat",
+				"args": [
+					"SV",
+					"Win64",
+					"Development",
+					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"SV Win64 Development Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "D:\\Epic\\UE_5.4"
+				}
+			},
+			{
+				"label": "SV Win64 Development Clean",
+				"group": "build",
+				"command": "Engine\\Build\\BatchFiles\\Clean.bat",
+				"args": [
+					"SV",
+					"Win64",
+					"Development",
+					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "D:\\Epic\\UE_5.4"
+				}
+			},
+			{
+				"label": "SV Win64 Test Build",
+				"group": "build",
+				"command": "Engine\\Build\\BatchFiles\\Build.bat",
+				"args": [
+					"SV",
+					"Win64",
+					"Test",
+					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "D:\\Epic\\UE_5.4"
+				}
+			},
+			{
+				"label": "SV Win64 Test Rebuild",
+				"group": "build",
+				"command": "Engine\\Build\\BatchFiles\\Build.bat",
+				"args": [
+					"SV",
+					"Win64",
+					"Test",
+					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"SV Win64 Test Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "D:\\Epic\\UE_5.4"
+				}
+			},
+			{
+				"label": "SV Win64 Test Clean",
+				"group": "build",
+				"command": "Engine\\Build\\BatchFiles\\Clean.bat",
+				"args": [
+					"SV",
+					"Win64",
+					"Test",
+					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "D:\\Epic\\UE_5.4"
+				}
+			},
+			{
+				"label": "SV Win64 Shipping Build",
+				"group": "build",
+				"command": "Engine\\Build\\BatchFiles\\Build.bat",
+				"args": [
+					"SV",
+					"Win64",
+					"Shipping",
+					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "D:\\Epic\\UE_5.4"
+				}
+			},
+			{
+				"label": "SV Win64 Shipping Rebuild",
+				"group": "build",
+				"command": "Engine\\Build\\BatchFiles\\Build.bat",
+				"args": [
+					"SV",
+					"Win64",
+					"Shipping",
+					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"SV Win64 Shipping Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "D:\\Epic\\UE_5.4"
+				}
+			},
+			{
+				"label": "SV Win64 Shipping Clean",
+				"group": "build",
+				"command": "Engine\\Build\\BatchFiles\\Clean.bat",
+				"args": [
+					"SV",
+					"Win64",
+					"Shipping",
+					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "D:\\Epic\\UE_5.4"
+				}
+			},
+			{
+				"label": "SVEditor Win64 Debug Build",
+				"group": "build",
+				"command": "Engine\\Build\\BatchFiles\\Build.bat",
+				"args": [
+					"SVEditor",
+					"Win64",
+					"Debug",
+					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "D:\\Epic\\UE_5.4"
+				}
+			},
+			{
+				"label": "SVEditor Win64 Debug Rebuild",
+				"group": "build",
+				"command": "Engine\\Build\\BatchFiles\\Build.bat",
+				"args": [
+					"SVEditor",
+					"Win64",
+					"Debug",
+					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"SVEditor Win64 Debug Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "D:\\Epic\\UE_5.4"
+				}
+			},
+			{
+				"label": "SVEditor Win64 Debug Clean",
+				"group": "build",
+				"command": "Engine\\Build\\BatchFiles\\Clean.bat",
+				"args": [
+					"SVEditor",
+					"Win64",
+					"Debug",
+					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "D:\\Epic\\UE_5.4"
+				}
+			},
+			{
+				"label": "SVEditor Win64 DebugGame Build",
+				"group": "build",
+				"command": "Engine\\Build\\BatchFiles\\Build.bat",
+				"args": [
+					"SVEditor",
+					"Win64",
+					"DebugGame",
+					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "D:\\Epic\\UE_5.4"
+				}
+			},
+			{
+				"label": "SVEditor Win64 DebugGame Rebuild",
+				"group": "build",
+				"command": "Engine\\Build\\BatchFiles\\Build.bat",
+				"args": [
+					"SVEditor",
+					"Win64",
+					"DebugGame",
+					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"SVEditor Win64 DebugGame Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "D:\\Epic\\UE_5.4"
+				}
+			},
+			{
+				"label": "SVEditor Win64 DebugGame Clean",
+				"group": "build",
+				"command": "Engine\\Build\\BatchFiles\\Clean.bat",
+				"args": [
+					"SVEditor",
+					"Win64",
+					"DebugGame",
+					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "D:\\Epic\\UE_5.4"
+				}
+			},
+			{
+				"label": "SVEditor Win64 Development Build",
+				"group": "build",
+				"command": "Engine\\Build\\BatchFiles\\Build.bat",
+				"args": [
+					"SVEditor",
+					"Win64",
+					"Development",
+					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "D:\\Epic\\UE_5.4"
+				}
+			},
+			{
+				"label": "SVEditor Win64 Development Rebuild",
+				"group": "build",
+				"command": "Engine\\Build\\BatchFiles\\Build.bat",
+				"args": [
+					"SVEditor",
+					"Win64",
+					"Development",
+					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"SVEditor Win64 Development Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "D:\\Epic\\UE_5.4"
+				}
+			},
+			{
+				"label": "SVEditor Win64 Development Clean",
+				"group": "build",
+				"command": "Engine\\Build\\BatchFiles\\Clean.bat",
+				"args": [
+					"SVEditor",
+					"Win64",
+					"Development",
+					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "D:\\Epic\\UE_5.4"
+				}
+			}
+		]
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name": "Launch SV (Debug)",
+				"request": "launch",
+				"program": "D:\\Unreal Projects\\SV\\Binaries\\Win64\\UnrealGame-Win64-Debug.exe",
+				"preLaunchTask": "SV Win64 Debug Build",
+				"args": [
+				],
+				"cwd": "D:\\Epic\\UE_5.4",
+				"stopAtEntry": false,
+				"console": "integratedTerminal",
+				"type": "cppvsdbg",
+				"visualizerFile": "D:\\Epic\\UE_5.4\\Engine\\Extras\\VisualStudioDebugging\\Unreal.natvis",
+				"sourceFileMap": {
+					"D:\\build\\++UE5\\Sync": "D:\\Epic\\UE_5.4"
+				}
+			},
+			{
+				"name": "Launch SV (DebugGame)",
+				"request": "launch",
+				"program": "D:\\Unreal Projects\\SV\\Binaries\\Win64\\UnrealGame-Win64-DebugGame.exe",
+				"preLaunchTask": "SV Win64 DebugGame Build",
+				"args": [
+				],
+				"cwd": "D:\\Epic\\UE_5.4",
+				"stopAtEntry": false,
+				"console": "integratedTerminal",
+				"type": "cppvsdbg",
+				"visualizerFile": "D:\\Epic\\UE_5.4\\Engine\\Extras\\VisualStudioDebugging\\Unreal.natvis",
+				"sourceFileMap": {
+					"D:\\build\\++UE5\\Sync": "D:\\Epic\\UE_5.4"
+				}
+			},
+			{
+				"name": "Launch SV (Development)",
+				"request": "launch",
+				"program": "D:\\Unreal Projects\\SV\\Binaries\\Win64\\UnrealGame.exe",
+				"preLaunchTask": "SV Win64 Development Build",
+				"args": [
+				],
+				"cwd": "D:\\Epic\\UE_5.4",
+				"stopAtEntry": false,
+				"console": "integratedTerminal",
+				"type": "cppvsdbg",
+				"visualizerFile": "D:\\Epic\\UE_5.4\\Engine\\Extras\\VisualStudioDebugging\\Unreal.natvis",
+				"sourceFileMap": {
+					"D:\\build\\++UE5\\Sync": "D:\\Epic\\UE_5.4"
+				}
+			},
+			{
+				"name": "Launch SV (Test)",
+				"request": "launch",
+				"program": "D:\\Unreal Projects\\SV\\Binaries\\Win64\\UnrealGame-Win64-Test.exe",
+				"preLaunchTask": "SV Win64 Test Build",
+				"args": [
+				],
+				"cwd": "D:\\Epic\\UE_5.4",
+				"stopAtEntry": false,
+				"console": "integratedTerminal",
+				"type": "cppvsdbg",
+				"visualizerFile": "D:\\Epic\\UE_5.4\\Engine\\Extras\\VisualStudioDebugging\\Unreal.natvis",
+				"sourceFileMap": {
+					"D:\\build\\++UE5\\Sync": "D:\\Epic\\UE_5.4"
+				}
+			},
+			{
+				"name": "Launch SV (Shipping)",
+				"request": "launch",
+				"program": "D:\\Unreal Projects\\SV\\Binaries\\Win64\\UnrealGame-Win64-Shipping.exe",
+				"preLaunchTask": "SV Win64 Shipping Build",
+				"args": [
+				],
+				"cwd": "D:\\Epic\\UE_5.4",
+				"stopAtEntry": false,
+				"console": "integratedTerminal",
+				"type": "cppvsdbg",
+				"visualizerFile": "D:\\Epic\\UE_5.4\\Engine\\Extras\\VisualStudioDebugging\\Unreal.natvis",
+				"sourceFileMap": {
+					"D:\\build\\++UE5\\Sync": "D:\\Epic\\UE_5.4"
+				}
+			},
+			{
+				"name": "Launch SVEditor (Debug)",
+				"request": "launch",
+				"program": "D:\\Epic\\UE_5.4\\Engine\\Binaries\\Win64\\UnrealEditor-Win64-Debug.exe",
+				"preLaunchTask": "SVEditor Win64 Debug Build",
+				"args": [
+					"D:\\Unreal Projects\\SV\\SV.uproject"
+				],
+				"cwd": "D:\\Epic\\UE_5.4",
+				"stopAtEntry": false,
+				"console": "integratedTerminal",
+				"type": "cppvsdbg",
+				"visualizerFile": "D:\\Epic\\UE_5.4\\Engine\\Extras\\VisualStudioDebugging\\Unreal.natvis",
+				"sourceFileMap": {
+					"D:\\build\\++UE5\\Sync": "D:\\Epic\\UE_5.4"
+				}
+			},
+			{
+				"name": "Launch SVEditor (DebugGame)",
+				"request": "launch",
+				"program": "D:\\Epic\\UE_5.4\\Engine\\Binaries\\Win64\\UnrealEditor-Win64-DebugGame.exe",
+				"preLaunchTask": "SVEditor Win64 DebugGame Build",
+				"args": [
+					"D:\\Unreal Projects\\SV\\SV.uproject"
+				],
+				"cwd": "D:\\Epic\\UE_5.4",
+				"stopAtEntry": false,
+				"console": "integratedTerminal",
+				"type": "cppvsdbg",
+				"visualizerFile": "D:\\Epic\\UE_5.4\\Engine\\Extras\\VisualStudioDebugging\\Unreal.natvis",
+				"sourceFileMap": {
+					"D:\\build\\++UE5\\Sync": "D:\\Epic\\UE_5.4"
+				}
+			},
+			{
+				"name": "Launch SVEditor (Development)",
+				"request": "launch",
+				"program": "D:\\Epic\\UE_5.4\\Engine\\Binaries\\Win64\\UnrealEditor.exe",
+				"preLaunchTask": "SVEditor Win64 Development Build",
+				"args": [
+					"D:\\Unreal Projects\\SV\\SV.uproject"
+				],
+				"cwd": "D:\\Epic\\UE_5.4",
+				"stopAtEntry": false,
+				"console": "integratedTerminal",
+				"type": "cppvsdbg",
+				"visualizerFile": "D:\\Epic\\UE_5.4\\Engine\\Extras\\VisualStudioDebugging\\Unreal.natvis",
+				"sourceFileMap": {
+					"D:\\build\\++UE5\\Sync": "D:\\Epic\\UE_5.4"
+				}
+			},
+			{
+				"name": "Generate Project Files",
+				"type": "coreclr",
+				"request": "launch",
+				"preLaunchTask": "UnrealBuildTool Win64 Development Build",
+				"program": "D:\\Epic\\UE_5.4\\Engine\\Build\\BatchFiles\\RunUBT.bat",
+				"args": [
+					"-projectfiles",
+					"-vscode",
+					"-project=D:\\Unreal Projects\\SV\\SV.uproject",
+					"-game",
+					"-engine",
+					"-dotnet"
+				],
+				"console": "integratedTerminal",
+				"stopAtEntry": false,
+				"cwd": "D:\\Epic\\UE_5.4"
+			}
+		]
+	}
+}

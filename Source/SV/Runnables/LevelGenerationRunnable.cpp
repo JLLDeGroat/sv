@@ -48,73 +48,14 @@ void ULevelGenerationRunnable::ActivateThread() {
 	TArray<FVector> endArr;
 	endArr.Emplace(GetRandomEndZoneLocation());
 
-	//auto mainRoute = FindRouteBetweenRecursive(spawnArr, EndZone[RandomStream.RandRange(0, EndZone.Num() - 1)], TwoDGrid, MaxX + MaxY);
-
 	auto world = GetWorld();
-	/*auto spawnLocs = SpawnZone;
-	FGraphEventRef spawnTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, spawnLocs] {
-
-		for (int i = 0; i < spawnLocs.Num(); i++) {
-			auto actor = world->SpawnActor<AWorldGridItemActor>(spawnLocs[i], FRotator::ZeroRotator);
-			actor->SetIsSpawn();
-		}
-		}, TStatId(), nullptr, ENamedThreads::GameThread);
-
-	auto endLocs = EndZone;
-	FGraphEventRef endTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, endLocs] {
-		for (int i = 0; i < endLocs.Num(); i++) {
-			auto actor = world->SpawnActor<AWorldGridItemActor>(endLocs[i], FRotator::ZeroRotator);
-			actor->SetIsEnd();
-		}
-		}, TStatId(), nullptr, ENamedThreads::GameThread);*/
-
 
 	FindPrimaryRouteBetweenRecursive(spawnArr, EndZone[RandomStream.RandRange(0, EndZone.Num() - 1)], 80, 1);
-
-	/*for (int i = 0; i < PrimaryRoute.Num(); i++) {
-		auto thisRoute = PrimaryRoute[i];
-		FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, thisRoute] {
-			auto actor = world->SpawnActor<AWorldGridItemActor>(thisRoute, FRotator::ZeroRotator);
-			}, TStatId(), nullptr, ENamedThreads::GameThread);
-	}*/
-
 	FindPrimaryRouteBetweenRecursive(GetRandomLocationAlongPrimaryRoute(), GetRandomLocationWithinGrid(), 90, 2);
-
-	/*for (int i = 0; i < GetRouteById(2).Num(); i++) {
-		auto thisRoute = GetRouteById(2)[i];
-		FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, thisRoute] {
-			auto actor = world->SpawnActor<AWorldGridItemActor>(thisRoute, FRotator::ZeroRotator);
-			}, TStatId(), nullptr, ENamedThreads::GameThread);
-	}*/
-
 	FindPrimaryRouteBetweenRecursive(GetRandomLocationAlongPrimaryRoute(), GetRandomLocationWithinGrid(), 90, 3);
-	/*for (int i = 0; i < GetRouteById(3).Num(); i++) {
-		auto thisRoute = GetRouteById(3)[i];
-		FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, thisRoute] {
-			auto actor = world->SpawnActor<AWorldGridItemActor>(thisRoute, FRotator::ZeroRotator);
-			}, TStatId(), nullptr, ENamedThreads::GameThread);
-	}*/
 	FindPrimaryRouteBetweenRecursive(GetRandomLocationAlongPrimaryRoute(), GetRandomLocationWithinGrid(), 90, 4);
-	/*for (int i = 0; i < GetRouteById(4).Num(); i++) {
-		auto thisRoute = GetRouteById(4)[i];
-		FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, thisRoute] {
-			auto actor = world->SpawnActor<AWorldGridItemActor>(thisRoute, FRotator::ZeroRotator);
-			}, TStatId(), nullptr, ENamedThreads::GameThread);
-	}*/
 	FindPrimaryRouteBetweenRecursive(GetRandomLocationAlongPrimaryRoute(), GetRandomLocationWithinGrid(), 90, 5);
-	/*for (int i = 0; i < GetRouteById(5).Num(); i++) {
-		auto thisRoute = GetRouteById(5)[i];
-		FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, thisRoute] {
-			auto actor = world->SpawnActor<AWorldGridItemActor>(thisRoute, FRotator::ZeroRotator);
-			}, TStatId(), nullptr, ENamedThreads::GameThread);
-	}*/
 	FindPrimaryRouteBetweenRecursive(GetRandomLocationAlongPrimaryRoute(), GetRandomLocationWithinGrid(), 90, 6);
-	/*for (int i = 0; i < GetRouteById(6).Num(); i++) {
-		auto thisRoute = GetRouteById(6)[i];
-		FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, thisRoute] {
-			auto actor = world->SpawnActor<AWorldGridItemActor>(thisRoute, FRotator::ZeroRotator);
-			}, TStatId(), nullptr, ENamedThreads::GameThread);
-	}*/
 
 	GenerateCaveWalls();
 
@@ -127,14 +68,6 @@ void ULevelGenerationRunnable::ActivateThread() {
 	}
 
 	FillAllObstacleAllowedLocations();
-
-	/*for (int i = 0; i < ObstacleAllowedLocations.Num(); i++) {
-		auto thisLoc = ObstacleAllowedLocations[i];
-		FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, thisLoc] {
-			auto actor = world->SpawnActor<AWorldGridItemActor>(thisLoc, FRotator::ZeroRotator);
-			actor->SetIsStart();
-			}, TStatId(), nullptr, ENamedThreads::GameThread);
-	}*/
 
 	auto fenceGen = NewObject<UFenceGenerations>(this)
 		->SetupGeneration(GetWorld(), RandomStream, ObstacleAllowedLocations)

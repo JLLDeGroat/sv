@@ -82,7 +82,6 @@ void UDamageRecieveComponent::DoDamage(float multiplier, int damage, FVector loc
 			return UDebugMessages::LogError(this, "location was zero vector, cannot add impulse on death");
 
 		skeleton->AddRadialImpulse(location, 350, impulseDamage, ERadialImpulseFalloff::RIF_Linear);
-
 	}
 }
 

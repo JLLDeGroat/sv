@@ -26,6 +26,13 @@ void UActionsComponent::BeginPlay()
 	// ...
 }
 
+void UActionsComponent::SetCanExtract(bool val) {
+	bCanExtract = val;
+}
+bool UActionsComponent::GetCanExtract() {
+	return bCanExtract;
+}
+
 void UActionsComponent::SendActionsToUI() {
 	UDebugMessages::LogDisplay(this, "SendActionsToUI");
 	auto hudDelegates = UHudDelegates::GetInstance();
@@ -61,6 +68,10 @@ void UActionsComponent::SendActionsToUI() {
 					hudDelegates->_AddActionIconToHud.Broadcast(EActionType::AT_Overwatch, "O");
 			}
 		}
+	}
+
+	if (bCanExtract) {
+		hudDelegates->_AddActionIconToHud.Broadcast(EActionType::AT_Extract, "E");
 	}
 
 	hudDelegates->_AddActionIconToHud.Broadcast(EActionType::AT_Sleep, "9");

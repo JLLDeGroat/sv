@@ -8,7 +8,9 @@
 #include "../Environment/Components/VaultableComponent.h"
 #include "../Characters/Components/GridMovementComponent.h"
 #include "../Characters/Components/CharacterDetailsComponent.h"
+#include "../Characters/Components/AIComponent.h"
 #include "../Delegates/HudDelegates.h"
+#include "../Delegates/AIDelegates.h"
 #include "DrawDebugHelpers.h"
 
 void UPostMovementRunnable::ActivateThread() {
@@ -43,6 +45,16 @@ void UPostMovementRunnable::ActivateThread() {
 
 		FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([hudDelegates] {
 			hudDelegates->_RefreshCharacterDetailsWidget.Broadcast();
+			}, TStatId(), nullptr, ENamedThreads::GameThread);
+	}
+
+	if (MovedActor->GetComponentByClass<UAIComponent>()) {
+		auto aiDelegates = UAIDelegates::GetInstance();
+		if (!aiDelegates)
+			return UDebugMessages::LogError(this, "failed to get ai delegates");
+
+		FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([aiDelegates] {
+			aiDelegates->_AICharacterFinishedBehaviour.Broadcast();
 			}, TStatId(), nullptr, ENamedThreads::GameThread);
 	}
 }

@@ -7,6 +7,7 @@
 #include "AITurnRunnable.generated.h"
 
 class ISvChar;
+class UBaseRunnable;
 
 /**
  * 
@@ -19,11 +20,17 @@ public:
 
 	virtual void ActivateThread() override;
 
+	void KillThreads();
+
 private:
 
-	TArray<TScriptInterface<ISvChar>> ClosestCharactersToThisEnemy(TScriptInterface<ISvChar> enemy, TArray<TScriptInterface<ISvChar>> characters);
+	//TArray<TScriptInterface<ISvChar>> ClosestCharactersToThisEnemy(TScriptInterface<ISvChar> enemy, TArray<TScriptInterface<ISvChar>> characters);
 	bool IsAlreadyAdjacentCharacter(FVector source, FVector characterLoc);
 	bool AttemptToRouteToPossibleLocation(TScriptInterface<ISvChar> character, FVector possibleLocation);
 
-	void TryMeleeAttack(TScriptInterface<ISvChar> meleeAttacker, TScriptInterface<ISvChar> character);
+	//void TryMeleeAttack(TScriptInterface<ISvChar> meleeAttacker, TScriptInterface<ISvChar> character);
+
+	UPROPERTY() UBaseRunnable* PreMoveRunnable;
+	UPROPERTY() UBaseRunnable* MoveRunnable;
+	UPROPERTY() UBaseRunnable* PostMoveRunnable;
 };
