@@ -2,13 +2,15 @@
 
 
 #include "ActionListItemWidget.h"
-#include "../../../Helpers/EquipmentInventoryHelpers.h"
+#include "../../../Helpers/UserWidgetHelpers.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
+#include "Components/Image.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 
 #include "../../../../Player/GamePlayerController.h"
 #include "../../../../Player/Actions/Base/ActionManager.h"
+#include "../../../../Delegates/HudDelegates.h"
 
 void UActionListItemWidget::NativeConstruct() {
 	Super::NativeConstruct();
@@ -21,13 +23,22 @@ void UActionListItemWidget::SetupActionItem(EActionType actionType, FString shor
 	ShortCut = shortCut;
 
 
-	auto button = UEquipmentInventoryHelpers::GetButtonFromWidget(this, "ActionButton");
-	if (button)
+	auto button = UUserWidgetHelpers::GetButtonFromWidget(this, "ActionButton");
+	if (button) {
 		button->OnClicked.AddDynamic(this, &UActionListItemWidget::OnButtonClick);
-
-	auto shortCutText = UEquipmentInventoryHelpers::GetTextBlockFromWidget(this, "ActionShortCut");
+		button->OnHovered.AddDynamic(this, &UActionListItemWidget::OnButtonHovered);
+		button->OnUnhovered.AddDynamic(this, &UActionListItemWidget::OnButtonUnHovered);
+	}
+	auto shortCutText = UUserWidgetHelpers::GetTextBlockFromWidget(this, "ActionShortCut");
 	if (shortCutText)
 		shortCutText->SetText(FText::FromString(shortCut));
+
+	auto textureForAction = UUserWidgetHelpers::GetTextureForActionType(actionType);
+	if (textureForAction) {
+		auto imageWidget = UUserWidgetHelpers::GetImageFromWidget(this, "Image");
+		if (imageWidget)
+			imageWidget->SetBrushFromTexture(textureForAction);
+	}
 }
 
 void UActionListItemWidget::OnButtonClick() {
@@ -42,4 +53,19 @@ void UActionListItemWidget::OnButtonClick() {
 		return UDebugMessages::LogError(this, "failed to get action manager");
 
 	actionManager->DoActionFromUI(Action);
+}
+
+void UActionListItemWidget::OnButtonUnHovered() {
+	auto hudDelegates = UHudDelegates::GetInstance();
+	if (!hudDelegates)
+		return UDebugMessages::LogError(this, "could not get hud delegeats, cannot do target icon clicked");
+
+	hudDelegates->_OnHudItemUnhovered.Broadcast();
+}
+void UActionListItemWidget::OnButtonHovered() {
+	auto hudDelegates = UHudDelegates::GetInstance();
+	if (!hudDelegates)
+		return UDebugMessages::LogError(this, "could not get hud delegeats, cannot do target icon clicked");
+
+	hudDelegates->_OnHudItemHovered.Broadcast();
 }

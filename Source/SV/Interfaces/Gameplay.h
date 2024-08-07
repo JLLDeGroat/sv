@@ -7,6 +7,7 @@
 #include "Gameplay.generated.h"
 
 class UCharacterManager;
+class UWinLossManager;
 
 /**
  * 
@@ -25,6 +26,7 @@ class SV_API IGameplay {
 public:
 
 	virtual UCharacterManager* GetCharacterManager() = 0;
+	virtual UWinLossManager* GetWinLossManager() = 0;
 
 	virtual void EndTurn() = 0;
 	virtual void BeginPlayerTurn() = 0;

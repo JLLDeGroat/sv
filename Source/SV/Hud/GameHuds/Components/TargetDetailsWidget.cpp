@@ -136,7 +136,6 @@ void UTargetDetailsWidget::CycleTarget() {
 	if (currentTarget)
 		currentId = currentTarget->GetId();
 
-
 	auto detailsBox = GetDetailsBox();
 	auto detailChildren = detailsBox->GetAllChildren();
 
@@ -146,7 +145,6 @@ void UTargetDetailsWidget::CycleTarget() {
 		auto res = GetItemsFromHorizontalBox(horizontalBox);
 		for (int x = 0; x < res.Num(); x++)
 			items.Emplace(res[x]);
-
 	}
 
 	bool foundCurrent = false;
@@ -174,7 +172,6 @@ void UTargetDetailsWidget::CycleTarget() {
 			itemWidgetButton->WidgetStyle.Normal.OutlineSettings.Color = FSlateColor(FLinearColor(0, 55, 255, 0));
 		}
 	}
-
 	if (!foundNew && items.Num() > 0) {
 		targetingComponent->SetCurrentMainTargetId(items[0]->GetId());
 

@@ -8,6 +8,7 @@
 #include "Managers/TurnManager.h"
 #include "Managers/CharacterManager.h"
 #include "Managers/LevelSpawnerManager.h"
+#include "Managers/WinLossManager.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "../Runnables/LevelGenerationRunnable.h"
 
@@ -19,6 +20,7 @@ AGameplayMode::AGameplayMode() {
 	CharacterManager = CreateDefaultSubobject<UCharacterManager>(TEXT("CharacterManager"));
 	TurnManager = CreateDefaultSubobject<UTurnManager>(TEXT("TurnManager"));
 	LevelSpawnerManager = CreateDefaultSubobject<ULevelSpawnerManager>(TEXT("SpawnerManager"));
+	WinLossManager = CreateDefaultSubobject<UWinLossManager>(TEXT("WinLoss"));
 }
 
 void AGameplayMode::BeginPlay() {
@@ -32,6 +34,9 @@ void AGameplayMode::BeginPlay() {
 
 UCharacterManager* AGameplayMode::GetCharacterManager() {
 	return CharacterManager;
+}
+UWinLossManager* AGameplayMode::GetWinLossManager() {
+	return WinLossManager;
 }
 
 void AGameplayMode::EndTurn() {

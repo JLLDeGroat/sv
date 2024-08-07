@@ -11,7 +11,8 @@ class UStaticMeshComponent;
 class UTravelComponent;
 class UBulletDetailsComponent;
 class UBulletTrailComponent;
-
+class UBulletSoundComponent;
+class UBulletHitSoundComponent;
 UCLASS()
 class SV_API ABullet : public AActor
 {
@@ -30,6 +31,8 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UTravelComponent* TravelComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UBulletDetailsComponent* BulletDetailsComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UBulletTrailComponent* BulletTrailComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UBulletSoundComponent* BulletFireSoundComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UBulletHitSoundComponent* BulletHitSoundComponent;
 
 
 	UFUNCTION() void OnAutoDestroyCallback();

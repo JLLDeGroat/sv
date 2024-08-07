@@ -35,7 +35,7 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) ECameraState CurrentCameraState;
 private:
 
 	void CinematicAttackCameraMovement(AActor* attacker, AActor* target);
@@ -47,8 +47,6 @@ private:
 	
 	UPROPERTY() FVector CurrentMoveTo;
 	UPROPERTY() FVector CurrentRotateToLocation;
-
-	UPROPERTY() ECameraState CurrentCameraState;
 
 	UPROPERTY() bool CurrentlyMoving;
 

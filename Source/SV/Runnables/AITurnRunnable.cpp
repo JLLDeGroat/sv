@@ -55,6 +55,18 @@ void UAITurnRunnable::ActivateThread() {
 	}
 
 	for (int i = 0; i < aiEnemies.Num(); i++) {
+		//check is active
+		auto aiComponent = aiEnemies[i]->GetAsActor()->GetComponentByClass<UAIComponent>();
+		if (!aiComponent) {
+			UDebugMessages::LogError(this, "No Ai component, skipping this enemy");
+			continue;
+		}
+
+		if (!aiComponent->GetIsActiveAi()) {
+			UDebugMessages::LogError(this, "This Ai does not have an actiive ai component, will skip this enemy");
+			continue;
+		}
+
 		auto preMoveRunnable = NewObject<UPreMoveChecker>();
 		PreMoveRunnable = preMoveRunnable;
 		preMoveRunnable->SetThisEnemy(aiEnemies[i]);

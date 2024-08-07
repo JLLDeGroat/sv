@@ -8,6 +8,8 @@
 #include "Components/BulletDetailsComponent.h"
 #include "../../Utilities/SvUtilities.h"
 #include "Components/BulletTrailComponent.h"
+#include "Components/BulletSoundComponent.h"
+#include "Components/BulletHitSoundComponent.h"
 
 // Sets default values
 ABullet::ABullet()
@@ -40,6 +42,12 @@ ABullet::ABullet()
 	BulletDetailsComponent = CreateDefaultSubobject<UBulletDetailsComponent>(TEXT("BulletDetails"));
 	BulletTrailComponent = CreateDefaultSubobject<UBulletTrailComponent>(TEXT("BulletTrail"));
 	BulletTrailComponent->SetupAttachment(RootComponent);
+
+
+	BulletFireSoundComponent = CreateDefaultSubobject<UBulletSoundComponent>(TEXT("FireSound"));
+	BulletHitSoundComponent = CreateDefaultSubobject<UBulletHitSoundComponent>(TEXT("HitSound"));
+	BulletHitSoundComponent->SetSphereRadius(0);
+	BulletFireSoundComponent->SetSphereRadius(0);
 }
 
 // Called when the game starts or when spawned
@@ -49,6 +57,11 @@ void ABullet::BeginPlay()
 
 	//TODO Uncomment OnDebug
 	GetWorld()->GetTimerManager().SetTimer(AutoDestroyTimer, this, &ABullet::OnAutoDestroyCallback, 5.0f, false);
+
+	if (BulletFireSoundComponent) BulletFireSoundComponent->SetWorldLocation(GetActorLocation());
+	if (BulletHitSoundComponent) BulletHitSoundComponent->SetWorldLocation(GetActorLocation());
+
+	BulletFireSoundComponent->SetSphereRadius(800);
 }
 
 // Called every frame

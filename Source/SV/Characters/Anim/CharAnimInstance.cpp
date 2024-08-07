@@ -19,6 +19,7 @@
 #include "../../Equipment/Throwable/Components/ThrowTravelComponent.h"
 #include "../../Equipment/Components/EquipmentDetailsComponent.h"
 #include "../Components/AIComponent.h"
+#include "Animation/AnimNode_StateMachine.h"
 
 UCharAnimInstance::UCharAnimInstance(const FObjectInitializer& ObjectInitializer)
 	: UAnimInstance(ObjectInitializer) {
@@ -30,6 +31,15 @@ UCharAnimInstance::UCharAnimInstance(const FObjectInitializer& ObjectInitializer
 
 void UCharAnimInstance::NativeUpdateAnimation(float DeltaSeconds) {
 	Super::NativeUpdateAnimation(DeltaSeconds);
+
+	//getting state machines, future code helper
+	//auto stateMachine = GetStateMachineInstanceFromName(FName("GruntStateMachine"));
+	//if (stateMachine) {
+	//	auto currentState = stateMachine->GetCurrentState();
+	//	auto stateName = stateMachine->GetCurrentStateName();
+
+	//	UDebugMessages::LogDisplay(this, "current state " + stateName.ToString());
+	//}
 }
 
 void UCharAnimInstance::UpdateSpeed(float value) {
@@ -51,6 +61,12 @@ void UCharAnimInstance::SetIsCrouching(bool val) {
 }
 void UCharAnimInstance::SetIsReloading(bool val) {
 	bIsReloading = val;
+}
+void UCharAnimInstance::SetIsTakenDamage(bool val) {
+	bHasTakenDamage = val;
+}
+void UCharAnimInstance::SetIsAiActive(bool val) {
+	bIsAiActive = val;
 }
 void UCharAnimInstance::OnGunFire() {
 	auto owningActor = GetOwningActor();
@@ -232,4 +248,7 @@ void UCharAnimInstance::OnReloadFinish() {
 		return UDebugMessages::LogError(this, "failed to get character details component");
 
 	characterDetails->RemoveActionPoints(equipmentDetailsComponent->GetReloadApCost());
+}
+void UCharAnimInstance::OnFinishTakenDamage() {
+	bHasTakenDamage = false;
 }

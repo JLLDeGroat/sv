@@ -50,6 +50,9 @@ void UGrenadeActionComponent::DoAction() {
 		ThrowableChosen = EThrowable::T_Grenade;
 		auto throwable = throwableComponent->GetThrowableItem(ThrowableChosen);
 
+		if (!throwable)
+			return UDebugMessages::LogError(this, "could not find throwable");
+
 		auto detailsComponent = actor->GetComponentByClass<UCharacterDetailsComponent>();
 
 		if (throwable->GetApCost() > detailsComponent->GetActionPoints())

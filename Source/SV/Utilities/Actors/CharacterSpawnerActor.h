@@ -35,4 +35,6 @@ protected:
  
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* RootMesh;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) int GrenadeAmount;
+
 };

@@ -26,6 +26,8 @@ public:
 protected:
 
 	UFUNCTION() void OnCharacterButtonClicked();
+	UFUNCTION() void OnHovered();
+	UFUNCTION() void OnUnhovered();
 	UPROPERTY() AActor* RepresentedActor;
 
 	UPROPERTY(BlueprintReadOnly, Transient, meta = (BindWidgetAnim)) UWidgetAnimation* AnimateIn;

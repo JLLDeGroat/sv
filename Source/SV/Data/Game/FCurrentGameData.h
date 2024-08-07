@@ -5,6 +5,10 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "../../Enums/EEquipmentEnums.h"
+#include "../../Enums/EWorldEnums.h"
+#include "Mission/FMissionDetails.h"
+#include "Stats/FCrewMemberStats.h"
+#include "World/FCurrentWorldData.h"
 
 #include "FCurrentGameData.generated.h"
 
@@ -22,6 +26,7 @@ public:
 		Health = 0;
 		MaxHealth = 0;
 		Bio = "";
+		Stats = FCrewMemberStats();
 	}
 
 	FCrew(FString fName, FString lName, FString bio, int health, int maxHealth, FGuid guid = FGuid::NewGuid()) {
@@ -33,23 +38,24 @@ public:
 		MaxHealth = maxHealth;
 		Bio = bio;
 		Id = guid;
+		Stats = FCrewMemberStats();
 	}
 
 	FString GetName() const { return FirstName + " " + LastName; }
 	FGuid GetId() const { return Id; }
+	FCrewMemberStats* GetStats() { return &Stats; }
+	void SetHealth(int health) { Health = health; }
 
 protected:
 	UPROPERTY() FString FirstName;
 	UPROPERTY() FString LastName;
 	UPROPERTY() FString NickName;
 	UPROPERTY() FString Bio;
-
 	UPROPERTY() EGun EquippedGun;
-
 	UPROPERTY() int Health;
 	UPROPERTY() int MaxHealth;
-
 	UPROPERTY() FGuid Id;
+	UPROPERTY() FCrewMemberStats Stats;
 };
 
 
@@ -59,7 +65,9 @@ struct SV_API FCrewPrimaries
 	GENERATED_BODY()
 public:
 	FCrewPrimaries() {
-
+		GunType = EGun::INVALID;
+		CrewMember = FGuid::FGuid();
+		Id = FGuid::FGuid();
 	}
 
 	FCrewPrimaries(EGun gun, FGuid guid = FGuid::FGuid()) {
@@ -151,6 +159,43 @@ protected:
 	UPROPERTY() FGuid Id;
 };
 
+USTRUCT()
+struct SV_API FCurrentMission
+{
+	GENERATED_BODY()
+public:
+	FCurrentMission() {
+		Name = "INVALID";
+		Type = EMissionType::INVALID;
+		Id = FGuid::FGuid();
+		CurrentTurn = 1;
+		TurnLimit = 999;
+	}
+
+	FCurrentMission(EMissionType missionType, FString missionName, int turnLimit = 999) {
+		Name = missionName;
+		Type = missionType;
+		Id = FGuid::NewGuid();
+		CurrentTurn = 1;
+		TurnLimit = turnLimit;
+	}
+
+	EMissionType GetType() const { return Type; }
+	FString GetName() { return Name; }
+	FGuid GetId() const { return Id; }
+	int GetCurrentTurn() const { return CurrentTurn; }
+	int GetTurnLimit()const { return TurnLimit; }
+
+	FMissionDetails* GetMissionDetails() { return &MissionDetails; }
+protected:
+
+	UPROPERTY() EMissionType Type;
+	UPROPERTY() FString Name;
+	UPROPERTY() FGuid Id;
+	UPROPERTY() FMissionDetails MissionDetails = FMissionDetails();
+	UPROPERTY() int CurrentTurn;
+	UPROPERTY() int TurnLimit;
+};
 
 /**
  *
@@ -174,12 +219,20 @@ public:
 	TArray<FCrew> GetCrew() {
 		return Crew;
 	}
-	FCrew GetCrewMember(FGuid crewMemberId) {
+	FCrew* GetCrewMember(FGuid crewMemberId) {
 		for (int i = 0; i < Crew.Num(); i++)
 			if (Crew[i].GetId() == crewMemberId)
-				return Crew[i];
+				return &Crew[i];
 
-		return FCrew();
+		return nullptr;
+	}
+	void SetCrewAsDead(FGuid crewMemberId) {
+		for (int i = 0; i < Crew.Num(); i++)
+			if (Crew[i].GetId() == crewMemberId) {
+				auto deadCrew = FCrew(Crew[i]);
+				Crew.RemoveAt(i);
+				return;
+			}
 	}
 #pragma endregion
 
@@ -206,12 +259,12 @@ public:
 	}
 
 	TArray<FCrewPrimaries> GetCrewPrimaries() { return CrewPrimaries; }
-	FCrewPrimaries GetCrewPrimary(FGuid crewId) {
+	FCrewPrimaries* GetCrewPrimary(FGuid crewId) {
 		for (int i = 0; i < CrewPrimaries.Num(); i++)
 			if (CrewPrimaries[i].GetCrewMemberId() == crewId)
-				return CrewPrimaries[i];
+				return &CrewPrimaries[i];
 
-		return FCrewPrimaries();
+		return nullptr;
 	}
 #pragma endregion
 
@@ -266,10 +319,42 @@ public:
 		return nullptr;
 	}
 
+	void RemoveTool(FGuid toolId) {
+		for (int i = 0; i < CrewTools.Num(); i++)
+			if (CrewTools[i].GetToolId() == toolId)
+				return CrewTools.RemoveAt(i);
+	}
+
+#pragma endregion
+
+#pragma region CurrentMission
+
+	FCurrentMission* StartNewMission(FString name, EMissionType missionType) {
+		CurrentMission = FCurrentMission(missionType, name);
+		return &CurrentMission;
+	}
+
+	FCurrentMission* GetCurrentMission() { return &CurrentMission; }
+
+	void SetIsHistoryMission() {
+		HistoricMissions.Emplace(FCurrentMission(CurrentMission));
+	}
+
+#pragma endregion
+
+#pragma region WorldData
+
+	FCurrentWorldData* GetWorldData() { return &WorldData; }
+
 #pragma endregion
 
 protected:
 	UPROPERTY() TArray<FCrew> Crew;
+	UPROPERTY() TArray<FCrew> DeadCrew;
 	UPROPERTY() TArray<FCrewPrimaries> CrewPrimaries;
 	UPROPERTY() TArray<FCrewTools> CrewTools;
+
+	UPROPERTY()  FCurrentMission CurrentMission;
+	UPROPERTY()  TArray<FCurrentMission> HistoricMissions;
+	UPROPERTY()  FCurrentWorldData WorldData;
 };

@@ -144,10 +144,10 @@ void UPawnCameraComponent::DoOverwatchCinematicAttackCameraMovement(AActor* atta
 	CinematicAttackCameraMovement(attacker, target);
 }
 void UPawnCameraComponent::CinematicAttackCameraMovement(AActor* attacker, AActor* target) {
-	AttemptToAlterAttackerStatusWidgetVisibility(false);
-
 	CinematicActorAttacker = attacker;
 	CinematicActorTarget = target;
+
+	AttemptToAlterAttackerStatusWidgetVisibility(false);
 
 	CurrentlyMoving = true;
 	SetComponentTickEnabled(true);

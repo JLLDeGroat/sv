@@ -31,10 +31,6 @@ UThrowableComponent::UThrowableComponent(const FObjectInitializer& ObjectInitial
 void UThrowableComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
-	UDebugMessages::LogWarning(this, "Debug method here adding one test grenade");
-	AddThrowable(EThrowable::T_Grenade, 1);
 	SetComponentTickEnabled(false);
 }
 
@@ -75,7 +71,7 @@ FThrowableDataItem* UThrowableComponent::GetThrowableItem(EThrowable throwable) 
 	return nullptr;
 }
 
-void UThrowableComponent::AddThrowable(EThrowable throwable, int amount) {
+void UThrowableComponent::AddThrowable(EThrowable throwable, int amount, FGuid thrownId) {
 	for (int i = 0; i < Throwables.Num(); i++) {
 		if (Throwables[i].GetThrowable()->GetThrowable() == throwable)
 			return Throwables[i].Add(amount);
@@ -84,13 +80,28 @@ void UThrowableComponent::AddThrowable(EThrowable throwable, int amount) {
 	auto instance = USvUtilities::GetGameInstance(GetOwner()->GetWorld());
 	FThrowableDataItem dataItem;
 	instance->GetThrowableDataItem(throwable, dataItem);
-	Throwables.Emplace(FThrowable(dataItem, 1));
+	Throwables.Emplace(FThrowable(dataItem, 1, thrownId));
 }
 
 void UThrowableComponent::ThrowAtLocation(FVector location) {
 	ThrowingDestination = location;
 	AnimInstance->SetIsThrowing(true);
 	SetComponentTickEnabled(true);
+}
+
+void UThrowableComponent::AddThrowableToPreviouslyThrown(EThrowable throwable, int amount, FGuid thrownId) {
+	for (int i = 0; i < PreviouslyThrownThrowables.Num(); i++) {
+		if (PreviouslyThrownThrowables[i].GetThrowable()->GetThrowable() == throwable)
+			return PreviouslyThrownThrowables[i].Add(amount);
+	}
+
+	auto instance = USvUtilities::GetGameInstance(GetOwner()->GetWorld());
+	FThrowableDataItem dataItem;
+	instance->GetThrowableDataItem(throwable, dataItem);
+	PreviouslyThrownThrowables.Emplace(FThrowable(dataItem, 1, thrownId));
+}
+TArray<FThrowable> UThrowableComponent::GetPreviouslyThrownThrowables() {
+	return PreviouslyThrownThrowables;
 }
 
 void UThrowableComponent::SpawnThrowableOfTypeAtRightHand(EThrowable throwable) {
@@ -107,6 +118,16 @@ void UThrowableComponent::SpawnThrowableOfTypeAtRightHand(EThrowable throwable) 
 
 	if (!ThrownEquipment)
 		return UDebugMessages::LogError(this, "failed to get spawned throwable");
+
+	FGuid thrownThrowable = FGuid::FGuid();
+	for (int i = 0; i < Throwables.Num(); i++)
+		if (Throwables[i].GetThrowable()->GetThrowable() == throwable)
+			thrownThrowable = Throwables[i].GetThrowableId();
+
+	if (thrownThrowable == FGuid::FGuid())
+		return UDebugMessages::LogError(this, "failed to get throwable id");
+
+	AddThrowableToPreviouslyThrown(throwable, 1, thrownThrowable);
 
 	auto travelComp = ThrownEquipment->GetComponentByClass<UThrowTravelComponent>();
 	travelComp->SetDestination(ThrowingDestination, skeletalMesh->GetSocketLocation(FName("RightHandSocket")));

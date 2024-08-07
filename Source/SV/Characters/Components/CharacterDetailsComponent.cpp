@@ -10,8 +10,7 @@ UCharacterDetailsComponent::UCharacterDetailsComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
-
-	// ...
+	CharacterId = FGuid::NewGuid();
 }
 
 
@@ -130,4 +129,11 @@ FString UCharacterDetailsComponent::GetCharacterName() {
 }
 float UCharacterDetailsComponent::GetHealthAsPercentage() const {
 	return (float)Health / (float)MaxHealth;
+}
+
+FGuid UCharacterDetailsComponent::GetCharacterId() const {
+	return CharacterId;
+}
+void UCharacterDetailsComponent::SetCharacterId(FGuid guid) {
+	CharacterId = guid;
 }

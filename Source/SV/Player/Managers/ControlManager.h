@@ -10,7 +10,7 @@ class USelectionManager;
 class AGrenadeIndicatorActor;
 class AGridSelectionActor;
 /**
- * 
+ *
  */
 UCLASS()
 class SV_API UControlManager : public UBaseControllerManager
@@ -36,6 +36,9 @@ public:
 	void TickShowGrenadeIndicator(FVector mouseLocation);
 	void TickFindMovementPath(FVector localised);
 
+	UFUNCTION() void OnUIItemHovered();
+	UFUNCTION() void OnUIItemUnhovered();
+
 protected:
 
 	virtual void BeginPlay() override;
@@ -48,5 +51,10 @@ private:
 	UPROPERTY() AGrenadeIndicatorActor* GrenadeIndicatorActor;
 	UPROPERTY() AGridSelectionActor* GridSelectionActor;
 	UPROPERTY() USelectionManager* SelectionManager;
-	
+
+
+	UPROPERTY() bool bDisabledMouseDesignationOnHover;
+	UPROPERTY() bool bDisabledMouseExplosionDesignationOnHover;
+	UPROPERTY() bool bIsHovered;
+
 };

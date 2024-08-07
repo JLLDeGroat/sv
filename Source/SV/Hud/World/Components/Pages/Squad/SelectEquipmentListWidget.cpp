@@ -6,7 +6,7 @@
 #include "../../../../../Utilities/SvUtilities.h"
 #include "../../../../../Instance/SvGameInstance.h"
 #include "../../../../../Instance/Managers/CurrentGameDataManager.h"
-#include "../../../../Helpers/EquipmentInventoryHelpers.h"
+#include "../../../../Helpers/UserWidgetHelpers.h"
 #include "Components/ScrollBox.h"
 #include "Components/Button.h"
 #include "CrewDetailsGridWidget.h"
@@ -124,7 +124,7 @@ void USelectEquipmentListWidget::PrimaryButtonClicked(EGun gunType, FGuid primar
 
 	auto currentPrimary = gameData->GetCrewPrimary(CurrentMemberId);
 
-	gameData->UnnassignPrimaryFromCrew(currentPrimary.GetPrimaryId());
+	gameData->UnnassignPrimaryFromCrew(currentPrimary->GetPrimaryId());
 	if (gunType != EGun::INVALID)
 		gameData->AssignPrimaryToCrew(primaryId, CurrentMemberId);
 

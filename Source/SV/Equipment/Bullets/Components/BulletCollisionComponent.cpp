@@ -7,6 +7,7 @@
 #include "../../../Characters/Components/HitCapsuleComponent.h"
 #include "../../../Characters/Components/HitBoxComponent.h"
 #include "../../../Characters/Components/DamageRecieveComponent.h"
+#include "BulletHitSoundComponent.h"
 #include "BulletDetailsComponent.h"
 #include "TravelComponent.h"
 
@@ -36,6 +37,7 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent* OverlappedComp, 
 		TScriptInterface<IHitComponent> hitComp = OtherComp;
 		auto bulletDetails = GetOwner()->GetComponentByClass<UBulletDetailsComponent>();
 		auto damageRecieve = OtherActor->GetComponentByClass<UDamageRecieveComponent>();
+
 		if (!bulletDetails || !damageRecieve) {
 			UDebugMessages::LogError(this, "no bullet details or damage recieve, ERROR, will do no damage");
 		}
@@ -61,9 +63,15 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent* OverlappedComp, 
 	}
 }
 
+void UBulletCollisionComponent::AttemptToInitiateBulletSound() {
+	auto hitComponent = GetOwner()->GetComponentByClass<UBulletHitSoundComponent>();
+	if (hitComponent) {
+		hitComponent->SetSphereRadius(800);
+	}
+}
+
 void UBulletCollisionComponent::OnDestroyCallback() {
 	UDebugMessages::LogDisplay(this, "Destroying bullet");
 	GetOwner()->Destroy();
 }
-
 

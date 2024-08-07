@@ -10,8 +10,11 @@
 class IGameplay;
 class UNiagaraSystem;
 class UCharacterManager;
+class UWinLossManager;
 class USvGameInstance;
 class UTexture2D;
+
+struct FCurrentGameData;
 
 UCLASS()
 class SV_API USvUtilities : public UObject
@@ -48,8 +51,10 @@ public:
 
 	static TScriptInterface<IGameplay> GetGameMode(UWorld* world);
 	static UCharacterManager* GetGameModeCharacterManager(UWorld* world);
+	static UWinLossManager* GetGameModeWinLossManager(UWorld* world);
 
 	static USvGameInstance* GetGameInstance(UWorld* world);
+	static FCurrentGameData* GetCurrentGameData(UWorld* world);
 
 	static int GetWorldMapGridMultiplier();
 

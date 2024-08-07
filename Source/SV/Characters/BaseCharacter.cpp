@@ -31,8 +31,6 @@ ABaseCharacter::ABaseCharacter(const FObjectInitializer& ObjectInitializer) : AC
 
 	DetailsComponent = CreateDefaultSubobject<UCharacterDetailsComponent>(TEXT("DetailsComponent"));
 
-	SvCharId = FGuid::NewGuid();
-
 	SetActorScale3D(FVector(.8f));
 }
 
@@ -80,9 +78,6 @@ void ABaseCharacter::TryVisualiseTargets() {
 }
 AActor* ABaseCharacter::GetAsActor() {
 	return this;
-}
-FGuid ABaseCharacter::GetSvCharId() {
-	return SvCharId;
 }
 
 TArray<TScriptInterface<IHitComponent>> ABaseCharacter::GetHitComponents() {

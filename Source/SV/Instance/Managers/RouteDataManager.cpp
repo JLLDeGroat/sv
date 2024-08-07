@@ -4,7 +4,7 @@
 #include "RouteDataManager.h"
 
 URouteDataManager::URouteDataManager() {
-
+	
 }
 
 void URouteDataManager::SetCurrentRoute(TArray<FVector2D> arr) {

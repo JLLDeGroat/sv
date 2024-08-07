@@ -8,12 +8,12 @@
 #include "CharacterDetailsComponent.generated.h"
 
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class SV_API UCharacterDetailsComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	// Sets default values for this component's properties
 	UCharacterDetailsComponent();
 
@@ -21,7 +21,7 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
@@ -61,19 +61,19 @@ public:
 	FString GetCharacterName();
 
 	float GetHealthAsPercentage() const;
+
+	FGuid GetCharacterId() const;
+	void SetCharacterId(FGuid guid);
 private:
 
 	UPROPERTY() ECharacterControl ControlType;
 	UPROPERTY() int Health;
 	UPROPERTY() int MaxHealth;
-
 	UPROPERTY() int MovementPoints;
 	UPROPERTY() int MaxMovementPoints;
-
 	UPROPERTY() int ActionPoints;
 	UPROPERTY() int MaxActionPoints;
-
 	UPROPERTY() bool bCanVault;
-
 	UPROPERTY() FString CharacterName;
+	UPROPERTY() FGuid CharacterId;
 };

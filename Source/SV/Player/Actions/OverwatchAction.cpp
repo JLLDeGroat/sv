@@ -6,6 +6,7 @@
 #include "../../Equipment/Utility/OverwatchArea.h"
 #include "../../Interfaces/Selectable.h"
 #include "../Managers/SelectionManager.h"
+#include "../Managers/ControlManager.h"
 #include "../../Utilities/SvUtilities.h"
 #include "../../Utilities/GridUtilities.h"
 #include "../Components/PawnCameraComponent.h"
@@ -22,6 +23,7 @@ UOverwatchAction::UOverwatchAction(const FObjectInitializer& ObjectInitializer)
 	PrimaryComponentTick.bCanEverTick = true;
 
 	ValidCameraStates.Emplace(ECameraState::CS_Control);
+	ValidCameraStates.Emplace(ECameraState::CS_Overwatch);
 }
 
 void UOverwatchAction::DoAction() {
@@ -35,17 +37,38 @@ void UOverwatchAction::DoAction() {
 	if (!pawnCameraComponent)
 		return UDebugMessages::LogError(this, "failed to get pawn camera component");
 
+	if (!IsInValidCameraState(pawnCameraComponent->GetCurrentCameraState()))
+		return;
+
 	auto selected = SelectionManager->GetSelected();
 	if (selected) {
-		if (!OverwatchArea)
-			OverwatchArea = GetWorld()->SpawnActor<AOverwatchArea>(FVector(0, 0, -1000), FRotator::ZeroRotator);
+		auto controlComponent = controller->GetComponentByClass<UControlManager>();
+		if (!controlComponent)
+			return UDebugMessages::LogError(this, "failed to get control component");
 
-		auto actorOwner = selected->GetAsActor();
-		OverwatchArea->SetOverWatchOwner(actorOwner);
-		pawnCameraComponent->UpdateCameraState(ECameraState::CS_Overwatch,
-			FVector::ZeroVector, FVector::ZeroVector, true);
+		if (pawnCameraComponent->GetCurrentCameraState() == ECameraState::CS_Control) {
+			if (!OverwatchArea)
+				OverwatchArea = GetWorld()->SpawnActor<AOverwatchArea>(FVector(0, 0, -1000), FRotator::ZeroRotator);
 
-		SetComponentTickEnabled(true);
+			auto actorOwner = selected->GetAsActor();
+			OverwatchArea->SetOverWatchOwner(actorOwner);
+			pawnCameraComponent->UpdateCameraState(ECameraState::CS_Overwatch,
+				FVector::ZeroVector, FVector::ZeroVector, true);
+
+			ControlManager->SetCanMouseDesignateSelectionDecal(false);
+			SetComponentTickEnabled(true);
+		}
+		else if (pawnCameraComponent->GetCurrentCameraState() == ECameraState::CS_Overwatch) {
+			if (OverwatchArea) {
+				OverwatchArea->Destroy();
+				OverwatchArea = nullptr;
+			}
+			pawnCameraComponent->UpdateCameraState(ECameraState::CS_Control,
+				FVector::ZeroVector, FVector::ZeroVector, true);
+
+			ControlManager->SetCanMouseDesignateSelectionDecal(true);
+			SetComponentTickEnabled(false);
+		}
 	}
 }
 

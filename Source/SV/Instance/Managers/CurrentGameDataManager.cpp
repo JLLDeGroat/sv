@@ -3,8 +3,9 @@
 
 #include "CurrentGameDataManager.h"
 
-void UCurrentGameDataManager::AddCrewMember(FString Name, FString LastName, FString Bio, int Health, int MaxHealth) {
-	CurrentGameData.AddCrewMember(Name, LastName, Bio, Health, MaxHealth);
+FGuid UCurrentGameDataManager::AddCrewMember(FString Name, FString LastName, FString Bio, int Health, int MaxHealth) {
+	auto memberId = CurrentGameData.AddCrewMember(Name, LastName, Bio, Health, MaxHealth);
+	return memberId;
 }
 
 TArray<FCrew> UCurrentGameDataManager::GetEntireCrew() {

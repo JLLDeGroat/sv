@@ -11,8 +11,13 @@
 #include "HealthAndStatusWidgetComponent.h"
 #include "../../GameModes/Managers/CharacterManager.h"
 #include "../../Utilities/SvUtilities.h"
+#include "../../Instance/Managers/CurrentGameDataManager.h"
+#include "../../Instance/SvGameInstance.h"
+#include "../../Runnables/Checkers/WinLossCheckerRunnable.h"
+#include "../Anim/CharAnimInstance.h"
 // Sets default values for this component's properties
-UDamageRecieveComponent::UDamageRecieveComponent()
+UDamageRecieveComponent::UDamageRecieveComponent(const FObjectInitializer& ObjectInitializer)
+	: UAnimAccessComponent(ObjectInitializer)
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -58,6 +63,8 @@ void UDamageRecieveComponent::DoDamage(float multiplier, int damage, FVector loc
 		statusComponent->UpdateOnHealthChange();
 	}
 
+	AnimInstance->SetIsTakenDamage(true);
+
 	UDebugMessages::LogDisplay(this, "health is now " + FString::SanitizeFloat(details->GetHealth()));
 
 	if (isDead) {
@@ -65,7 +72,7 @@ void UDamageRecieveComponent::DoDamage(float multiplier, int damage, FVector loc
 
 		auto gameMode = USvUtilities::GetGameMode(GetOwner()->GetWorld());
 		auto characterManager = gameMode->GetCharacterManager();
-		characterManager->RemoveCharacter(ownerAsCharacter->GetSvCharId());
+		characterManager->RemoveCharacter(details->GetCharacterId());
 
 		auto owner = GetOwner();
 		auto skeleton = owner->GetComponentByClass<USkeletalMeshComponent>();
@@ -79,9 +86,22 @@ void UDamageRecieveComponent::DoDamage(float multiplier, int damage, FVector loc
 		skeleton->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 
 		if (location == FVector::ZeroVector)
-			return UDebugMessages::LogError(this, "location was zero vector, cannot add impulse on death");
+			UDebugMessages::LogError(this, "location was zero vector, cannot add impulse on death");
+		else
+			skeleton->AddRadialImpulse(location, 350, impulseDamage, ERadialImpulseFalloff::RIF_Linear);
 
-		skeleton->AddRadialImpulse(location, 350, impulseDamage, ERadialImpulseFalloff::RIF_Linear);
+		if (details->GetCharacterControl() == ECharacterControl::CC_Player) {
+			auto instance = USvUtilities::GetGameInstance(GetWorld());
+			if (!instance->GetCurrentGameDataManager() || !instance->GetCurrentGameDataManager()->GetCurrentGameData())
+				return UDebugMessages::LogError(this, "failed to get game instance current game data");
+
+			auto currentGameData = instance->GetCurrentGameDataManager()->GetCurrentGameData();
+			currentGameData->SetCrewAsDead(details->GetCharacterId());
+		}
+
+		WinLossRunnable = NewObject<UWinLossCheckerRunnable>()
+			->Initialise(GetWorld())
+			->Begin();
 	}
 }
 

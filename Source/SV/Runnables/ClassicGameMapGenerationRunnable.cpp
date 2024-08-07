@@ -6,6 +6,7 @@
 #include "../Instance/SvGameInstance.h"
 #include "../Instance/Managers/RouteDataManager.h"
 #include "../Instance/Managers/CurrentGameDataManager.h"
+#include "../Instance/Managers/MissionDetailsManager.h"
 #include "../Utilities/SvUtilities.h"
 #include "../Utilities/RunnableUtilities.h"
 
@@ -38,6 +39,8 @@ void UClassicGameMapGenerationRunnable::ActivateThread() {
 	routeManager->SetCurrentOffshoots(Offshoots);
 	routeManager->SetCurrentLocationOnRoute(ChosenPrimaryRoute[0]);
 
+	GenerateWorldLocationData();
+	GenerateWorldLocationMissionsData();
 	GenerateCrewMembers();
 
 	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([widget] {
@@ -266,4 +269,63 @@ void UClassicGameMapGenerationRunnable::GenerateCrewMembers(int amount) {
 	gameData->AddToolToCrew(EToolType::TT_Throwable, (uint8)EThrowable::T_Grenade);
 	gameData->AddToolToCrew(EToolType::TT_Throwable, (uint8)EThrowable::T_Grenade);
 }
+
+void UClassicGameMapGenerationRunnable::GenerateWorldLocationData() {
+	auto instance = USvUtilities::GetGameInstance(GetWorld());
+
+	auto currentgameDataManager = instance->GetCurrentGameDataManager();
+	if (!currentgameDataManager || !currentgameDataManager->GetCurrentGameData())
+		return UDebugMessages::LogError(this, "could not get current game data manager");
+
+	auto currentGameData = currentgameDataManager->GetCurrentGameData();
+
+	auto worldManager = currentGameData->GetWorldData();
+	for (int i = 0; i < ChosenPrimaryRoute.Num(); i++) {
+		auto locationId = worldManager->AddWorldLocationData(ChosenPrimaryRoute[i]);
+		if (i == 0) {
+			auto thisLocation = worldManager->GetWorldLocationData(locationId);
+			thisLocation->SetIsCurrent(true);
+		}
+	}
+
+	for (int i = 0; i < Offshoots.Num(); i++) {
+		auto locationId = worldManager->AddWorldLocationData(Offshoots[i]);
+		auto thisLocation = worldManager->GetWorldLocationData(locationId);
+		thisLocation->SetIsOffshoot(true);
+	}
+}
+void UClassicGameMapGenerationRunnable::GenerateWorldLocationMissionsData() {
+	auto instance = USvUtilities::GetGameInstance(GetWorld());
+
+	auto currentgameDataManager = instance->GetCurrentGameDataManager();
+	if (!currentgameDataManager || !currentgameDataManager->GetCurrentGameData())
+		return UDebugMessages::LogError(this, "could not get current game data manager");
+
+	auto missionDetailsManager = instance->GetMissionDetailsManager();
+
+	if (!missionDetailsManager)
+		return UDebugMessages::LogError(this, "failed to get mission details managaer");
+
+	auto currentGameData = currentgameDataManager->GetCurrentGameData();
+
+	auto worldData = currentGameData->GetWorldData();
+	auto worldDataLocations = worldData->GetWorldLocationData();
+
+
+	for (int i = 0; i < worldDataLocations.Num(); i++) {
+		/*auto item = worldDataLocations[i]; */
+		if (!worldDataLocations[i]->GetIsCurrent()) {
+			EMissionType missionType = (EMissionType)FMath::RandRange(1, 4);
+			auto thisMissionName = missionDetailsManager->GenerateMissionName();
+			auto thisMissionDesc = missionDetailsManager->GetMissionTypeDescription(missionType);
+
+			auto mDetails = worldDataLocations[i]->GetMissionDetails();
+			mDetails->SetMissionType(missionType);
+			mDetails->SetName(thisMissionName);
+			mDetails->SetDescription(thisMissionDesc->GetDescription());
+			mDetails->SetIsValidMission(true);
+		}
+	}
+}
+
 #pragma optimize("", on)

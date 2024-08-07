@@ -6,7 +6,10 @@
 #include "../../Utilities/GridUtilities.h"
 #include "../../Utilities/SvUtilities.h"
 #include "../../Instance/SvGameInstance.h"
+#include "../../Instance/Managers/CurrentGameDataManager.h"
 #include "../../Instance/Managers/RouteDataManager.h"
+#include "../../GameModes/WorldGameMode.h"
+#include "../../GameModes/WorldManagers/WorldDirectionManager.h"
 #include "../../Delegates/WorldDelegates.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 
@@ -54,14 +57,32 @@ void UWorldPawnMovementComponent::TickComponent(float DeltaTime, ELevelTick Tick
 		SetComponentTickEnabled(false);
 		auto newGridLocation = UGridUtilities::GetRouteLocationFrom3DLoc(MovementLocation, true);
 		auto gameInstance = USvUtilities::GetGameInstance(GetWorld());
+
+		if (!gameInstance->GetCurrentGameDataManager() || !gameInstance->GetCurrentGameDataManager()->GetCurrentGameData())
+			return UDebugMessages::LogError(this, "failed to get current game data manager");
+
+		auto currentGameData = gameInstance->GetCurrentGameDataManager()->GetCurrentGameData();
+		auto worldData = currentGameData->GetWorldData();
+
+		worldData->SetNewLocationAsCurrent(newGridLocation);
+
 		auto routeData = gameInstance->GetRouteDataManager();
 		routeData->SetCurrentLocationOnRoute(newGridLocation);
+
+		if (worldData->GetCurrentLocation()->GetMissionDetails()->GetIsCompleted()) {
+			auto gameMode = GetWorld()->GetAuthGameMode<AWorldGameMode>();
+			auto directionManager = gameMode->GetComponentByClass<UWorldDirectionManager>();
+			if (!directionManager)
+				return UDebugMessages::LogError(this, "failed to get direction manager");
+
+			directionManager->GenerateDirections(newGridLocation);
+		}
 
 		auto worldDelegates = UWorldDelegates::GetInstance();
 		if (!worldDelegates)
 			return UDebugMessages::LogError(this, "failed to get world delegates");
 
-		worldDelegates->_OnWorldMovementComplete.Broadcast();
+		worldDelegates->_OnWorldMovementComplete.Broadcast(newGridLocation);
 	}
 }
 
