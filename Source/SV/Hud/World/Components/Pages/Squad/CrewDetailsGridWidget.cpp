@@ -8,7 +8,7 @@
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "Components/Image.h"
 #include "Components/Button.h"
-#include "../../../../Helpers/EquipmentInventoryHelpers.h"
+#include "../../../../Helpers/UserWidgetHelpers.h"
 #include "SelectEquipmentListWidget.h"
 
 void UCrewDetailsGridWidget::NativeConstruct() {
@@ -16,22 +16,22 @@ void UCrewDetailsGridWidget::NativeConstruct() {
 
 	SetVisibility(ESlateVisibility::Hidden);
 
-	auto primaryButton = UEquipmentInventoryHelpers::GetButtonFromWidget(this, "PrimaryBtn");
+	auto primaryButton = UUserWidgetHelpers::GetButtonFromWidget(this, "PrimaryBtn");
 	if (primaryButton)
 		primaryButton->OnClicked.AddDynamic(this, &UCrewDetailsGridWidget::PrimaryClicked);
 
 	auto equipmentImage1 = (UUserWidget*)GetWidgetFromName(FName("EquipmentSlot1"));
-	auto equipmentButton1 = UEquipmentInventoryHelpers::GetButtonFromWidget(equipmentImage1, "EquipmentButton");
+	auto equipmentButton1 = UUserWidgetHelpers::GetButtonFromWidget(equipmentImage1, "EquipmentButton");
 	if (equipmentButton1)
 		equipmentButton1->OnClicked.AddDynamic(this, &UCrewDetailsGridWidget::Tool1Clicked);
 
 	auto equipmentImage2 = (UUserWidget*)GetWidgetFromName(FName("EquipmentSlot2"));
-	auto equipmentButton2 = UEquipmentInventoryHelpers::GetButtonFromWidget(equipmentImage2, "EquipmentButton");
+	auto equipmentButton2 = UUserWidgetHelpers::GetButtonFromWidget(equipmentImage2, "EquipmentButton");
 	if (equipmentButton2)
 		equipmentButton2->OnClicked.AddDynamic(this, &UCrewDetailsGridWidget::Tool2Clicked);
 
 	auto equipmentImage3 = (UUserWidget*)GetWidgetFromName(FName("EquipmentSlot3"));
-	auto equipmentButton3 = UEquipmentInventoryHelpers::GetButtonFromWidget(equipmentImage3, "EquipmentButton");
+	auto equipmentButton3 = UUserWidgetHelpers::GetButtonFromWidget(equipmentImage3, "EquipmentButton");
 	if (equipmentButton3)
 		equipmentButton3->OnClicked.AddDynamic(this, &UCrewDetailsGridWidget::Tool3Clicked);
 
@@ -50,13 +50,13 @@ void UCrewDetailsGridWidget::InitialiseGridForCrewMember(FGuid crewMember) {
 	auto gameDataManager = instance->GetCurrentGameDataManager();
 	auto gameData = gameDataManager->GetCurrentGameData();
 	auto crewMemberData = gameData->GetCrewMember(crewMember);
-	auto primary = gameData->GetCrewPrimary(crewMemberData.GetId());
+	auto primary = gameData->GetCrewPrimary(crewMemberData->GetId());
 
-	CurrentCrewId = crewMemberData.GetId();
+	CurrentCrewId = crewMemberData->GetId();
 
-	auto primaryImageSlot = UEquipmentInventoryHelpers::GetImageFromWidget(this, "PrimaryImage");
+	auto primaryImageSlot = UUserWidgetHelpers::GetImageFromWidget(this, "PrimaryImage");
 	if (primaryImageSlot) {
-		primaryImageSlot->SetBrushFromTexture(UEquipmentInventoryHelpers::GetTextureForGun(primary.GetPrimaryGunType()));
+		primaryImageSlot->SetBrushFromTexture(UUserWidgetHelpers::GetTextureForGun(primary->GetPrimaryGunType()));
 	}
 	else return UDebugMessages::LogError(this, "failed to get primary image btn");
 
@@ -66,9 +66,9 @@ void UCrewDetailsGridWidget::InitialiseGridForCrewMember(FGuid crewMember) {
 		auto toolSlot = i + 1;
 		auto equipmentSlotWidget = (UUserWidget*)GetWidgetFromName(FName("EquipmentSlot" + FString::SanitizeFloat(toolSlot, 0)));
 
-		auto equipmentImage = UEquipmentInventoryHelpers::GetImageFromWidget(equipmentSlotWidget, "EquipmentImage");
+		auto equipmentImage = UUserWidgetHelpers::GetImageFromWidget(equipmentSlotWidget, "EquipmentImage");
 		if (equipmentImage) {
-			equipmentImage->SetBrushFromTexture(UEquipmentInventoryHelpers::GetTextureForTool(crewMemberTools[i]->GetToolType(), crewMemberTools[i]->GetTool()));
+			equipmentImage->SetBrushFromTexture(UUserWidgetHelpers::GetTextureForTool(crewMemberTools[i]->GetToolType(), crewMemberTools[i]->GetTool()));
 		}
 		else return UDebugMessages::LogError(this, "failed to get equpment image" + FString::SanitizeFloat(toolSlot, 0));
 	}
@@ -77,7 +77,6 @@ void UCrewDetailsGridWidget::InitialiseGridForCrewMember(FGuid crewMember) {
 
 void UCrewDetailsGridWidget::PrimaryClicked() {
 	UDebugMessages::LogDisplay(this, "Primary Clicked");
-
 	auto owningWidget = (UUserWidget*)GetOuter()->GetOuter();
 	if (owningWidget) {
 		auto equipmentSelectWidget = (USelectEquipmentListWidget*)owningWidget->GetWidgetFromName("SelectPrimaryList");
@@ -108,14 +107,14 @@ void UCrewDetailsGridWidget::OpenToolSelectionMenu(int toolIndex) {
 }
 
 void UCrewDetailsGridWidget::ResetDetailsGrid() {
-	auto primaryImageSlot = UEquipmentInventoryHelpers::GetImageFromWidget(this, "PrimaryImage");
+	auto primaryImageSlot = UUserWidgetHelpers::GetImageFromWidget(this, "PrimaryImage");
 
 	auto equipmentImage1 = (UUserWidget*)GetWidgetFromName(FName("EquipmentSlot1"));
 	auto equipmentImage2 = (UUserWidget*)GetWidgetFromName(FName("EquipmentSlot2"));
 	auto equipmentImage3 = (UUserWidget*)GetWidgetFromName(FName("EquipmentSlot3"));
-	auto eq1ImageSlot = UEquipmentInventoryHelpers::GetImageFromWidget(equipmentImage1, "EquipmentImage");
-	auto eq2ImageSlot = UEquipmentInventoryHelpers::GetImageFromWidget(equipmentImage2, "EquipmentImage");
-	auto eq3ImageSlot = UEquipmentInventoryHelpers::GetImageFromWidget(equipmentImage3, "EquipmentImage");
+	auto eq1ImageSlot = UUserWidgetHelpers::GetImageFromWidget(equipmentImage1, "EquipmentImage");
+	auto eq2ImageSlot = UUserWidgetHelpers::GetImageFromWidget(equipmentImage2, "EquipmentImage");
+	auto eq3ImageSlot = UUserWidgetHelpers::GetImageFromWidget(equipmentImage3, "EquipmentImage");
 
 	if (primaryImageSlot) ResetPrimaryInventoryImage(primaryImageSlot);
 
@@ -126,8 +125,8 @@ void UCrewDetailsGridWidget::ResetDetailsGrid() {
 
 
 void UCrewDetailsGridWidget::ResetPrimaryInventoryImage(UImage* image) {
-	image->SetBrushFromTexture(UEquipmentInventoryHelpers::GetPrimaryNonTexture());
+	image->SetBrushFromTexture(UUserWidgetHelpers::GetPrimaryNonTexture());
 }
 void UCrewDetailsGridWidget::ResetEquipmentInventoryImage(UImage* image) {
-	image->SetBrushFromTexture(UEquipmentInventoryHelpers::GetEquipmentNonTexture());
+	image->SetBrushFromTexture(UUserWidgetHelpers::GetEquipmentNonTexture());
 }

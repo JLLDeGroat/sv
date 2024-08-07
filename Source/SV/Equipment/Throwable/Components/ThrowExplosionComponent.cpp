@@ -10,6 +10,7 @@
 #include "../Components/ThrownOwnerComponent.h"
 #include "../../../Characters/Components/CharacterDetailsComponent.h"
 #include "../../../Player/Components/PawnCameraComponent.h"
+#include "../../../Player/Managers/ControlManager.h"
 
 
 // Sets default values for this component's properties
@@ -85,11 +86,16 @@ void UThrowExplosionComponent::FuseHandleCallback() {
 			auto controller = world->GetFirstPlayerController();
 
 			auto pawnCamera = controller->GetPawn()->GetComponentByClass<UPawnCameraComponent>();
-			
-			if (!pawnCamera) 
+
+			if (!pawnCamera)
 				return UDebugMessages::LogError(this, "could not find pawn camera component");
-		
+
 			pawnCamera->UpdateCameraState(ECameraState::CS_Control, FVector::ZeroVector, FVector::ZeroVector, true);
+
+			auto controlManager = controller->GetComponentByClass<UControlManager>();
+			if (!controlManager)
+				return UDebugMessages::LogError(this, "could not get control manager");
+			controlManager->SetCanMouseDesignateSelectionDecal(true);
 		}
 		else
 			return UDebugMessages::LogError(this, "could not get character details component of thrown owner");

@@ -2,7 +2,7 @@
 
 
 #include "CharacterTileItemWidget.h"
-#include "../../../Helpers/EquipmentInventoryHelpers.h"
+#include "../../../Helpers/UserWidgetHelpers.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "Components/Button.h"
 #include "../../../../Player/Actions/Base/ActionManager.h"
@@ -17,14 +17,15 @@
 void UCharacterTileItemWidget::NativeConstruct() {
 	Super::NativeConstruct();
 
-	auto button = UEquipmentInventoryHelpers::GetButtonFromWidget(this, "CharacterButton");
+	auto button = UUserWidgetHelpers::GetButtonFromWidget(this, "CharacterButton");
 
 	if (!button)
 		return UDebugMessages::LogError(this, "could not find character button");
 
 	button->OnClicked.AddDynamic(this, &UCharacterTileItemWidget::OnCharacterButtonClicked);
-
-
+	button->OnHovered.AddDynamic(this, &UCharacterTileItemWidget::OnHovered);
+	button->OnUnhovered.AddDynamic(this, &UCharacterTileItemWidget::OnUnhovered);
+		
 	auto hudDelegates = UHudDelegates::GetInstance();
 	if (!hudDelegates)
 		return UDebugMessages::LogError(this, "could not find hud delegates");
@@ -82,6 +83,21 @@ void UCharacterTileItemWidget::OnCharacterButtonClicked() {
 		Activated = true;
 		Activating = false;
 	}
+}
+
+void UCharacterTileItemWidget::OnHovered() {
+	auto hudDelegates = UHudDelegates::GetInstance();
+	if (!hudDelegates)
+		return UDebugMessages::LogError(this, "could not get hud delegeats, cannot do target icon clicked");
+
+	hudDelegates->_OnHudItemHovered.Broadcast();
+}
+void UCharacterTileItemWidget::OnUnhovered() {
+	auto hudDelegates = UHudDelegates::GetInstance();
+	if (!hudDelegates)
+		return UDebugMessages::LogError(this, "could not get hud delegeats, cannot do target icon clicked");
+
+	hudDelegates->_OnHudItemUnhovered.Broadcast();
 }
 
 void UCharacterTileItemWidget::Deactivate() {

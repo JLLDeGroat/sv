@@ -26,4 +26,8 @@ protected:
 	UFUNCTION() void OnDestroyCallback();
 	FTimerHandle DestroyTimer;
 
+private:
+
+	void AttemptToInitiateBulletSound();
+
 };

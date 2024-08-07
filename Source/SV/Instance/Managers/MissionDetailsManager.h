@@ -20,8 +20,7 @@ public:
 
 	UMissionDetailsManager();
 	FString GenerateMissionName();
-
-	FMissionDescriptions* GetMissionDescription(EMissionType missionType);
+	FMissionDescriptions* GetMissionTypeDescription(EMissionType missionType);
 
 protected:
 

@@ -5,7 +5,8 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "../../Enums/EEquipmentEnums.h"
-#include "EquipmentInventoryHelpers.generated.h"
+#include "../../Enums/ECharacterEnums.h"
+#include "UserWidgetHelpers.generated.h"
 
 class UImage;
 class UUserWidget;
@@ -17,7 +18,7 @@ class UTextBlock;
  * 
  */
 UCLASS()
-class SV_API UEquipmentInventoryHelpers : public UObject
+class SV_API UUserWidgetHelpers : public UObject
 {
 	GENERATED_BODY()
 
@@ -32,4 +33,6 @@ public:
 
 	static UTexture2D* GetPrimaryNonTexture();
 	static UTexture2D* GetEquipmentNonTexture();
+
+	static UTexture2D* GetTextureForActionType(EActionType actionType);
 };

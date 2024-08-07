@@ -2,7 +2,7 @@
 
 
 #include "SelectEquipmentListItemWidget.h"
-#include "../../../../Helpers/EquipmentInventoryHelpers.h"
+#include "../../../../Helpers/UserWidgetHelpers.h"
 #include "Components/Button.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
@@ -32,9 +32,9 @@ EGun USelectEquipmentListItemWidget::GetPrimaryGun() {
 void USelectEquipmentListItemWidget::SetPrimaryGun(EGun primary) {
 	PrimaryGun = primary;
 
-	auto image = UEquipmentInventoryHelpers::GetImageFromWidget(this, "SelectionImage");
+	auto image = UUserWidgetHelpers::GetImageFromWidget(this, "SelectionImage");
 	if (image) {
-		auto texture = UEquipmentInventoryHelpers::GetTextureForGun(primary);
+		auto texture = UUserWidgetHelpers::GetTextureForGun(primary);
 		image->SetBrushFromTexture(texture);
 	}
 }
@@ -49,9 +49,9 @@ void USelectEquipmentListItemWidget::SetItemId(FGuid id) {
 void USelectEquipmentListItemWidget::SetToolAndType(EToolType toolType, uint8 tool) {
 	ToolType = toolType;
 	Tool = tool;
-	auto image = UEquipmentInventoryHelpers::GetImageFromWidget(this, "SelectionImage");
+	auto image = UUserWidgetHelpers::GetImageFromWidget(this, "SelectionImage");
 	if (image) {
-		auto texture = UEquipmentInventoryHelpers::GetTextureForTool(toolType, tool);
+		auto texture = UUserWidgetHelpers::GetTextureForTool(toolType, tool);
 		image->SetBrushFromTexture(texture);
 	}
 }
@@ -65,7 +65,7 @@ uint8 USelectEquipmentListItemWidget::GetTool() {
 
 int USelectEquipmentListItemWidget::AddToAmount(int amount) {
 	Amount += amount;
-	auto text = UEquipmentInventoryHelpers::GetTextBlockFromWidget(this, "AmountText");
+	auto text = UUserWidgetHelpers::GetTextBlockFromWidget(this, "AmountText");
 	if (text)
 		text->SetText(FText::FromString("x " + FString::SanitizeFloat(Amount, 0)));
 
@@ -90,5 +90,5 @@ void USelectEquipmentListItemWidget::ButtonClickedTool() {
 }
 
 UButton* USelectEquipmentListItemWidget::GetActivateButton() {
-	return UEquipmentInventoryHelpers::GetButtonFromWidget(this, "ActivateButton");
+	return UUserWidgetHelpers::GetButtonFromWidget(this, "ActivateButton");
 }

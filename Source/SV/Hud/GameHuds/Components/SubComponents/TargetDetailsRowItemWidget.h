@@ -34,6 +34,9 @@ protected:
 
 	UFUNCTION() void OnButtonClicked();
 
+	UFUNCTION() void OnButtonUnHovered();
+	UFUNCTION() void OnButtonHovered();
+
 private:
 
 	UPROPERTY() FVector SourceLocation;

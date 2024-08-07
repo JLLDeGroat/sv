@@ -7,7 +7,7 @@
 #include "MissionDescriptionWidget.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class SV_API UMissionDescriptionWidget : public UUserWidget
@@ -21,8 +21,12 @@ public:
 
 protected:
 
-	UFUNCTION() void OnWorldMoveComplete();
+	UFUNCTION() void OnWorldMoveComplete(FVector2D MovedToLocation);
 	UFUNCTION() void OnStartMissionClicked();
+
+
+	UPROPERTY() FString MissionName;
+	UPROPERTY() uint8 MissionType;
 
 private:
 

@@ -59,6 +59,7 @@ AGamePlayerController::AGamePlayerController() {
 	ReloadAction = LoadObject<UInputAction>(this, TEXT("/Script/EnhancedInput.InputAction'/Game/Controls/IA_Reload.IA_Reload'"));
 	CycleAction = LoadObject<UInputAction>(this, TEXT("/Script/EnhancedInput.InputAction'/Game/Controls/IA_CycleTarget.IA_CycleTarget'"));
 	OverwatchAction = LoadObject<UInputAction>(this, TEXT("/Script/EnhancedInput.InputAction'/Game/Controls/IA_Overwatch.IA_Overwatch'"));
+	ExtractionAction = LoadObject<UInputAction>(this, TEXT("/Script/EnhancedInput.InputAction'/Game/Controls/IA_Extraction.IA_Extraction'"));
 
 	SelectionManager = CreateDefaultSubobject<USelectionManager>(TEXT("Selection"));
 	ControlManager = CreateDefaultSubobject<UControlManager>(TEXT("Control"));

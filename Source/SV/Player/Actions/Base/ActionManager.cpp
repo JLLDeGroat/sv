@@ -11,6 +11,7 @@
 #include "../ReloadAction.h"
 #include "../CycleTargetAction.h"
 #include "../OverwatchAction.h"
+#include "../ExtractionAction.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 
 // Sets default values for this component's properties
@@ -29,6 +30,7 @@ UActionManager::UActionManager()
 	ReloadActionComponent = CreateDefaultSubobject<UReloadAction>(TEXT("ReloadAction"));
 	CycleTargetComponent = CreateDefaultSubobject<UCycleTargetAction>(TEXT("CycleTargetAction"));
 	OverwatchComponent = CreateDefaultSubobject<UOverwatchAction>(TEXT("OverwatchAction"));
+	ExtractionComponent = CreateDefaultSubobject<UExtractionAction>(TEXT("ExtractionAction"));
 }
 
 
@@ -62,10 +64,17 @@ void UActionManager::DoActionFromUI(EActionType actionType) {
 	{
 		ReloadActionComponent->DoAction();
 	}
+	break;
 	case EActionType::AT_Overwatch:
 	{
 		OverwatchComponent->DoAction();
 	}
+	break;
+	case EActionType::AT_Extract:
+	{
+		ExtractionComponent->DoAction();
+	}
+	break;
 	default:
 	{
 		UDebugMessages::LogDisplay(this, "Failed to get an action");

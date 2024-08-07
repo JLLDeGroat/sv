@@ -7,6 +7,9 @@
 #include "../Enums/ECharacterEnums.h"
 #include "HudDelegates.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHudItemHovered);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHudItemUnhovered);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FClearTargetDataHud);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FAddTargetDataToHud, FGuid, Id, FVector, SourceLocation, FVector, TargetLocation);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FTargetIconClicked, FGuid, Id, FVector, Location);
@@ -26,6 +29,13 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FResetCharacterTileWidget);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCycleToNextTarget);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterTileVisibility, bool, bVisibility);
+
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FShowMissionCompleteWidget);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FShowMissionFailedWidget);
+
+
+
 /**
  *
  */
@@ -43,6 +53,9 @@ public:
 		return hudDelegates;
 	}
 
+	FOnHudItemHovered _OnHudItemHovered;
+	FOnHudItemUnhovered _OnHudItemUnhovered;
+
 	FAddTargetDataToHud _AddTargetDataToHud;
 	FClearTargetDataHud _ClearTargetDataHud;
 	FTargetIconClicked _TargetIconClicked;
@@ -59,4 +72,7 @@ public:
 	FSelectNextCharacterWithAp _SelectNextCharacterWithAp;
 
 	FCharacterTileVisibility _CharacterTileVisibility;
+
+	FShowMissionCompleteWidget _ShowMissionCompleteWidget;
+	FShowMissionFailedWidget _ShowMissionFailedWidget;
 };

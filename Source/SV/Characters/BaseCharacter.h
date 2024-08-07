@@ -28,7 +28,6 @@ public:
 	virtual bool IsControlType(ECharacterControl characterControl) override;
 	virtual void TryVisualiseTargets() override;
 	virtual AActor* GetAsActor() override;
-	virtual FGuid GetSvCharId() override;
 
 	AAIController* GetAIController() const;
 
@@ -48,5 +47,5 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	UPROPERTY() FGuid SvCharId;
+	
 };

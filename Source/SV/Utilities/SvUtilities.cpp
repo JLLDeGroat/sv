@@ -7,6 +7,7 @@
 #include "../Interfaces/Gameplay.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "../Instance/SvGameInstance.h"
+#include "../Instance/Managers/CurrentGameDataManager.h"
 #include "NiagaraSystem.h"
 
 ECollisionChannel USvUtilities::GetFloorTargetChannel() {
@@ -81,6 +82,10 @@ TScriptInterface<IGameplay> USvUtilities::GetGameMode(UWorld* world) {
 UCharacterManager* USvUtilities::GetGameModeCharacterManager(UWorld* world) {
 	auto gameMode = GetGameMode(world);
 	return gameMode->GetCharacterManager();
+}
+UWinLossManager* USvUtilities::GetGameModeWinLossManager(UWorld* world) {
+	auto gameMode = GetGameMode(world);
+	return gameMode->GetWinLossManager();
 }
 
 void USvUtilities::GetAdjacentGridTiles(FVector location, TArray<FVector>& adjacentTiles) {
@@ -162,6 +167,13 @@ int USvUtilities::GetTileElevation(FVector loc) {
 
 USvGameInstance* USvUtilities::GetGameInstance(UWorld* world) {
 	return world->GetGameInstance<USvGameInstance>();
+}
+FCurrentGameData* USvUtilities::GetCurrentGameData(UWorld* world) {
+	auto instance = GetGameInstance(world);
+	if (!instance || !instance->GetCurrentGameDataManager() || !instance->GetCurrentGameDataManager()->GetCurrentGameData())
+		return nullptr;
+
+	return instance->GetCurrentGameDataManager()->GetCurrentGameData();
 }
 
 TArray<FVector> USvUtilities::RandomizeList(TArray<FVector> list, FRandomStream stream) {
