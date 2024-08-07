@@ -10,8 +10,8 @@
 **/Floor8k_N.uasset
 
 Content/StarterContent
-Content/__ExternalActors__
-Content/__ExternalObjects__
+Content/__ExternalActors__/**
+Content/__ExternalObjects__/**
 # Precompiled Headers
 *.gch
 *.pch
@@ -83,7 +83,6 @@ DerivedDataCache/*
 /.github
 /.vs
 /.vscode
-/Content
 /DerivedDataCache
 /Intermediate
 /Mods
