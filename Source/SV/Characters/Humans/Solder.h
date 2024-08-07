@@ -19,6 +19,7 @@ class UVaultObstacleComponent;
 class UHealthAndStatusWidgetComponent;
 class UActionsComponent;
 class UCharacterTileUIComponent;
+class UDestroyComponent;
 
 UCLASS()
 class SV_API ASolder : public ABaseCharacter, public IMovable
@@ -51,6 +52,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UHealthAndStatusWidgetComponent* HealthAndStatusComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UActionsComponent* ActionsComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UCharacterTileUIComponent* CharacterTileUIComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UDestroyComponent* DestroyComponent;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

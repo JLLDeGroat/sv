@@ -12,6 +12,8 @@
 #include "../../Characters/Components/CharacterDetailsComponent.h"
 #include "../../Characters/Components/EquipmentComponent.h"
 #include "../../Characters/Components/ThrowableComponent.h"
+#include "../../Equipment/Equipment.h"
+#include "../../Equipment/Components/EquipmentDetailsComponent.h"
 
 UBaseGenerations* UPlayerGeneration::Generate() {
 
@@ -43,14 +45,16 @@ UBaseGenerations* UPlayerGeneration::Generate() {
 			auto loc = spawnZoneRandomized[i] + FVector(0, 0, 100);
 			auto playerGen = this;
 
-			auto thisPrimary = currentGameData->GetCrewPrimary(crew[i].GetId());
-			auto gunType = thisPrimary.GetPrimaryGunType();
-			auto equipment = currentGameData->GetToolsFromMember(crew[i].GetId());
+			auto creMemberId = crew[i].GetId();
+
+			auto thisPrimary = currentGameData->GetCrewPrimary(creMemberId);
+			auto gunType = thisPrimary->GetPrimaryGunType();
+			auto equipment = currentGameData->GetToolsFromMember(creMemberId);
 			auto crewName = crew[i].GetName();
 
 			auto self = this;
 
-			FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, loc, cameraComponent, playerGen, gunType, equipment, self, crewName] {
+			FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, loc, cameraComponent, playerGen, gunType, equipment, self, crewName, creMemberId, thisPrimary] {
 				auto actor = world->SpawnActor<ASolder>(loc, FRotator::ZeroRotator);
 
 				if (!actor)
@@ -60,6 +64,13 @@ UBaseGenerations* UPlayerGeneration::Generate() {
 				if (gunType != EGun::INVALID) {
 					auto equipmentComponent = actor->GetComponentByClass<UEquipmentComponent>();
 					equipmentComponent->EquipPrimary(gunType);
+
+					auto primaryEquipment = equipmentComponent->GetPrimaryEquipment();
+					if (!primaryEquipment)
+						return UDebugMessages::LogError(playerGen, "failed to get spawnedEquipment");
+
+					auto equipmentDetailsComponent = primaryEquipment->GetComponentByClass<UEquipmentDetailsComponent>();
+					equipmentDetailsComponent->SetEquipmentId(thisPrimary->GetPrimaryId());
 				}
 
 				//Get throwable component
@@ -78,7 +89,7 @@ UBaseGenerations* UPlayerGeneration::Generate() {
 					}
 
 					else if (equipment[i]->GetToolType() == EToolType::TT_Throwable)
-						throwableEquipment->AddThrowable((EThrowable)equipment[i]->GetTool(), 1);
+						throwableEquipment->AddThrowable((EThrowable)equipment[i]->GetTool(), 1, equipment[i]->GetToolId());
 				}
 
 				auto characterDetailsComponent = actor->GetComponentByClass<UCharacterDetailsComponent>();
@@ -87,6 +98,7 @@ UBaseGenerations* UPlayerGeneration::Generate() {
 					return;
 				}
 
+				characterDetailsComponent->SetCharacterId(creMemberId);
 				characterDetailsComponent->SetCharacterName(crewName);
 				//updating camera state to look at this one
 				cameraComponent->UpdateCameraState(ECameraState::CS_ReTarget, loc);

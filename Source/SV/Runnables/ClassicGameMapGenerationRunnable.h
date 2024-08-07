@@ -49,6 +49,9 @@ private:
 
 	void GenerateCrewMembers(int amount = 5);
 
+	void GenerateWorldLocationData();
+	void GenerateWorldLocationMissionsData();
+
 	UPROPERTY() int BaseChance;
 	UPROPERTY() int MaxOffshoots;
 	UPROPERTY() TArray<FVector2D> Offshoots;

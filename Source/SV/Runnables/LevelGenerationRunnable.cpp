@@ -35,12 +35,9 @@ void ULevelGenerationRunnable::ActivateThread() {
 	//generate boundary walls
 	GenerateBoundaryWalls();
 
-
 	bool bDebug = true;
 	if (bDebug)
 		return UDebugMessages::LogError(this, "Manual return out of level gen, this is for debug only");
-
-
 
 	TArray<FVector> spawnArr;
 	spawnArr.Emplace(GetRandomStartZoneLocation());
@@ -307,7 +304,6 @@ TArray<FVector> ULevelGenerationRunnable::GetAdjacentGridItems(FVector item) {
 	}
 	return result;
 }
-
 
 bool ULevelGenerationRunnable::IsAValidRouteItem(FVector item) {
 	if (IsWithinList(EndZone, item) || IsWithinList(SpawnZone, item))

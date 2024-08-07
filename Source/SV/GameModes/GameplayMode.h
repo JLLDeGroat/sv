@@ -11,6 +11,7 @@
 class UCharacterManager;
 class UTurnManager;
 class ULevelSpawnerManager;
+class UWinLossManager;
 /**
  * 
  */
@@ -31,6 +32,7 @@ public:
 	virtual void BeginPlayerTurn() override;
 
 	ULevelSpawnerManager* GetLevelSpawnerManager();
+	UWinLossManager* GetWinLossManager();
 
 	virtual void BeginDestroy() override;
 
@@ -39,6 +41,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UCharacterManager* CharacterManager;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UTurnManager* TurnManager;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) ULevelSpawnerManager* LevelSpawnerManager;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UWinLossManager* WinLossManager;
 
 	UPROPERTY() UBaseRunnable* LevelGenThread;
 	

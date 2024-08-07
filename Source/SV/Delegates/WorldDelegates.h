@@ -8,7 +8,7 @@
  * 
  */
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWorldMovementComplete);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWorldMovementComplete, FVector2D, MovedToLocationo);
 
 UCLASS()
 class SV_API UWorldDelegates : public UObject

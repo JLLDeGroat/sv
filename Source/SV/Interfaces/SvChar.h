@@ -33,6 +33,4 @@ public:
 
 	virtual void UpdateActorVisibility(bool value) = 0;
 
-	virtual FGuid GetSvCharId() = 0;
-
 };

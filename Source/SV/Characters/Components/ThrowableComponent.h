@@ -18,11 +18,13 @@ public:
 	FThrowable() {
 		Amount = 0;
 		Throwable = FThrowableDataItem();
+		ThrowableId = FGuid::FGuid();
 	}
 
-	FThrowable(FThrowableDataItem throwable, int amount) {
+	FThrowable(FThrowableDataItem throwable, int amount, FGuid id) {
 		Amount = amount;
 		Throwable = throwable;
+		ThrowableId = id;
 	}
 
 	void Remove(int amount) {
@@ -35,10 +37,13 @@ public:
 
 	FThrowableDataItem* GetThrowable() { return &Throwable; }
 	int GetAmount() const { return Amount; }
+
+	FGuid GetThrowableId() { return ThrowableId; }
 protected:
 
 	UPROPERTY() FThrowableDataItem Throwable;
 	UPROPERTY() int Amount;
+	UPROPERTY() FGuid ThrowableId;
 
 };
 
@@ -62,7 +67,10 @@ public:
 	int GetThrowableAmount(EThrowable throwable);
 	FThrowableDataItem* GetThrowableItem(EThrowable throwable);
 
-	void AddThrowable(EThrowable throwable, int amount);
+	void AddThrowable(EThrowable throwable, int amount, FGuid thrownId);
+
+	void AddThrowableToPreviouslyThrown(EThrowable throwable, int amount, FGuid thrownId);
+	TArray<FThrowable> GetPreviouslyThrownThrowables();
 
 	void ThrowAtLocation(FVector location);
 
@@ -72,6 +80,7 @@ public:
 private:
 
 	UPROPERTY() TArray<FThrowable> Throwables;
+	UPROPERTY() TArray<FThrowable> PreviouslyThrownThrowables;
 	UPROPERTY() FVector ThrowingDestination;
 
 	UPROPERTY() AEquipment* ThrownEquipment;

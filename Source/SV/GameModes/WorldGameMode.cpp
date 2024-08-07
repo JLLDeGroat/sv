@@ -8,6 +8,7 @@
 #include "../Instance/Managers/RouteDataManager.h"
 #include "../Utilities/SvUtilities.h"
 #include "../Instance/SvGameInstance.h"
+#include "../Instance/Managers/CurrentGameDataManager.h"
 #include "../World/WorldGridItemActor.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "WorldManagers/WorldMapWallManager.h"
@@ -28,40 +29,29 @@ void AWorldGameMode::BeginPlay() {
 	Super::BeginPlay();
 
 	auto instance = USvUtilities::GetGameInstance(GetWorld());
-	auto routeData = instance->GetRouteDataManager();
+	if (!instance->GetCurrentGameDataManager() || !instance->GetCurrentGameDataManager()->GetCurrentGameData())
+		return UDebugMessages::LogError(this, "failed to get current game data manager");
 
-	auto route = routeData->GetCurrentRoute();
-	auto offshoots = routeData->GetCurrentOffshoots();
-
-	int multiplier = USvUtilities::GetWorldMapGridMultiplier();
-
-	for (int i = 0; i < route.Num(); i++) {
-		auto actualLocation = FVector(route[i].Y * multiplier, route[i].X * multiplier, 0);
-	}
-
-	for (int i = 0; i < offshoots.Num(); i++) {
-		auto actualLocation = FVector(offshoots[i].Y * multiplier, offshoots[i].X * multiplier, 0);
-	}
+	auto currentGameData = instance->GetCurrentGameDataManager()->GetCurrentGameData();
+	auto worldData = currentGameData->GetWorldData();
 
 	if (!RouteWallManager) return UDebugMessages::LogError(this, "failed to get route wall manager");
 
-	TArray<FVector2D> fullRoute;
-	fullRoute.Append(route);
-	fullRoute.Append(offshoots);
+	TArray<FVector2D> fullRoute = worldData->GetTotalRoute();
 	RouteWallManager->SetFullRouteList(fullRoute);
 	DirectionManager->SetFullRouteList(fullRoute);
 	RouteWallManager->GenerateWalls();
 
-	auto currentStep = routeData->GetCurrentLocationOnRoute();
+	auto currentStep = worldData->GetCurrentLocation();
 
 	auto allActors = GetWorld()->GetCurrentLevel()->Actors;
 	for (int i = 0; i < allActors.Num(); i++) {
 		if (allActors[i] && allActors[i]->IsA<APawn>()) {
-			auto firstStep3DLocation = UGridUtilities::GetRouteLocationAs3DLoc(currentStep, true);
+			auto firstStep3DLocation = UGridUtilities::GetRouteLocationAs3DLoc(currentStep->GetLocation(), true);
 			allActors[i]->SetActorLocation(firstStep3DLocation + FVector(0, 0, 68));
 			break;
 		}
 	}
 
-	DirectionManager->GenerateDirections(currentStep);
+	DirectionManager->GenerateDirections(currentStep->GetLocation());
 }

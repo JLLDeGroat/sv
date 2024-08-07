@@ -7,7 +7,7 @@
 #include "../../../Characters/Components/EquipmentComponent.h"
 #include "../../../Characters/Components/CharacterDetailsComponent.h"
 #include "../../../Equipment/Components/EquipmentDetailsComponent.h"
-#include "../../Helpers/EquipmentInventoryHelpers.h"
+#include "../../Helpers/UserWidgetHelpers.h"
 #include "../../../Equipment/Equipment.h"
 #include "Components/Image.h"
 #include "Components/ProgressBar.h"
@@ -68,7 +68,7 @@ void UCharacterDetailsWidget::UpdateUIWithActor() {
 
 		if (equipmentDetailsComp->GetIsGun()) {
 			auto ammo = (float)equipmentDetailsComp->GetRounds() / (float)equipmentDetailsComp->GetMaxRounds();
-			auto image = UEquipmentInventoryHelpers::GetTextureForGun(equipmentDetailsComp->GetGunType());
+			auto image = UUserWidgetHelpers::GetTextureForGun(equipmentDetailsComp->GetGunType());
 
 			UDebugMessages::LogDisplay(this, "setting ammo as " + FString::SanitizeFloat(ammo));
 

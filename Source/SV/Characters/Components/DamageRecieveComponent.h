@@ -3,24 +3,25 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "Base/AnimAccessComponent.h"
 #include "DamageRecieveComponent.generated.h"
 
+class UBaseRunnable;
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class SV_API UDamageRecieveComponent : public UActorComponent
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
+class SV_API UDamageRecieveComponent : public UAnimAccessComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	// Sets default values for this component's properties
-	UDamageRecieveComponent();
+	UDamageRecieveComponent(const FObjectInitializer& ObjectInitializer);
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
@@ -32,5 +33,6 @@ protected:
 private:
 
 	FTimerHandle DeathHandle;
-		
+	UPROPERTY() UBaseRunnable* WinLossRunnable;
+
 };

@@ -6,8 +6,14 @@
 #include "../../Characters/Components/CharacterDetailsComponent.h"
 #include "../../Characters/Components/EquipmentComponent.h"
 #include "../../Characters/Components/HealthAndStatusWidgetComponent.h"
+#include "../../Characters/Components/ThrowableComponent.h"
+#include "../../Equipment/Components/EquipmentDetailsComponent.h"
+#include "../../Equipment/Equipment.h"
 #include "../SvUtilities.h"
 #include "Components/StaticMeshComponent.h"
+#include "../../Instance/SvGameInstance.h"
+#include "../../Instance/Managers/CurrentGameDataManager.h"
+#include "../GridUtilities.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 
 // Sets default values
@@ -45,15 +51,47 @@ void ACharacterSpawnerActor::BeginPlay()
 				equipmentComponent->EquipPrimary(GunType);
 			}
 
+			auto characterDetails = actor->GetComponentByClass<UCharacterDetailsComponent>();
+			if (!characterDetails)
+				return UDebugMessages::LogError(this, "could not get character details");
+
 			if (OverrideCharacterName.Len() > 0) {
-				auto characterDetails = actor->GetComponentByClass<UCharacterDetailsComponent>();
-				if (characterDetails) {
-					characterDetails->SetCharacterName(OverrideCharacterName);
-				}
+				if (characterDetails) characterDetails->SetCharacterName(OverrideCharacterName);
 
 				auto statusWidget = actor->GetComponentByClass<UHealthAndStatusWidgetComponent>();
-				if (statusWidget) {
-					statusWidget->SetName(OverrideCharacterName);
+				if (statusWidget) statusWidget->SetName(OverrideCharacterName);
+			}
+
+			if (characterDetails->GetCharacterControl() == ECharacterControl::CC_Player) {
+				auto gameInstance = USvUtilities::GetGameInstance(GetWorld());
+				
+				if (gameInstance) {
+					auto currentGameDataManager = gameInstance->GetCurrentGameDataManager();
+					if (!currentGameDataManager)
+						return UDebugMessages::LogError(this, "failed to get currentGame data manager");
+
+					auto currentGameData = currentGameDataManager->GetCurrentGameData();
+					if (currentGameData) {
+						auto memberId = currentGameData->AddCrewMember(characterDetails->GetCharacterName(), "", "", characterDetails->GetHealth(), characterDetails->GetMaxHealth());
+						characterDetails->SetCharacterId(memberId);
+
+						if (GrenadeAmount > 0) {
+							for (int i = 0; i < GrenadeAmount; i++) {
+								auto toolId = currentGameData->AddToolToCrew(EToolType::TT_Throwable, (uint8)EThrowable::T_Grenade);
+								currentGameData->AssignToolToCrew(toolId, memberId);
+
+								auto throwableComponent = actor->GetComponentByClass<UThrowableComponent>();
+								throwableComponent->AddThrowable(EThrowable::T_Grenade, 1, toolId);
+							}
+						}
+					}
+
+					if (GunType != EGun::INVALID) {
+						auto gunId = currentGameData->AddPrimaryToCrew(GunType);
+						auto primary = equipmentComponent->GetPrimaryEquipment();
+						auto primaryEquipment = primary->GetComponentByClass<UEquipmentDetailsComponent>();
+						primaryEquipment->SetEquipmentId(gunId);
+					}
 				}
 			}
 		}

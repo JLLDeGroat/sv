@@ -23,6 +23,8 @@ public:
 protected:
 
 	UFUNCTION() void OnButtonClick();
+	UFUNCTION() void OnButtonUnHovered();
+	UFUNCTION() void OnButtonHovered();
 
 private:
 

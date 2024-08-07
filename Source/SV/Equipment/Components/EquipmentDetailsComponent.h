@@ -69,6 +69,9 @@ public:
 	void SetGunType(EGun gunType);
 	EGun GetGunType();
 	bool GetIsGun();
+
+	void SetEquipmentId(FGuid id);
+	FGuid GetEquipmentId();
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -96,4 +99,5 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) int MaxRounds;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) EGun GunType;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) FGuid EquipmentId;
 };

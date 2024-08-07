@@ -9,6 +9,7 @@
 #include "../Characters/Components/GridMovementComponent.h"
 #include "../Characters/Components/CharacterDetailsComponent.h"
 #include "../Characters/Components/AIComponent.h"
+#include "../Characters/Components/ActionsComponent.h"
 #include "../Delegates/HudDelegates.h"
 #include "../Delegates/AIDelegates.h"
 #include "DrawDebugHelpers.h"
@@ -43,7 +44,13 @@ void UPostMovementRunnable::ActivateThread() {
 		if (!hudDelegates)
 			return UDebugMessages::LogError(this, "failed to get hudDelegates");
 
-		FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([hudDelegates] {
+		auto actionsComponent = MovedActor->GetComponentByClass<UActionsComponent>();
+
+		if (!actionsComponent)
+			return UDebugMessages::LogError(this, "failed to get actions component");
+
+		FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([hudDelegates, actionsComponent] {
+			actionsComponent->SendActionsToUI();
 			hudDelegates->_RefreshCharacterDetailsWidget.Broadcast();
 			}, TStatId(), nullptr, ENamedThreads::GameThread);
 	}

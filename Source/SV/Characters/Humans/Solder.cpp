@@ -17,6 +17,7 @@
 #include "../Components/HealthAndStatusWidgetComponent.h"
 #include "../Components/ActionsComponent.h"
 #include "../Components/UI/CharacterTileUIComponent.h"
+#include "../Components/DestroyComponent.h"
 
 // Sets default values
 ASolder::ASolder(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(ObjectInitializer)
@@ -71,6 +72,8 @@ ASolder::ASolder(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(O
 	ActionsComponent = CreateDefaultSubobject<UActionsComponent>(TEXT("Actions"));
 
 	CharacterTileUIComponent = CreateDefaultSubobject<UCharacterTileUIComponent>(TEXT("UITile"));
+
+	DestroyComponent = CreateDefaultSubobject< UDestroyComponent>(TEXT("DestroyComponent"));
 }
 
 // Called when the game starts or when spawned

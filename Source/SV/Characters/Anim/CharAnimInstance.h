@@ -30,6 +30,8 @@ public:
 	void SetIsVaulting(bool val);
 	void SetIsCrouching(bool val);
 	void SetIsReloading(bool val);
+	void SetIsTakenDamage(bool val);
+	void SetIsAiActive(bool val);
 
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnGunFire();
@@ -47,6 +49,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnFinishVault();
 
+	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnFinishTakenDamage();
+
 	void UpdateAnimPlayRate(float newRate);
 
 protected:
@@ -61,4 +65,6 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsCrouching;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsVaulting;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsReloading;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bHasTakenDamage;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsAiActive;
 };

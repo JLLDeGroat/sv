@@ -26,6 +26,7 @@ public:
 
 	void SetCurrentLocationOnRoute(FVector2D loc);
 	FVector2D GetCurrentLocationOnRoute();
+
 private:
 
 	UPROPERTY() TArray<FVector2D> CurrentRoute;

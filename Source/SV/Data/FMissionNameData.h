@@ -55,19 +55,15 @@ public:
 	FMissionNameData() {
 		MissionTitles = FMissionTitles();
 	}
-
 	FMissionTitles* GetMissionTitles() {
 		return &MissionTitles;
 	}
-
 	FMissionDescriptions* GetDescription(EMissionType missionType) {
 		for (int i = 0; i < MissionDescriptions.Num(); i++)
 			if (MissionDescriptions[i].GetMissionType() == missionType)
 				return &MissionDescriptions[i];
-
 		return nullptr;
 	}
-
 protected:
 	UPROPERTY() FMissionTitles MissionTitles;
 	UPROPERTY() TArray<FMissionDescriptions> MissionDescriptions;

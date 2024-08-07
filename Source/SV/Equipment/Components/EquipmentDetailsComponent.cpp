@@ -150,3 +150,9 @@ EGun UEquipmentDetailsComponent::GetGunType() {
 bool UEquipmentDetailsComponent::GetIsGun() {
 	return GunType != EGun::INVALID;
 }
+void UEquipmentDetailsComponent::SetEquipmentId(FGuid id) {
+	EquipmentId = id;
+}
+FGuid UEquipmentDetailsComponent::GetEquipmentId() {
+	return EquipmentId;
+}

@@ -8,6 +8,7 @@
 #include "../../Characters/Components/CharacterDetailsComponent.h"
 #include "../../Characters/Components/ActionsComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "VgCore/Domain/Debug/DebugMessages.h"
 
 
 // Sets default values
@@ -55,6 +56,8 @@ AExtractionIndicator::AExtractionIndicator()
 	BaseMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	TopRingMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	BottomRingMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	bIsActivated = false;
 }
 
 // Called when the game starts or when spawned
@@ -70,6 +73,7 @@ void AExtractionIndicator::ActivateIndicator() {
 	TopRingMeshComponent->SetRelativeLocation(FVector(0));
 	BottomRingMeshComponent->SetRelativeLocation(FVector(0));
 	SetActorTickEnabled(true);
+	bIsActivated = true;
 }
 void AExtractionIndicator::DeactivateIndicator() {
 	TopRingMeshComponent->SetVisibility(false);
@@ -77,6 +81,7 @@ void AExtractionIndicator::DeactivateIndicator() {
 	TopRingMeshComponent->SetRelativeLocation(FVector(0));
 	BottomRingMeshComponent->SetRelativeLocation(FVector(0));
 	SetActorTickEnabled(false);
+	bIsActivated = false;
 }
 
 // Called every frame
@@ -113,10 +118,12 @@ void AExtractionIndicator::Tick(float DeltaTime)
 }
 
 void AExtractionIndicator::StartTickAgain() {
-	SetActorTickEnabled(true);
+	if (bIsActivated) {
+		SetActorTickEnabled(true);
 
-	TopRingMeshComponent->SetVisibility(true);
-	BottomRingMeshComponent->SetVisibility(true);
+		TopRingMeshComponent->SetVisibility(true);
+		BottomRingMeshComponent->SetVisibility(true);
+	}
 }
 
 
@@ -142,6 +149,7 @@ void AExtractionIndicator::OverlapEnded(UPrimitiveComponent* OverlappedComp, AAc
 			OtherComp->IsA<UCapsuleComponent>()) {
 			actionComponent->SetCanExtract(false);
 			DeactivateIndicator();
+			UDebugMessages::LogDisplay(this, "stop indicating");
 		}
 	}
 }

@@ -14,6 +14,7 @@
 #include "../../Utilities/GridUtilities.h"
 #include "../GamePlayerController.h"
 #include "../Components/PawnCameraComponent.h"
+#include "../../Delegates/HudDelegates.h"
 
 UControlManager::UControlManager(const FObjectInitializer& ObjectInitializer) : UBaseControllerManager(ObjectInitializer) {
 	bCanMouseDesignateSelectionDecal = true;
@@ -24,6 +25,13 @@ void UControlManager::BeginPlay() {
 	Super::BeginPlay();
 
 	SelectionManager = GetOwner()->GetComponentByClass<USelectionManager>();
+
+	auto hudDelegates = UHudDelegates::GetInstance();
+	if (!hudDelegates)
+		return UDebugMessages::LogError(this, "failed to get hud Delegates");
+
+	hudDelegates->_OnHudItemHovered.AddDynamic(this, &UControlManager::OnUIItemHovered);
+	hudDelegates->_OnHudItemUnhovered.AddDynamic(this, &UControlManager::OnUIItemUnhovered);
 }
 
 void UControlManager::SetGrenadeIndicatorActor(AGrenadeIndicatorActor* indicatorActor) {
@@ -53,6 +61,8 @@ bool UControlManager::GetCanMouseDesignateExplosionRadiusActor() {
 void UControlManager::SetCanMouseDesignateExplosionRadiusActor(bool val) {
 	bCanMouseDesignateExplosionRadiusActor = val;
 	GrenadeIndicatorActor->SetVisibility(val);
+
+	if (!val) GrenadeIndicatorActor->SetActorLocation(FVector(0, 0, -1000));
 }
 
 void UControlManager::TickShowGrenadeIndicator(FVector mouseLocation) {
@@ -90,4 +100,27 @@ void UControlManager::TickFindMovementPath(FVector localisedLocation) {
 			}
 		}
 	}
+}
+
+void UControlManager::OnUIItemHovered() {
+	UDebugMessages::LogDisplay(this, "hovered");
+
+	if (bIsHovered) return;
+	bIsHovered = true;
+
+	bDisabledMouseDesignationOnHover = bCanMouseDesignateSelectionDecal;
+	bDisabledMouseExplosionDesignationOnHover = bCanMouseDesignateExplosionRadiusActor;
+
+	if (bDisabledMouseDesignationOnHover) SetCanMouseDesignateSelectionDecal(false);
+	if (bDisabledMouseExplosionDesignationOnHover) SetCanMouseDesignateExplosionRadiusActor(false);
+}
+void UControlManager::OnUIItemUnhovered() {
+
+	if (!bIsHovered) return;
+	bIsHovered = false;
+
+	UDebugMessages::LogDisplay(this, "unhovered");
+
+	SetCanMouseDesignateSelectionDecal(bDisabledMouseDesignationOnHover);
+	SetCanMouseDesignateExplosionRadiusActor(bDisabledMouseExplosionDesignationOnHover);
 }

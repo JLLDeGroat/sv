@@ -18,7 +18,7 @@ class SV_API UCurrentGameDataManager : public UObject
 
 public:
 
-	void AddCrewMember(FString Name, FString LastName, FString Bio, int Health, int MaxHealth);
+	FGuid AddCrewMember(FString Name, FString LastName, FString Bio, int Health, int MaxHealth);
 
 	TArray<FCrew> GetEntireCrew();
 	FCurrentGameData* GetCurrentGameData();

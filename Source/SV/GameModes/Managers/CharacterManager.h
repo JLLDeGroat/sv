@@ -20,17 +20,18 @@ class SV_API UCharacterManager : public UObject
 
 public:
 	UCharacterManager(const FObjectInitializer& ObjectInitializer);
-	
-	void AssignDelegates();
 
 	void GetCharacterListOfCharacterType(ECharacterControl characterControl, TArray<TScriptInterface<ISvChar>>& foundCharacters);
-
 	void ReceiveNewCharacter(ABaseCharacter* character);
 	void RemoveCharacter(FGuid Id);
+
+	TArray<TScriptInterface<ISvChar>> GetExtractedCharacters();
+	void AddToExtractedCharacterList(TScriptInterface<ISvChar> svChar);
 
 protected:
 
 private:
 
 	TArray<TScriptInterface<ISvChar>> CharacterList;
+	TArray<TScriptInterface<ISvChar>> ExtractedCharacterList;
 };

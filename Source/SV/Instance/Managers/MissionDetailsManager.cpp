@@ -17,6 +17,6 @@ FString UMissionDetailsManager::GenerateMissionName() {
 		nouns[FMath::RandRange(0, nouns.Num() - 1)];
 }
 
-FMissionDescriptions* UMissionDetailsManager::GetMissionDescription(EMissionType missionType) {
+FMissionDescriptions* UMissionDetailsManager::GetMissionTypeDescription(EMissionType missionType) {
 	return MissionNameData.GetDescription(missionType);
 }

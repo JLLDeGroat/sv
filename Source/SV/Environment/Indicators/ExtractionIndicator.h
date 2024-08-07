@@ -48,4 +48,6 @@ protected:
 	UFUNCTION() void StartTickAgain();
 	FTimerHandle StartTickHandle;
 
+	UPROPERTY() bool bIsActivated;
+
 };
