@@ -89,6 +89,11 @@ void UAITurnRunnable::ActivateThread() {
 			while (!moveChecker->GetCheckerHasCompletedAndWaitIfNot(1) && bIsAlive)
 				UDebugMessages::LogWarning(this, "waiting on move checker");
 
+			if (!moveChecker->GetThisEnemyIsValidAndAlive()) {
+				UDebugMessages::LogDisplay(this, "wont go to post move checker, has died");
+				continue;
+			}
+
 			if (!moveChecker->GetHasFinishedTurnEarly()) {
 				auto postMoveChecker = NewObject<UPostMoveChecker>();
 				PostMoveRunnable = postMoveChecker;

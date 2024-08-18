@@ -64,6 +64,8 @@ public:
 
 	FGuid GetCharacterId() const;
 	void SetCharacterId(FGuid guid);
+
+	bool GetIsDead();
 private:
 
 	UPROPERTY() ECharacterControl ControlType;

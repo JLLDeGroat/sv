@@ -137,3 +137,7 @@ FGuid UCharacterDetailsComponent::GetCharacterId() const {
 void UCharacterDetailsComponent::SetCharacterId(FGuid guid) {
 	CharacterId = guid;
 }
+
+bool UCharacterDetailsComponent::GetIsDead() {
+	return Health <= 0;
+}

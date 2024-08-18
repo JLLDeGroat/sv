@@ -35,6 +35,8 @@ public:
 	UFUNCTION() void SetHasFinishedTurnEarly();
 	bool GetHasFinishedTurnEarly();
 
+
+	bool GetThisEnemyIsValidAndAlive();
 protected:
 
 	UWorld* GetWorld() const;
