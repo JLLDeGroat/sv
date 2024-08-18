@@ -12,23 +12,23 @@ UBaseGenerations* UEnemyGeneration::Generate() {
 	int maxSpawnedWalkingZombies = TotalWalkingZombies;
 
 	TArray<FVector> foundLocations;
-	for (int i = 0; i < AllowedSpots.Num(); i++) {
+	for (int i = 0; i < UsableLocations.Num(); i++) {
 
-		if (IsTooCloseToSpawnZone(AllowedSpots[i], 800))
+		if (IsTooCloseToSpawnZone(UsableLocations[i], 800))
 			continue;
 
-		if (IsWithinList(AllowedSpots[i], AllEnemyLocations))
+		if (IsWithinList(UsableLocations[i], AllEnemyLocations))
 			continue;
 
 		if (spawnedWalkingZombies >= maxSpawnedWalkingZombies)
 			break;
 
-		if (IsTooCloseToOtherSpawns(AllowedSpots[i], foundLocations, 750))
+		if (IsTooCloseToOtherSpawns(UsableLocations[i], foundLocations, 750))
 			continue;
 
 		auto random = RandomStream.RandRange(1, 2002);
 		if (random < 500) {
-			foundLocations.Emplace(AllowedSpots[i]);
+			foundLocations.Emplace(UsableLocations[i]);
 			spawnedWalkingZombies += 1;
 		}
 	}

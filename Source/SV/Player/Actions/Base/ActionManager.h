@@ -17,6 +17,7 @@ class UReloadAction;
 class UCycleTargetAction;
 class UOverwatchAction;
 class UExtractionAction;
+class UPickupAction;
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class SV_API UActionManager : public UActorComponent
@@ -53,5 +54,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) UCycleTargetAction* CycleTargetComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) UOverwatchAction* OverwatchComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) UExtractionAction* ExtractionComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UPickupAction* PickupActionComponent;
 
 };

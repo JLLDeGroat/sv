@@ -12,6 +12,7 @@
 #include "../CycleTargetAction.h"
 #include "../OverwatchAction.h"
 #include "../ExtractionAction.h"
+#include "../PickupAction.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 
 // Sets default values for this component's properties
@@ -31,6 +32,7 @@ UActionManager::UActionManager()
 	CycleTargetComponent = CreateDefaultSubobject<UCycleTargetAction>(TEXT("CycleTargetAction"));
 	OverwatchComponent = CreateDefaultSubobject<UOverwatchAction>(TEXT("OverwatchAction"));
 	ExtractionComponent = CreateDefaultSubobject<UExtractionAction>(TEXT("ExtractionAction"));
+	PickupActionComponent = CreateDefaultSubobject<UPickupAction>(TEXT("PickupAction"));
 }
 
 
@@ -73,6 +75,11 @@ void UActionManager::DoActionFromUI(EActionType actionType) {
 	case EActionType::AT_Extract:
 	{
 		ExtractionComponent->DoAction();
+	}
+	break;
+	case EActionType::AT_Pickup:
+	{
+		PickupActionComponent->DoAction();
 	}
 	break;
 	default:

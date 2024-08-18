@@ -9,7 +9,7 @@
 #include "CharAnimInstance.generated.h"
 
 class ABaseCharacter;
-
+class UBaseRunnable;
 /**
  *
  */
@@ -32,10 +32,14 @@ public:
 	void SetIsReloading(bool val);
 	void SetIsTakenDamage(bool val);
 	void SetIsAiActive(bool val);
+	void SetIsPickingUp(bool val);
 
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnGunFire();
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnFinishFire();
+	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnFinishFire_PostDelay();
+	FTimerHandle OnFinishFireHandle;
+
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnMeleeHit();
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnFinishMelee();
@@ -50,6 +54,8 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnFinishVault();
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnFinishTakenDamage();
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnInitializePickup();
 
 	void UpdateAnimPlayRate(float newRate);
 
@@ -67,4 +73,11 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsReloading;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bHasTakenDamage;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsAiActive;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsPickingUp;
+
+
+private:
+
+	UPROPERTY() UBaseRunnable* BaseRunnable;
+
 };

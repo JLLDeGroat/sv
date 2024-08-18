@@ -23,6 +23,7 @@ void UMissionCompleteWidget::NativeConstruct() {
 		return UDebugMessages::LogError(this, "faile to get continue button");
 
 	continueBtn->OnClicked.AddDynamic(this, &UMissionCompleteWidget::OnContinueClicked);
+	UUserWidgetHelpers::DesignButton(this, "ContinueBtn");
 }
 
 void UMissionCompleteWidget::OnConsumeDelegate() {

@@ -8,6 +8,7 @@
 #include "../../../Instance/SvGameInstance.h"
 #include "../../../Instance/Managers/CurrentGameDataManager.h"
 #include "../SquadPageWidget.h"
+#include "../../Helpers/UserWidgetHelpers.h"
 
 void UWorldMenuWidget::NativeConstruct() {
 	Super::NativeConstruct();
@@ -26,18 +27,20 @@ void UWorldMenuWidget::NativeConstruct() {
 	if (shopBtn)
 		shopBtn->OnClicked.AddDynamic(this, &UWorldMenuWidget::SuppliesClicked);
 	else UDebugMessages::LogError(this, "failed to get Shop btn");
+
+	UUserWidgetHelpers::DesignButton(this, "WorldMapBtn");
+	UUserWidgetHelpers::DesignButton(this, "SquadBtn");
+	UUserWidgetHelpers::DesignButton(this, "ShopBtn");
 }
 
 
 void UWorldMenuWidget::WorldMapClicked() {
 	CloseWorldPage("SquadPage");
-
 	OpenWorldPage("WorldPage");
 }
 
 void UWorldMenuWidget::SquadClicked() {
 	OpenWorldPage("SquadPage");
-
 	CloseWorldPage("WorldPage");
 }
 

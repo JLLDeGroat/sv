@@ -102,6 +102,8 @@ void AManualWorldDataActor::GenerateWorldLocationMissionsData() {
 			mDetails->SetName(thisMissionName);
 			mDetails->SetDescription(thisMissionDesc->GetDescription());
 			mDetails->SetIsValidMission(true);
+
+			currentGameData->StartNewMission(mDetails->GetName(), mDetails->GetMissionType());
 		}
 	}
 }

@@ -34,3 +34,9 @@ enum class EMissionType : uint8 {
 	MT_Traverse = 3,
 	MT_Exterminate = 4
 };
+
+UENUM(BlueprintType)
+enum class ELevelGenType :uint8 {
+	Generic,
+	TwoBuilding
+};

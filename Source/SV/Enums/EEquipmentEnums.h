@@ -46,4 +46,10 @@ enum class EAttachType : uint8 {
 	AT_RightHand
 };
 
+UENUM(BlueprintType)
+enum class EResourceType : uint8 {
+	INVALID = 0,
+	RT_Currency = 1,
+};
+
 

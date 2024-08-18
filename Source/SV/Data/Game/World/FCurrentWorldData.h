@@ -20,6 +20,7 @@ public:
 		bHasVisited = false;
 		MissionDetails = FMissionDetails();
 		Id = FGuid::NewGuid();
+		bIsCurrent = false;
 	}
 
 	FWorldLocationData(FVector2D location, bool bVisited = false) {
@@ -27,6 +28,7 @@ public:
 		bHasVisited = bVisited;
 		MissionDetails = FMissionDetails();
 		Id = FGuid::NewGuid();
+		bIsCurrent = false;
 	}
 
 	FGuid GetId() { return Id; }

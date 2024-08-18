@@ -62,7 +62,7 @@ void UGunFireComponent::FireAtLocation(FVector location, float accuracyRadius) {
 	auto offsetLoc = randomUnitVector * randomFloatInRange;
 	auto finalLoc = location + offsetLoc;
 
-	DrawDebugLine(GetOwner()->GetWorld(), bulletStart, finalLoc, FColor::Green, true, 60, 0, 1);
+	//DrawDebugLine(GetOwner()->GetWorld(), bulletStart, finalLoc, FColor::Green, true, 60, 0, 1);
 
 	auto bulletRotation = UGridUtilities::FindLookAtRotation(bulletStart, finalLoc);
 

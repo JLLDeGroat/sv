@@ -3,20 +3,20 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "Base/AnimAccessComponent.h"
 #include "../../Enums/EEquipmentEnums.h"
 #include "EquipmentComponent.generated.h"
 
 class AEquipment;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class SV_API UEquipmentComponent : public UActorComponent
+class SV_API UEquipmentComponent : public UAnimAccessComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UEquipmentComponent();
+	UEquipmentComponent(const FObjectInitializer& ObjectInitializer);
 
 	void UpdateActorVisibility(bool value);
 
@@ -26,6 +26,8 @@ public:
 
 	void EquipPrimary(EGun gunType);
 	void AttachEquipmentToSocket(EAttachType attachmentType, AEquipment* equipment, FString socketName);
+
+	void ReloadEquipment();
 
 protected:
 	// Called when the game starts
@@ -37,10 +39,6 @@ public:
 
 	void FireEquippedGun();
 	int GetActionPointsNeededToUseEquipment();
-
 private:
-
 	UPROPERTY() TArray<AEquipment*> Equipment;
-
-		
 };

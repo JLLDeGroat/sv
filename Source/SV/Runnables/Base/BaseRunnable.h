@@ -17,8 +17,11 @@ class SV_API UBaseRunnable : public UObject, public FRunnable
 
 public:
 
-	virtual UBaseRunnable* Initialise(UWorld* world) {
-		RandomStream = FRandomStream(FMath::RandRange(0, 999999));
+	virtual UBaseRunnable* Initialise(UWorld* world, int streamRandom = 0) {
+		if (streamRandom == 0)
+			streamRandom = FMath::RandRange(0, 999999);
+
+		RandomStream = FRandomStream(streamRandom);
 		bIsAlive = true;
 		World = world;
 		return this;
@@ -40,7 +43,7 @@ public:
 
 	}
 
-	void KillThread() {
+	virtual void KillThread() {
 		bIsAlive = false;
 	}
 

@@ -61,7 +61,7 @@ protected:
 
 
 	bool ObtainPotentialTargetList(TArray<TScriptInterface<ISvChar>>& FoundCharacters) const;
-	TArray<FVector> GetPotentialShootingLocations();
+	TArray<FVector> GetPotentialShootingLocations(bool includeCurrentLocation);
 
 public:
 	// Called every frame
@@ -71,5 +71,7 @@ private:
 	UPROPERTY() TArray<FTargetData> TargetData;
 	UPROPERTY() FGuid CurrentMainTargetId;
 
+
+	bool GetCanTarget(FVector possibleLocation, TScriptInterface<ISvChar> character);
 
 };

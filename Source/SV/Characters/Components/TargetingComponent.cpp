@@ -77,32 +77,21 @@ void UTargetingComponent::DetermineTargetData() {
 		TArray<TScriptInterface<ISvChar>> characters;
 		ObtainPotentialTargetList(characters);
 
-		auto possibleLocations = GetPotentialShootingLocations();
+		auto possibleLocations = GetPotentialShootingLocations(false);
 
 		for (int i = 0; i < characters.Num(); i++) {
 			auto characterLocation = characters[i]->GetSelectableGridLocation();
-			bool canTarget = false;
 
 			possibleLocations.Sort([possibleLocations, characterLocation](const FVector A, const FVector B) {
 				return FVector::DistSquared(characterLocation, A) < FVector::DistSquared(characterLocation, B);
 				});
 
+			auto startingLocation = svChar->GetSelectableGridLocation();
+			if (GetCanTarget(startingLocation, characters[i]))
+				continue;
+
 			for (int j = 0; j < possibleLocations.Num(); j++) {
-
-				auto hitComponents = characters[i]->GetHitComponents();
-				for (int x = 0; x < hitComponents.Num(); x++) {
-					FHitResult Hit;
-
-					owner->GetWorld()->LineTraceSingleByChannel(Hit, possibleLocations[j], hitComponents[x]->GetWorldLocation(), USvUtilities::GetEnvironmentChannel());
-
-					if (!Hit.bBlockingHit) {
-						TargetData.Emplace(FTargetData(possibleLocations[j], characters[i]));
-						canTarget = true;
-						break;
-					}
-				}
-
-				if (canTarget)
+				if (GetCanTarget(possibleLocations[j], characters[i]))
 					break;
 			}
 			// owner->GetWorld()->LineTraceSingleByChannel(Hit, ownerLocation, location)
@@ -140,7 +129,7 @@ bool UTargetingComponent::ObtainPotentialTargetList(TArray<TScriptInterface<ISvC
 	return !FoundCharacters.IsEmpty();
 }
 
-TArray<FVector> UTargetingComponent::GetPotentialShootingLocations() {
+TArray<FVector> UTargetingComponent::GetPotentialShootingLocations(bool includeCurrentLocation) {
 	auto svChar = GetOwner<ISvChar>();
 
 	auto startingLocation = svChar->GetSelectableGridLocation();
@@ -152,9 +141,27 @@ TArray<FVector> UTargetingComponent::GetPotentialShootingLocations() {
 		gridMovementComponent->GetMovableAdjacentTiles(startingLocation, locations, FVector::ZeroVector, true);
 
 	TArray<FVector> finalLocations;
-	finalLocations.Emplace(startingLocation);
+	if (includeCurrentLocation)
+		finalLocations.Emplace(startingLocation);
+
 	for (int i = 0; i < locations.Num(); i++)
 		finalLocations.Emplace(locations[i]);
 
 	return finalLocations;
+}
+
+bool UTargetingComponent::GetCanTarget(FVector possibleLocation, TScriptInterface<ISvChar> character) {
+
+	auto hitComponents = character->GetHitComponents();
+	for (int x = 0; x < hitComponents.Num(); x++) {
+		FHitResult Hit;
+
+		GetOwner()->GetWorld()->LineTraceSingleByChannel(Hit, possibleLocation, hitComponents[x]->GetWorldLocation(), USvUtilities::GetEnvironmentChannel());
+
+		if (!Hit.bBlockingHit) {
+			TargetData.Emplace(FTargetData(possibleLocation, character));
+			return true;
+		}
+	}
+	return false;
 }

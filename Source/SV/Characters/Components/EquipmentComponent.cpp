@@ -13,9 +13,11 @@
 #include "../../Equipment/Equipment.h"
 #include "../../Equipment/Components/EquipmentDetailsComponent.h"
 #include "../../Equipment/Components/AttachedVectorComponent.h"
+#include "../Anim/CharAnimInstance.h"
 
 // Sets default values for this component's properties
-UEquipmentComponent::UEquipmentComponent()
+UEquipmentComponent::UEquipmentComponent(const FObjectInitializer& ObjectInitializer)
+	: UAnimAccessComponent(ObjectInitializer)
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -131,4 +133,8 @@ void UEquipmentComponent::AttachEquipmentToSocket(EAttachType attachmentType, AE
 		equipment->SetActorRelativeRotation(rot);
 		equipment->SetActorRelativeLocation(loc);
 	}
+}
+
+void UEquipmentComponent::ReloadEquipment() {
+	AnimInstance->SetIsReloading(true);
 }

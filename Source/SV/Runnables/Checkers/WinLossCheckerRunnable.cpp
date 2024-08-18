@@ -11,6 +11,7 @@
 #include "../../Delegates/HudDelegates.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 
+#pragma optimize("", off)
 void UWinLossCheckerRunnable::ActivateThread() {
 	UDebugMessages::LogDisplay(this, "checking winloss");
 
@@ -117,3 +118,4 @@ void UWinLossCheckerRunnable::SetHasCompletedThisMission() {
 	auto currentMission = worldData->GetCurrentLocation()->GetMissionDetails();
 	currentMission->SetIsCompleted(true);
 }
+#pragma optimize("", on)

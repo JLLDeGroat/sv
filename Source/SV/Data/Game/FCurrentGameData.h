@@ -9,7 +9,7 @@
 #include "Mission/FMissionDetails.h"
 #include "Stats/FCrewMemberStats.h"
 #include "World/FCurrentWorldData.h"
-
+#include "Resource/FResourceData.h"
 #include "FCurrentGameData.generated.h"
 
 
@@ -348,13 +348,20 @@ public:
 
 #pragma endregion
 
+#pragma region ResourceData
+
+	FResourceData* GetResourceData() { return &ResourceData; }
+
+#pragma endregion
+
 protected:
 	UPROPERTY() TArray<FCrew> Crew;
 	UPROPERTY() TArray<FCrew> DeadCrew;
 	UPROPERTY() TArray<FCrewPrimaries> CrewPrimaries;
 	UPROPERTY() TArray<FCrewTools> CrewTools;
 
-	UPROPERTY()  FCurrentMission CurrentMission;
-	UPROPERTY()  TArray<FCurrentMission> HistoricMissions;
-	UPROPERTY()  FCurrentWorldData WorldData;
+	UPROPERTY() FCurrentMission CurrentMission;
+	UPROPERTY() TArray<FCurrentMission> HistoricMissions;
+	UPROPERTY() FCurrentWorldData WorldData;
+	UPROPERTY() FResourceData ResourceData;
 };

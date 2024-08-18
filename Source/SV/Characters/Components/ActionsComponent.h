@@ -29,5 +29,4 @@ protected:
 private:
 
 	UPROPERTY() bool bCanExtract;
-		
 };

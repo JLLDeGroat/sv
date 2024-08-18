@@ -12,7 +12,7 @@ ANaturalRoad::ANaturalRoad(const FObjectInitializer& ObjectInitializer)
 	RootComponent = RoadDecalComponent;
 
 	RoadDecalComponent->SetWorldRotation(FRotator(-90, 0, 0));
-	RoadDecalComponent->SetWorldScale3D(FVector(.0011, .3f, .3f));
+	RoadDecalComponent->SetWorldScale3D(FVector(.0055, .3f, .3f));
 }
 
 

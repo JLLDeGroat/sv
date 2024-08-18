@@ -15,6 +15,7 @@
 #include "../../Instance/SvGameInstance.h"
 #include "../../Runnables/Checkers/WinLossCheckerRunnable.h"
 #include "../Anim/CharAnimInstance.h"
+#include "DropResourceComponent.h"
 // Sets default values for this component's properties
 UDamageRecieveComponent::UDamageRecieveComponent(const FObjectInitializer& ObjectInitializer)
 	: UAnimAccessComponent(ObjectInitializer)
@@ -98,6 +99,12 @@ void UDamageRecieveComponent::DoDamage(float multiplier, int damage, FVector loc
 			auto currentGameData = instance->GetCurrentGameDataManager()->GetCurrentGameData();
 			currentGameData->SetCrewAsDead(details->GetCharacterId());
 		}
+
+		auto dropResource = owner->GetComponentByClass<UDropResourceComponent>();
+		if(dropResource){
+			dropResource->AttemptToDropResource();
+		}
+
 
 		WinLossRunnable = NewObject<UWinLossCheckerRunnable>()
 			->Initialise(GetWorld())

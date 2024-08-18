@@ -9,14 +9,17 @@
 
 #pragma optimize("", off)
 UBaseGenerations* UFenceGenerations::Generate() {
-	SetRequiredSpots(GenerateRequiredLocations());
+	TemplatedRequiredLocations = GenerateRequiredLocations();
 
-	for (int i = 0; i < AllowedSpots.Num(); i++) {
-		if (CanFitInLocation(AllowedSpots[i])) {
+	for (int i = 0; i < UsableLocations.Num(); i++) {
+		if (CanFitInLocation(UsableLocations[i])) {
 			if (ShouldGenerate()) {
 				DecrementChance();
-				auto requiredLocs = CreateRequiredLocations(AllowedSpots[i]);
-				AddToUsedSpots(requiredLocs);
+
+				auto thisRequiredLocation = CreateRequiredLocations(UsableLocations[i]);
+				RequiredLocations = CombineList(thisRequiredLocation, RequiredLocations);
+				TotalUsedLocations = CombineList(TotalUsedLocations, RequiredLocations);
+				//AddToUsedSpots(requiredLocs);
 
 				/*auto world = World;
 				FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, requiredLocs] {
@@ -25,42 +28,41 @@ UBaseGenerations* UFenceGenerations::Generate() {
 						actor->SetIsObstacle();
 					}}, TStatId(), nullptr, ENamedThreads::GameThread);*/
 
-
-				for (int x = 0; x < requiredLocs.Num(); x++) {
-					if (IsRequiredSpotBottomRight(requiredLocs[x])) {
-						BuildFence(requiredLocs[x] + FVector(50, 50, 0), FRotator(0, 180, 0));
-						BuildFence(requiredLocs[x] + FVector(50, 150, 0), FRotator(0, 90, 0));
+				for (int x = 0; x < thisRequiredLocation.Num(); x++) {
+					if (IsRequiredSpotBottomRight(thisRequiredLocation[x])) {
+						BuildFence(thisRequiredLocation[x] + FVector(50, 50, 0), FRotator(0, 180, 0));
+						BuildFence(thisRequiredLocation[x] + FVector(50, 150, 0), FRotator(0, 90, 0));
 					}
-					else if (IsRequiredSpotBottomLeft(requiredLocs[x])) {
-						BuildFence(requiredLocs[x] + FVector(50, 50, 0), FRotator(0, 180, 0));
-						BuildFence(requiredLocs[x] + FVector(50, 50, 0), FRotator(0, 90, 0));
+					else if (IsRequiredSpotBottomLeft(thisRequiredLocation[x])) {
+						BuildFence(thisRequiredLocation[x] + FVector(50, 50, 0), FRotator(0, 180, 0));
+						BuildFence(thisRequiredLocation[x] + FVector(50, 50, 0), FRotator(0, 90, 0));
 					}
-					else if (IsRequiredSpotTopRight(requiredLocs[x])) {
-						BuildFence(requiredLocs[x] + FVector(50, 150, 0), FRotator(0, 90, 0));
-						BuildFence(requiredLocs[x] + FVector(150, 150, 0));
+					else if (IsRequiredSpotTopRight(thisRequiredLocation[x])) {
+						BuildFence(thisRequiredLocation[x] + FVector(50, 150, 0), FRotator(0, 90, 0));
+						BuildFence(thisRequiredLocation[x] + FVector(150, 150, 0));
 					}
-					else if (IsRequiredSpotTopLeft(requiredLocs[x])) {
-						BuildFence(requiredLocs[x] + FVector(150, 50, 0), FRotator(0, 180, 0));
-						BuildFence(requiredLocs[x] + FVector(50, 50, 0), FRotator(0, 90, 0));
+					else if (IsRequiredSpotTopLeft(thisRequiredLocation[x])) {
+						BuildFence(thisRequiredLocation[x] + FVector(150, 50, 0), FRotator(0, 180, 0));
+						BuildFence(thisRequiredLocation[x] + FVector(50, 50, 0), FRotator(0, 90, 0));
 					}
 					else {
 
-						if (IsRequiredSpotLeftWall(requiredLocs[x])) {
-							BuildFence(requiredLocs[x] + FVector(50, 50, 0), FRotator(0, 90, 0));
+						if (IsRequiredSpotLeftWall(thisRequiredLocation[x])) {
+							BuildFence(thisRequiredLocation[x] + FVector(50, 50, 0), FRotator(0, 90, 0));
 						}
-						else if (IsRequiredSpotRightWall(requiredLocs[x])) {
-							BuildFence(requiredLocs[x] + FVector(50, 150, 0), FRotator(0, 90, 0));
+						else if (IsRequiredSpotRightWall(thisRequiredLocation[x])) {
+							BuildFence(thisRequiredLocation[x] + FVector(50, 150, 0), FRotator(0, 90, 0));
 						}
-						else if (IsRequiredSpotBottomWall(requiredLocs[x])) {
-							BuildFence(requiredLocs[x] + FVector(50, 50, 0), FRotator(0, 180, 0));
+						else if (IsRequiredSpotBottomWall(thisRequiredLocation[x])) {
+							BuildFence(thisRequiredLocation[x] + FVector(50, 50, 0), FRotator(0, 180, 0));
 						}
-						else if (IsRequiredSpotTopWall(requiredLocs[x])) {
-							BuildFence(requiredLocs[x] + FVector(150, 50, 0), FRotator(0, 180, 0));
+						else if (IsRequiredSpotTopWall(thisRequiredLocation[x])) {
+							BuildFence(thisRequiredLocation[x] + FVector(150, 50, 0), FRotator(0, 180, 0));
 						}
 						else {
 							auto num = RandomStream.RandRange(1, 1001);
 							if (num > 500)
-								BuildPlot(requiredLocs[x]);
+								BuildPlot(thisRequiredLocation[x]);
 						}
 					}
 				}

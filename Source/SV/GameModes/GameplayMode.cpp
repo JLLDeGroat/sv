@@ -27,7 +27,7 @@ void AGameplayMode::BeginPlay() {
 	Super::BeginPlay();
 
 	LevelGenThread = NewObject<ULevelGenerationRunnable>()
-		->InsertVariables()
+		->InsertVariables(ELevelGenType::TwoBuilding)
 		->Initialise(GetWorld())
 		->Begin();
 }

@@ -10,7 +10,9 @@
 #include "../Components/ThrowableComponent.h"
 #include "../Components/VaultObstacleComponent.h"
 #include "../Components/GridMovementComponent.h"
+#include "../Components/DropResourceComponent.h"
 #include "../Components/CharacterDetailsComponent.h"
+#include "../Components/PickupResourceComponent.h"
 #include "../../Player/Components/PawnCameraComponent.h"
 #include "../../Player/Components/CameraOverlapComponent.h"
 #include "../../Player/GamePlayerController.h"
@@ -20,6 +22,7 @@
 #include "../../Equipment/Components/EquipmentDetailsComponent.h"
 #include "../Components/AIComponent.h"
 #include "Animation/AnimNode_StateMachine.h"
+#include "../../Runnables/PostMovementRunnable.h"
 
 UCharAnimInstance::UCharAnimInstance(const FObjectInitializer& ObjectInitializer)
 	: UAnimInstance(ObjectInitializer) {
@@ -68,6 +71,9 @@ void UCharAnimInstance::SetIsTakenDamage(bool val) {
 void UCharAnimInstance::SetIsAiActive(bool val) {
 	bIsAiActive = val;
 }
+void UCharAnimInstance::SetIsPickingUp(bool val) {
+	bIsPickingUp = val;
+}
 void UCharAnimInstance::OnGunFire() {
 	auto owningActor = GetOwningActor();
 	auto equipmentComponent = owningActor->GetComponentByClass<UEquipmentComponent>();
@@ -83,29 +89,46 @@ void UCharAnimInstance::OnGunFire() {
 
 void UCharAnimInstance::OnFinishFire() {
 	auto owningActor = GetOwningActor();
+
+	bIsAttacking = false;
 	auto attackComponent = owningActor->GetComponentByClass<UAttackComponent>();
 
 	auto playerController = owningActor->GetWorld()->GetFirstPlayerController<AGamePlayerController>();
 	auto pawn = playerController->GetPawn();
 	auto cameraComponent = pawn->GetComponentByClass<UPawnCameraComponent>();
 	auto cameraOverlapComponent = pawn->GetComponentByClass<UCameraOverlapComponent>();
-
-	bIsAttacking = false;
 	auto currentAttackType = AttackType;
 
 	if (currentAttackType == EAttackType::AT_MoveAndFire_Right ||
 		currentAttackType == EAttackType::AT_MoveAndFire_Left ||
 		currentAttackType == EAttackType::AT_BasicFire &&
 		(attackComponent && cameraComponent && cameraOverlapComponent))
-		FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([attackComponent, cameraComponent, playerController, cameraOverlapComponent]
+		FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([attackComponent]
 			{
 				attackComponent->ReturnCharacterAnimationSpeedsToNormal();
 				attackComponent->UpdateCurrentAttackState(EAttackState::CS_Return);
-				cameraComponent->UpdateCameraState(ECameraState::CS_Control);
-				playerController->SetMouseAsUi();
-				cameraOverlapComponent->ResetOverlapComponent();
 			},
 			TStatId(), nullptr, ENamedThreads::GameThread);
+
+	GetWorld()->GetTimerManager().SetTimer(OnFinishFireHandle, this, &UCharAnimInstance::OnFinishFire_PostDelay, 1.0f, false);
+}
+void UCharAnimInstance::OnFinishFire_PostDelay() {
+	auto owningActor = GetOwningActor();
+	if (owningActor) {
+		auto playerController = owningActor->GetWorld()->GetFirstPlayerController<AGamePlayerController>();
+		auto pawn = playerController->GetPawn();
+		auto cameraComponent = pawn->GetComponentByClass<UPawnCameraComponent>();
+		auto cameraOverlapComponent = pawn->GetComponentByClass<UCameraOverlapComponent>();
+
+		if (cameraComponent && cameraOverlapComponent && playerController)
+			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([cameraComponent, cameraOverlapComponent, playerController]
+				{
+					cameraComponent->UpdateCameraState(ECameraState::CS_Control);
+					cameraOverlapComponent->ResetOverlapComponent();
+					playerController->SetMouseAsUi();
+				},
+				TStatId(), nullptr, ENamedThreads::GameThread);
+	}
 }
 
 void UCharAnimInstance::OnMeleeHit() {
@@ -229,6 +252,9 @@ void UCharAnimInstance::OnReleasedThrowable() {
 
 void UCharAnimInstance::OnReloadFinish() {
 	bIsReloading = false;
+
+	UDebugMessages::LogDisplay(this, "finishing reloading");
+
 	auto owningActor = GetOwningActor();
 
 	auto equipmentComponent = owningActor->GetComponentByClass<UEquipmentComponent>();
@@ -248,7 +274,26 @@ void UCharAnimInstance::OnReloadFinish() {
 		return UDebugMessages::LogError(this, "failed to get character details component");
 
 	characterDetails->RemoveActionPoints(equipmentDetailsComponent->GetReloadApCost());
+
+	BaseRunnable = NewObject<UPostMovementRunnable>()
+		->InsertVariables(owningActor)
+		->Initialise(owningActor->GetWorld())
+		->Begin();
 }
 void UCharAnimInstance::OnFinishTakenDamage() {
 	bHasTakenDamage = false;
+}
+void UCharAnimInstance::OnInitializePickup() {
+	bIsPickingUp = false;
+
+	auto owningActor = GetOwningActor();
+
+	if (owningActor) {
+		auto resourcePickup = owningActor->GetComponentByClass<UPickupResourceComponent>();
+		
+		if (!resourcePickup)
+			return UDebugMessages::LogError(this, "failed to get resource pickup component");
+	
+		resourcePickup->AssignPickup();
+	}
 }

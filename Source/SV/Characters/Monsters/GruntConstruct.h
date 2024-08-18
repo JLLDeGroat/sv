@@ -18,6 +18,7 @@ class UAttackComponent;
 class UAnimSpeedComponent;
 class UHealthAndStatusWidgetComponent;
 class UAIComponent;
+class UDropResourceComponent;
 /**
  * 
  */
@@ -42,6 +43,7 @@ protected:
 	//Hit Boxes
 
 	UPROPERTY(BlueprintreadWrite, EditAnywhere) UHitCapsuleComponent* LeftArmHitComponent;
+	UPROPERTY(BlueprintreadWrite, EditAnywhere) UHitCapsuleComponent* LeftForeArmHitComponent;
 	UPROPERTY(BlueprintreadWrite, EditAnywhere) UHitCapsuleComponent* RightArmHitComponent;
 	UPROPERTY(BlueprintreadWrite, EditAnywhere) UHitCapsuleComponent* RightForeArmHitComponent;
 
@@ -59,4 +61,5 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UAnimSpeedComponent* AnimSpeedComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UHealthAndStatusWidgetComponent* HealthAndStatusComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UAIComponent* AiComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UDropResourceComponent* DropResourceComponent;
 };

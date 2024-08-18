@@ -21,5 +21,7 @@ public:
 protected:
 
 	UFUNCTION() void EndTurnClicked();
+	UFUNCTION() void OnButtonUnHovered();
+	UFUNCTION() void OnButtonHovered();
 	
 };

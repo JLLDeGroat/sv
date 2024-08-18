@@ -6,16 +6,33 @@
 #include "../../Environment/Natural/NaturalRoad.h"
 
 #pragma optimize("", off)
-UBaseGenerations* URoadGenerations::Generate() {
-	Super::Generate();
 
-	RoadAllowedList = AllowedSpots;//need to also add the spawn and endzones here
+URoadGenerations::URoadGenerations() {
+	MaxTotalIteraions = 3000;
+}
+
+UBaseGenerations* URoadGenerations::Generate() {
+	TotalIterations = 0;
+	if (!Route.IsEmpty()) {
+		//route set by parent object
+		//simple route place
+		for (int i = 0; i < Route.Num(); i++) {
+			PlaceRoad(Route[i]);
+		}
+		return this;
+	}
+
+	RoadAllowedList = UsableLocations;//need to also add the spawn and endzones here
 	for (int i = 0; i < StartZones.Num(); i++) RoadAllowedList.Emplace(StartZones[i]);
 	for (int i = 0; i < EndZones.Num(); i++) RoadAllowedList.Emplace(EndZones[i]);
 
 	TArray<FVector> route;
 	route.Emplace(StartLocation);
-	FindPrimaryRouteBetweenRecursive(route, EndLocation, 90);
+
+	PlaceRoad(StartLocation);
+	PlaceRoad(EndLocation);
+
+	FindPrimaryRouteBetweenRecursive(route, EndLocation, 70);
 
 	if (Route.IsEmpty()) {
 		UDebugMessages::LogError(this, "Generation failed");
@@ -28,9 +45,21 @@ UBaseGenerations* URoadGenerations::Generate() {
 	return this;
 }
 
+TArray<FVector> URoadGenerations::GetRoadRoute() {
+	return Route;
+}
+URoadGenerations* URoadGenerations::SetRoadRoute(TArray<FVector> locations) {
+	Route = locations;
+	return this;
+}
+
+URoadGenerations* URoadGenerations::SetRoadMaxIterations(int amount) {
+	MaxTotalIteraions = amount;
+	return this;
+}
+
 void URoadGenerations::PlaceRoad(FVector loc) {
 	auto finalLoc = loc + FVector(50, 50, 0);
-
 	auto world = GetWorld();
 	FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, loc] {
 		auto actor = world->SpawnActor<ANaturalRoad>(loc, FRotator(0));
@@ -41,10 +70,22 @@ void URoadGenerations::FindPrimaryRouteBetweenRecursive(TArray<FVector> currentR
 	if (currentRoute.Num() > maxRoute)
 		return;
 
+	TotalIterations += 1;
+
+	if (TotalIterations > MaxTotalIteraions) {
+		UDebugMessages::LogError(this, "reached max iterations, exiting");
+		return;
+	}
+
 	auto lastRoute = currentRoute[currentRoute.Num() - 1];
 	auto adjacentGridItems = GetAdjacentGridItems(lastRoute);
 
 	for (int i = 0; i < adjacentGridItems.Num(); i++) {
+
+		if (adjacentGridItems[i] == end) {
+			UDebugMessages::LogError(this, "found end");
+		}
+
 		if (!Route.IsEmpty())
 			return;
 
@@ -69,6 +110,8 @@ void URoadGenerations::FindPrimaryRouteBetweenRecursive(TArray<FVector> currentR
 
 		auto newRoute = currentRoute;
 		newRoute.Emplace(adjacentGridItems[i]);
+
+		//SpawnDebugGrid_SetIsObstacle(adjacentGridItems[i], .001f);
 
 		auto world = GetWorld();
 		auto owner = this;

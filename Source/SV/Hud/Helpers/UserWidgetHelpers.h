@@ -35,4 +35,6 @@ public:
 	static UTexture2D* GetEquipmentNonTexture();
 
 	static UTexture2D* GetTextureForActionType(EActionType actionType);
+
+	static void DesignButton(UUserWidget* widget, FString btnName);
 };

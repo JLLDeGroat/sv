@@ -2,6 +2,7 @@
 
 
 #include "BaseGenerations.h"
+#include "../../../World/WorldGridItemActor.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 
 #pragma optimize("", off)
@@ -12,7 +13,7 @@ UBaseGenerations::UBaseGenerations() {
 UBaseGenerations* UBaseGenerations::SetupGeneration(UWorld* world, FRandomStream random, TArray<FVector> allowedSpots) {
 	World = world;
 	RandomStream = random;
-	AllowedSpots = allowedSpots;
+	UsableLocations = allowedSpots;
 	return this;
 }
 
@@ -33,15 +34,21 @@ bool UBaseGenerations::ShouldGenerate() {
 }
 
 void UBaseGenerations::SetRequiredSpots(TArray<FVector> requiredSpots) {
-	RequiredSpots = requiredSpots;
+	RequiredLocations = requiredSpots;
 }
 
 bool UBaseGenerations::CanFitInLocation(FVector loc) {
 	auto requiredLocs = CreateRequiredLocations(loc);
 
-	for (int i = 0; i < requiredLocs.Num(); i++)
+	/*for (int i = 0; i < requiredLocs.Num(); i++)
 		if (!IsWithinAllowedList(requiredLocs[i]) ||
-			IsWithinCurrentUsedList(requiredLocs[i]))
+			IsWithinCurrentUsedList(requiredLocs[i]) ||
+			IsWithinRequiredBufferSpots(requiredLocs[i]))
+			return false;*/
+
+	for (int i = 0; i < requiredLocs.Num(); i++)
+		if (!IsWithinList(UsableLocations, requiredLocs[i]) ||
+			IsWithinList(TotalUsedLocations, requiredLocs[i]))
 			return false;
 
 	return true;
@@ -54,28 +61,54 @@ void UBaseGenerations::DecrementChance() {
 	CurrentChance -= ChanceDecrement;
 }
 
+void UBaseGenerations::SetRequiredLocations(TArray<FVector> locations) {
+	RequiredLocations = locations;
+}
+void UBaseGenerations::SetRequiredBufferLocations(TArray<FVector> locations) {
+	RequiredBufferLocations = locations;
+}
+
+TArray<FVector> UBaseGenerations::GetRequiredLocations() {
+	return RequiredLocations;
+}
+TArray<FVector> UBaseGenerations::GetRequiredBufferLocations() {
+	return RequiredBufferLocations;
+}
+TArray<FVector> UBaseGenerations::GetUsableLocations() {
+	return UsableLocations;
+}
+
 TArray<FVector> UBaseGenerations::CreateRequiredLocations(FVector original) {
 	TArray<FVector> locs;
-	for (int i = 0; i < RequiredSpots.Num(); i++)
-		locs.Emplace(original + RequiredSpots[i]);
+	for (int i = 0; i < TemplatedRequiredLocations.Num(); i++)
+		locs.Emplace(original + TemplatedRequiredLocations[i]);
 
-	RequiredCalculatedSpots = locs;
 	return locs;
 }
 
-void UBaseGenerations::AddToUsedSpots(TArray<FVector> locs) {
-	for (int i = 0; i < locs.Num(); i++)
-		AllUsedSpots.Emplace(locs[i]);
-}
+//void UBaseGenerations::AddToUsedSpots(TArray<FVector> locs) {
+//	for (int i = 0; i < locs.Num(); i++)
+//		AllUsedSpots.Emplace(locs[i]);
+//}
+//TArray<FVector> UBaseGenerations::GetUsedSpots() {
+//	return AllUsedSpots;
+//}
 
 
 TArray<FVector> UBaseGenerations::GetUnusedSpotsLeft() {
 	TArray<FVector> result;
-	for (int i = 0; i < AllowedSpots.Num(); i++) {
-		if (!IsWithinCurrentUsedList(AllowedSpots[i]))
-			result.Emplace(AllowedSpots[i]);
+	for (int i = 0; i < UsableLocations.Num(); i++) {
+		if (!IsWithinRequiredSpots(UsableLocations[i]) || !IsWithinRequiredBufferSpots(UsableLocations[i]))
+			result.Emplace(UsableLocations[i]);
 	}
 	return result;
+}
+
+TArray<FVector> UBaseGenerations::CombineList(TArray<FVector> locs1, TArray<FVector> locs2) {
+	for (int i = 0; i < locs1.Num(); i++) {
+		locs2.Emplace(locs1[i]);
+	}
+	return locs2;
 }
 
 UBaseGenerations* UBaseGenerations::SetRoadGenStartAndEndLocation(FVector start, FVector end) {
@@ -91,29 +124,29 @@ UBaseGenerations* UBaseGenerations::SetStartAndEndZones(TArray<FVector> startZon
 	return this;
 }
 
-bool UBaseGenerations::IsWithinAllowedList(FVector location) {
-	for (int i = 0; i < AllowedSpots.Num(); i++)
-		if (AllowedSpots[i] == location)
-			return true;
-
-	return false;
-}
-
-bool UBaseGenerations::IsWithinCurrentUsedList(FVector location) {
-	for (int i = 0; i < AllUsedSpots.Num(); i++)
-		if (AllUsedSpots[i] == location)
-			return true;
-
-	return false;
-}
+//bool UBaseGenerations::IsWithinAllowedList(FVector location) {
+//	for (int i = 0; i < AllowedSpots.Num(); i++)
+//		if (AllowedSpots[i] == location)
+//			return true;
+//
+//	return false;
+//}
+//
+//bool UBaseGenerations::IsWithinCurrentUsedList(FVector location) {
+//	for (int i = 0; i < AllUsedSpots.Num(); i++)
+//		if (AllUsedSpots[i] == location)
+//			return true;
+//
+//	return false;
+//}
 
 
 bool UBaseGenerations::IsRequiredSpotBottomLeft(FVector loc) {
 	auto left = loc + FVector(-100, 0, 0);
 	auto down = loc + FVector(0, -100, 0);
 
-	for (int i = 0; i < RequiredCalculatedSpots.Num(); i++)
-		if (RequiredCalculatedSpots[i] == left || RequiredCalculatedSpots[i] == down)
+	for (int i = 0; i < RequiredLocations.Num(); i++)
+		if (RequiredLocations[i] == left || RequiredLocations[i] == down)
 			return false;
 
 	return true;
@@ -122,8 +155,8 @@ bool UBaseGenerations::IsRequiredSpotTopLeft(FVector loc) {
 	auto right = loc + FVector(100, 0, 0);
 	auto down = loc + FVector(0, -100, 0);
 
-	for (int i = 0; i < RequiredCalculatedSpots.Num(); i++) {
-		if (RequiredCalculatedSpots[i] == right || RequiredCalculatedSpots[i] == down)
+	for (int i = 0; i < RequiredLocations.Num(); i++) {
+		if (RequiredLocations[i] == right || RequiredLocations[i] == down)
 			return false;
 	}
 	return true;
@@ -132,8 +165,8 @@ bool UBaseGenerations::IsRequiredSpotBottomRight(FVector loc) {
 	auto left = loc + FVector(-100, 0, 0);
 	auto up = loc + FVector(0, 100, 0);
 
-	for (int i = 0; i < RequiredCalculatedSpots.Num(); i++) {
-		if (RequiredCalculatedSpots[i] == left || RequiredCalculatedSpots[i] == up)
+	for (int i = 0; i < RequiredLocations.Num(); i++) {
+		if (RequiredLocations[i] == left || RequiredLocations[i] == up)
 			return false;
 	}
 
@@ -143,8 +176,8 @@ bool UBaseGenerations::IsRequiredSpotTopRight(FVector loc) {
 	auto right = loc + FVector(100, 0, 0);
 	auto up = loc + FVector(0, 100, 0);
 
-	for (int i = 0; i < RequiredCalculatedSpots.Num(); i++) {
-		if (RequiredCalculatedSpots[i] == right || RequiredCalculatedSpots[i] == up)
+	for (int i = 0; i < RequiredLocations.Num(); i++) {
+		if (RequiredLocations[i] == right || RequiredLocations[i] == up)
 			return false;
 	}
 	return true;
@@ -168,11 +201,147 @@ bool UBaseGenerations::IsRequiredSpotBottomWall(FVector loc) {
 }
 
 bool UBaseGenerations::IsWithinRequiredSpots(FVector location) {
-	for (int i = 0; i < RequiredCalculatedSpots.Num(); i++)
-		if (RequiredCalculatedSpots[i] == location)
+	for (int i = 0; i < RequiredLocations.Num(); i++)
+		if (RequiredLocations[i] == location)
 			return true;
 
 	return false;
 }
+bool UBaseGenerations::IsWithinRequiredBufferSpots(FVector location) {
+	for (int i = 0; i < RequiredBufferLocations.Num(); i++)
+		if (RequiredBufferLocations[i] == location)
+			return true;
+
+	return false;
+}
+
+TArray<FVector> UBaseGenerations::GenerateBufferAroundLocations(TArray<FVector> locations, int buffer) {
+	TArray<FVector> result;
+
+	for (int i = 0; i < locations.Num(); i++) {
+
+		TArray<FVector> adjacents = GetAdjacentsAroundLocation(locations[i], buffer);
+
+		for (int x = 0; x < adjacents.Num(); x++) {
+			if (IsWithinList(locations, adjacents[x]))
+				continue;
+
+			result.Emplace(adjacents[x]);
+		}
+	}
+
+	return result;
+}
+
+TArray<FVector> UBaseGenerations::GetAdjacentsAroundLocation(FVector loc, int adjacentRadius) {
+	TArray<FVector> locs;
+	for (int i = 1; i < adjacentRadius + 1; i++) {
+		locs.Emplace(loc + FVector((100 * i), 0 + (100 * i), 0));
+		locs.Emplace(loc + FVector((-100 * i), 0 + (-100 * i), 0));
+
+		locs.Emplace(loc + FVector(0, 0 + (100 * i), 0));
+		locs.Emplace(loc + FVector((100 * i), 0, 0));
+
+		locs.Emplace(loc + FVector(0, (-100 * i), 0));
+		locs.Emplace(loc + FVector(0 + (-100 * i), 0, 0));
+	}
+
+	return locs;
+}
+
+FVector UBaseGenerations::GetRandomLocationInList(TArray<FVector> locs) {
+	if (locs.IsEmpty())
+		return FVector::ZeroVector;
+
+	return locs[RandomStream.RandRange(0, locs.Num() - 1)];
+}
+
+void UBaseGenerations::SpawnDebugGrid_SetIsStart(FVector location, float delay) {
+	auto world = GetWorld();
+	FPlatformProcess::Sleep(delay);
+	location += FVector(-50, -50, 0);
+	FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, location] {
+		auto actor = world->SpawnActor<AWorldGridItemActor>(location, FRotator::ZeroRotator);
+		actor->SetIsStart();
+		}, TStatId(), nullptr, ENamedThreads::GameThread);
+}
+void UBaseGenerations::SpawnDebugGrid_SetIsEnd(FVector location, float delay) {
+	auto world = GetWorld();
+	FPlatformProcess::Sleep(delay);
+	location += FVector(-50, -50, 0);
+	FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, location] {
+		auto actor = world->SpawnActor<AWorldGridItemActor>(location, FRotator::ZeroRotator);
+		actor->SetIsEnd();
+		}, TStatId(), nullptr, ENamedThreads::GameThread);
+}
+void UBaseGenerations::SpawnDebugGrid_SetIsOffshoot(FVector location, float delay) {
+	auto world = GetWorld();
+	FPlatformProcess::Sleep(delay);
+	location += FVector(-50, -50, 0);
+	FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, location] {
+		auto actor = world->SpawnActor<AWorldGridItemActor>(location, FRotator::ZeroRotator);
+		actor->SetIsOffshoot();
+		}, TStatId(), nullptr, ENamedThreads::GameThread);
+}
+void UBaseGenerations::SpawnDebugGrid_SetIsSpawn(FVector location, float delay) {
+	auto world = GetWorld();
+	FPlatformProcess::Sleep(delay);
+	location += FVector(-50, -50, 0);
+	FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, location] {
+		auto actor = world->SpawnActor<AWorldGridItemActor>(location, FRotator::ZeroRotator);
+		actor->SetIsSpawn();
+		}, TStatId(), nullptr, ENamedThreads::GameThread);
+}
+void UBaseGenerations::SpawnDebugGrid_SetIsObstacle(FVector location, float delay) {
+	auto world = GetWorld();
+	FPlatformProcess::Sleep(delay);
+	location += FVector(-50, -50, 0);
+	FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, location] {
+		auto actor = world->SpawnActor<AWorldGridItemActor>(location, FRotator::ZeroRotator);
+		actor->SetIsObstacle();
+		}, TStatId(), nullptr, ENamedThreads::GameThread);
+}
+
+void UBaseGenerations::SpawnDebugGrid_SetIsStart(TArray<FVector> locations, FVector offset, float delay) {
+	for (int i = 0; i < locations.Num(); i++)
+		SpawnDebugGrid_SetIsStart(locations[i] + offset, delay);
+}
+void UBaseGenerations::SpawnDebugGrid_SetIsEnd(TArray<FVector> locations, FVector offset, float delay) {
+	for (int i = 0; i < locations.Num(); i++)
+		SpawnDebugGrid_SetIsEnd(locations[i] + offset, delay);
+}
+void UBaseGenerations::SpawnDebugGrid_SetIsOffshoot(TArray<FVector> locations, FVector offset, float delay) {
+	for (int i = 0; i < locations.Num(); i++)
+		SpawnDebugGrid_SetIsOffshoot(locations[i] + offset, delay);
+}
+void UBaseGenerations::SpawnDebugGrid_SetIsSpawn(TArray<FVector> locations, FVector offset, float delay) {
+	for (int i = 0; i < locations.Num(); i++)
+		SpawnDebugGrid_SetIsSpawn(locations[i] + offset, delay);
+}
+void UBaseGenerations::SpawnDebugGrid_SetIsObstacle(TArray<FVector> locations, FVector offset, float delay) {
+	for (int i = 0; i < locations.Num(); i++)
+		SpawnDebugGrid_SetIsObstacle(locations[i] + offset, delay);
+}
+
+
+bool UBaseGenerations::IsWithinList(TArray<FVector> list, FVector location) {
+	for (int i = 0; i < list.Num(); i++)
+		if (list[i] == location)
+			return true;
+
+	return false;
+}
+
+TArray<FVector> UBaseGenerations::RemoveListFromList(TArray<FVector> bigList, TArray<FVector> removesThisListFromItemsFromBigList) {
+	for (int i = 0; i < removesThisListFromItemsFromBigList.Num(); i++)
+		for (int x = 0; x < bigList.Num(); x++)
+			if (removesThisListFromItemsFromBigList[i] == bigList[x]) {
+				bigList.RemoveAt(x);
+				break;
+			}
+
+	return bigList;
+}
+
 
 #pragma optimize("", on)

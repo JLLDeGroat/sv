@@ -61,7 +61,7 @@ void ULeftClickAction::DoAction() {
 
 	if (!IsInValidCameraState(pawnCameraComponent->GetCurrentCameraState()))
 		return;
-
+	
 	FHitResult Hit;
 	controller->GetHitResultUnderCursor(USvUtilities::GetClickableChannel(), false, Hit);
 
@@ -135,6 +135,8 @@ void ULeftClickAction::DoAction() {
 
 		overwatchAction->SetOverwatch();
 		pawnCameraComponent->UpdateCameraState(ECameraState::CS_Control, FVector::ZeroVector, FVector::ZeroVector, true);
+
+		ControlManager->SetCanMouseDesignateSelectionDecal(true);
 	}
 	else {
 		if (Hit.GetActor() && SelectionManager->TrySetSelected(Hit.GetActor())) {

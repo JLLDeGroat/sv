@@ -18,6 +18,7 @@
 #include "../Components/ActionsComponent.h"
 #include "../Components/UI/CharacterTileUIComponent.h"
 #include "../Components/DestroyComponent.h"
+#include "../Components/PickupResourceComponent.h"
 
 // Sets default values
 ASolder::ASolder(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(ObjectInitializer)
@@ -31,8 +32,12 @@ ASolder::ASolder(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(O
 	DetailsComponent->SetHealth(100);
 
 	TargetingComponent = CreateDefaultSubobject<UTargetingComponent>(TEXT("Targeting"));
-
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMesh(TEXT("SkeletalMesh'/Game/Characters/Soldier/ClothedPlayer.ClothedPlayer'"));
+	///Script/Engine.SkeletalMesh'/Game/Characters/Soldier/BaseSoldier.BaseSoldier'
+	/*static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMesh(TEXT("SkeletalMesh'/Game/Characters/Soldier/ClothedPlayer.ClothedPlayer'"));
+	if (skeletalMesh.Succeeded()) {
+		GetMesh()->SetSkeletalMesh(skeletalMesh.Object);
+	}*/
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMesh(TEXT("Script/Engine.SkeletalMesh'/Game/Characters/Soldier/BaseSoldier.BaseSoldier'"));
 	if (skeletalMesh.Succeeded()) {
 		GetMesh()->SetSkeletalMesh(skeletalMesh.Object);
 	}
@@ -74,6 +79,8 @@ ASolder::ASolder(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(O
 	CharacterTileUIComponent = CreateDefaultSubobject<UCharacterTileUIComponent>(TEXT("UITile"));
 
 	DestroyComponent = CreateDefaultSubobject< UDestroyComponent>(TEXT("DestroyComponent"));
+
+	PickupResourceComponent = CreateDefaultSubobject<UPickupResourceComponent>(TEXT("PickupResource"));
 }
 
 // Called when the game starts or when spawned

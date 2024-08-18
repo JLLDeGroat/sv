@@ -5,6 +5,7 @@
 #include "TargetingComponent.h"
 #include "EquipmentComponent.h"
 #include "ThrowableComponent.h"
+#include "PickupResourceComponent.h"
 #include "../../Equipment/Equipment.h"
 #include "../../Equipment/Components/EquipmentDetailsComponent.h"
 #include "../../Delegates/HudDelegates.h"
@@ -23,7 +24,6 @@ UActionsComponent::UActionsComponent()
 void UActionsComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	// ...
 }
 
 void UActionsComponent::SetCanExtract(bool val) {
@@ -73,6 +73,10 @@ void UActionsComponent::SendActionsToUI() {
 	if (bCanExtract) {
 		hudDelegates->_AddActionIconToHud.Broadcast(EActionType::AT_Extract, "E");
 	}
+
+	auto pickups = GetOwner()->GetComponentByClass<UPickupResourceComponent>();
+	if (pickups && pickups->HasNearbyPickupActors())
+		hudDelegates->_AddActionIconToHud.Broadcast(EActionType::AT_Pickup, "P");
 
 	hudDelegates->_AddActionIconToHud.Broadcast(EActionType::AT_Sleep, "9");
 	hudDelegates->_AddSoldierToCharacterDetailsWidget.Broadcast(GetOwner());

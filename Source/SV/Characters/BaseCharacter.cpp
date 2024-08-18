@@ -84,7 +84,7 @@ TArray<TScriptInterface<IHitComponent>> ABaseCharacter::GetHitComponents() {
 	TArray<UActorComponent*> components;
 	GetComponents(components);
 
-	TArray< TScriptInterface<IHitComponent>> response;
+	TArray<TScriptInterface<IHitComponent>> response;
 
 	for (UActorComponent* comp : components) {
 		if (comp->IsA<UHitBoxComponent>() ||
@@ -93,7 +93,6 @@ TArray<TScriptInterface<IHitComponent>> ABaseCharacter::GetHitComponents() {
 			response.Emplace(comp);
 		}
 	}
-
 	return response;
 }
 
