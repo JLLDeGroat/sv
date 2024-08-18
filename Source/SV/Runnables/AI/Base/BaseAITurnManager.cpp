@@ -8,6 +8,7 @@
 #include "../Behaviours/AIMeleeRangeMove.h"
 
 #include "../../../Interfaces/SvChar.h"
+#include "../../../Characters/Components/CharacterDetailsComponent.h"
 
 UBaseAITurnManager::UBaseAITurnManager(const FObjectInitializer& ObjectInitializer)
 	: UBaseRunnable(ObjectInitializer) {
@@ -34,6 +35,16 @@ void UBaseAITurnManager::SetAllCharacters(TArray<TScriptInterface<ISvChar>> char
 
 TScriptInterface<ISvChar> UBaseAITurnManager::GetThisEnemy() {
 	return ThisEnemy;
+}
+bool UBaseAITurnManager::GetThisEnemyIsValidAndAlive() {
+	if (GetThisEnemy()) {
+		auto detailComponent = GetThisEnemy()->GetAsActor()->GetComponentByClass<UCharacterDetailsComponent>();
+		if (!detailComponent)
+			UDebugMessages::LogError(this, "failed to get detailsComponent for this enemy " + GetThisEnemy()->GetAsActor()->GetName());
+
+		return !detailComponent->GetIsDead();
+	}
+	return false;
 }
 TArray<TScriptInterface<ISvChar>> UBaseAITurnManager::GetAllCharacters() {
 	return AllCharacters;

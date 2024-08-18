@@ -26,7 +26,13 @@ void UAiTurnMoveChecker::ActivateThread() {
 	meleeMovement->DoBehaviour();
 
 	while (!meleeMovement->GetCompletedBehaviourAndWaitIfNot(.1f) && bIsAlive) {
-		UDebugMessages::LogDisplay(this, "waiting on melee range movement behaviour");
+		if (GetThisEnemyIsValidAndAlive()) {
+			UDebugMessages::LogDisplay(this, "waiting on melee range movement behaviour");
+		}
+		else {
+			SetCheckerHasCompleted();
+			return;
+		}
 	}
 
 	UDebugMessages::LogDisplay(this, "ending move checker");

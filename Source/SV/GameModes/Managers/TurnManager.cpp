@@ -73,8 +73,8 @@ void UTurnManager::BeginPlayerTurn() {
 	aiDelegates->_AiTurnIndicatorVisibility.Broadcast(false);
 
 	UDebugMessages::LogError(this, "TODO current activations are commented out");
-	//gameplayDelegates->_ActivateOverwatchActors.Broadcast(ECharacterControl::CC_AI);
-	//gameplayDelegates->_RemoveUnusedOverwatchActors.Broadcast(ECharacterControl::CC_Player);
+	gameplayDelegates->_ActivateOverwatchActors.Broadcast(ECharacterControl::CC_AI);
+	gameplayDelegates->_RemoveUnusedOverwatchActors.Broadcast(ECharacterControl::CC_Player);
 
 	TArray<TScriptInterface<ISvChar>> foundCharacters;
 	characterManager->GetCharacterListOfCharacterType(ECharacterControl::CC_Player, foundCharacters);
