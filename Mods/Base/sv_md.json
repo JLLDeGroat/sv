@@ -28,5 +28,45 @@
             "MissionType": "MT_Exterminate",
             "MissionName": "Exterminate"
         }
+    ],
+    "MissionFluffItems": [
+        {
+            "MissionType": "MT_Survive",
+            "Fluff": "Survive Fluff"
+        },
+        {
+            "MissionType": "MT_Extraction",
+            "Fluff": "Extraction Fluff"
+        },
+        {
+            "MissionType": "MT_Traverse",
+            "Fluff": "Traverse Fluff"
+        },
+        {
+            "MissionType": "MT_Exterminate",
+            "Fluff": "Exterminate Flufff"
+        }
+    ],
+    "MissionObjectives":[
+        {
+            "MissionType": "MT_Survive",
+            "Text": "Survive the onslaught!"
+        },
+        {
+            "MissionType": "MT_Survive",
+            "Text": "Survive the onslaught!"
+        },
+        {
+            "MissionType": "MT_Exterminate",
+            "Text": "Eliminate all Targets"
+        },        
+        {
+            "MissionType": "MT_Traverse",
+            "Text": "Extract at the other side of this tunnel"
+        },
+        {
+            "MissionType": "MT_Extraction",
+            "Text": "Gather the Intel and reach the extraction"
+        }
     ]
 }

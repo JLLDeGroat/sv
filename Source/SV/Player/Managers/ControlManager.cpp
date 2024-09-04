@@ -6,6 +6,7 @@
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "../../Interfaces/Selectable.h"
 #include "../../Interfaces/Movable.h"
+#include "../../Delegates/GameplayDelegates.h"
 #include "../../Characters/Components/GridMovementComponent.h"
 #include "SelectionManager.h"
 #include "../Utility/GrenadeIndicatorActor.h"
@@ -32,6 +33,12 @@ void UControlManager::BeginPlay() {
 
 	hudDelegates->_OnHudItemHovered.AddDynamic(this, &UControlManager::OnUIItemHovered);
 	hudDelegates->_OnHudItemUnhovered.AddDynamic(this, &UControlManager::OnUIItemUnhovered);
+
+	auto gameplayDelegates = UGameplayDelegates::GetInstance();
+	if (!gameplayDelegates)
+		return UDebugMessages::LogError(this, "failed to get gameplay delegates");
+
+	gameplayDelegates->_ChangeControlLimits.AddDynamic(this, &UControlManager::UpdateControlLimit);
 }
 
 void UControlManager::SetGrenadeIndicatorActor(AGrenadeIndicatorActor* indicatorActor) {
@@ -123,4 +130,11 @@ void UControlManager::OnUIItemUnhovered() {
 
 	SetCanMouseDesignateSelectionDecal(bDisabledMouseDesignationOnHover);
 	SetCanMouseDesignateExplosionRadiusActor(bDisabledMouseExplosionDesignationOnHover);
+}
+
+void UControlManager::UpdateControlLimit(EControlLimit controlLimit) {
+	ControlLimits = controlLimit;
+}
+EControlLimit UControlManager::GetControlLimit() {
+	return ControlLimits;
 }

@@ -3,6 +3,7 @@
 
 #include "ThrowExplosionComponent.h"
 #include "../../../Utilities/SvUtilities.h"
+#include "../../../Utilities/GridUtilities.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "../../../Characters/Components/DamageRecieveComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -51,7 +52,8 @@ void UThrowExplosionComponent::Overlapped(UPrimitiveComponent* OverlappedComp, A
 	auto damageReceiveComponent = OtherActor->GetComponentByClass<UDamageRecieveComponent>();
 	auto equipmentDetailsComponent = GetOwner()->GetComponentByClass<UEquipmentDetailsComponent>();
 	if (damageReceiveComponent && equipmentDetailsComponent) {
-		damageReceiveComponent->DoDamage(1.0f, 200, GetOwner()->GetActorLocation(), 150000);
+		damageReceiveComponent->DoDamage(1.0f, 200, 150000, 
+			UGridUtilities::FindLookAtRotation(GetOwner()->GetActorLocation(), OtherActor->GetActorLocation()));
 	}
 }
 

@@ -6,6 +6,7 @@
 #include "../../EnvironmentActor.h"
 #include "RollingTable.generated.h"
 
+class UPotentialItemSpawnComponent;
 /**
  *
  */
@@ -27,4 +28,6 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* Wheel2;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* Wheel3;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* Wheel4;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UPotentialItemSpawnComponent* PotentialItemSpawnComponent;
 };

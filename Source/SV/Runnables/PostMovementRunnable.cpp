@@ -10,8 +10,10 @@
 #include "../Characters/Components/CharacterDetailsComponent.h"
 #include "../Characters/Components/AIComponent.h"
 #include "../Characters/Components/ActionsComponent.h"
+#include "../Characters/Components/TargetingComponent.h"
 #include "../Delegates/HudDelegates.h"
 #include "../Delegates/AIDelegates.h"
+#include "../Delegates/GameplayDelegates.h"
 #include "DrawDebugHelpers.h"
 
 void UPostMovementRunnable::ActivateThread() {
@@ -37,9 +39,9 @@ void UPostMovementRunnable::ActivateThread() {
 			}
 		}
 	}
-
+	auto targeting = MovedActor->GetComponentByClass<UTargetingComponent>();
 	auto details = MovedActor->GetComponentByClass<UCharacterDetailsComponent>();
-	if (details && details->GetCharacterControl() == ECharacterControl::CC_Player) {
+	if (targeting && details && details->GetCharacterControl() == ECharacterControl::CC_Player) {
 		auto hudDelegates = UHudDelegates::GetInstance();
 		if (!hudDelegates)
 			return UDebugMessages::LogError(this, "failed to get hudDelegates");
@@ -49,9 +51,20 @@ void UPostMovementRunnable::ActivateThread() {
 		if (!actionsComponent)
 			return UDebugMessages::LogError(this, "failed to get actions component");
 
-		FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([hudDelegates, actionsComponent] {
+		auto gamePlayDelegates = UGameplayDelegates::GetInstance();
+		if (!gamePlayDelegates)
+			return UDebugMessages::LogError(this, "failed to get gameplay delegates");
+
+		auto world = GetWorld();
+		FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([hudDelegates, actionsComponent, gamePlayDelegates, targeting, world] {
+			targeting->DetermineTargetData();
 			actionsComponent->SendActionsToUI();
 			hudDelegates->_RefreshCharacterDetailsWidget.Broadcast();
+			gamePlayDelegates->_ChangeControlLimits.Broadcast(EControlLimit::CL_NONE);
+
+			if (world)
+				USvUtilities::AttemptToStartWinLossChecker(world);
+
 			}, TStatId(), nullptr, ENamedThreads::GameThread);
 	}
 

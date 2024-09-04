@@ -9,6 +9,7 @@
 ULightAttachmentComponent::ULightAttachmentComponent() {
 	auto meshRef = "/Script/Engine.StaticMesh'/Game/Equipment/TorchAttachment.TorchAttachment'";
 	auto staticMesh = USvUtilities::GetStaticMesh(meshRef);
+	SetCanEverAffectNavigation(false);
 	if (staticMesh) {
 		SetStaticMesh(staticMesh);
 	}

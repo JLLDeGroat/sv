@@ -6,7 +6,7 @@
 #include "../EnvironmentActor.h"
 #include "ResourcePickup.generated.h"
 
-class UStaticMeshComponent;
+class UPickupMeshComponent;
 class UBoxComponent;
 class UPickupDetailsComponent;
 /**
@@ -20,19 +20,12 @@ class SV_API AResourcePickup : public AEnvironmentActor
 public:
 
 	AResourcePickup(const FObjectInitializer& ObjectInitializer);
-
-	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void BeginPlay() override;
 
 
 protected:
 
-	UFUNCTION() void Overlapped(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION() void EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* PickupMeshComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UPickupMeshComponent* PickupMeshComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UBoxComponent* BoxComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UPickupDetailsComponent* PickupDetailsComponent;
 

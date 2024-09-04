@@ -15,25 +15,28 @@ USleepAction::USleepAction(const FObjectInitializer& ObjectInitializer)
 }
 
 void USleepAction::DoAction() {
-	ResetActionEffects();
+	if (IsWithinValidControlLimiter()) {
+		ResetActionEffects();
 
 
-	auto selected = SelectionManager->GetSelected();
+		auto selected = SelectionManager->GetSelected();
 
-	auto hudDelegates = UHudDelegates::GetInstance();
-	if (!hudDelegates)
-		return UDebugMessages::LogError(this, "failed to get hud delegates");
+		auto hudDelegates = UHudDelegates::GetInstance();
+		if (!hudDelegates)
+			return UDebugMessages::LogError(this, "failed to get hud delegates");
 
-	if (selected) {
-		auto details = selected->GetAsActor()->GetComponentByClass<UCharacterDetailsComponent>();
-		if (details) {
-			details->RemoveMovementPoints(details->GetMaxMovementPoints());
-			details->RemoveActionPoints(details->GetMaxActionPoints());
+		if (selected) {
+			auto details = selected->GetAsActor()->GetComponentByClass<UCharacterDetailsComponent>();
+			if (details) {
+				details->RemoveMovementPoints(details->GetMaxMovementPoints());
+				details->RemoveActionPoints(details->GetMaxActionPoints());
 
-			SelectionManager->TrySetSelected(nullptr);
+				SelectionManager->TrySetSelected(nullptr);
 
-			hudDelegates->_HideOrResetUIWidget.Broadcast();
-			hudDelegates->_ResetCharacterTileWidget.Broadcast();
+				hudDelegates->_HideOrResetUIWidget.Broadcast();
+				hudDelegates->_ResetCharacterTileWidget.Broadcast();
+				hudDelegates->_OnHudItemUnhovered.Broadcast();
+			}
 		}
 	}
 }

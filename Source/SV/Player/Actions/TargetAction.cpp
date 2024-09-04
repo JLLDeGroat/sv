@@ -36,6 +36,11 @@ void UTargetAction::BeginPlay() {
 		TargetingIndicator = GetWorld()->SpawnActor<ATargetingIndicatorActor>();
 		TargetingIndicator->SetActorLocation(FVector(0, 0, -1000));
 	}
+
+	auto owner = GetOwner<AGamePlayerController>();
+	auto pawn = owner->GetPawn();
+	if (!PawnCameraComponent)
+		PawnCameraComponent = pawn->GetComponentByClass<UCameraComponent>();
 }
 
 void UTargetAction::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
@@ -45,67 +50,71 @@ void UTargetAction::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 	FVector targetLocation = FVector::ZeroVector;
 	GetTargetLocation(hit, targetLocation, PawnCameraComponent);
 	TargetingIndicator->SetActorLocation(targetLocation);
-	
+
 	auto gunAccuracy = USvUtilities::DetermineAccuracyInidicatorScale(PawnCameraComponent->GetComponentLocation(), targetLocation,
 		CurrentTargetAccuracy, CurrentTargetAccuracyDecay, CurrentTargetBaseAccuracy);
 
 	TargetingIndicator->SetActorScale3D(gunAccuracy);
+
+	UDebugMessages::LogError(this, FString::SanitizeFloat(DeltaTime));
 }
 
 void UTargetAction::DoAction() {
-	ResetActionEffects();
+	if (IsWithinValidControlLimiter()) {
+		ResetActionEffects();
 
-	auto owner = GetOwner<AGamePlayerController>();
-	auto pawn = owner->GetPawn();
-	auto pawnCameraComponent = pawn->GetComponentByClass<UPawnCameraComponent>();
+		auto owner = GetOwner<AGamePlayerController>();
+		auto pawn = owner->GetPawn();
+		auto pawnCameraComponent = pawn->GetComponentByClass<UPawnCameraComponent>();
 
-	if (!PawnCameraComponent)
-		PawnCameraComponent = pawn->GetComponentByClass<UCameraComponent>();
+		if (!PawnCameraComponent)
+			PawnCameraComponent = pawn->GetComponentByClass<UCameraComponent>();
 
-	if (!IsInValidCameraState(pawnCameraComponent->GetCurrentCameraState()))
-		return;
+		if (!IsInValidCameraState(pawnCameraComponent->GetCurrentCameraState()))
+			return;
 
-	auto selected = SelectionManager->GetSelected();
+		auto selected = SelectionManager->GetSelected();
 
-	auto hudDelegates = UHudDelegates::GetInstance();
-	if (!hudDelegates)
-		return UDebugMessages::LogError(this, "failed to get hud delegates, cannot do target action");
+		auto hudDelegates = UHudDelegates::GetInstance();
+		if (!hudDelegates)
+			return UDebugMessages::LogError(this, "failed to get hud delegates, cannot do target action");
 
-	// reset values
-	if (pawnCameraComponent->GetCurrentCameraState() == ECameraState::CS_GunTarget) {
-		pawnCameraComponent->UpdateCameraState(ECameraState::CS_Control);
-		owner->SetMouseAsUi();
-		hudDelegates->_AimTargetVisibility.Broadcast(false);
-	}
-	else if (selected) {
-		auto actor = selected->GetAsActor();
+		// reset values
+		if (pawnCameraComponent->GetCurrentCameraState() == ECameraState::CS_GunTarget) {
+			pawnCameraComponent->UpdateCameraState(ECameraState::CS_Control);
+			owner->SetMouseAsUi();
+			hudDelegates->_AimTargetVisibility.Broadcast(false);
+		}
+		else if (selected) {
+			auto actor = selected->GetAsActor();
 
-		auto equipmentComponent = actor->GetComponentByClass<UEquipmentComponent>();
-		auto detailsComponent = actor->GetComponentByClass<UCharacterDetailsComponent>();
+			auto equipmentComponent = actor->GetComponentByClass<UEquipmentComponent>();
+			auto detailsComponent = actor->GetComponentByClass<UCharacterDetailsComponent>();
 
-		if (!equipmentComponent || !detailsComponent ||
-			equipmentComponent->GetActionPointsNeededToUseEquipment() > detailsComponent->GetActionPoints())
-			return UDebugMessages::LogError(this, "could not get equpiment or details component, or not enough action points. will not begin targeting");
+			if (!equipmentComponent || !detailsComponent ||
+				equipmentComponent->GetActionPointsNeededToUseEquipment() > detailsComponent->GetActionPoints())
+				return UDebugMessages::LogError(this, "could not get equpiment or details component, or not enough action points. will not begin targeting");
 
-		auto targetingComponent = actor->GetComponentByClass<UTargetingComponent>();
-		if (targetingComponent) {
-			auto currentTargetData = targetingComponent->GetCurrentMainTarget();
-			if (!currentTargetData) {
-				UDebugMessages::LogError(this, "no targeting data");
-				return;
+			auto targetingComponent = actor->GetComponentByClass<UTargetingComponent>();
+			if (targetingComponent) {
+				auto currentTargetData = targetingComponent->GetCurrentMainTarget();
+				if (!currentTargetData) {
+					UDebugMessages::LogError(this, "no targeting data");
+					return;
+				}
+				//assuming only one target data
+
+				pawnCameraComponent->UpdateCameraState(ECameraState::CS_GunTarget, currentTargetData->GetShootCameraLocation(),
+					currentTargetData->GetCharacter()->GetSelectableGridLocation());
+
+				owner->SetMouseAsGame();
+
+				SetCurrentEquipmentAccuracy(actor);
+
+				//shows the hud on screen
+				//hudDelegates->_AimTargetVisibility.Broadcast(true);
+				SetComponentTickEnabled(true);
 			}
-			//assuming only one target data
-
-			pawnCameraComponent->UpdateCameraState(ECameraState::CS_GunTarget, currentTargetData->GetShootLocation(),
-				currentTargetData->GetCharacter()->GetSelectableGridLocation());
-
-			owner->SetMouseAsGame();
-
-			SetCurrentEquipmentAccuracy(actor);
-
-			//shows the hud on screen
-			//hudDelegates->_AimTargetVisibility.Broadcast(true);
-			SetComponentTickEnabled(true);
 		}
 	}
 }

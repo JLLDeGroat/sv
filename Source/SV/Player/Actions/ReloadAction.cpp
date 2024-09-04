@@ -19,42 +19,45 @@ UReloadAction::UReloadAction(const FObjectInitializer& ObjectInitializer)
 }
 
 void UReloadAction::DoAction() {
-	UDebugMessages::LogDisplay(this, "doing reload");
-	ResetActionEffects();
+	if (IsWithinValidControlLimiter()) {
+		UDebugMessages::LogDisplay(this, "doing reload");
+		ResetActionEffects();
 
-	auto controller = GetOwner<APlayerController>();
-	auto pawn = controller->GetPawn();
-	auto pawnCameraComponent = pawn->GetComponentByClass<UPawnCameraComponent>();
+		auto controller = GetOwner<APlayerController>();
+		auto pawn = controller->GetPawn();
+		auto pawnCameraComponent = pawn->GetComponentByClass<UPawnCameraComponent>();
 
-	if (!pawnCameraComponent)
-		return UDebugMessages::LogError(this, "failed to get pawn camera component");
+		if (!pawnCameraComponent)
+			return UDebugMessages::LogError(this, "failed to get pawn camera component");
 
-	if (!IsInValidCameraState(pawnCameraComponent->GetCurrentCameraState()))
-		return;
+		if (!IsInValidCameraState(pawnCameraComponent->GetCurrentCameraState()))
+			return;
 
-	auto selected = SelectionManager->GetSelected();
-	if (selected) {
-		auto selectedAsActor = selected->GetAsActor();
+		auto selected = SelectionManager->GetSelected();
+		if (selected) {
+			auto selectedAsActor = selected->GetAsActor();
 
-		auto characterDetails = selectedAsActor->GetComponentByClass<UCharacterDetailsComponent>();
-		if (!characterDetails)
-			return UDebugMessages::LogError(this, "failed to get character details");
+			auto characterDetails = selectedAsActor->GetComponentByClass<UCharacterDetailsComponent>();
+			if (!characterDetails)
+				return UDebugMessages::LogError(this, "failed to get character details");
 
-		auto equipmentComponent = selectedAsActor->GetComponentByClass<UEquipmentComponent>();
-		auto equipment = equipmentComponent->GetPrimaryEquipment();
+			auto equipmentComponent = selectedAsActor->GetComponentByClass<UEquipmentComponent>();
+			auto equipment = equipmentComponent->GetPrimaryEquipment();
 
-		if (!equipment)
-			return UDebugMessages::LogError(this, "failed to get equipment");
+			if (!equipment)
+				return UDebugMessages::LogError(this, "failed to get equipment");
 
-		auto equipmentDetails = equipment->GetComponentByClass<UEquipmentDetailsComponent>();
-		if (!equipmentDetails)
-			return UDebugMessages::LogError(this, "failed to get equipmentDetails");
+			auto equipmentDetails = equipment->GetComponentByClass<UEquipmentDetailsComponent>();
+			if (!equipmentDetails)
+				return UDebugMessages::LogError(this, "failed to get equipmentDetails");
 
 
-		if (characterDetails->GetActionPoints() >= equipmentDetails->GetReloadApCost()) {
-			equipmentComponent->ReloadEquipment();
+			if (characterDetails->GetActionPoints() >= equipmentDetails->GetReloadApCost()) {
+				equipmentComponent->ReloadEquipment();
+				UpdateControlLimit(EControlLimit::CL_NoClick);
+			}
+			else
+				return UDebugMessages::LogError(this, "cannot reload, not enough ap");
 		}
-		else
-			return UDebugMessages::LogError(this, "cannot reload, not enough ap");
 	}
 }

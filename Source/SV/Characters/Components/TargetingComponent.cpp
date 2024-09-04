@@ -133,7 +133,6 @@ TArray<FVector> UTargetingComponent::GetPotentialShootingLocations(bool includeC
 	auto svChar = GetOwner<ISvChar>();
 
 	auto startingLocation = svChar->GetSelectableGridLocation();
-
 	TArray<FVector> locations;
 
 	auto gridMovementComponent = GetOwner()->GetComponentByClass<UGridMovementComponent>();
@@ -151,15 +150,16 @@ TArray<FVector> UTargetingComponent::GetPotentialShootingLocations(bool includeC
 }
 
 bool UTargetingComponent::GetCanTarget(FVector possibleLocation, TScriptInterface<ISvChar> character) {
-
+	auto svChar = GetOwner<ISvChar>();
+	auto headLocation = svChar->GetHeadZHeight();
 	auto hitComponents = character->GetHitComponents();
 	for (int x = 0; x < hitComponents.Num(); x++) {
 		FHitResult Hit;
-
 		GetOwner()->GetWorld()->LineTraceSingleByChannel(Hit, possibleLocation, hitComponents[x]->GetWorldLocation(), USvUtilities::GetEnvironmentChannel());
 
 		if (!Hit.bBlockingHit) {
-			TargetData.Emplace(FTargetData(possibleLocation, character));
+			TargetData.Emplace(FTargetData(possibleLocation, character,
+				FVector(possibleLocation.X, possibleLocation.Y, headLocation)));
 			return true;
 		}
 	}

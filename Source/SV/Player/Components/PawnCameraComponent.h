@@ -10,16 +10,16 @@
 class UCameraComponent;
 class UPostProcessComponent;
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class SV_API UPawnCameraComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	// Sets default values for this component's properties
 	UPawnCameraComponent();
 
-	void UpdateCameraState(ECameraState cameraState, FVector moveToLocation = FVector::ZeroVector, FVector lookAtLocation = FVector::ZeroVector, bool overrideCameraMovements = false);
+	void UpdateCameraState(ECameraState cameraState, FVector moveToLocation = FVector::ZeroVector, FVector lookAtLocation = FVector::ZeroVector, bool overrideCameraMovements = false, bool doNotSetReturn = false);
 	ECameraState GetCurrentCameraState();
 
 	void DoCinematicAttackCameraMovement(AActor* attacker, AActor* target);
@@ -31,7 +31,7 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
@@ -42,9 +42,9 @@ private:
 
 	UPROPERTY() FVector MoveToLocation;
 	UPROPERTY() FVector LookToLocation;
-	
+
 	UPROPERTY() FVector ReturnLocation;
-	
+
 	UPROPERTY() FVector CurrentMoveTo;
 	UPROPERTY() FVector CurrentRotateToLocation;
 
@@ -64,7 +64,7 @@ private:
 	UPROPERTY() float DefaultDepthOfFieldFstopValue = 0.0f;
 	UPROPERTY() float DefaultDepthOfFieldSensorWidth = 0.0f;
 	UPROPERTY() float DefaultDepthOfFieldFocalDistance = 0.0f;
-		
+
 
 	void AttemptToAlterAttackerStatusWidgetVisibility(bool val);
 };

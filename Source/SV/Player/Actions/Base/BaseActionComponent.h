@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "../../GamePlayerController.h"
 #include "../../../Enums/ECharacterEnums.h"
+#include "../../../Enums/EControllerEnums.h"
 #include "BaseActionComponent.generated.h"
 
 class USelectionManager;
@@ -27,11 +28,14 @@ protected:
 	virtual void BeginPlay() override;
 	AGamePlayerController* GetOwningController();
 
+	bool IsWithinValidControlLimiter();
 	void ResetActionEffects();
 
 	bool IsInValidCameraState(ECameraState currentCameraState);
 
 	void GetTargetLocation(FHitResult& hit, FVector& targetLocation, UCameraComponent* cameraComp);
+
+	void UpdateControlLimit(EControlLimit controlLimit);
 
 
 	UPROPERTY() USelectionManager* SelectionManager;
@@ -40,6 +44,7 @@ protected:
 	UPROPERTY() AGamePlayerController* PlayerController;
 
 	UPROPERTY() TArray<ECameraState> ValidCameraStates;
+	UPROPERTY() TArray<EControlLimit> ValidControlLimits;
 
 
 };

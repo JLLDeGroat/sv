@@ -129,6 +129,8 @@ void UAttackComponent::ReturnCharacterAnimationSpeedsToNormal() {
 
 void UAttackComponent::TryActivateOverwatch(AActor* targetActor, UPrimitiveComponent* componentWithinOverwatch) {
 	auto owner = GetOwner();
+	auto controller = GetWorld()->GetFirstPlayerController();
+	auto pawnCameraComponent = controller->GetPawn()->GetComponentByClass<UPawnCameraComponent>();
 
 	auto targetComponent = owner->GetComponentByClass<UTargetingComponent>();
 
@@ -159,8 +161,6 @@ void UAttackComponent::TryActivateOverwatch(AActor* targetActor, UPrimitiveCompo
 	auto accuracy = USvUtilities::DetermineAccuracyInidicatorScale(owner->GetActorLocation(), targetActor->GetActorLocation(), equipmentDetails->GetAccuracy(),
 		equipmentDetails->GetAccuracyDecay(), equipmentDetails->GetBaseAccuracy());
 
-	auto controller = GetWorld()->GetFirstPlayerController();
-	auto pawnCameraComponent = controller->GetPawn()->GetComponentByClass<UPawnCameraComponent>();
 	auto targetAction = controller->GetComponentByClass<UTargetAction>();
 	if (!targetAction || !pawnCameraComponent)
 		return UDebugMessages::LogError(this, "no targeting action or pawn camera compoment, failed");
@@ -169,7 +169,10 @@ void UAttackComponent::TryActivateOverwatch(AActor* targetActor, UPrimitiveCompo
 	attackComponent->TryAttackLocation(targetData->GetShootLocation(), componentWithinOverwatch->GetComponentLocation(),
 		targetAction->SetScaleAndGetTargetingRadius(FVector(accuracy)));
 
-	pawnCameraComponent->DoOverwatchCinematicAttackCameraMovement(owner, targetActor);
+	if (pawnCameraComponent->GetCurrentCameraState() == ECameraState::CS_OverwatchCinematicShoot)
+		return UDebugMessages::LogWarning(this, "Already in Cinematic Overwatch");
+	else
+		pawnCameraComponent->DoOverwatchCinematicAttackCameraMovement(owner, targetActor);
 }
 
 void UAttackComponent::TryAttackLocation(FVector sourceGridLocation, FVector location, float locationRadius, bool bIsRange) {

@@ -56,6 +56,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnFinishTakenDamage();
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnInitializePickup();
+	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnFinishPickup();
 
 	void UpdateAnimPlayRate(float newRate);
 

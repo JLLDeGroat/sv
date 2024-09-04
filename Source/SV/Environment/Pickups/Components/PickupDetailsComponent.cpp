@@ -26,3 +26,9 @@ int UPickupDetailsComponent::GetAmount() {
 EResourceType UPickupDetailsComponent::GetResourceType() {
 	return ResourceType;
 }
+void UPickupDetailsComponent::SetIsIntel() {
+	bIsIntel = true;
+}
+bool UPickupDetailsComponent::GetIsIntel() {
+	return bIsIntel;
+}

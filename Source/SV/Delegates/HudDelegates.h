@@ -34,6 +34,10 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterTileVisibility, bool, bVis
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FShowMissionCompleteWidget);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FShowMissionFailedWidget);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateMainObjectiveText, FString, Text);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateSubObjectiveOneText, FString, Text);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateSubObjectiveTwoText, FString, Text);
+
 
 
 /**
@@ -75,4 +79,8 @@ public:
 
 	FShowMissionCompleteWidget _ShowMissionCompleteWidget;
 	FShowMissionFailedWidget _ShowMissionFailedWidget;
+
+	FUpdateMainObjectiveText _UpdateMainObjectiveText;
+	FUpdateSubObjectiveOneText _UpdateSubObjectiveOneText;
+	FUpdateSubObjectiveTwoText _UpdateSubObjectiveTwoText;
 };

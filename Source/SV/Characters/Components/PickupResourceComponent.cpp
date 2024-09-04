@@ -4,10 +4,12 @@
 #include "PickupResourceComponent.h"
 #include "../Anim/CharAnimInstance.h"
 #include "ActionsComponent.h"
+#include "InventoryComponent.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "../../Utilities/SvUtilities.h"
 #include "../../Instance/Managers/CurrentGameDataManager.h"
-#include "../../Environment/Components/Pickup/PickupDetailsComponent.h"
+#include "../../Environment/Pickups/Components/PickupDetailsComponent.h"
+#include "../../Environment/Pickups/Components/PickupIndicatorLink.h"
 #include "../../Delegates/HudDelegates.h"
 
 
@@ -64,12 +66,31 @@ void UPickupResourceComponent::AssignPickup() {
 	if (!pickupDetails)
 		return UDebugMessages::LogError(this, "failed to get pickup details");
 
-	auto resourceData = currentGameData->GetResourceData();
+	auto inventoryComponent = owner->GetComponentByClass<UInventoryComponent>();
+	if (!inventoryComponent)
+		return UDebugMessages::LogError(this, "failed to get inventory component, cannot pick up");
 
+	if (pickupDetails->GetResourceType() != EResourceType::INVALID) {
+		inventoryComponent->AddToHeldResource(pickupDetails->GetResourceType(), pickupDetails->GetAmount());
+	}
+	else if (pickupDetails->GetIsIntel()) {
+		inventoryComponent->AddToIntel();
+	}
+
+
+	auto linkedIndicatorComp = pickupActor->GetComponentByClass<UPickupIndicatorLink>();
+	if (linkedIndicatorComp && linkedIndicatorComp->GetIndicatorIndicatingTo()) {
+		linkedIndicatorComp->GetIndicatorIndicatingTo()->Destroy();
+	}
+	else {
+		UDebugMessages::LogWarning(this, "has no indicator linked to, will not delete indicator");
+	}
+
+	/*auto resourceData = currentGameData->GetResourceData();
 	auto currentResource = resourceData->GetResource(pickupDetails->GetResourceType());
-	currentResource->AddToAmount(pickupDetails->GetAmount());
+	currentResource->AddToAmount(pickupDetails->GetAmount());*/
 
-	UDebugMessages::LogDisplay(this, "total res: " + FString::SanitizeFloat(currentResource->GetAmount(), 0));
+	//UDebugMessages::LogDisplay(this, "total res: " + FString::SanitizeFloat(currentResource->GetAmount(), 0));
 
 	RemovePickupActor(pickupActor);
 	pickupActor->Destroy();

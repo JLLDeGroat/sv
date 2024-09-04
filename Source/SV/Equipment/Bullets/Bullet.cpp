@@ -56,7 +56,7 @@ void ABullet::BeginPlay()
 	Super::BeginPlay();
 
 	//TODO Uncomment OnDebug
-	GetWorld()->GetTimerManager().SetTimer(AutoDestroyTimer, this, &ABullet::OnAutoDestroyCallback, 5.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(AutoDestroyTimer, this, &ABullet::OnAutoDestroyCallback, 10.0f, false);
 
 	if (BulletFireSoundComponent) BulletFireSoundComponent->SetWorldLocation(GetActorLocation());
 	if (BulletHitSoundComponent) BulletHitSoundComponent->SetWorldLocation(GetActorLocation());

@@ -17,6 +17,8 @@ class SV_API UWinLossCheckerRunnable : public UBaseRunnable
 public:
 	virtual void ActivateThread() override;
 
+	bool GetIsComplete();
+
 private:
 
 	bool GetHasAllCharactersLeftTheField();
@@ -26,5 +28,7 @@ private:
 
 
 	void SetHasCompletedThisMission();
+
+	UPROPERTY() bool bIsComplete;
 
 };

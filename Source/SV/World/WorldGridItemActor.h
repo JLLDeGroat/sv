@@ -10,8 +10,8 @@ UCLASS()
 class SV_API AWorldGridItemActor : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	AWorldGridItemActor();
 	// Called every frame
@@ -22,11 +22,16 @@ public:
 	void SetIsOffshoot();
 	void SetIsSpawn();
 	void SetIsObstacle();
+
+	void SetAutoDestroy(float timer = 1.0f);
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* MeshComponent;
+
+	UFUNCTION() void OnAutoDestroy();
+	FTimerHandle AutoDestroyHandle;
 
 private:
 

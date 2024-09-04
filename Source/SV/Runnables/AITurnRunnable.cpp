@@ -23,6 +23,8 @@
 #include "AI/PreMoveChecker.h"
 #include "AI/PostMoveChecker.h"
 
+#pragma optimize("", off)
+
 void UAITurnRunnable::ActivateThread() {
 	UDebugMessages::LogDisplay(this, "Starting AI turns");
 	TScriptInterface<IGameplay> gamePlay = GetWorld()->GetAuthGameMode<AGameplayMode>();
@@ -45,8 +47,8 @@ void UAITurnRunnable::ActivateThread() {
 		//if so, get the list of same location enemies
 		//steadily regress them to use the step before
 
-	auto aiTurnChecker = NewObject<UAiTurnChecker>();
-	aiTurnChecker->SetupTurnManager(GetWorld());
+	//auto aiTurnChecker = NewObject<UAiTurnChecker>(this);
+	//aiTurnChecker->SetupTurnManager(GetWorld());
 
 	for (int i = 0; i < aiEnemies.Num(); i++) {
 		if (aiEnemies[i]->GetAsActor())
@@ -55,7 +57,6 @@ void UAITurnRunnable::ActivateThread() {
 	}
 
 	for (int i = 0; i < aiEnemies.Num(); i++) {
-		//check is active
 		auto aiComponent = aiEnemies[i]->GetAsActor()->GetComponentByClass<UAIComponent>();
 		if (!aiComponent) {
 			UDebugMessages::LogError(this, "No Ai component, skipping this enemy");
@@ -67,100 +68,74 @@ void UAITurnRunnable::ActivateThread() {
 			continue;
 		}
 
-		auto preMoveRunnable = NewObject<UPreMoveChecker>();
-		PreMoveRunnable = preMoveRunnable;
-		preMoveRunnable->SetThisEnemy(aiEnemies[i]);
-		preMoveRunnable->SetAllCharacters(playerCharacters);
-		preMoveRunnable->SetupTurnManager(GetWorld());
-		preMoveRunnable->Initialise(GetWorld())->Begin();
+		PreMoveRunnable = NewObject<UPreMoveChecker>(this);
+		PreMoveRunnable->SetThisEnemy(aiEnemies[i]);
+		PreMoveRunnable->SetAllCharacters(playerCharacters);
+		PreMoveRunnable->SetupTurnManager(GetWorld());
+		PreMoveRunnable->Initialise(GetWorld())->Begin();
 
-		while (!preMoveRunnable->GetCheckerHasCompletedAndWaitIfNot(1) && bIsAlive)
+		while (!PreMoveRunnable->GetCheckerHasCompletedAndWaitIfNot(1) && bIsAlive)
 			UDebugMessages::LogWarning(this, "waiting on premove");
 
-		if (!preMoveRunnable->GetHasFinishedTurnEarly()) {
+		if (!PreMoveRunnable->GetHasFinishedTurnEarly()) {
+			MoveRunnable = NewObject<UAiTurnMoveChecker>(this);
+			MoveRunnable->SetThisEnemy(aiEnemies[i]);
+			MoveRunnable->SetAllCharacters(playerCharacters);
+			MoveRunnable->SetupTurnManager(GetWorld());
+			MoveRunnable->Initialise(GetWorld())->Begin();
 
-			auto moveChecker = NewObject<UAiTurnMoveChecker>();
-			MoveRunnable = moveChecker;
-			moveChecker->SetThisEnemy(aiEnemies[i]);
-			moveChecker->SetAllCharacters(playerCharacters);
-			moveChecker->SetupTurnManager(GetWorld());
-			moveChecker->Initialise(GetWorld())->Begin();
-
-			while (!moveChecker->GetCheckerHasCompletedAndWaitIfNot(1) && bIsAlive)
+			while (!MoveRunnable->GetCheckerHasCompletedAndWaitIfNot(1) && bIsAlive)
 				UDebugMessages::LogWarning(this, "waiting on move checker");
 
-			if (!moveChecker->GetThisEnemyIsValidAndAlive()) {
+			if (!MoveRunnable->GetThisEnemyIsValidAndAlive()) {
 				UDebugMessages::LogDisplay(this, "wont go to post move checker, has died");
-				continue;
 			}
+			else {
+				if (!MoveRunnable->GetHasFinishedTurnEarly()) {
+					PostMoveRunnable = NewObject<UPostMoveChecker>(this);
+					PostMoveRunnable->SetThisEnemy(aiEnemies[i]);
+					PostMoveRunnable->SetAllCharacters(playerCharacters);
+					PostMoveRunnable->SetupTurnManager(GetWorld());
+					PostMoveRunnable->Initialise(GetWorld())->Begin();
 
-			if (!moveChecker->GetHasFinishedTurnEarly()) {
-				auto postMoveChecker = NewObject<UPostMoveChecker>();
-				PostMoveRunnable = postMoveChecker;
-				postMoveChecker->SetThisEnemy(aiEnemies[i]);
-				postMoveChecker->SetAllCharacters(playerCharacters);
-				postMoveChecker->SetupTurnManager(GetWorld());
-				postMoveChecker->Initialise(GetWorld())->Begin();
-
-				while (!postMoveChecker->GetCheckerHasCompletedAndWaitIfNot(1) && bIsAlive)
-					UDebugMessages::LogWarning(this, "waiting on post move checker");
+					while (!PostMoveRunnable->GetCheckerHasCompletedAndWaitIfNot(1) && bIsAlive)
+						UDebugMessages::LogWarning(this, "waiting on post move checker");
+				}
 			}
 		}
 
 		if (PreMoveRunnable) {
+			PreMoveRunnable->ClearInternalFlags(EInternalObjectFlags::Async);
 			PreMoveRunnable->KillThread();
+			PreMoveRunnable->EnsureCompletion();
 			PreMoveRunnable = nullptr;
 		}
 		if (MoveRunnable) {
+			MoveRunnable->ClearInternalFlags(EInternalObjectFlags::Async);
 			MoveRunnable->KillThread();
+			MoveRunnable->EnsureCompletion();
 			MoveRunnable = nullptr;
 		}
 		if (PostMoveRunnable) {
+			PostMoveRunnable->ClearInternalFlags(EInternalObjectFlags::Async);
 			PostMoveRunnable->KillThread();
+			PostMoveRunnable->EnsureCompletion();
 			PostMoveRunnable = nullptr;
 		}
 
+
+
 		UDebugMessages::LogDisplay(this, "unit completed");
-
-		//auto closestCharacterToEnemy = ClosestCharactersToThisEnemy(aiEnemies[i], playerCharacters);
-		//if (!closestCharacterToEnemy.IsEmpty()) {
-		//	for (int x = 0; x < closestCharacterToEnemy.Num(); x++) {
-
-		//		auto sourceLoc = UGridUtilities::GetNormalisedGridLocation(aiEnemies[i]->GetAsActor()->GetActorLocation());
-
-		//		//check if already next to player
-		//		if (USvUtilities::AreGridLocationsAdjacent(
-		//			UGridUtilities::GetNormalisedGridLocation(aiEnemies[i]->GetAsActor()->GetActorLocation()),
-		//			UGridUtilities::GetNormalisedGridLocation(closestCharacterToEnemy[x]->GetAsActor()->GetActorLocation())))
-		//		{
-		//			UDebugMessages::LogDisplay(this, "Already Adjacent, attempt to attack");
-		//			TryMeleeAttack(aiEnemies[i], closestCharacterToEnemy[x]);
-		//			break;
-		//		}
-
-		//		TArray<FVector> possibleDestinationLocs;
-		//		USvUtilities::GetAdjacentGridTiles(UGridUtilities::GetNormalisedGridLocation(closestCharacterToEnemy[x]->GetAsActor()->GetActorLocation()), possibleDestinationLocs);
-
-		//		possibleDestinationLocs = USvUtilities::OrderByClosestTo(sourceLoc, possibleDestinationLocs);
-
-		//		for (int k = 0; k < possibleDestinationLocs.Num(); k++) {
-		//			if (AttemptToRouteToPossibleLocation(aiEnemies[i], possibleDestinationLocs[k])) {
-		//				break;
-		//			}
-		//		}
-		//	}
-		//}
 	}
 
-
-	//move all enemies
-
+	UDebugMessages::LogDisplay(this, "All Complete");
 	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([gamePlay]
 		{
 			gamePlay->BeginPlayerTurn();
 		},
 		TStatId(), nullptr, ENamedThreads::GameThread);
 }
+#pragma optimize("", off)
 
 void UAITurnRunnable::KillThreads() {
 	if (PreMoveRunnable) {

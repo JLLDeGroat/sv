@@ -5,4 +5,7 @@
 
 FCrewMemberStats::FCrewMemberStats()
 {
+	TotalDamage = 0;
+	Kills = 0;
+	MissionsCompleted = 0;
 }

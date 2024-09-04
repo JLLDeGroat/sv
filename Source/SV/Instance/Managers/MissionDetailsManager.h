@@ -9,7 +9,7 @@
 #include "MissionDetailsManager.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class SV_API UMissionDetailsManager : public UBaseInstanceManager
@@ -21,6 +21,8 @@ public:
 	UMissionDetailsManager();
 	FString GenerateMissionName();
 	FMissionDescriptions* GetMissionTypeDescription(EMissionType missionType);
+	FString GenerateFluffText(EMissionType missionType);
+	FString GenerateMainObjective(EMissionType missionType);
 
 protected:
 

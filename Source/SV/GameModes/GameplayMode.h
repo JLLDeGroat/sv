@@ -6,14 +6,17 @@
 #include "GameFramework/GameModeBase.h"
 #include "../Interfaces/Gameplay.h"
 #include "../Runnables/Base/BaseRunnable.h"
+#include "../Enums/EWorldEnums.h"
 #include "GameplayMode.generated.h"
 
 class UCharacterManager;
 class UTurnManager;
 class ULevelSpawnerManager;
-class UWinLossManager;
+class UObjectivesManager;
+class UWinLossCheckerRunnable;
+class UStatUpdateRunnable;
 /**
- * 
+ *
  */
 UCLASS()
 class SV_API AGameplayMode : public AGameModeBase, public IGameplay
@@ -28,22 +31,23 @@ public:
 
 	//inherited from IGameplay
 	virtual UCharacterManager* GetCharacterManager() override;
+	virtual UObjectivesManager* GetObjectivesManager() override;
 	virtual void EndTurn() override;
 	virtual void BeginPlayerTurn() override;
 
 	ULevelSpawnerManager* GetLevelSpawnerManager();
-	UWinLossManager* GetWinLossManager();
-
 	virtual void BeginDestroy() override;
+
+	virtual bool AttemptToStartWinLossChecker() override;
+	virtual void StartStatRunnable(AActor* statOwner, EStatisticType statType, float damage = 0.0f);
 
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UCharacterManager* CharacterManager;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UTurnManager* TurnManager;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) ULevelSpawnerManager* LevelSpawnerManager;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) UWinLossManager* WinLossManager;
-
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UObjectivesManager* ObjectivesManager;
 	UPROPERTY() UBaseRunnable* LevelGenThread;
-	
-
+	UPROPERTY() UWinLossCheckerRunnable* WinLossCheckerThread;
+	UPROPERTY() TArray<UStatUpdateRunnable*> StatRunnables;
 };

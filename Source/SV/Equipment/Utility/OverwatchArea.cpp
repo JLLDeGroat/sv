@@ -107,7 +107,7 @@ void AOverwatchArea::BeginPlay()
 
 void AOverwatchArea::OnCanActivateRequest(ECharacterControl control) {
 	if (!OverwatchOwner) return UDebugMessages::LogError(this, "cannot find overwatch owner OnCanActivateRequest");
-
+	SetupForCollision();
 	auto details = OverwatchOwner->GetComponentByClass<UCharacterDetailsComponent>();
 	if (details->GetCharacterControl() == control)
 		bCanActivate = true;

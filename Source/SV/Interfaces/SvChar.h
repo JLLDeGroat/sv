@@ -28,7 +28,7 @@ public:
 	virtual FVector GetSelectableGridLocation() = 0;
 	virtual bool IsControlType(ECharacterControl characterControl) = 0;
 	virtual TArray<TScriptInterface<IHitComponent>> GetHitComponents() = 0;
-
+	virtual float GetHeadZHeight() = 0;
 	virtual AActor* GetAsActor() = 0;
 
 	virtual void UpdateActorVisibility(bool value) = 0;

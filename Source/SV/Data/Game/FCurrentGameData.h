@@ -169,22 +169,20 @@ public:
 		Type = EMissionType::INVALID;
 		Id = FGuid::FGuid();
 		CurrentTurn = 1;
-		TurnLimit = 999;
 	}
 
-	FCurrentMission(EMissionType missionType, FString missionName, int turnLimit = 999) {
+	FCurrentMission(EMissionType missionType, FString missionName, FMissionDetails* missionDetails) {
 		Name = missionName;
 		Type = missionType;
 		Id = FGuid::NewGuid();
 		CurrentTurn = 1;
-		TurnLimit = turnLimit;
+		MissionDetails = FMissionDetails(*missionDetails);
 	}
 
 	EMissionType GetType() const { return Type; }
 	FString GetName() { return Name; }
 	FGuid GetId() const { return Id; }
 	int GetCurrentTurn() const { return CurrentTurn; }
-	int GetTurnLimit()const { return TurnLimit; }
 
 	FMissionDetails* GetMissionDetails() { return &MissionDetails; }
 protected:
@@ -194,7 +192,6 @@ protected:
 	UPROPERTY() FGuid Id;
 	UPROPERTY() FMissionDetails MissionDetails = FMissionDetails();
 	UPROPERTY() int CurrentTurn;
-	UPROPERTY() int TurnLimit;
 };
 
 /**
@@ -329,8 +326,8 @@ public:
 
 #pragma region CurrentMission
 
-	FCurrentMission* StartNewMission(FString name, EMissionType missionType) {
-		CurrentMission = FCurrentMission(missionType, name);
+	FCurrentMission* StartNewMission(FString name, EMissionType missionType, FMissionDetails* missionDetails) {
+		CurrentMission = FCurrentMission(missionType, name, missionDetails);
 		return &CurrentMission;
 	}
 

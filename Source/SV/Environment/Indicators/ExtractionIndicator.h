@@ -7,7 +7,7 @@
 #include "ExtractionIndicator.generated.h"
 
 class UStaticMeshComponent;
-class UBoxComponent;
+class UIndicatorActivatorComponent;
 
 UCLASS()
 class SV_API AExtractionIndicator : public AActor
@@ -24,14 +24,16 @@ protected:
 
 public:	
 	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	/*virtual void Tick(float DeltaTime) override;
 
 	void ActivateIndicator();
-	void DeactivateIndicator();
+	void DeactivateIndicator();*/
 
 protected:
-
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* BaseMeshComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UIndicatorActivatorComponent* ActivatorIndicator;
+
+	/*UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* BaseMeshComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* BottomRingMeshComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* TopRingMeshComponent;
 
@@ -48,6 +50,6 @@ protected:
 	UFUNCTION() void StartTickAgain();
 	FTimerHandle StartTickHandle;
 
-	UPROPERTY() bool bIsActivated;
+	UPROPERTY() bool bIsActivated;*/
 
 };

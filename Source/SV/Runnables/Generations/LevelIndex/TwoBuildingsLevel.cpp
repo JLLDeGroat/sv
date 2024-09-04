@@ -27,7 +27,7 @@ void UTwoBuildingsLevel::GenerateLevel() {
 	//generate boundary walls
 	GenerateBoundaryWalls();
 
-	bool bDebug = false;
+	bool bDebug = true;
 	if (bDebug)
 		return UDebugMessages::LogError(this, "Manual return out of level gen, this is for debug only");
 

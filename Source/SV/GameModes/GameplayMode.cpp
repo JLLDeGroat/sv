@@ -8,9 +8,11 @@
 #include "Managers/TurnManager.h"
 #include "Managers/CharacterManager.h"
 #include "Managers/LevelSpawnerManager.h"
-#include "Managers/WinLossManager.h"
+#include "Managers/ObjectivesManager.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "../Runnables/LevelGenerationRunnable.h"
+#include "../Runnables/Checkers/WinLossCheckerRunnable.h"
+#include "../Runnables/Stats/StatUpdateRunnable.h"
 
 AGameplayMode::AGameplayMode() {
 	PlayerControllerClass = AGamePlayerController::StaticClass();
@@ -20,7 +22,7 @@ AGameplayMode::AGameplayMode() {
 	CharacterManager = CreateDefaultSubobject<UCharacterManager>(TEXT("CharacterManager"));
 	TurnManager = CreateDefaultSubobject<UTurnManager>(TEXT("TurnManager"));
 	LevelSpawnerManager = CreateDefaultSubobject<ULevelSpawnerManager>(TEXT("SpawnerManager"));
-	WinLossManager = CreateDefaultSubobject<UWinLossManager>(TEXT("WinLoss"));
+	ObjectivesManager = CreateDefaultSubobject<UObjectivesManager>(TEXT("ObjectiveManager"));
 }
 
 void AGameplayMode::BeginPlay() {
@@ -32,11 +34,12 @@ void AGameplayMode::BeginPlay() {
 		->Begin();
 }
 
+UObjectivesManager* AGameplayMode::GetObjectivesManager() {
+	return ObjectivesManager;
+}
+
 UCharacterManager* AGameplayMode::GetCharacterManager() {
 	return CharacterManager;
-}
-UWinLossManager* AGameplayMode::GetWinLossManager() {
-	return WinLossManager;
 }
 
 void AGameplayMode::EndTurn() {
@@ -55,4 +58,40 @@ ULevelSpawnerManager* AGameplayMode::GetLevelSpawnerManager() {
 void AGameplayMode::BeginDestroy() {
 	TurnManager->KillRunnable();
 	Super::BeginDestroy();
+}
+
+bool AGameplayMode::AttemptToStartWinLossChecker() {
+	if (!WinLossCheckerThread || WinLossCheckerThread->GetIsComplete()) {
+		WinLossCheckerThread = (UWinLossCheckerRunnable*)NewObject<UWinLossCheckerRunnable>()
+			->Initialise(GetWorld())
+			->Begin();
+		return true;
+	}
+	else
+	{
+		UDebugMessages::LogError(this, "could not attempt to start win loss checker");
+		return false;
+	}
+}
+
+void AGameplayMode::StartStatRunnable(AActor* statOwner, EStatisticType statType, float damage) {
+	UDebugMessages::LogDisplay(this, "StartStatRunnable");
+	auto newStatRunnable = (UStatUpdateRunnable*)NewObject<UStatUpdateRunnable>(this)
+		->InsertVariables(statOwner, statType, damage)
+		->Initialise(GetWorld())
+		->Begin();
+
+	bool noChange = false;
+	while (!noChange) {
+		noChange = true;
+		for (int i = 0; i < StatRunnables.Num(); i++) {
+			if (!StatRunnables[i] || StatRunnables[i]->GetIsCompleteStatItem()) {
+				StatRunnables.RemoveAt(i);
+				noChange = false;
+				break;
+			}
+		}
+	}
+
+	StatRunnables.Emplace(newStatRunnable);
 }

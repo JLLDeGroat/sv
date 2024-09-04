@@ -5,12 +5,14 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "../Enums/ECharacterEnums.h"
+#include "../Enums/EControllerEnums.h"
 #include "GameplayDelegates.generated.h"
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FActivateOverwatchActors, ECharacterControl, CharacterControl);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRemoveUnusedOverwatchActors, ECharacterControl, CharacterControl);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FChangeControlLimits, EControlLimit, ControllerLimit);
 
 /**
  * 
@@ -34,4 +36,5 @@ public:
 	FActivateOverwatchActors _ActivateOverwatchActors;
 	FRemoveUnusedOverwatchActors _RemoveUnusedOverwatchActors;
 
+	FChangeControlLimits _ChangeControlLimits;
 };

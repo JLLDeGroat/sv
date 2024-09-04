@@ -27,14 +27,14 @@ void UPreMoveChecker::ActivateThread() {
 		UDebugMessages::LogDisplay(this, "Already Adjacent, attempt to attack");
 		//TODO: should check if this enemy wants to melee or run to cover
 
-		auto meleeBehaviour = CreateBehaviourClass(UAIMeleeAttack::StaticClass());
-		if (!meleeBehaviour)
+		MeleeBehaviour = CreateBehaviourClass(UAIMeleeAttack::StaticClass());
+		if (!MeleeBehaviour)
 			return UDebugMessages::LogError(this, "failed to get melee behaviour class");
 
-		meleeBehaviour->SetBehaviourTarget(closestCharacter);
-		meleeBehaviour->DoBehaviour();
+		MeleeBehaviour->SetBehaviourTarget(closestCharacter);
+		MeleeBehaviour->DoBehaviour();
 
-		while (!meleeBehaviour->GetCompletedBehaviourAndWaitIfNot(.1f) && bIsAlive) {
+		while (!MeleeBehaviour->GetCompletedBehaviourAndWaitIfNot(.1f) && bIsAlive) {
 			UDebugMessages::LogDisplay(this, "waiting on melee behaviour");
 		}
 

@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-
 #include "CoreMinimal.h"
+#include "../Enums/EWorldEnums.h"
 #include "SvUtilities.generated.h"
 /**
  *
@@ -10,6 +10,7 @@
 class IGameplay;
 class UNiagaraSystem;
 class UCharacterManager;
+class UObjectivesManager;
 class UWinLossManager;
 class USvGameInstance;
 class UTexture2D;
@@ -51,7 +52,7 @@ public:
 
 	static TScriptInterface<IGameplay> GetGameMode(UWorld* world);
 	static UCharacterManager* GetGameModeCharacterManager(UWorld* world);
-	static UWinLossManager* GetGameModeWinLossManager(UWorld* world);
+	static UObjectivesManager* GetGameModeObjectiveManager(UWorld* world);
 
 	static USvGameInstance* GetGameInstance(UWorld* world);
 	static FCurrentGameData* GetCurrentGameData(UWorld* world);
@@ -63,6 +64,12 @@ public:
 
 
 	static FVector DetermineAccuracyInidicatorScale(FVector source, FVector target, float accuracy, float accuracyDecay, float baseAccuracy, float distanceModifier = 1.0f);
+
+	static void AttemptToStartWinLossChecker(UWorld* world);
+
+	static AActor* AttemptToGetCurrentSelectedActor(UWorld* world);
+
+	static void AttemptToStartStatUpdater(AActor* statOwner, EStatisticType statType, float value = 0.0f);
 
 private:
 

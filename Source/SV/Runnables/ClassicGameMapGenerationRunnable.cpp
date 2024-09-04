@@ -323,7 +323,11 @@ void UClassicGameMapGenerationRunnable::GenerateWorldLocationMissionsData() {
 			mDetails->SetMissionType(missionType);
 			mDetails->SetName(thisMissionName);
 			mDetails->SetDescription(thisMissionDesc->GetDescription());
+			mDetails->SetMissionTypeDescription(thisMissionDesc->GetMissionName());
 			mDetails->SetIsValidMission(true);
+			mDetails->SetFluffText(missionDetailsManager->GenerateFluffText(missionType));
+			mDetails->SetFluffText(missionDetailsManager->GenerateFluffText(missionType));
+			mDetails->SetMainObjective(missionDetailsManager->GenerateMainObjective(missionType));
 		}
 	}
 }

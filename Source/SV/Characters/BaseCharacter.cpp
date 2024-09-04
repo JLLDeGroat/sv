@@ -45,6 +45,8 @@ void ABaseCharacter::BeginPlay()
 
 	auto characterManager = gameMode->GetCharacterManager();
 	characterManager->ReceiveNewCharacter(this);
+
+	GetCapsuleComponent()->SetCanEverAffectNavigation(true);
 }
 
 // Called every frame
@@ -79,7 +81,10 @@ void ABaseCharacter::TryVisualiseTargets() {
 AActor* ABaseCharacter::GetAsActor() {
 	return this;
 }
-
+float ABaseCharacter::GetHeadZHeight() {
+	auto loc = GetMesh()->GetSocketLocation(FName("HeadSocket"));
+	return loc.Z;
+}
 TArray<TScriptInterface<IHitComponent>> ABaseCharacter::GetHitComponents() {
 	TArray<UActorComponent*> components;
 	GetComponents(components);

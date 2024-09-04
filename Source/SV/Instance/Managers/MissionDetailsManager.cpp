@@ -20,3 +20,9 @@ FString UMissionDetailsManager::GenerateMissionName() {
 FMissionDescriptions* UMissionDetailsManager::GetMissionTypeDescription(EMissionType missionType) {
 	return MissionNameData.GetDescription(missionType);
 }
+FString UMissionDetailsManager::GenerateFluffText(EMissionType missionType) {
+	return MissionNameData.GetRandomFluff(missionType);
+}
+FString UMissionDetailsManager::GenerateMainObjective(EMissionType missionType) {
+	return MissionNameData.GetRandomMainObjective(missionType);
+}

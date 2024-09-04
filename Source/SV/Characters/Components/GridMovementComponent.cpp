@@ -14,6 +14,8 @@
 #include "CharacterDetailsComponent.h"
 #include "../../Runnables/PostMovementRunnable.h"
 #include "../../Environment/Components/VaultableComponent.h"
+#include "../../World/WorldGridItemActor.h"
+#include "Algo/Sort.h"
 
 // Sets default values for this component's properties
 UGridMovementComponent::UGridMovementComponent(const FObjectInitializer& ObjectInitializer) : UAnimAccessComponent(ObjectInitializer)
@@ -27,7 +29,7 @@ UGridMovementComponent::UGridMovementComponent(const FObjectInitializer& ObjectI
 	DefaultRotationSpeed = 200;
 	RotationSpeed = DefaultRotationSpeed;
 	MovementSpeed = DefaultMovementSpeed;
-	
+
 }
 
 
@@ -73,11 +75,6 @@ void UGridMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		if (AnimInstance)
 			AnimInstance->UpdateSpeed(0);
 
-		auto targeting = GetOwner()->GetComponentByClass<UTargetingComponent>();
-		if (targeting) {
-			targeting->DetermineTargetData();
-		}
-
 		PostMovementRunnable = NewObject<UPostMovementRunnable>()
 			->InsertVariables(GetOwner())
 			->Initialise(GetWorld())
@@ -91,33 +88,11 @@ void UGridMovementComponent::MoveAcrossGrid(TArray<FVector> movementLocs) {
 	MovementLocations = movementLocs;
 	AnimInstance->SetIsCrouching(false);
 	SetComponentTickEnabled(true);
-
-	/*auto owner = GetOwner<ABaseCharacter>();
-	if (owner) {
-		auto result = owner->GetAIController()->MoveToLocation(MovementLocations[0], 1.0f);
-		if (result == EPathFollowingRequestResult::RequestSuccessful) {
-			MovementLocations.RemoveAt(0);
-		}
-		else {
-			UDebugMessages::LogDisplay(this, "UGridMovementComponent::MoveAcrossGrid failed to move or is already there");
-		}
-	}*/
 }
 
 void UGridMovementComponent::MovementLoop() {
 	if (MovementLocations.Num() == 0)
 		return;
-
-	/*auto owner = GetOwner<ABaseCharacter>();
-	if (owner) {
-		auto result = owner->GetAIController()->MoveToLocation(MovementLocations[0], 1.0f);
-		if (result == EPathFollowingRequestResult::RequestSuccessful) {
-			MovementLocations.RemoveAt(0);
-		}
-		else {
-			UDebugMessages::LogDisplay(this, "UGridMovementComponent::MoveAcrossGrid failed to move or is already there");
-		}
-	}*/
 }
 
 bool UGridMovementComponent::HasFoundEnd() {
@@ -173,6 +148,18 @@ TArray<FVector> UGridMovementComponent::FindRoute(FVector start, FVector end, bo
 	return response;
 }
 
+TArray<FVector> UGridMovementComponent::FindQuickestRoute(FVector start, FVector end, bool bisAI) {
+	TArray<FVector> VisitedNodes;
+	TArray<FVector> BestPath;
+	TArray<FVector> CostGrid;
+	float BestCost = FLT_MAX;
+	bAIRouteDecided = false;
+
+	FindQuickestRouteRecursive(start, end, VisitedNodes, BestCost, BestPath);
+
+	return BestPath;
+}
+
 void UGridMovementComponent::FindRouteRecursive(FMovementData* movementData, FVector desiredLocation, bool bisAI) {
 
 	if (!HasFoundEnd()) {
@@ -197,6 +184,14 @@ void UGridMovementComponent::FindRouteRecursive(FMovementData* movementData, FVe
 			newConnectionIds.Emplace(movementDataForGridIndex);
 		}
 
+		/*auto world = GetWorld();
+		FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, movementData] {
+			auto actor = world->SpawnActor<AWorldGridItemActor>(movementData->GetStart() - FVector(50, 50, 0), FRotator::ZeroRotator);
+			actor->SetIsSpawn();
+			actor->SetAutoDestroy();
+			}, TStatId(), nullptr, ENamedThreads::GameThread);
+		FPlatformProcess::Sleep(.25f);*/
+
 		for (int i = 0; i < newConnectionIds.Num(); i++) {
 			if (MovementData[newConnectionIds[i]].GetStart().X == desiredLocation.X &&
 				MovementData[newConnectionIds[i]].GetStart().Y == desiredLocation.Y)
@@ -209,6 +204,76 @@ void UGridMovementComponent::FindRouteRecursive(FMovementData* movementData, FVe
 				FindRouteRecursive(&MovementData[newConnectionIds[i]], desiredLocation, bisAI);
 		}
 	}
+}
+
+TArray<FVector> UGridMovementComponent::FindQuickestRouteRecursive(FVector Current, FVector End, TArray<FVector>& VisitedNodes, float& BestCost, TArray<FVector>& BestPath)
+{
+	if (bAIRouteDecided)
+		return BestPath;
+
+	//if (Current == End)
+	if (Current.Equals(End))
+	{
+		// If we reached the end, calculate the cost
+		float CurrentCost = VisitedNodes.Num();
+		/*for (const FVector& Node : VisitedNodes)
+		{
+			int32 Index = Grid.Find(Node);
+			if (Index != INDEX_NONE)
+			{
+				CurrentCost += CostGrid[Index];
+			}
+		}*/
+
+		// If the current path cost is better, update the best path
+		if (CurrentCost < BestCost)
+		{
+			UDebugMessages::LogDisplay(this, "found new bestCost " + FString::SanitizeFloat(CurrentCost));
+			AIRouteIterations = 0;
+			BestCost = CurrentCost;
+			BestPath = VisitedNodes;
+
+			//only use one for testing
+			bAIRouteDecided = true;
+		}
+		else {
+			AIRouteIterations += 1;
+			UDebugMessages::LogDisplay(this, "adding to ai iterations " + FString::SanitizeFloat(AIRouteIterations));
+			if (AIRouteIterations > 5) {
+				bAIRouteDecided = true;
+			}
+		}
+		return BestPath;
+	}
+
+	auto world = GetWorld();
+	FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, Current] {
+		auto actor = world->SpawnActor<AWorldGridItemActor>(Current - FVector(50, 50, 0), FRotator::ZeroRotator);
+		actor->SetIsSpawn();
+		actor->SetAutoDestroy();
+		}, TStatId(), nullptr, ENamedThreads::GameThread);
+	FPlatformProcess::Sleep(.25f);
+
+	// Mark the current node as visited
+	VisitedNodes.Add(Current);
+
+	// Explore neighboring nodes
+	TArray<FVector> locs;
+	GetMovableAdjacentTiles(Current, locs, End);
+
+	for (const FVector& Neighbor : locs)
+	{
+		if (!VisitedNodes.Contains(Neighbor) &&
+			VisitedNodes.Num() < 50 &&
+			CanReachDestination(Neighbor, End, (50 - VisitedNodes.Num())) /*&& Grid.Contains(Neighbor)*/)
+		{
+			FindQuickestRouteRecursive(Neighbor, End, VisitedNodes, BestCost, BestPath);
+		}
+	}
+
+	// Backtrack: remove the current node from the visited list
+	VisitedNodes.Remove(Current);
+	return BestPath;
 }
 
 int UGridMovementComponent::GetMovementDataForGridItem(FVector gridItem, TArray<FVector> previous, FVector end) {
@@ -239,8 +304,18 @@ bool UGridMovementComponent::GetMovableAdjacentTiles(FVector start, TArray<FVect
 	USvUtilities::GetAdjacentGridTiles(start, unorderedLocations);
 
 	TArray<FVector> adjacentTiles = unorderedLocations;
-
 	if (orderByDistanceLoc != FVector::ZeroVector) {
+		Algo::Sort(adjacentTiles, [&orderByDistanceLoc](const FVector& A, const FVector& B)
+			{
+				// Calculate squared distance to avoid unnecessary square root operations
+				float DistanceA = FVector::DistSquared(A, orderByDistanceLoc);
+				float DistanceB = FVector::DistSquared(B, orderByDistanceLoc);
+
+				// Return true if A is closer to the ReferencePoint than B
+				return DistanceA < DistanceB;
+			});
+	}
+	/*if (orderByDistanceLoc != FVector::ZeroVector) {
 		adjacentTiles.Empty();
 		while (unorderedLocations.Num() > 0) {
 			float minDistance = -1;
@@ -258,7 +333,7 @@ bool UGridMovementComponent::GetMovableAdjacentTiles(FVector start, TArray<FVect
 			adjacentTiles.Emplace(unorderedLocations[index]);
 			unorderedLocations.RemoveAt(index);
 		}
-	}
+	}*/
 
 	auto world = GetOwner()->GetWorld();
 
@@ -281,9 +356,27 @@ bool UGridMovementComponent::GetMovableAdjacentTiles(FVector start, TArray<FVect
 		{
 			ValidAdjacentTiles.Emplace(adjacentTiles[i]);
 		}
+		else {
+			UDebugMessages::LogError(this, "Invalid spot " + adjacentTiles[i].ToString());
+		}
 	}
 
 	return !ValidAdjacentTiles.IsEmpty();
+}
+
+bool UGridMovementComponent::CanReachDestination(FVector location, FVector end, int steps) {
+	auto stepBuffer = 3;
+
+	auto xmovement = location.X - end.X;
+	if (xmovement < 0) xmovement *= -1;
+
+	auto ymovement = location.Y - end.Y;
+	if (ymovement < 0) ymovement *= -1;
+
+	if ((ymovement + xmovement) / 100 <= (steps - stepBuffer)) {
+		return true;
+	}
+	else return false;
 }
 
 void UGridMovementComponent::ResetMovementSpeed() {

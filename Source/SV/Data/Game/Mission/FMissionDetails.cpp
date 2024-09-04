@@ -3,10 +3,11 @@
 
 #include "FMissionDetails.h"
 
-FMissionDetails::FMissionDetails()
-{
+FMissionDetails::FMissionDetails() {
 	bValidMission = false;
 	bIsCompleted = false;
+	Turn = 0;
+	MissionStats = FMissionStats();
 }
 
 FMissionDetails::FMissionDetails(FString name, FString desc, EMissionType type, FString missionTypeDescription) {
@@ -16,6 +17,8 @@ FMissionDetails::FMissionDetails(FString name, FString desc, EMissionType type, 
 	bValidMission = true;
 	MissionTypeDescription = missionTypeDescription;
 	bIsCompleted = false;
+	Turn = 0;
+	MissionStats = FMissionStats();
 }
 
 FString FMissionDetails::GetName() {
@@ -46,9 +49,65 @@ void FMissionDetails::SetDescription(FString desc) {
 void FMissionDetails::SetMissionType(EMissionType missionType) {
 	MissionType = missionType;
 }
+void FMissionDetails::SetMissionTypeDescription(FString missionTypeDesc) {
+	MissionTypeDescription = missionTypeDesc;
+}
 void FMissionDetails::SetIsValidMission(bool val) {
 	bValidMission = val;
 }
 void FMissionDetails::SetIsCompleted(bool val) {
 	bIsCompleted = val;
+}
+FString FMissionDetails::GetFluffText() {
+	return FluffText;
+}
+void FMissionDetails::SetFluffText(FString txt) {
+	FluffText = txt;
+}
+FString FMissionDetails::GetMainObjective() {
+	if (MissionType == EMissionType::MT_Survive) {
+		return MainObjective + " (Turns: " + FString::SanitizeFloat(TurnLimit - Turn, 0) + ")";
+	}
+	return MainObjective;
+}
+void FMissionDetails::SetMainObjective(FString txt) {
+	MainObjective = txt;
+}
+
+int FMissionDetails::GetTurn() {
+	return Turn;
+}
+void FMissionDetails::AddToTurnCounter() {
+	Turn += 1;
+}
+
+void FMissionDetails::SetTurnLimit(int turnLimit) {
+	TurnLimit = turnLimit;
+}
+int FMissionDetails::GetTurnLimit() {
+	return TurnLimit;
+}
+
+TMap<EResourceType, int> FMissionDetails::GetResourceExtracted() {
+	return ResourceExtracted;
+}
+bool FMissionDetails::GetExtractedIntel() {
+	return bExtractedIntel;
+}
+
+void FMissionDetails::AddToResourceExtracted(EResourceType rType, int amount) {
+	if (ResourceExtracted.Find(rType)) {
+		ResourceExtracted[rType] += amount;
+	}
+	else {
+		ResourceExtracted.Add(rType);
+		ResourceExtracted[rType] += amount;
+	}
+}
+void FMissionDetails::SetHasExtractedIntel() {
+	bExtractedIntel = true;
+}
+
+FMissionStats* FMissionDetails::GetMissionStats() {
+	return &MissionStats;
 }

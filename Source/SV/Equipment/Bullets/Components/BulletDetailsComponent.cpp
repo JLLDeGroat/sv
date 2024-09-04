@@ -9,7 +9,7 @@ UBulletDetailsComponent::UBulletDetailsComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
-	BaseImpulse = 100000.0f;
+	BaseImpulse = 7500.0f;
 	// ...
 }
 
@@ -20,7 +20,7 @@ void UBulletDetailsComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
+
 }
 
 
@@ -43,4 +43,10 @@ int UBulletDetailsComponent::GetBaseImpulse() {
 }
 void UBulletDetailsComponent::SetBaseImpulse(int impulse) {
 	BaseImpulse = impulse;
+}
+void UBulletDetailsComponent::SetGunShotFrom(AActor* gun) {
+	GunShotFrom = gun;
+}
+AActor* UBulletDetailsComponent::GetGunShotFrom() {
+	return GunShotFrom;
 }

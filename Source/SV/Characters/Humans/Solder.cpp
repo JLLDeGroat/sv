@@ -19,6 +19,7 @@
 #include "../Components/UI/CharacterTileUIComponent.h"
 #include "../Components/DestroyComponent.h"
 #include "../Components/PickupResourceComponent.h"
+#include "../Components/InventoryComponent.h"
 
 // Sets default values
 ASolder::ASolder(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(ObjectInitializer)
@@ -81,6 +82,8 @@ ASolder::ASolder(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(O
 	DestroyComponent = CreateDefaultSubobject< UDestroyComponent>(TEXT("DestroyComponent"));
 
 	PickupResourceComponent = CreateDefaultSubobject<UPickupResourceComponent>(TEXT("PickupResource"));
+
+	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
 }
 
 // Called when the game starts or when spawned

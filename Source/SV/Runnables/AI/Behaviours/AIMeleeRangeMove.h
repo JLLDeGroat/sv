@@ -23,5 +23,10 @@ public:
 protected:
 
 	bool AttemptToRouteToPossibleLocation(TScriptInterface<ISvChar> character, FVector possibleLocation);
+
+private:
+
+	void FindPathPointsToLocation(FVector start, FVector end, TArray<FVector>& navPath);
+	FVector GetPointBetweenVectors(FVector StartVector, FVector EndVector, float DistanceFromStart);
 	
 };

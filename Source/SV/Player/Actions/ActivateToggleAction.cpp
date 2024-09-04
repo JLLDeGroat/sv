@@ -14,20 +14,24 @@ UActivateToggleAction::UActivateToggleAction(const FObjectInitializer& ObjectIni
 }
 
 void UActivateToggleAction::DoAction() {
-	ResetActionEffects();
+	if (IsWithinValidControlLimiter()) {
+		ResetActionEffects();
 
-	auto selected = SelectionManager->GetSelected();
+		auto selected = SelectionManager->GetSelected();
 
-	if (selected) {
-		auto actor = selected->GetAsActor();
-		auto comp = actor->GetComponentByClass<UActivateTogglesComponent>();
-		if (comp) {
-			auto allToggles = comp->GetToggleComponents();
+		if (selected) {
+			auto actor = selected->GetAsActor();
+			auto comp = actor->GetComponentByClass<UActivateTogglesComponent>();
+			if (comp) {
+				auto allToggles = comp->GetToggleComponents();
 
-			//TODO do specific toggle
-			for (int i = 0; i < allToggles.Num(); i++)
-				if (allToggles[i])
-					allToggles[i]->ActivateToggle();
+				//TODO do specific toggle
+				for (int i = 0; i < allToggles.Num(); i++)
+					if (allToggles[i]) {
+						UpdateControlLimit(EControlLimit::CL_NoClick);
+						allToggles[i]->ActivateToggle();
+					}
+			}
 		}
 	}
 }

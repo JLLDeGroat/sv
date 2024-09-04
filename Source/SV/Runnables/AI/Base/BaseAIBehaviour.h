@@ -34,6 +34,19 @@ public:
 	bool GetCompletedBehaviourAndWaitIfNot(float seconds);
 	UFUNCTION() void SetCompletedBehaviour();
 
+protected:
+
+	void SpawnDebugGrid_SetIsStart(FVector location, float delay = .0001f);
+	void SpawnDebugGrid_SetIsEnd(FVector location, float delay = .0001f);
+	void SpawnDebugGrid_SetIsOffshoot(FVector location, float delay = .0001f);
+	void SpawnDebugGrid_SetIsSpawn(FVector location, float delay = .0001f);
+	void SpawnDebugGrid_SetIsObstacle(FVector location, float delay = .0001f);
+
+	void SpawnDebugGrid_SetIsStart(TArray<FVector> locations, FVector offset = FVector(0, 0, -50), float delay = .0001f);
+	void SpawnDebugGrid_SetIsEnd(TArray<FVector> locations, FVector offset = FVector(0, 0, -50), float delay = .0001f);
+	void SpawnDebugGrid_SetIsOffshoot(TArray<FVector> locations, FVector offset = FVector(0, 0, -50), float delay = .0001f);
+	void SpawnDebugGrid_SetIsSpawn(TArray<FVector> locations, FVector offset = FVector(0, 0, -50), float delay = .0001f);
+	void SpawnDebugGrid_SetIsObstacle(TArray<FVector> locations, FVector offset = FVector(0, 0, -50), float delay = .0001f);
 private:
 
 	UPROPERTY() AActor* ThisEnemy;

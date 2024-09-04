@@ -40,3 +40,11 @@ enum class ELevelGenType :uint8 {
 	Generic,
 	TwoBuilding
 };
+
+UENUM(BlueprintType)
+enum class EStatisticType : uint8 {
+	INVALID = 0,
+	ST_DAMAGE,
+	ST_Kill,
+};
+

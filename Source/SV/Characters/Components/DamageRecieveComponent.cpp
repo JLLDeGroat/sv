@@ -45,11 +45,11 @@ void UDamageRecieveComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	// ...
 }
 
-void UDamageRecieveComponent::DoDamage(float multiplier, int damage, FVector location, float impulseDamage) {
+float UDamageRecieveComponent::DoDamage(float multiplier, int damage, float impulseDamage, FRotator angleOfDamage) {
 	auto details = GetOwner()->GetComponentByClass<UCharacterDetailsComponent>();
 	if (!details) {
 		UDebugMessages::LogError(this, "No details component, cannot take damage");
-		return;
+		return 0;
 	}
 
 	int total = multiplier * damage;
@@ -80,36 +80,43 @@ void UDamageRecieveComponent::DoDamage(float multiplier, int damage, FVector loc
 
 		GetOwner()->GetWorld()->GetTimerManager().SetTimer(DeathHandle, this, &UDamageRecieveComponent::OnDeathHandleCallback, 3.5f, false);
 
-		if (!skeleton)
-			return UDebugMessages::LogError(this, "failed to get skeletalmeshComponent on death");
-
+		if (!skeleton) {
+			UDebugMessages::LogError(this, "failed to get skeletalmeshComponent on death");
+			return 0;
+		}
 		skeleton->SetSimulatePhysics(true);
 		skeleton->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 
-		if (location == FVector::ZeroVector)
+		if (angleOfDamage == FRotator::ZeroRotator)
 			UDebugMessages::LogError(this, "location was zero vector, cannot add impulse on death");
 		else
-			skeleton->AddRadialImpulse(location, 350, impulseDamage, ERadialImpulseFalloff::RIF_Linear);
+			skeleton->AddImpulse(angleOfDamage.Vector() * impulseDamage);
+
+		//if (location == FVector::ZeroVector)
+		//	UDebugMessages::LogError(this, "location was zero vector, cannot add impulse on death");
+		//else
+		//	skeleton->AddImpulse(FVector(0, 0, 100000));
+		//	//skeleton->AddRadialImpulse(location, 350, impulseDamage, ERadialImpulseFalloff::RIF_Linear);
 
 		if (details->GetCharacterControl() == ECharacterControl::CC_Player) {
 			auto instance = USvUtilities::GetGameInstance(GetWorld());
-			if (!instance->GetCurrentGameDataManager() || !instance->GetCurrentGameDataManager()->GetCurrentGameData())
-				return UDebugMessages::LogError(this, "failed to get game instance current game data");
+			if (!instance->GetCurrentGameDataManager() || !instance->GetCurrentGameDataManager()->GetCurrentGameData()) {
+				UDebugMessages::LogError(this, "failed to get game instance current game data");
+				return 0.0f;
+			}
 
 			auto currentGameData = instance->GetCurrentGameDataManager()->GetCurrentGameData();
 			currentGameData->SetCrewAsDead(details->GetCharacterId());
 		}
 
 		auto dropResource = owner->GetComponentByClass<UDropResourceComponent>();
-		if(dropResource){
+		if (dropResource) {
 			dropResource->AttemptToDropResource();
 		}
 
-
-		WinLossRunnable = NewObject<UWinLossCheckerRunnable>()
-			->Initialise(GetWorld())
-			->Begin();
+		USvUtilities::AttemptToStartWinLossChecker(GetWorld());
 	}
+	return total;
 }
 
 void UDamageRecieveComponent::OnDeathHandleCallback() {

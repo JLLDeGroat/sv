@@ -14,6 +14,7 @@
 #include "../Interfaces/Selectable.h"
 #include "../Interfaces/Movable.h"
 #include "../Interfaces/SvChar.h"
+#include "../Delegates/GameplayDelegates.h"
 #include "Managers/SelectionManager.h"
 #include "Managers/ControlManager.h"
 #include "../Characters/Components/GridMovementComponent.h"

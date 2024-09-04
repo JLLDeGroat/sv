@@ -4,6 +4,7 @@
 #include "RollingTable.h"
 #include "Components/StaticMeshComponent.h"
 #include "../../../Utilities/SvUtilities.h"
+#include "../../Components/PotentialItemSpawnComponent.h"
 
 ARollingTable::ARollingTable(const FObjectInitializer& ObjectInitializer) :
 	AEnvironmentActor(ObjectInitializer) {
@@ -17,7 +18,7 @@ ARollingTable::ARollingTable(const FObjectInitializer& ObjectInitializer) :
 	Wheel2 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Wheel2"));
 	Wheel3 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Wheel3"));
 	Wheel4 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Wheel4"));
-	
+
 	SetupEnvironmentMeshComponent(RollingTable);
 
 	Wheel1->SetupAttachment(RootComponent);
@@ -29,6 +30,10 @@ ARollingTable::ARollingTable(const FObjectInitializer& ObjectInitializer) :
 	Wheel2->SetWorldScale3D(FVector(.45f));
 	Wheel3->SetWorldScale3D(FVector(.45f));
 	Wheel4->SetWorldScale3D(FVector(.45f));
+
+	PotentialItemSpawnComponent = CreateDefaultSubobject<UPotentialItemSpawnComponent>(TEXT("PotentialSpawn"));
+	PotentialItemSpawnComponent->SetupAttachment(RootComponent);
+	PotentialItemSpawnComponent->SetRelativeLocation(FVector(50, 50, 80));
 }
 
 void ARollingTable::OnConstruction(const FTransform& Transform) {

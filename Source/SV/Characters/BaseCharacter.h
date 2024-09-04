@@ -28,7 +28,7 @@ public:
 	virtual bool IsControlType(ECharacterControl characterControl) override;
 	virtual void TryVisualiseTargets() override;
 	virtual AActor* GetAsActor() override;
-
+	virtual float GetHeadZHeight() override;
 	AAIController* GetAIController() const;
 
 	//inherited from ISVChar

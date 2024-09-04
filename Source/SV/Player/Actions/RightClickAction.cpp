@@ -32,49 +32,52 @@ void URightClickAction::BeginPlay()
 }
 
 void URightClickAction::DoAction() {
-	ResetActionEffects();
+	if (IsWithinValidControlLimiter()) {
+		ResetActionEffects();
 
-	auto owner = GetOwner<AGamePlayerController>();
-	auto pawn = owner->GetPawn();
-	auto pawnCameraComponent = pawn->GetComponentByClass<UPawnCameraComponent>();
+		auto owner = GetOwner<AGamePlayerController>();
+		auto pawn = owner->GetPawn();
+		auto pawnCameraComponent = pawn->GetComponentByClass<UPawnCameraComponent>();
 
-	if (!IsInValidCameraState(pawnCameraComponent->GetCurrentCameraState()))
-		return;
+		if (!IsInValidCameraState(pawnCameraComponent->GetCurrentCameraState()))
+			return;
 
-	auto selected = SelectionManager->GetSelected();
+		auto selected = SelectionManager->GetSelected();
 
-	if (selected) {
-		TScriptInterface<IMovable> movable;
-		if (selected->TryGetAsMoveable(movable)) {
-			auto selectedDetails = selected->GetAsActor()->GetComponentByClass<UCharacterDetailsComponent>();
-			if (!selectedDetails || selectedDetails->GetMovementPoints() == 0) {
-				UDebugMessages::LogError(this, "failed to get selected details or had zero movement points cannot move");
-				return;
+		if (selected) {
+			TScriptInterface<IMovable> movable;
+			if (selected->TryGetAsMoveable(movable)) {
+				auto selectedDetails = selected->GetAsActor()->GetComponentByClass<UCharacterDetailsComponent>();
+				if (!selectedDetails || selectedDetails->GetMovementPoints() == 0) {
+					UDebugMessages::LogError(this, "failed to get selected details or had zero movement points cannot move");
+					return;
+				}
+
+				auto selectedMouseLocation = SelectionManager->GetCurrentMousedLocation();
+				auto currentActorGridLocation = selected->GetSelectableGridLocation();
+				//move the z axis lower to hit fence items
+				currentActorGridLocation.Z -= 50;
+
+				UDebugMessages::LogDisplay(this, "Moving from " + currentActorGridLocation.ToString() + " to: " + selectedMouseLocation.ToString());
+				//testing grid system
+				auto gridSteps = movable->GetGridMovementComponent()->FindRoute(currentActorGridLocation, selectedMouseLocation);
+				//
+
+				int stepsTaken = gridSteps.Num() - 1;
+				if (stepsTaken == 0)
+					stepsTaken = 1;
+
+				selectedDetails->RemoveMovementPoints(stepsTaken);
+
+				UDebugMessages::LogDisplay(this, "removing " + FString::SanitizeFloat(stepsTaken) +
+					" movement points, has " +
+					FString::SanitizeFloat(selectedDetails->GetMovementPoints()) +
+					"left.");
+
+				UDebugMessages::LogDisplay(this, "moving");
+				movable->GetGridMovementComponent()->MoveAcrossGrid(SelectionManager->GetLocationPath());
+				UpdateControlLimit(EControlLimit::CL_NoClick);
 			}
-
-			auto selectedMouseLocation = SelectionManager->GetCurrentMousedLocation();
-			auto currentActorGridLocation = selected->GetSelectableGridLocation();
-			//move the z axis lower to hit fence items
-			currentActorGridLocation.Z -= 50;
-
-			UDebugMessages::LogDisplay(this, "Moving from " + currentActorGridLocation.ToString() + " to: " + selectedMouseLocation.ToString());
-			//testing grid system
-			auto gridSteps = movable->GetGridMovementComponent()->FindRoute(currentActorGridLocation, selectedMouseLocation);
-			//
-
-			int stepsTaken = gridSteps.Num() - 1;
-			if (stepsTaken == 0)
-				stepsTaken = 1;
-
-			selectedDetails->RemoveMovementPoints(stepsTaken);
-
-			UDebugMessages::LogDisplay(this, "removing " + FString::SanitizeFloat(stepsTaken) +
-				" movement points, has " +
-				FString::SanitizeFloat(selectedDetails->GetMovementPoints()) +
-				"left.");
-
-			UDebugMessages::LogDisplay(this, "moving");
-			movable->GetGridMovementComponent()->MoveAcrossGrid(SelectionManager->GetLocationPath());
 		}
 	}
 }

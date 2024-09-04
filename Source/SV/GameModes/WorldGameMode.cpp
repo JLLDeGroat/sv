@@ -53,5 +53,21 @@ void AWorldGameMode::BeginPlay() {
 		}
 	}
 
+	auto currentMission = currentGameData->GetCurrentMission();
+	if (currentMission && currentMission->GetMissionDetails()) {
+		auto missionDetails = currentMission->GetMissionDetails();
+		if (missionDetails->GetIsCompleted()) {
+			auto extractedResources = missionDetails->GetResourceExtracted();
+			auto currentResources = currentGameData->GetResourceData();
+
+			for (const TPair<EResourceType, int>& pair : extractedResources)
+			{
+				auto res = currentResources->GetResource(pair.Key);
+				res->AddToAmount(pair.Value);
+				UDebugMessages::LogDisplay(this, "added (" + FString::SanitizeFloat(pair.Value) + ") resource of " + EEquipmentEnums::GetResourceTypeAsString(EResourceType::RT_Currency));
+			}
+		}
+	}
+
 	DirectionManager->GenerateDirections(currentStep->GetLocation());
 }

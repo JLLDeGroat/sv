@@ -30,7 +30,10 @@ AWorldGridItemActor::AWorldGridItemActor()
 void AWorldGridItemActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
+}
+
+void AWorldGridItemActor::SetAutoDestroy(float timer) {
+	GetWorld()->GetTimerManager().SetTimer(AutoDestroyHandle, this, &AWorldGridItemActor::OnAutoDestroy, timer);
 }
 
 // Called every frame
@@ -59,4 +62,8 @@ void AWorldGridItemActor::SetIsSpawn() {
 void AWorldGridItemActor::SetIsObstacle() {
 	auto mat = USvUtilities::GetMaterial("/Script/Engine.Material'/Game/Materials/World/IsObstacle_M.IsObstacle_M'");
 	MeshComponent->SetMaterial(0, mat);
+}
+
+void AWorldGridItemActor::OnAutoDestroy() {
+	Destroy();
 }

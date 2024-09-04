@@ -290,10 +290,19 @@ void UCharAnimInstance::OnInitializePickup() {
 
 	if (owningActor) {
 		auto resourcePickup = owningActor->GetComponentByClass<UPickupResourceComponent>();
-		
+
 		if (!resourcePickup)
 			return UDebugMessages::LogError(this, "failed to get resource pickup component");
-	
+
 		resourcePickup->AssignPickup();
 	}
+}
+void UCharAnimInstance::OnFinishPickup() {
+	auto owningActor = GetOwningActor();
+
+	if (owningActor)
+		BaseRunnable = NewObject<UPostMovementRunnable>()
+		->InsertVariables(owningActor)
+		->Initialise(owningActor->GetWorld())
+		->Begin();
 }

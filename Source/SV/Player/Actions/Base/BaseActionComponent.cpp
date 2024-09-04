@@ -12,13 +12,14 @@
 #include "../GrenadeActionComponent.h"
 #include "../LeftClickAction.h"
 #include "../RightClickAction.h"
+#include "../../../Delegates/GameplayDelegates.h"
 // Sets default values for this component's properties
 UBaseActionComponent::UBaseActionComponent(const FObjectInitializer& ObjectInitializer) : UActorComponent(ObjectInitializer)
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
-
+	ValidControlLimits.Emplace(EControlLimit::CL_NONE);
 	// ...
 }
 
@@ -50,13 +51,19 @@ bool UBaseActionComponent::IsInValidCameraState(ECameraState currentCameraState)
 }
 
 void UBaseActionComponent::GetTargetLocation(FHitResult& hit, FVector& targetLocation, UCameraComponent* cameraComp) {
+	if (!cameraComp)
+		return UDebugMessages::LogError(this, "camera comp is null");
+
 	auto cameraForwardVector = cameraComp->GetForwardVector();
 	targetLocation = cameraComp->GetComponentLocation() + (5000 * cameraForwardVector);
 	FCollisionObjectQueryParams collisionParams;
 	collisionParams.AddObjectTypesToQuery(USvUtilities::GetBulletCollisionObjectChannel());
 	collisionParams.AddObjectTypesToQuery(USvUtilities::GetEnvironmentChannel());
 	collisionParams.AddObjectTypesToQuery(USvUtilities::GetFloorTargetChannel());
-	GetWorld()->LineTraceSingleByObjectType(hit, cameraComp->GetComponentLocation(), targetLocation, collisionParams);
+
+	FCollisionQueryParams queryParams;
+
+	GetWorld()->LineTraceSingleByObjectType(hit, cameraComp->GetComponentLocation(), targetLocation, collisionParams, queryParams);
 
 	if (hit.GetActor())
 		targetLocation = hit.Location;
@@ -64,9 +71,31 @@ void UBaseActionComponent::GetTargetLocation(FHitResult& hit, FVector& targetLoc
 
 void UBaseActionComponent::ResetActionEffects() {
 	auto controller = GetOwningController();
-
 	auto targetAction = controller->GetComponentByClass<UTargetAction>();
 	if (targetAction) {
 		targetAction->ResetTargetingActor();
 	}
+}
+
+void UBaseActionComponent::UpdateControlLimit(EControlLimit controlLimit) {
+	auto gamePlay = UGameplayDelegates::GetInstance();
+	if (!gamePlay)
+		return UDebugMessages::LogError(this, "failed to get gameplay delegates");
+
+	gamePlay->_ChangeControlLimits.Broadcast(controlLimit);
+}
+
+bool UBaseActionComponent::IsWithinValidControlLimiter() {
+	auto controller = GetOwningController();
+	auto controlAction = controller->GetComponentByClass<UControlManager>();
+	if (controlAction) {
+		auto currentLimit = controlAction->GetControlLimit();
+
+		for (int i = 0; i < ValidControlLimits.Num(); i++)
+			if (currentLimit == ValidControlLimits[i])
+				return true;
+	}
+
+	UDebugMessages::LogWarning(this, "is not within valid control limiter, cannot do action");
+	return false;
 }

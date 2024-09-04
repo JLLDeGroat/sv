@@ -7,6 +7,7 @@
 #include "../../../Characters/Components/HitCapsuleComponent.h"
 #include "../../../Characters/Components/HitBoxComponent.h"
 #include "../../../Characters/Components/DamageRecieveComponent.h"
+#include "../../../Characters/Components/CharacterDetailsComponent.h"
 #include "BulletHitSoundComponent.h"
 #include "BulletDetailsComponent.h"
 #include "TravelComponent.h"
@@ -37,13 +38,18 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent* OverlappedComp, 
 		TScriptInterface<IHitComponent> hitComp = OtherComp;
 		auto bulletDetails = GetOwner()->GetComponentByClass<UBulletDetailsComponent>();
 		auto damageRecieve = OtherActor->GetComponentByClass<UDamageRecieveComponent>();
+		auto otherCharacterDetails = OtherActor->GetComponentByClass<UCharacterDetailsComponent>();
+		auto damageDone = 0;
 
-		if (!bulletDetails || !damageRecieve) {
-			UDebugMessages::LogError(this, "no bullet details or damage recieve, ERROR, will do no damage");
+		if (!bulletDetails || !damageRecieve || !otherCharacterDetails) {
+			UDebugMessages::LogError(this, "no bullet details, damage recieve or character details, ERROR, will do no damage");
 		}
 		else {
-			damageRecieve->DoDamage(hitComp->GetHitDamageMultiplier(), bulletDetails->GetBaseDamage(),
-				GetOwner()->GetActorLocation(), bulletDetails->GetBaseImpulse());
+			if (!otherCharacterDetails->GetIsDead()) {
+				damageDone = damageRecieve->DoDamage(hitComp->GetHitDamageMultiplier(), bulletDetails->GetBaseDamage(),
+					bulletDetails->GetBaseImpulse(), GetOwner()->GetActorRotation());
+				AttemptToInitiateBulletSound();
+			}
 		}
 		//TODO:
 		//Create Blood spatter
@@ -51,6 +57,19 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent* OverlappedComp, 
 		auto meshComponent = GetOwner()->GetComponentByClass<UStaticMeshComponent>();
 		if (meshComponent)
 			meshComponent->SetVisibility(false);
+
+		auto sourceGun = bulletDetails->GetGunShotFrom();
+		if (!sourceGun || !sourceGun->GetAttachParentActor())
+			UDebugMessages::LogError(this, "could not determine where bullet came from");
+		else if (damageDone == 0)
+			UDebugMessages::LogError(this, "Did 0 damage, not running stat task");
+		else {
+			auto firer = sourceGun->GetAttachParentActor();
+
+			USvUtilities::AttemptToStartStatUpdater(firer, EStatisticType::ST_DAMAGE, damageDone);
+			if (damageDone > 0 && otherCharacterDetails && otherCharacterDetails->GetIsDead())
+				USvUtilities::AttemptToStartStatUpdater(firer, EStatisticType::ST_Kill);
+		}
 	}
 
 	//TODO: change environment tests
@@ -66,6 +85,7 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent* OverlappedComp, 
 void UBulletCollisionComponent::AttemptToInitiateBulletSound() {
 	auto hitComponent = GetOwner()->GetComponentByClass<UBulletHitSoundComponent>();
 	if (hitComponent) {
+		hitComponent->SetWorldLocation(GetOwner()->GetActorLocation());
 		hitComponent->SetSphereRadius(800);
 	}
 }

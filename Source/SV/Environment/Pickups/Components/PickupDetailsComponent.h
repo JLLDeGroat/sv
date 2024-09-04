@@ -8,12 +8,12 @@
 #include "PickupDetailsComponent.generated.h"
 
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class SV_API UPickupDetailsComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	// Sets default values for this component's properties
 	UPickupDetailsComponent();
 
@@ -23,8 +23,12 @@ public:
 	int GetAmount();
 	EResourceType GetResourceType();
 
+	void SetIsIntel();
+	bool GetIsIntel();
+
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) EResourceType ResourceType;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) int Amount;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsIntel;
 };

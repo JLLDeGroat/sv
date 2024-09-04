@@ -7,16 +7,6 @@
 /**
  *
  */
-class SV_API EEquipmentEnums
-{
-public:
-	template< typename T >
-	static FORCEINLINE FString ToString(T EnumValue)
-	{
-		static_assert(TIsUEnumClass< T >::Value, "'T' template parameter to EnumToString must be a valid UEnum");
-		return StaticEnum< T >()->GetNameStringByIndex((int32)EnumValue);
-	}
-};
 
 UENUM(BlueprintType)
 enum class EThrowable : uint8 {
@@ -52,4 +42,21 @@ enum class EResourceType : uint8 {
 	RT_Currency = 1,
 };
 
+class SV_API EEquipmentEnums
+{
+public:
+	template< typename T >
+	static FORCEINLINE FString ToString(T EnumValue)
+	{
+		static_assert(TIsUEnumClass< T >::Value, "'T' template parameter to EnumToString must be a valid UEnum");
+		return StaticEnum< T >()->GetNameStringByIndex((int32)EnumValue);
+	}
 
+	static FORCEINLINE FString GetResourceTypeAsString(EResourceType rType) {
+		UEnum* EnumPtr = FindObject<UEnum>(GetTransientPackage(), TEXT("EResourceType"), true);
+		if (EnumPtr)
+			return EnumPtr->GetNameStringByValue((int64)rType);
+		else
+			return "FOUND_INVALID";
+	}
+};

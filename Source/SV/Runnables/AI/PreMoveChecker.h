@@ -7,7 +7,7 @@
 #include "PreMoveChecker.generated.h"
 
 class ISvChar;
-
+class UBaseAIBehaviour;
 /**
  *
  */
@@ -26,4 +26,5 @@ private:
 	void DetermineClosestCharactersToThisEnemy();
 
 	UPROPERTY() TArray<TScriptInterface<ISvChar>> Targets;
+	UPROPERTY() UBaseAIBehaviour* MeleeBehaviour;
 };

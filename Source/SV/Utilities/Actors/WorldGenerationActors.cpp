@@ -5,6 +5,7 @@
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "../SvUtilities.h"
 #include "../../Runnables/LevelGenerationRunnable.h"
+#include "../../Runnables/Checkers/WinLossCheckerRunnable.h"
 #include "../../Environment/EnvironmentActor.h"
 #include "../../World/WorldGridItemActor.h"
 #include "GameFramework/Character.h"
@@ -27,20 +28,14 @@ AWorldGenerationActors::AWorldGenerationActors()
 void AWorldGenerationActors::GenericLevel() {
 	TearDownCurrentGen();
 
-	auto i = FMath::RandRange(0, 999999);
-	UDebugMessages::LogDisplay(this, "FMath::RandRange(0, 999999) = " + FString::SanitizeFloat(i));
-
 	auto newLevel = NewObject<ULevelGenerationRunnable>()
 		->InsertVariables(ELevelGenType::Generic)
-		->Initialise(GetWorld(), i)
+		->Initialise(GetWorld(), FMath::RandRange(0, 999999))
 		->Begin();
 }
 
 void AWorldGenerationActors::TwoBuildingLevel() {
 	TearDownCurrentGen();
-
-	auto i = FMath::RandRange(0, 999999);
-	UDebugMessages::LogDisplay(this, "FMath::RandRange(0, 999999) = " + FString::SanitizeFloat(i));
 
 	if (BaseRunnable) {
 		BaseRunnable->KillThread();
@@ -49,7 +44,7 @@ void AWorldGenerationActors::TwoBuildingLevel() {
 
 	BaseRunnable = NewObject<ULevelGenerationRunnable>()
 		->InsertVariables(ELevelGenType::TwoBuilding)
-		->Initialise(GetWorld(), i)
+		->Initialise(GetWorld(), FMath::RandRange(0, 999999))
 		->Begin();
 }
 
@@ -83,6 +78,24 @@ void AWorldGenerationActors::BeginDestroy() {
 		BaseRunnable->KillThread();
 		BaseRunnable->EnsureCompletion();
 	}
+
 	Super::BeginDestroy();
+}
+
+void AWorldGenerationActors::RunWinLossRunnable() {
+	USvUtilities::AttemptToStartWinLossChecker(GetWorld());
+}
+
+void AWorldGenerationActors::DestroyAllDebugActors() {
+	auto actors = GetWorld()->GetCurrentLevel()->Actors;
+	auto totalActors = actors.Num() - 1;
+	for (int i = totalActors; i > 0; i--) {
+		if (actors[i]) {
+			if (actors[i]->IsA<AWorldGridItemActor>()) {
+				actors[i]->Destroy();
+				continue;
+			}
+		}
+	}
 }
 #pragma optimize("", on)

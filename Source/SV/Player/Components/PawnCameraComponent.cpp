@@ -71,7 +71,7 @@ void UPawnCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 			else UDebugMessages::LogError(this, "failed to get valid cinematic location");
 		}
 		else {
-			newLocation = UKismetMathLibrary::VInterpTo_Constant(currentLocation, CurrentMoveTo, DeltaTime, 800);
+			newLocation = UKismetMathLibrary::VInterpTo_Constant(currentLocation, CurrentMoveTo, DeltaTime, 1500);
 
 			requiredRotation = ShoudUseSetRotation() ?
 				UGridUtilities::FindLookAtRotation(newLocation, CurrentRotateToLocation) :
@@ -99,7 +99,7 @@ void UPawnCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	}
 }
 
-void UPawnCameraComponent::UpdateCameraState(ECameraState cameraState, FVector moveToLocation, FVector lookAtLocation, bool overrideCameraMovements) {
+void UPawnCameraComponent::UpdateCameraState(ECameraState cameraState, FVector moveToLocation, FVector lookAtLocation, bool overrideCameraMovements, bool doNotSetReturn) {
 	CurrentCameraState = cameraState;
 
 	if (overrideCameraMovements)
@@ -124,8 +124,9 @@ void UPawnCameraComponent::UpdateCameraState(ECameraState cameraState, FVector m
 		AttemptToAlterAttackerStatusWidgetVisibility(true);
 	}
 	else {
-		ReturnLocation = CameraComponent->GetComponentLocation();
-
+		if (!doNotSetReturn) {
+			ReturnLocation = CameraComponent->GetComponentLocation();
+		}
 		CurrentMoveTo = moveToLocation;
 		CurrentRotateToLocation = lookAtLocation;
 	}

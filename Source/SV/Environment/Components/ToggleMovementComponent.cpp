@@ -3,6 +3,11 @@
 
 #include "ToggleMovementComponent.h"
 #include "Runtime/Engine/Classes/Kismet/KismetMathLibrary.h"
+#include "../../Delegates/GameplayDelegates.h"
+#include "VgCore/Domain/Debug/DebugMessages.h"
+#include "../../Utilities/SvUtilities.h"
+#include "../../Characters/Components/TargetingComponent.h"
+#include "../../Characters/Components/ActionsComponent.h"
 
 // Sets default values for this component's properties
 UToggleMovementComponent::UToggleMovementComponent()
@@ -33,8 +38,29 @@ void UToggleMovementComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	auto newLocation = UKismetMathLibrary::VInterpTo_Constant(MovingMesh->GetRelativeLocation(), MovingToLocation, DeltaTime, 200);
 	MovingMesh->SetRelativeLocation(newLocation);
 
-	if (FVector::Dist(MovingMesh->GetRelativeLocation(), MovingToLocation) < 1)
+	if (FVector::Dist(MovingMesh->GetRelativeLocation(), MovingToLocation) < 1) {
 		SetComponentTickEnabled(false);
+
+		auto gamePlayDelegates = UGameplayDelegates::GetInstance();
+		if (!gamePlayDelegates)
+			return UDebugMessages::LogError(this, "failed to get gameplay delegates");
+
+		gamePlayDelegates->_ChangeControlLimits.Broadcast(EControlLimit::CL_NONE);
+
+		auto selected = USvUtilities::AttemptToGetCurrentSelectedActor(GetWorld());
+		if (selected) {
+			auto targeting = selected->GetComponentByClass<UTargetingComponent>();
+			auto actions = selected->GetComponentByClass<UActionsComponent>();
+
+			if (targeting && actions) {
+				targeting->DetermineTargetData();
+				actions->SendActionsToUI();
+			}
+			else {
+				UDebugMessages::LogError(this, "failed once environment toggle moved");
+			}
+		}
+	}
 }
 
 

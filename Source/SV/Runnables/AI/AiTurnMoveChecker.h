@@ -6,6 +6,7 @@
 #include "Base/BaseAITurnManager.h"
 #include "AiTurnMoveChecker.generated.h"
 
+class UBaseAIBehaviour;
 /**
  * 
  */
@@ -19,5 +20,7 @@ public:
 	virtual void ActivateThread() override;
 
 protected:
+
+	UPROPERTY() UBaseAIBehaviour* MeleeBehaviour;
 
 };

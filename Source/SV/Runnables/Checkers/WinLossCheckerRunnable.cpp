@@ -7,17 +7,16 @@
 #include "../../Instance/Managers/CurrentGameDataManager.h"
 #include "../../GameModes/GameplayMode.h"
 #include "../../GameModes/Managers/CharacterManager.h"
-#include "../../GameModes/Managers/WinLossManager.h"
 #include "../../Delegates/HudDelegates.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
+#include "MissionTypes/ExtractionChecker.h"
+#include "MissionTypes/ExterminateChecker.h"
+#include "MissionTypes/SurvivalChecker.h"
+#include "MissionTypes/TraverseChecker.h"
 
 #pragma optimize("", off)
 void UWinLossCheckerRunnable::ActivateThread() {
 	UDebugMessages::LogDisplay(this, "checking winloss");
-
-	auto winLossManager = USvUtilities::GetGameModeWinLossManager(GetWorld());
-	if (!winLossManager)
-		return UDebugMessages::LogError(this, "failed to get win loss manager");
 
 	auto characterManager = USvUtilities::GetGameModeCharacterManager(GetWorld());
 	if (!characterManager)
@@ -32,7 +31,6 @@ void UWinLossCheckerRunnable::ActivateThread() {
 	auto hudDelegates = UHudDelegates::GetInstance();
 	if (!hudDelegates)
 		return UDebugMessages::LogError(this, "failed to get hud delegates");
-
 
 	if (GetHasAllCharactersLeftTheField()) {
 		if (GetHasExtractedAnyCharacters()) {
@@ -49,31 +47,39 @@ void UWinLossCheckerRunnable::ActivateThread() {
 	}
 	else {
 		auto missionType = currentGameData->GetCurrentMission()->GetType();
-
+		UBaseMissionTypeWLChecker* missionTypeChecker = nullptr;
 		switch (missionType) {
 		case EMissionType::MT_Exterminate:
 		{
-			if (GetHasExterminationComplete()) {
+			missionTypeChecker = NewObject<UExterminateChecker>(this)
+				->ActivateChecker();
+			/*if (GetHasExterminationComplete()) {
 				SetHasCompletedThisMission();
+				bHasEndedMission = true;
 				FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([hudDelegates] {
 					hudDelegates->_ShowMissionCompleteWidget.Broadcast();
 					}, TStatId(), nullptr, ENamedThreads::GameThread);
 				return;
-			}
+			}*/
 		}
 		break;
 		case EMissionType::MT_Survive:
 		{
-
+			missionTypeChecker = NewObject<USurvivalChecker>(this)
+				->ActivateChecker();
 		}
 		break;
 		case EMissionType::MT_Traverse:
 		{
+			missionTypeChecker = NewObject<UTraverseChecker>(this)
+				->ActivateChecker();
 			// this one onoly happens if everyone has extracted
 		}
 		break;
 		case EMissionType::MT_Extraction:
 		{
+			missionTypeChecker = NewObject<UExtractionChecker>(this)
+				->ActivateChecker();
 			// this one only happens if every one has extracted with something
 		}
 		break;
@@ -81,7 +87,12 @@ void UWinLossCheckerRunnable::ActivateThread() {
 			return UDebugMessages::LogError(this, "failed to get valid missionType");
 		}
 
+		if (missionTypeChecker) {
+			missionTypeChecker->ClearInternalFlags(EInternalObjectFlags::Async);
+		}
 	}
+
+	bIsComplete = true;
 }
 
 bool UWinLossCheckerRunnable::GetHasAllCharactersLeftTheField() {
@@ -114,8 +125,11 @@ void UWinLossCheckerRunnable::SetHasCompletedThisMission() {
 	if (!gameData)
 		return UDebugMessages::LogError(this, "failed to get current game data");
 
-	auto worldData = gameData->GetWorldData();
-	auto currentMission = worldData->GetCurrentLocation()->GetMissionDetails();
+	auto currentMission = gameData->GetCurrentMission()->GetMissionDetails();
 	currentMission->SetIsCompleted(true);
+}
+
+bool UWinLossCheckerRunnable::GetIsComplete() {
+	return bIsComplete;
 }
 #pragma optimize("", on)

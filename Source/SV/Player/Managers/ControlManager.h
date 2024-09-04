@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Base/BaseControllerManager.h"
+#include "../../Enums/EControllerEnums.h"
 #include "ControlManager.generated.h"
 
 class USelectionManager;
@@ -39,6 +40,10 @@ public:
 	UFUNCTION() void OnUIItemHovered();
 	UFUNCTION() void OnUIItemUnhovered();
 
+	UFUNCTION() void UpdateControlLimit(EControlLimit controlLimit);
+
+	EControlLimit GetControlLimit();
+
 protected:
 
 	virtual void BeginPlay() override;
@@ -56,5 +61,7 @@ private:
 	UPROPERTY() bool bDisabledMouseDesignationOnHover;
 	UPROPERTY() bool bDisabledMouseExplosionDesignationOnHover;
 	UPROPERTY() bool bIsHovered;
+
+	UPROPERTY() EControlLimit ControlLimits;
 
 };

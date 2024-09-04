@@ -1,6 +1,8 @@
 # Visual Studio 2015 user specific files
 .vs/
-
+.vs/**
+.vscode/**
+.vscode/
 # Compiled Object files
 *.slo
 *.lo
@@ -86,6 +88,7 @@ DerivedDataCache/*
 /DerivedDataCache
 /Intermediate
 /Mods
+/Mods/**
 /Saved
 /Plugins/VgCore/Content
 /Plugins/VgCore/Intermediate

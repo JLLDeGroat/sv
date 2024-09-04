@@ -21,6 +21,7 @@ class UActionsComponent;
 class UCharacterTileUIComponent;
 class UDestroyComponent;
 class UPickupResourceComponent;
+class UInventoryComponent;
 
 UCLASS()
 class SV_API ASolder : public ABaseCharacter, public IMovable
@@ -55,6 +56,8 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UCharacterTileUIComponent* CharacterTileUIComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UDestroyComponent* DestroyComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UPickupResourceComponent* PickupResourceComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UInventoryComponent* InventoryComponent;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

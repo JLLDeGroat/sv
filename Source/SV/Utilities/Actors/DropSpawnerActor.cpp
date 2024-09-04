@@ -4,7 +4,8 @@
 #include "DropSpawnerActor.h"
 #include "../SvUtilities.h"
 #include "../../Environment/Pickups/ResourcePickup.h"
-#include "../../Environment/Components/Pickup/PickupDetailsComponent.h"
+#include "../../Environment/Pickups/Components/PickupDetailsComponent.h"
+#include "../../Environment/Pickups/IntelPickup.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 // Sets default values
 ADropSpawnerActor::ADropSpawnerActor()
@@ -37,6 +38,9 @@ void ADropSpawnerActor::BeginPlay() {
 				details->SetAmount(Amount);
 			}
 		}
+	}
+	else {
+		auto res = GetWorld()->SpawnActor<AIntelPickup>(GetActorLocation(), FRotator::ZeroRotator, FActorSpawnParameters());
 	}
 
 	Destroy();

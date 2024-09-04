@@ -19,19 +19,27 @@ public:
 		Id = FGuid::NewGuid();
 	}
 
-	FTargetData(FVector shootFromLoc, TScriptInterface<ISvChar> svChar) {
+	FTargetData(FVector shootFromLoc, TScriptInterface<ISvChar> svChar, FVector shootFromCameraLoc = FVector::ZeroVector) {
 		ShootFromLocation = shootFromLoc;
 		Character = svChar;
+
+		ShootFromCameraLocation = shootFromCameraLoc == FVector::ZeroVector ?
+			ShootFromLocation :
+			shootFromCameraLoc;
+
+
 		Id = FGuid::NewGuid();
 	}
 
 	TScriptInterface<ISvChar> GetCharacter() { return Character; }
 	FVector GetShootLocation() const { return ShootFromLocation; }
+	FVector GetShootCameraLocation() const { return ShootFromCameraLocation; }
 	FGuid GetId() const { return Id; }
 
 protected:
 
 	UPROPERTY() FVector ShootFromLocation;
+	UPROPERTY() FVector ShootFromCameraLocation;
 	UPROPERTY() TScriptInterface<ISvChar> Character;
 
 	UPROPERTY() FGuid Id;

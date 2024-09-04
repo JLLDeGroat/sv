@@ -21,10 +21,6 @@ void ULevelGenerationRunnable::KillThread() {
 }
 
 void ULevelGenerationRunnable::ActivateThread() {
-	UDebugMessages::LogError(this, "DEBUG SET AND WILL NOT GENERATE LEVEL");
-	bool bDebug = false;
-	if (!bDebug)return;
-
 	LevelIndex = nullptr;
 
 	switch (GenType) {

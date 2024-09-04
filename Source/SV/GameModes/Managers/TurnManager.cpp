@@ -9,7 +9,10 @@
 #include "../../Delegates/GameplayDelegates.h"
 #include "../../Delegates/AIDelegates.h"
 #include "../../Delegates/HudDelegates.h"
+#include "../../Utilities/SvUtilities.h"
 #include "../GameplayMode.h"
+#include "../../Data/Game/FCurrentGameData.h"
+#include "ObjectivesManager.h"
 #include "CharacterManager.h"
 
 UTurnManager::UTurnManager(const FObjectInitializer& ObjectInitializer) : UObject(ObjectInitializer) {
@@ -39,13 +42,17 @@ void UTurnManager::BeginAITurn() {
 
 	aiDelegates->_AiTurnIndicatorVisibility.Broadcast(true);
 
-	Runnable = NewObject<UAITurnRunnable>()
+	Runnable = NewObject<UAITurnRunnable>(this)
 		->Initialise(GetWorld())
 		->Begin();
 }
 
 void UTurnManager::BeginPlayerTurn() {
 	if (!this || !GetWorld()) return;
+
+	auto currentGameData = USvUtilities::GetCurrentGameData(GetWorld());
+	if (!currentGameData)
+		return UDebugMessages::LogError(this, "failed to get currentGameData");
 
 	auto gameplayMode = GetWorld()->GetAuthGameMode<AGameplayMode>();
 	if (!gameplayMode) {
@@ -68,6 +75,17 @@ void UTurnManager::BeginPlayerTurn() {
 	auto aiDelegates = UAIDelegates::GetInstance();
 	if (!aiDelegates)
 		return UDebugMessages::LogError(this, "failed to get ai delegates");
+
+	auto currentMission = currentGameData->GetCurrentMission()->GetMissionDetails();
+	currentMission->AddToTurnCounter();
+	UDebugMessages::LogDisplay(this, "current turn " + FString::SanitizeFloat(currentMission->GetTurn()));
+
+	//mission complete, end here
+	if (currentMission->GetTurn() >= currentMission->GetTurnLimit())
+		return hudDelegates->_ShowMissionCompleteWidget.Broadcast();
+
+	auto objectivesManager = gameplayMode->GetObjectivesManager();
+	objectivesManager->UpdateMainObjective();
 
 	hudDelegates->_CharacterTileVisibility.Broadcast(true);
 	aiDelegates->_AiTurnIndicatorVisibility.Broadcast(false);

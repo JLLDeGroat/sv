@@ -12,6 +12,7 @@ UHitCapsuleComponent::UHitCapsuleComponent(const FObjectInitializer& ObjectIniti
 	SetCollisionResponseToChannel(ECC_GameTraceChannel5, ECR_Overlap);
 	SetCollisionObjectType(USvUtilities::GetBulletCollisionObjectChannel());
 
+	SetCanEverAffectNavigation(false);
 	DamageMultiplier = 1.0f;
 }
 

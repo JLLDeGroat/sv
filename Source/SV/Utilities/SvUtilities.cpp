@@ -9,6 +9,8 @@
 #include "../Instance/SvGameInstance.h"
 #include "../Instance/Managers/CurrentGameDataManager.h"
 #include "NiagaraSystem.h"
+#include "../Player/Managers/SelectionManager.h"
+#include "../Interfaces/Selectable.h"
 
 ECollisionChannel USvUtilities::GetFloorTargetChannel() {
 	return ECollisionChannel::ECC_GameTraceChannel1;
@@ -83,9 +85,9 @@ UCharacterManager* USvUtilities::GetGameModeCharacterManager(UWorld* world) {
 	auto gameMode = GetGameMode(world);
 	return gameMode->GetCharacterManager();
 }
-UWinLossManager* USvUtilities::GetGameModeWinLossManager(UWorld* world) {
+UObjectivesManager* USvUtilities::GetGameModeObjectiveManager(UWorld* world) {
 	auto gameMode = GetGameMode(world);
-	return gameMode->GetWinLossManager();
+	return gameMode->GetObjectivesManager();
 }
 
 void USvUtilities::GetAdjacentGridTiles(FVector location, TArray<FVector>& adjacentTiles) {
@@ -215,4 +217,25 @@ FVector USvUtilities::DetermineAccuracyInidicatorScale(FVector source, FVector t
 	if (gunAccuracy < 1) gunAccuracy = 1;
 	gunAccuracy = gunAccuracy * accuracyDecay;
 	return FVector(gunAccuracy / 100) + FVector(baseAccuracy);
+}
+
+void USvUtilities::AttemptToStartWinLossChecker(UWorld* world) {
+	auto gameMode = GetGameMode(world);
+	gameMode->AttemptToStartWinLossChecker();
+}
+
+AActor* USvUtilities::AttemptToGetCurrentSelectedActor(UWorld* world) {
+	auto controller = world->GetFirstPlayerController();
+	auto selectionManager = controller->GetComponentByClass<USelectionManager>();
+
+	if (selectionManager && selectionManager->GetSelected())
+		return selectionManager->GetSelected()->GetAsActor();
+
+
+	return nullptr;
+}
+
+void USvUtilities::AttemptToStartStatUpdater(AActor* statOwner, EStatisticType statType, float value) {
+	auto gameMode = GetGameMode(statOwner->GetWorld());
+	gameMode->StartStatRunnable(statOwner, statType, value);
 }

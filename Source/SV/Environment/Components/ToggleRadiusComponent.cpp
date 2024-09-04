@@ -15,6 +15,7 @@ UToggleRadiusComponent::UToggleRadiusComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 
 	SetGenerateOverlapEvents(true);
+	SetCanEverAffectNavigation(false);
 	SetCollisionObjectType(USvUtilities::GetTriggerableChannel());
 
 	OnComponentBeginOverlap.AddDynamic(this, &UToggleRadiusComponent::Overlapped);

@@ -19,13 +19,13 @@ void UAiTurnMoveChecker::ActivateThread() {
 	//TODO create behaviour aroud movement
 	//currently assuming all is melee and will move into melee range
 
-	auto meleeMovement = CreateBehaviourClass(UAIMeleeRangeMove::StaticClass());
-	if (!meleeMovement)
+	MeleeBehaviour = CreateBehaviourClass(UAIMeleeRangeMove::StaticClass());
+	if (!MeleeBehaviour)
 		return UDebugMessages::LogError(this, "found no melee movement behaviour");
 
-	meleeMovement->DoBehaviour();
+	MeleeBehaviour->DoBehaviour();
 
-	while (!meleeMovement->GetCompletedBehaviourAndWaitIfNot(.1f) && bIsAlive) {
+	while (!MeleeBehaviour->GetCompletedBehaviourAndWaitIfNot(.1f) && bIsAlive) {
 		if (GetThisEnemyIsValidAndAlive()) {
 			UDebugMessages::LogDisplay(this, "waiting on melee range movement behaviour");
 		}

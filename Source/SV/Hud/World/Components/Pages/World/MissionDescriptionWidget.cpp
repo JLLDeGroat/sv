@@ -57,7 +57,7 @@ void UMissionDescriptionWidget::OnWorldMoveComplete(FVector2D MovedToLocation) {
 	MissionName = missionDetails->GetName();
 	MissionType = (uint8)missionDetails->GetMissionType();
 
-	auto missionDetailsManager = instance->GetMissionDetailsManager();
+	//auto missionDetailsManager = instance->GetMissionDetailsManager();
 
 	auto titleWidget = GetWidgetFromName("MissionTitleText");
 	auto title = (UTextBlock*)titleWidget;
@@ -74,6 +74,12 @@ void UMissionDescriptionWidget::OnWorldMoveComplete(FVector2D MovedToLocation) {
 	auto description = (UTextBlock*)descriptionWidget;
 	if (description) {
 		description->SetText(FText::FromString(missionDetails->GetDescription()));
+	}
+
+	auto missionFluffTextWidget = GetWidgetFromName("MissionFluffText");
+	auto missionFluffText = (UTextBlock*)missionFluffTextWidget;
+	if (missionFluffText) {
+		missionFluffText->SetText(FText::FromString(missionDetails->GetFluffText()));
 	}
 
 	auto button = UUserWidgetHelpers::GetButtonFromWidget(this, "StartMissionBtn");
@@ -96,7 +102,11 @@ void UMissionDescriptionWidget::OnStartMissionClicked() {
 		return UDebugMessages::LogError(this, "failed to get current game data");
 
 	auto currentGameData = instance->GetCurrentGameDataManager()->GetCurrentGameData();
-	currentGameData->StartNewMission(MissionName, (EMissionType)MissionType);
+	auto worldData = currentGameData->GetWorldData();
+	auto currentLocation = worldData->GetCurrentLocation();
+
+	currentGameData->StartNewMission(currentLocation->GetMissionDetails()->GetName(),
+		currentLocation->GetMissionDetails()->GetMissionType(), currentLocation->GetMissionDetails());
 
 	FName lName = FName("TopDownMap");
 	UGameplayStatics::OpenLevel(this, lName, true, "game=Class'/Script/SV.GameplayMode'?");

@@ -72,5 +72,6 @@ enum class EActionType :uint8 {
 	AT_Reload = 4,
 	AT_Overwatch = 5,
 	AT_Extract = 6,
-	AT_Pickup = 7
+	AT_Pickup = 7,
+	AT_Interact = 8
 };

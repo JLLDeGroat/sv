@@ -73,8 +73,8 @@ bool UBaseAITurnManager::GetHasFinishedTurnEarly() {
 UBaseAIBehaviour* UBaseAITurnManager::CreateBehaviourClass(UClass* cls) {
 	UBaseAIBehaviour* behaviour = nullptr;
 
-	if (UAIMeleeAttack::StaticClass() == cls)			behaviour = NewObject<UAIMeleeAttack>();
-	else if (UAIMeleeRangeMove::StaticClass() == cls)	behaviour = NewObject<UAIMeleeRangeMove>();
+	if (UAIMeleeAttack::StaticClass() == cls)			behaviour = NewObject<UAIMeleeAttack>(this);
+	else if (UAIMeleeRangeMove::StaticClass() == cls)	behaviour = NewObject<UAIMeleeRangeMove>(this);
 
 	if (behaviour)
 		behaviour->SetEnemyAndCharacters(ThisEnemy->GetAsActor(), AllCharacters);

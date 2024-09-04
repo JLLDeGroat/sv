@@ -4,17 +4,22 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "WinLossManager.generated.h"
+#include "IndicatorLinkComponent.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class SV_API UWinLossManager : public UActorComponent
+class SV_API UIndicatorLinkComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UWinLossManager();
+	UIndicatorLinkComponent();
 
-	void CheckOnCharacterDeath();
+	void SetPickupIndicatingTo(AActor* actor);
+	AActor* GetPickupIndicatingTo();
+
+protected:
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) AActor* PickupIndicatingTo;
 };

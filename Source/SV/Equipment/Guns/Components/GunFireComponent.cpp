@@ -54,9 +54,11 @@ void UGunFireComponent::SetMeshAndSocketName(UStaticMeshComponent* meshComponent
 }
 
 void UGunFireComponent::FireAtLocation(FVector location, float accuracyRadius) {
+	auto owner = GetOwner();
+	
 	auto bulletStart = GetGunFireStartLocation();
 
-	auto equipmentDetails = GetOwner()->GetComponentByClass<UEquipmentDetailsComponent>();
+	auto equipmentDetails = owner->GetComponentByClass<UEquipmentDetailsComponent>();
 	auto randomUnitVector = FVector(FMath::RandRange(0, 1), FMath::RandRange(0, 1), FMath::RandRange(0, 1));
 	auto randomFloatInRange = FMath::RandRange(0.00f, accuracyRadius);
 	auto offsetLoc = randomUnitVector * randomFloatInRange;
@@ -68,15 +70,16 @@ void UGunFireComponent::FireAtLocation(FVector location, float accuracyRadius) {
 
 	UDebugMessages::LogDisplay(this, "spawning bullet at: " + bulletStart.ToString());
 
-	auto newBullet = GetOwner()->GetWorld()->SpawnActor<ABullet>(bulletStart, bulletRotation);
+	auto newBullet = owner->GetWorld()->SpawnActor<ABullet>(bulletStart, bulletRotation);
 
-	auto muzzleFlash = GetOwner()->GetComponentByClass<UMuzzleFlashComponent>();
+	auto muzzleFlash = owner->GetComponentByClass<UMuzzleFlashComponent>();
 
 	if (newBullet) {
 		auto bulletDetails = newBullet->GetComponentByClass<UBulletDetailsComponent>();
-		if (bulletDetails && equipmentDetails)
+		if (bulletDetails && equipmentDetails) {
 			bulletDetails->SetBaseDamage(equipmentDetails->GetBaseDamage());
-
+			bulletDetails->SetGunShotFrom(owner);
+		}
 		auto bulletTravel = newBullet->GetComponentByClass<UTravelComponent>();
 		if (bulletTravel)
 			bulletTravel->StartTravel(finalLoc);
@@ -84,4 +87,6 @@ void UGunFireComponent::FireAtLocation(FVector location, float accuracyRadius) {
 		if (muzzleFlash)
 			muzzleFlash->ActivateMuzzleFlash();
 	}
+
+
 }

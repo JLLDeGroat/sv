@@ -22,6 +22,9 @@ public:
 	int GetBaseImpulse();
 	void SetBaseImpulse(int impulse);
 
+	void SetGunShotFrom(AActor* gun);
+	AActor* GetGunShotFrom();
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -35,5 +38,7 @@ private:
 
 	UPROPERTY() int BaseDamage;
 	UPROPERTY() int BaseImpulse;
+
+	UPROPERTY() AActor* GunShotFrom;
 		
 };

@@ -13,16 +13,18 @@ UCycleTargetAction::UCycleTargetAction(const FObjectInitializer& ObjectInitializ
 }
 
 void UCycleTargetAction::DoAction() {
-	ResetActionEffects();
+	if (IsWithinValidControlLimiter()) {
+		ResetActionEffects();
 
-	auto selected = SelectionManager->GetSelected();
+		auto selected = SelectionManager->GetSelected();
 
-	auto hudDelegates = UHudDelegates::GetInstance();
-	if (!hudDelegates)
-		return UDebugMessages::LogError(this, "failed to get hud delegates");
+		auto hudDelegates = UHudDelegates::GetInstance();
+		if (!hudDelegates)
+			return UDebugMessages::LogError(this, "failed to get hud delegates");
 
-	if (selected)
-		hudDelegates->_CycleToNextTarget.Broadcast();
-	else
-		hudDelegates->_SelectNextCharacterWithAp.Broadcast();
+		if (selected)
+			hudDelegates->_CycleToNextTarget.Broadcast();
+		else
+			hudDelegates->_SelectNextCharacterWithAp.Broadcast();
+	}
 }

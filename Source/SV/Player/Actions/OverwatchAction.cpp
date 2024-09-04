@@ -27,47 +27,49 @@ UOverwatchAction::UOverwatchAction(const FObjectInitializer& ObjectInitializer)
 }
 
 void UOverwatchAction::DoAction() {
-	UDebugMessages::LogDisplay(this, "doing overwatch");
-	ResetActionEffects();
+	if (IsWithinValidControlLimiter()) {
+		UDebugMessages::LogDisplay(this, "doing overwatch");
+		ResetActionEffects();
 
-	auto controller = GetOwner<APlayerController>();
-	auto pawn = controller->GetPawn();
-	auto pawnCameraComponent = pawn->GetComponentByClass<UPawnCameraComponent>();
+		auto controller = GetOwner<APlayerController>();
+		auto pawn = controller->GetPawn();
+		auto pawnCameraComponent = pawn->GetComponentByClass<UPawnCameraComponent>();
 
-	if (!pawnCameraComponent)
-		return UDebugMessages::LogError(this, "failed to get pawn camera component");
+		if (!pawnCameraComponent)
+			return UDebugMessages::LogError(this, "failed to get pawn camera component");
 
-	if (!IsInValidCameraState(pawnCameraComponent->GetCurrentCameraState()))
-		return;
+		if (!IsInValidCameraState(pawnCameraComponent->GetCurrentCameraState()))
+			return;
 
-	auto selected = SelectionManager->GetSelected();
-	if (selected) {
-		auto controlComponent = controller->GetComponentByClass<UControlManager>();
-		if (!controlComponent)
-			return UDebugMessages::LogError(this, "failed to get control component");
+		auto selected = SelectionManager->GetSelected();
+		if (selected) {
+			auto controlComponent = controller->GetComponentByClass<UControlManager>();
+			if (!controlComponent)
+				return UDebugMessages::LogError(this, "failed to get control component");
 
-		if (pawnCameraComponent->GetCurrentCameraState() == ECameraState::CS_Control) {
-			if (!OverwatchArea)
-				OverwatchArea = GetWorld()->SpawnActor<AOverwatchArea>(FVector(0, 0, -1000), FRotator::ZeroRotator);
+			if (pawnCameraComponent->GetCurrentCameraState() == ECameraState::CS_Control) {
+				if (!OverwatchArea)
+					OverwatchArea = GetWorld()->SpawnActor<AOverwatchArea>(FVector(0, 0, -1000), FRotator::ZeroRotator);
 
-			auto actorOwner = selected->GetAsActor();
-			OverwatchArea->SetOverWatchOwner(actorOwner);
-			pawnCameraComponent->UpdateCameraState(ECameraState::CS_Overwatch,
-				FVector::ZeroVector, FVector::ZeroVector, true);
+				auto actorOwner = selected->GetAsActor();
+				OverwatchArea->SetOverWatchOwner(actorOwner);
+				pawnCameraComponent->UpdateCameraState(ECameraState::CS_Overwatch,
+					FVector::ZeroVector, FVector::ZeroVector, true);
 
-			ControlManager->SetCanMouseDesignateSelectionDecal(false);
-			SetComponentTickEnabled(true);
-		}
-		else if (pawnCameraComponent->GetCurrentCameraState() == ECameraState::CS_Overwatch) {
-			if (OverwatchArea) {
-				OverwatchArea->Destroy();
-				OverwatchArea = nullptr;
+				ControlManager->SetCanMouseDesignateSelectionDecal(false);
+				SetComponentTickEnabled(true);
 			}
-			pawnCameraComponent->UpdateCameraState(ECameraState::CS_Control,
-				FVector::ZeroVector, FVector::ZeroVector, true);
+			else if (pawnCameraComponent->GetCurrentCameraState() == ECameraState::CS_Overwatch) {
+				if (OverwatchArea) {
+					OverwatchArea->Destroy();
+					OverwatchArea = nullptr;
+				}
+				pawnCameraComponent->UpdateCameraState(ECameraState::CS_Control,
+					FVector::ZeroVector, FVector::ZeroVector, true);
 
-			ControlManager->SetCanMouseDesignateSelectionDecal(true);
-			SetComponentTickEnabled(false);
+				ControlManager->SetCanMouseDesignateSelectionDecal(true);
+				SetComponentTickEnabled(false);
+			}
 		}
 	}
 }
@@ -100,7 +102,7 @@ void UOverwatchAction::SetOverwatch() {
 
 			hudDelegates->_HideOrResetUIWidget.Broadcast();
 			hudDelegates->_ResetCharacterTileWidget.Broadcast();
-			OverwatchArea->SetupForCollision();
+			/*OverwatchArea->SetupForCollision();*/
 			OverwatchArea = nullptr;
 		}
 	}

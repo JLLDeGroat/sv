@@ -8,7 +8,9 @@
 
 class ISvChar;
 class UBaseRunnable;
-
+class UAiTurnMoveChecker;
+class UPostMoveChecker;
+class UPreMoveChecker;
 /**
  * 
  */
@@ -30,7 +32,7 @@ private:
 
 	//void TryMeleeAttack(TScriptInterface<ISvChar> meleeAttacker, TScriptInterface<ISvChar> character);
 
-	UPROPERTY() UBaseRunnable* PreMoveRunnable;
-	UPROPERTY() UBaseRunnable* MoveRunnable;
-	UPROPERTY() UBaseRunnable* PostMoveRunnable;
+	UPROPERTY() UPreMoveChecker* PreMoveRunnable;
+	UPROPERTY() UAiTurnMoveChecker* MoveRunnable;
+	UPROPERTY() UPostMoveChecker* PostMoveRunnable;
 };

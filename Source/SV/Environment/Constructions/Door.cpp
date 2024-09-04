@@ -30,6 +30,9 @@ ADoor::ADoor(const FObjectInitializer& ObjectInitializer)
 
 	ToggleRadius->SetBoxExtent(FVector(100, 150, 100));
 	ToggleRadius->SetRelativeLocation(FVector(0, -50, 100));
+
+	SetupEnvironmentMeshComponent(DoorComponent);
+	SetupEnvironmentMeshComponent(DoorFrameComponent);
 }
 
 void ADoor::OnConstruction(const FTransform& Transform) {

@@ -5,6 +5,8 @@
 #include "../../Instance/SvGameInstance.h"
 #include "../../Instance/Managers/CurrentGameDataManager.h"
 #include "../../Instance/Managers/MissionDetailsManager.h"
+#include "../../GameModes/GameplayMode.h"
+#include "../../GameModes/Managers/ObjectivesManager.h"
 
 #include "../../Runnables/ClassicGameMapGenerationRunnable.h"
 #include "../../Utilities/SvUtilities.h"
@@ -91,19 +93,49 @@ void AManualWorldDataActor::GenerateWorldLocationMissionsData() {
 	auto worldDataLocations = worldData->GetWorldLocationData();
 
 	for (int i = 0; i < worldDataLocations.Num(); i++) {
-		if (!worldDataLocations[i]->GetIsCurrent()) {
+		EMissionType missionType = (EMissionType)FMath::RandRange(1, 4);
+		auto thisMissionName = missionDetailsManager->GenerateMissionName();
+		auto thisMissionDesc = missionDetailsManager->GetMissionTypeDescription(missionType);
 
-			EMissionType missionType = (EMissionType)FMath::RandRange(1, 4);
-			auto thisMissionName = missionDetailsManager->GenerateMissionName();
-			auto thisMissionDesc = missionDetailsManager->GetMissionTypeDescription(missionType);
+		auto mDetails = worldDataLocations[i]->GetMissionDetails();
+		mDetails->SetMissionType(missionType);
+		mDetails->SetName(thisMissionName);
+		mDetails->SetDescription(thisMissionDesc->GetDescription());
+		mDetails->SetIsValidMission(true);
+		mDetails->SetFluffText(missionDetailsManager->GenerateFluffText(missionType));
+		mDetails->SetMainObjective(missionDetailsManager->GenerateMainObjective(missionType));
+		mDetails->SetTurnLimit(999);
 
-			auto mDetails = worldDataLocations[i]->GetMissionDetails();
-			mDetails->SetMissionType(missionType);
-			mDetails->SetName(thisMissionName);
-			mDetails->SetDescription(thisMissionDesc->GetDescription());
-			mDetails->SetIsValidMission(true);
+		if (missionType == EMissionType::MT_Survive)
+			mDetails->SetTurnLimit(12);
 
-			currentGameData->StartNewMission(mDetails->GetName(), mDetails->GetMissionType());
+		if (worldDataLocations[i]->GetIsCurrent()) {
+
+			if (MissionType != EMissionType::INVALID) {
+				UDebugMessages::LogDisplay(this, "Manual set missionType");
+				//manual set
+				mDetails->SetMissionType(MissionType);
+				mDetails->SetName(thisMissionName);
+				mDetails->SetDescription(thisMissionDesc->GetDescription());
+				mDetails->SetIsValidMission(true);
+				mDetails->SetFluffText(missionDetailsManager->GenerateFluffText(MissionType));
+				mDetails->SetMainObjective(missionDetailsManager->GenerateMainObjective(MissionType));
+				mDetails->SetTurnLimit(999);
+
+				if (MissionType == EMissionType::MT_Survive)
+					mDetails->SetTurnLimit(12);
+			}
+
+			currentGameData->StartNewMission(mDetails->GetName(), mDetails->GetMissionType(), mDetails);
+			auto gameMode = GetWorld()->GetAuthGameMode<AGameplayMode>();
+			if (!gameMode)
+				return UDebugMessages::LogError(this, "failed to get auth game mode");
+
+			auto objectivesManager = gameMode->GetComponentByClass<UObjectivesManager>();
+			if (!objectivesManager)
+				return UDebugMessages::LogError(this, "failed to get objectives manager");
+
+			objectivesManager->SetupMainObjective();
 		}
 	}
 }

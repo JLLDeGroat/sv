@@ -32,7 +32,7 @@ public:
 		Start = mvData->GetStart();
 		Previous = mvData->GetPrevious();
 
-		if (mvData->GetIsEnd()) 
+		if (mvData->GetIsEnd())
 			IsEnd = true;
 
 		Connections = mvData->GetConnections();
@@ -77,7 +77,8 @@ public:
 	void MoveAcrossGrid(TArray<FVector> movementLocs);
 	void MovementLoop();
 
-	TArray<FVector> FindRoute(FVector start, FVector end, bool bisAI = false); 
+	TArray<FVector> FindRoute(FVector start, FVector end, bool bisAI = false);
+	TArray<FVector> FindQuickestRoute(FVector start, FVector end, bool bisAI = false);
 
 	bool GetMovableAdjacentTiles(FVector start, TArray<FVector>& ValidAdjacentTiles, FVector orderByDistanceLoc = FVector::ZeroVector, bool bIgnoreVaultables = false);
 
@@ -93,12 +94,15 @@ private:
 	UPROPERTY() TArray<FVector> MovementLocations;
 
 	void FindRouteRecursive(FMovementData* movementData, FVector desiredLocation, bool bisAI = false);
+	TArray<FVector> FindQuickestRouteRecursive(FVector Current, FVector End, TArray<FVector>& VisitedNodes, float& BestCost, TArray<FVector>& BestPath);
 
 	int GetMovementDataForGridItem(FVector gridItem, TArray<FVector> previous, FVector end);
 	bool HasFoundEnd();
 	FMovementData* HasAnalysedGridItem(FVector startLocation);
 	bool AlreadyInPrevious(FVector gridLocation, TArray<FVector> previous);
-	
+
+	bool CanReachDestination(FVector location, FVector end, int steps);
+
 	UPROPERTY() TArray<AActor*> TestActorList;
 	UPROPERTY() TArray<FMovementData> MovementData;
 
@@ -108,4 +112,7 @@ private:
 	UPROPERTY() float RotationSpeed;
 	UPROPERTY() float DefaultMovementSpeed;
 	UPROPERTY() float DefaultRotationSpeed;
+
+	UPROPERTY() int AIRouteIterations;
+	UPROPERTY() bool bAIRouteDecided;
 };

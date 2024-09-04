@@ -82,6 +82,11 @@ void UActionManager::DoActionFromUI(EActionType actionType) {
 		PickupActionComponent->DoAction();
 	}
 	break;
+	case EActionType::AT_Interact:
+	{
+		ActivateToggleActionComponent->DoAction();
+	}
+	break;
 	default:
 	{
 		UDebugMessages::LogDisplay(this, "Failed to get an action");

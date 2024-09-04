@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "../../Enums/EWorldEnums.h"
 #include "ManualWorldDataActor.generated.h"
 
 UCLASS()
@@ -18,6 +19,7 @@ public:
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* RootMesh;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) EMissionType MissionType;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

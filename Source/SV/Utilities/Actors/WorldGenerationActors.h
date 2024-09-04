@@ -17,12 +17,16 @@ class SV_API AWorldGenerationActors : public AActor
 public:
 	// Sets default values for this actor's properties
 	AWorldGenerationActors();
-	
+
 	virtual void BeginDestroy() override;
 protected:
 
-	UFUNCTION(CallInEditor) void GenericLevel();
-	UFUNCTION(CallInEditor) void TwoBuildingLevel();
+	UFUNCTION(CallInEditor, category = "generations") void GenericLevel();
+	UFUNCTION(CallInEditor, category = "generations") void TwoBuildingLevel();
+
+	UFUNCTION(CallInEditor, category = "generations") void DestroyAllDebugActors();
+
+	UFUNCTION(CallInEditor, category = "win loss") void RunWinLossRunnable();
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* RootMesh;
 

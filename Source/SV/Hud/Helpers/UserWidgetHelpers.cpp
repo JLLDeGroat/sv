@@ -77,6 +77,9 @@ UTexture2D* UUserWidgetHelpers::GetTextureForActionType(EActionType actionType) 
 	case EActionType::AT_Pickup:
 		texture = USvUtilities::GetTexture("/Script/Engine.Texture2D'/Game/Images/UI/PickupIcon.PickupIcon'");
 		break;
+	case EActionType::AT_Interact:
+		texture = USvUtilities::GetTexture("/Script/Engine.Texture2D'/Game/Images/UI/Interact.Interact'");
+		break;
 	}
 	return texture;
 }

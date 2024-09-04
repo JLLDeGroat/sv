@@ -72,6 +72,7 @@ public:
 
 	void SetEquipmentId(FGuid id);
 	FGuid GetEquipmentId();
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -100,4 +101,5 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) EGun GunType;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) FGuid EquipmentId;
+
 };

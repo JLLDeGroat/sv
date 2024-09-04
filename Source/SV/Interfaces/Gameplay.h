@@ -4,19 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
+#include "../Enums/EWorldEnums.h"
 #include "Gameplay.generated.h"
 
 class UCharacterManager;
-class UWinLossManager;
+class UObjectivesManager;
 
 /**
- * 
+ *
  */
 UINTERFACE()
 class SV_API UGameplay : public UInterface
 {
 	GENERATED_BODY()
-	
+
 };
 
 class SV_API IGameplay {
@@ -26,8 +27,11 @@ class SV_API IGameplay {
 public:
 
 	virtual UCharacterManager* GetCharacterManager() = 0;
-	virtual UWinLossManager* GetWinLossManager() = 0;
+	virtual UObjectivesManager* GetObjectivesManager() = 0;
 
 	virtual void EndTurn() = 0;
 	virtual void BeginPlayerTurn() = 0;
+
+	virtual bool AttemptToStartWinLossChecker() = 0;
+	virtual void StartStatRunnable(AActor* statOwner, EStatisticType statType, float damage = 0.0f) = 0;
 };

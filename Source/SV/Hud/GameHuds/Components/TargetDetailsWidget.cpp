@@ -9,8 +9,10 @@
 #include "SubComponents/TargetDetailsRowWidget.h"
 #include "SubComponents/TargetDetailsRowItemWidget.h"
 #include "../../../Player/GamePlayerController.h"
+#include "../../../Player/Actions/TargetAction.h"
 #include "../../../Player/Managers/SelectionManager.h"
 #include "../../../Interfaces/Selectable.h"
+#include "../../../Interfaces/SvChar.h"
 #include "../../../Characters/Components/TargetingComponent.h"
 #include "../../../Player/PlayerPawn.h"
 #include "../../../Player/Components/PawnCameraComponent.h"
@@ -110,13 +112,15 @@ void UTargetDetailsWidget::OnTargetIconClicked(FGuid Id, FVector Location) {
 void UTargetDetailsWidget::HideOrReset() {
 	OnClearTargetData();
 }
-
+#pragma optimize("", off)
 void UTargetDetailsWidget::CycleTarget() {
-	auto detailBox = GetDetailsBox();
-
 	auto playerController = GetWorld()->GetFirstPlayerController<AGamePlayerController>();
 	if (!playerController)
 		return UDebugMessages::LogError(this, "failed to get player controller, will not set targetdata");
+
+	auto targetAction = playerController->GetComponentByClass<UTargetAction>();
+	if (!targetAction)
+		return UDebugMessages::LogError(this, "Failed to get Target Action component");
 
 	FGuid currentId = FGuid::NewGuid();
 	auto selectionManager = playerController->GetSelectionManager();
@@ -152,15 +156,25 @@ void UTargetDetailsWidget::CycleTarget() {
 	for (int i = 0; i < items.Num(); i++) {
 		if (foundCurrent) {
 			targetingComponent->SetCurrentMainTargetId(items[i]->GetId());
+			auto mainTargetingComponent = targetingComponent->GetCurrentMainTarget();
+
+			targetAction->SetComponentTickEnabled(true);
+			playerController->SetMouseAsGame();
 
 			auto itemWidgetButton = items[i]->GetItemButton();
 			itemWidgetButton->WidgetStyle.Normal.TintColor = FSlateColor(FLinearColor(0, 175, 175, 1));
 			itemWidgetButton->WidgetStyle.Normal.OutlineSettings.Color = FSlateColor(FLinearColor(0, 55, 255, 1));
 
 			auto pawn = playerController->GetPawn<APlayerPawn>();
-			if (pawn && pawn->GetComponentByClass<UPawnCameraComponent>())
-				pawn->GetComponentByClass<UPawnCameraComponent>()->UpdateCameraState(ECameraState::CS_ReTarget, items[i]->GetTargetLocation());
 
+			if (pawn && pawn->GetComponentByClass<UPawnCameraComponent>()) {
+				auto pawnCameraComponent = pawn->GetComponentByClass<UPawnCameraComponent>();
+				if (pawnCameraComponent->GetCurrentCameraState() == ECameraState::CS_GunTarget)
+					pawnCameraComponent->UpdateCameraState(ECameraState::CS_GunTarget, mainTargetingComponent->GetShootCameraLocation(),
+						mainTargetingComponent->GetCharacter()->GetSelectableGridLocation(), false, true);
+				else
+					pawnCameraComponent->UpdateCameraState(ECameraState::CS_ReTarget, items[i]->GetTargetLocation());
+			}
 			foundNew = true;
 			break;
 		}
@@ -172,19 +186,30 @@ void UTargetDetailsWidget::CycleTarget() {
 			itemWidgetButton->WidgetStyle.Normal.OutlineSettings.Color = FSlateColor(FLinearColor(0, 55, 255, 0));
 		}
 	}
+
 	if (!foundNew && items.Num() > 0) {
 		targetingComponent->SetCurrentMainTargetId(items[0]->GetId());
+		auto mainTargetingComponent = targetingComponent->GetCurrentMainTarget();
+
+		targetAction->SetComponentTickEnabled(true);
+		playerController->SetMouseAsGame();
 
 		auto itemWidgetButton = items[0]->GetItemButton();
 		itemWidgetButton->WidgetStyle.Normal.TintColor = FSlateColor(FLinearColor(0, 175, 175, 1));
 		itemWidgetButton->WidgetStyle.Normal.OutlineSettings.Color = FSlateColor(FLinearColor(0, 55, 255, 1));
 
 		auto pawn = playerController->GetPawn<APlayerPawn>();
-		if (pawn && pawn->GetComponentByClass<UPawnCameraComponent>())
-			pawn->GetComponentByClass<UPawnCameraComponent>()->UpdateCameraState(ECameraState::CS_ReTarget, items[0]->GetTargetLocation());
+		if (pawn && pawn->GetComponentByClass<UPawnCameraComponent>()) {
+			auto pawnCameraComponent = pawn->GetComponentByClass<UPawnCameraComponent>();
+			if (pawnCameraComponent->GetCurrentCameraState() == ECameraState::CS_GunTarget)
+				pawnCameraComponent->UpdateCameraState(ECameraState::CS_GunTarget, mainTargetingComponent->GetShootCameraLocation(),
+					mainTargetingComponent->GetCharacter()->GetSelectableGridLocation(), false, true);
+			else
+				pawnCameraComponent->UpdateCameraState(ECameraState::CS_ReTarget, items[0]->GetTargetLocation());
+		}
 	}
 }
-
+#pragma optimize("", off)
 UVerticalBox* UTargetDetailsWidget::GetDetailsBox() const {
 	auto verticalBoxWidget = GetWidgetFromName("TargetDataBox");
 	if (verticalBoxWidget->IsA<UVerticalBox>())
