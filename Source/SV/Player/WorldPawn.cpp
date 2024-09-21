@@ -22,10 +22,10 @@ AWorldPawn::AWorldPawn()
 	SkeleMesh->SetRelativeLocation(FVector(0, -15, -58));
 	SkeleMesh->SetRelativeRotation(FRotator(0, -90, 0));
 
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMesh(TEXT("SkeletalMesh'/Game/Characters/Soldier/ClothedPlayer.ClothedPlayer'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/Characters/Soldier/BaseSoldier.BaseSoldier'"));
 	if (skeletalMesh.Succeeded()) SkeleMesh->SetSkeletalMesh(skeletalMesh.Object);
 
-	static ConstructorHelpers::FObjectFinder<UClass> AnimObj(TEXT("/Script/Engine.AnimBlueprint'/Game/Characters/Soldier/Anims/SolderAnim_Bp.SolderAnim_Bp_C'"));
+	static ConstructorHelpers::FObjectFinder<UClass> AnimObj(TEXT("/Script/Engine.AnimBlueprint'/Game/Characters/Soldier/Anims/WorldSoldierAnim_Bp.WorldSoldierAnim_Bp_C'"));
 	if (AnimObj.Succeeded()) SkeleMesh->SetAnimInstanceClass(AnimObj.Object);
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
@@ -61,3 +61,6 @@ void AWorldPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
+USkeletalMeshComponent* AWorldPawn::GetSkeleMeshComponent() {
+	return SkeleMesh;
+}

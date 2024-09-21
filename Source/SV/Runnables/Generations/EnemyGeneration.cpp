@@ -5,7 +5,7 @@
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "../../Characters/Monsters/ZombieGrunt.h"
 
-#pragma optimize("", off)
+
 UBaseGenerations* UEnemyGeneration::Generate() {
 
 	int spawnedWalkingZombies = 0;
@@ -83,4 +83,3 @@ bool UEnemyGeneration::IsTooCloseToOtherSpawns(FVector loc, TArray<FVector> loca
 	return false;
 }
 
-#pragma optimize("", on)

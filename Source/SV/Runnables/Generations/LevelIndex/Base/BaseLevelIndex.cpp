@@ -9,7 +9,7 @@
 #include "../../../../Environment/Natural/RockSection.h"
 #include "../../../../World/WorldGridItemActor.h"
 
-#pragma optimize("", off)
+
 UBaseLevelIndex::UBaseLevelIndex() {
 	RandomStream = FRandomStream();
 	bIsAlive = true;
@@ -539,4 +539,3 @@ TArray<FVector> UBaseLevelIndex::CombineList(TArray<FVector> locs1, TArray<FVect
 	return locs2;
 }
 
-#pragma optimize("", on)

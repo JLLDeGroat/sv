@@ -21,14 +21,18 @@ class UActionsComponent;
 class UCharacterTileUIComponent;
 class UDestroyComponent;
 class UPickupResourceComponent;
+class UDropResourceComponent;
 class UInventoryComponent;
+class UHitCapsuleComponent;
+class UHitBoxComponent;
+class UCharacterCaptureComponent;
 
 UCLASS()
 class SV_API ASolder : public ABaseCharacter, public IMovable
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	ASolder(const FObjectInitializer& ObjectInitializer);
 
@@ -57,8 +61,26 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UDestroyComponent* DestroyComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UPickupResourceComponent* PickupResourceComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UInventoryComponent* InventoryComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UDropResourceComponent* DropResourceComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UCharacterCaptureComponent* CharacterCaptureComponent;
 
-public:	
+	UPROPERTY(BlueprintreadWrite, EditAnywhere) UHitCapsuleComponent* LeftArmHitComponent;
+	UPROPERTY(BlueprintreadWrite, EditAnywhere) UHitCapsuleComponent* LeftForeArmHitComponent;
+	UPROPERTY(BlueprintreadWrite, EditAnywhere) UHitCapsuleComponent* RightArmHitComponent;
+	UPROPERTY(BlueprintreadWrite, EditAnywhere) UHitCapsuleComponent* RightForeArmHitComponent;
+
+	UPROPERTY(BlueprintreadWrite, EditAnywhere) UHitBoxComponent* UpperTorsoHitComponent;
+	UPROPERTY(BlueprintreadWrite, EditAnywhere) UHitBoxComponent* LowerTorsoHitComponent;
+
+	UPROPERTY(BlueprintreadWrite, EditAnywhere) UHitCapsuleComponent* LeftLegHitComponent;
+	UPROPERTY(BlueprintreadWrite, EditAnywhere) UHitCapsuleComponent* RightLegHitComponent;
+
+	UPROPERTY(BlueprintreadWrite, EditAnywhere) UHitCapsuleComponent* LeftUpperLegHitComponent;
+	UPROPERTY(BlueprintreadWrite, EditAnywhere) UHitCapsuleComponent* RightUpperLegHitComponent;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UHitCapsuleComponent* HeadHitComponent;
+
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 };

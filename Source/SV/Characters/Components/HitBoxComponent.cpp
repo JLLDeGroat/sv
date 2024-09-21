@@ -8,12 +8,16 @@ UHitBoxComponent::UHitBoxComponent(const FObjectInitializer& ObjectInitializer)
 	: UBoxComponent(ObjectInitializer) {
 
 	//SetCollisionResponseToAllChannels(ECR_Ignore);
-	SetCollisionResponseToChannel(USvUtilities::GetBulletCollisionChannel(), ECR_Overlap); 
+	SetCollisionResponseToChannel(USvUtilities::GetBulletCollisionChannel(), ECR_Overlap);
 	SetCollisionResponseToChannel(ECC_GameTraceChannel5, ECR_Overlap);
 	SetCollisionObjectType(USvUtilities::GetBulletCollisionObjectChannel());
 
 	SetCanEverAffectNavigation(false);
-	DamageMultiplier = 1.0f;
+	DamageMultiplier = 1.0f; 
+	Thickness = 1;
+
+	/*SetVisibility(true);
+	bHiddenInGame = false;*/
 }
 
 FVector UHitBoxComponent::GetWorldLocation() {
@@ -26,4 +30,12 @@ void UHitBoxComponent::SetHitDimageMultiplier(float value) {
 
 float UHitBoxComponent::GetHitDamageMultiplier() {
 	return DamageMultiplier;
+}
+
+void UHitBoxComponent::SetThickness(int thickness) {
+	Thickness = thickness;
+}
+
+int UHitBoxComponent::GetThickness() {
+	return Thickness;
 }

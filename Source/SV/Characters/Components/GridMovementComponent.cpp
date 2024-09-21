@@ -83,8 +83,10 @@ void UGridMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 }
 
 void UGridMovementComponent::MoveAcrossGrid(TArray<FVector> movementLocs) {
-	if (movementLocs.Num() == 0) return;
-
+	if (movementLocs.Num() == 0) {
+		UDebugMessages::LogError(this, "movementLocs were empty, breaking error");
+		return;
+	}
 	MovementLocations = movementLocs;
 	AnimInstance->SetIsCrouching(false);
 	SetComponentTickEnabled(true);
@@ -356,9 +358,7 @@ bool UGridMovementComponent::GetMovableAdjacentTiles(FVector start, TArray<FVect
 		{
 			ValidAdjacentTiles.Emplace(adjacentTiles[i]);
 		}
-		else {
-			UDebugMessages::LogError(this, "Invalid spot " + adjacentTiles[i].ToString());
-		}
+		//else UDebugMessages::LogError(this, "Invalid spot " + adjacentTiles[i].ToString());
 	}
 
 	return !ValidAdjacentTiles.IsEmpty();

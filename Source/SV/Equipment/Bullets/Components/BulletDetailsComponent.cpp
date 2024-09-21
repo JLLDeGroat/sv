@@ -6,21 +6,15 @@
 // Sets default values for this component's properties
 UBulletDetailsComponent::UBulletDetailsComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
-	BaseImpulse = 7500.0f;
-	// ...
+	BaseImpulse = 250.0f;
+	PenetrationAbility = 1;
 }
-
 
 // Called when the game starts
 void UBulletDetailsComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
-
 }
 
 
@@ -28,8 +22,6 @@ void UBulletDetailsComponent::BeginPlay()
 void UBulletDetailsComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
 }
 
 int UBulletDetailsComponent::GetBaseDamage() {
@@ -49,4 +41,13 @@ void UBulletDetailsComponent::SetGunShotFrom(AActor* gun) {
 }
 AActor* UBulletDetailsComponent::GetGunShotFrom() {
 	return GunShotFrom;
+}
+int UBulletDetailsComponent::GetPenetrationAbility() {
+	return PenetrationAbility;
+}
+void UBulletDetailsComponent::SetPenetrationAbility(int ability) {
+	PenetrationAbility = ability;
+}
+void UBulletDetailsComponent::RemoveFromPenetrationAbility(int amount) {
+	PenetrationAbility -= amount;
 }

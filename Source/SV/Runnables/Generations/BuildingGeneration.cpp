@@ -10,7 +10,7 @@
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "BuildingInteriorGeneration.h"
 
-#pragma optimize("", off)
+
 UBuildingGeneration::UBuildingGeneration() {
 	AmountToGenerate = 3;
 	AmountGenerated = 0;
@@ -30,7 +30,7 @@ TArray<FVector> UBuildingGeneration::GetDoorLocations() {
 	return DoorLocations;
 }
 
-#pragma optimize("", off)
+
 UBaseGenerations* UBuildingGeneration::Generate() {
 	UDebugMessages::LogDisplay(this, "Generating Building: allowed spots " + FString::SanitizeFloat(UsableLocations.Num()));
 	TemplatedRequiredLocations = GetBuildingRequiredLocations();
@@ -84,7 +84,7 @@ UBaseGenerations* UBuildingGeneration::Generate() {
 	}
 	return this;
 }
-#pragma optimize("", on)
+
 TArray<FVector> UBuildingGeneration::GetBuildingRequiredLocations() {
 
 	TArray<FVector> result;
@@ -240,4 +240,3 @@ void UBuildingGeneration::GenerateBuildingPoint(FVector loc, bool& bgeneratedLef
 	}
 }
 
-#pragma optimize("", on)

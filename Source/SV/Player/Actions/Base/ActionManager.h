@@ -18,6 +18,7 @@ class UCycleTargetAction;
 class UOverwatchAction;
 class UExtractionAction;
 class UPickupAction;
+class USwapWeaponAction;
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class SV_API UActionManager : public UActorComponent
@@ -37,6 +38,7 @@ public:
 	UReloadAction* GetReloadAction();
 	UCycleTargetAction* GetCycleTargetAction();
 	UOverwatchAction* GetOverwatchAction();
+	USwapWeaponAction* GetSwapWeaponAction();
 
 	void DoActionFromUI(EActionType actionType);
 
@@ -55,5 +57,5 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) UOverwatchAction* OverwatchComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) UExtractionAction* ExtractionComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) UPickupAction* PickupActionComponent;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) USwapWeaponAction* SwapActionComponent;
 };

@@ -10,6 +10,7 @@
 #include "Components/BulletTrailComponent.h"
 #include "Components/BulletSoundComponent.h"
 #include "Components/BulletHitSoundComponent.h"
+#include "Components/BulletRearComponent.h"
 
 // Sets default values
 ABullet::ABullet()
@@ -22,7 +23,7 @@ ABullet::ABullet()
 	BulletMeshComponent->SetCanEverAffectNavigation(false);
 	BulletMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	BulletCollisionComponent = CreateDefaultSubobject<UBulletCollisionComponent>(TEXT("Collision"));
+	BulletCollisionComponent = CreateDefaultSubobject<UBulletCollisionComponent>(TEXT("BulletCollision"));
 	BulletCollisionComponent->SetupAttachment(RootComponent);
 	BulletCollisionComponent->SetRelativeLocation(FVector(-7, 0, 0));
 	BulletCollisionComponent->SetCapsuleRadius(1, false);
@@ -48,6 +49,11 @@ ABullet::ABullet()
 	BulletHitSoundComponent = CreateDefaultSubobject<UBulletHitSoundComponent>(TEXT("HitSound"));
 	BulletHitSoundComponent->SetSphereRadius(0);
 	BulletFireSoundComponent->SetSphereRadius(0);
+
+	BulletRearComponent = CreateDefaultSubobject<UBulletRearComponent>(TEXT("ReadComp"));
+	BulletRearComponent->SetupAttachment(RootComponent);
+	BulletRearComponent->SetSphereRadius(1);
+	BulletRearComponent->SetRelativeLocation(FVector(-30, 0, 0));
 }
 
 // Called when the game starts or when spawned

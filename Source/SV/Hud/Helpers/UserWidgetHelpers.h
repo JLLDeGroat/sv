@@ -36,5 +36,8 @@ public:
 
 	static UTexture2D* GetTextureForActionType(EActionType actionType);
 
+	static UTexture2D* GetTextureForResourceType(EResourceType rType);
+
 	static void DesignButton(UUserWidget* widget, FString btnName);
+	static void DesignButton(UButton* btn);
 };

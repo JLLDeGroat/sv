@@ -4,7 +4,7 @@
 #include "HitCapsuleComponent.h"
 #include "../../Utilities/SvUtilities.h"
 
-UHitCapsuleComponent::UHitCapsuleComponent(const FObjectInitializer& ObjectInitializer) 
+UHitCapsuleComponent::UHitCapsuleComponent(const FObjectInitializer& ObjectInitializer)
 	: UCapsuleComponent(ObjectInitializer) {
 
 	//SetCollisionResponseToAllChannels(ECR_Ignore);
@@ -14,6 +14,10 @@ UHitCapsuleComponent::UHitCapsuleComponent(const FObjectInitializer& ObjectIniti
 
 	SetCanEverAffectNavigation(false);
 	DamageMultiplier = 1.0f;
+	Thickness = 1;
+
+	/*SetVisibility(true);
+	bHiddenInGame = false;*/
 }
 
 FVector UHitCapsuleComponent::GetWorldLocation() {
@@ -26,4 +30,12 @@ void UHitCapsuleComponent::SetHitDimageMultiplier(float value) {
 
 float UHitCapsuleComponent::GetHitDamageMultiplier() {
 	return DamageMultiplier;
+}
+
+int UHitCapsuleComponent::GetThickness() {
+	return Thickness;
+}
+
+void UHitCapsuleComponent::SetThickness(int thickness) {
+	Thickness = thickness;
 }

@@ -9,8 +9,9 @@
 #include "../../../Utilities/SvUtilities.h"
 #include "../../Generations/EnemyGeneration.h"
 #include "../../Generations/PlayerGeneration.h"
+#include "../../Generations/StaticSpawnerGeneration.h"
 
-#pragma optimize("", off)
+
 void UTwoBuildingsLevel::GenerateLevel() {
 	int minX = 20;
 	MaxX = 40;
@@ -194,5 +195,10 @@ void UTwoBuildingsLevel::GenerateLevel() {
 		->SetupGeneration(GetWorld(), RandomStream, ObstacleAllowedLocations)
 		->SetStartAndEndZones(SpawnZone, EndZone)
 		->Generate();
+
+	auto staticSpawnerGen = NewObject<UStaticSpawnerGeneration>(this)
+		->SetAmountToSpawn(10)
+		->SetupGeneration(GetWorld(), RandomStream, ObstacleAllowedLocations)
+		->SetStartAndEndZones(SpawnZone, EndZone)
+		->Generate();
 }
-#pragma optimize("", on)

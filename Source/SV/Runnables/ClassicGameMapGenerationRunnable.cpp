@@ -10,7 +10,7 @@
 #include "../Utilities/SvUtilities.h"
 #include "../Utilities/RunnableUtilities.h"
 
-#pragma optimize("", off)
+
 void UClassicGameMapGenerationRunnable::ActivateThread() {
 	Super::ActivateThread();
 
@@ -42,6 +42,7 @@ void UClassicGameMapGenerationRunnable::ActivateThread() {
 	GenerateWorldLocationData();
 	GenerateWorldLocationMissionsData();
 	GenerateCrewMembers();
+	GenerateBaseResourceAmounts();
 
 	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([widget] {
 		widget->OnGenCompleted();
@@ -332,4 +333,8 @@ void UClassicGameMapGenerationRunnable::GenerateWorldLocationMissionsData() {
 	}
 }
 
-#pragma optimize("", on)
+void UClassicGameMapGenerationRunnable::GenerateBaseResourceAmounts() {
+	auto currentGameData = USvUtilities::GetCurrentGameData(GetWorld());
+	auto scrap = currentGameData->GetResourceData()->GetResource(EResourceType::RT_Currency);
+	scrap->AddToAmount(200);
+}

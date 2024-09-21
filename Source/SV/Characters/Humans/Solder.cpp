@@ -20,6 +20,10 @@
 #include "../Components/DestroyComponent.h"
 #include "../Components/PickupResourceComponent.h"
 #include "../Components/InventoryComponent.h"
+#include "../Components/HitBoxComponent.h"
+#include "../Components/HitCapsuleComponent.h"
+#include "../Components/DropResourceComponent.h"
+#include "../Components/CharacterCaptureComponent.h"
 
 // Sets default values
 ASolder::ASolder(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(ObjectInitializer)
@@ -84,6 +88,91 @@ ASolder::ASolder(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(O
 	PickupResourceComponent = CreateDefaultSubobject<UPickupResourceComponent>(TEXT("PickupResource"));
 
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
+
+	LeftArmHitComponent = CreateDefaultSubobject<UHitCapsuleComponent>(TEXT("LeftUpperArmHit"));
+	LeftArmHitComponent->SetupAttachment(GetMesh(), FName("LeftArmSocket"));
+	LeftArmHitComponent->SetRelativeRotation(FRotator(90, 180, 180));
+	LeftArmHitComponent->SetRelativeLocation(FVector(16, 2.5, 1));
+	LeftArmHitComponent->SetCapsuleRadius(7, false);
+	LeftArmHitComponent->SetCapsuleHalfHeight(22, false);
+
+	LeftForeArmHitComponent = CreateDefaultSubobject<UHitCapsuleComponent>(TEXT("LeftForeArmHit"));
+	LeftForeArmHitComponent->SetupAttachment(GetMesh(), FName("LeftForeArmSocket"));
+	LeftForeArmHitComponent->SetRelativeRotation(FRotator(90, 180, 180));
+	LeftForeArmHitComponent->SetRelativeLocation(FVector(16, 1, 1.6f));
+	LeftForeArmHitComponent->SetCapsuleRadius(5, false);
+	LeftForeArmHitComponent->SetCapsuleHalfHeight(20, false);;
+
+	RightArmHitComponent = CreateDefaultSubobject<UHitCapsuleComponent>(TEXT("RightArmHit"));
+	RightArmHitComponent->SetupAttachment(GetMesh(), FName("RightArmSocket"));
+	RightArmHitComponent->SetRelativeRotation(FRotator(90, 180, 180));
+	RightArmHitComponent->SetRelativeLocation(FVector(16, 2.5, 1));
+	RightArmHitComponent->SetCapsuleRadius(6, false);
+	RightArmHitComponent->SetCapsuleHalfHeight(22, false);
+
+	RightForeArmHitComponent = CreateDefaultSubobject<UHitCapsuleComponent>(TEXT("RightForeArmHit"));
+	RightForeArmHitComponent->SetupAttachment(GetMesh(), FName("RightForeArmSocket"));
+	RightForeArmHitComponent->SetRelativeRotation(FRotator(90, 180, 180));
+	RightForeArmHitComponent->SetRelativeLocation(FVector(16, 1, 1.6f));
+	RightForeArmHitComponent->SetCapsuleRadius(5, false);
+	RightForeArmHitComponent->SetCapsuleHalfHeight(20, false);
+
+	UpperTorsoHitComponent = CreateDefaultSubobject<UHitBoxComponent>(TEXT("BodySocketTwoHit"));
+	UpperTorsoHitComponent->SetupAttachment(GetMesh(), FName("BodySocketTwo"));
+	UpperTorsoHitComponent->SetBoxExtent(FVector(13, 10, 16));
+	UpperTorsoHitComponent->SetRelativeRotation(FRotator(0, 5, 0));
+	UpperTorsoHitComponent->SetRelativeLocation(FVector(15, 7, -2));
+
+	LowerTorsoHitComponent = CreateDefaultSubobject<UHitBoxComponent>(TEXT("BodySocketOneHit"));
+	LowerTorsoHitComponent->SetupAttachment(GetMesh(), FName("BodySocketOne"));
+	LowerTorsoHitComponent->SetBoxExtent(FVector(21, 10, 18));
+	LowerTorsoHitComponent->SetRelativeRotation(FRotator(0, -21, 0));
+	LowerTorsoHitComponent->SetRelativeLocation(FVector(23, 8, 0));
+
+	LeftUpperLegHitComponent = CreateDefaultSubobject<UHitCapsuleComponent>(TEXT("LeftUpperLegHit"));
+	LeftUpperLegHitComponent->SetupAttachment(GetMesh(), FName("LeftUpLegSocket"));
+	LeftUpperLegHitComponent->SetRelativeRotation(FRotator(82, 175, 170));
+	LeftUpperLegHitComponent->SetRelativeLocation(FVector(21, -9, 1.7f));
+	LeftUpperLegHitComponent->SetCapsuleRadius(7, false);
+	LeftUpperLegHitComponent->SetCapsuleHalfHeight(30, false);
+
+	RightUpperLegHitComponent = CreateDefaultSubobject<UHitCapsuleComponent>(TEXT("RightUpperLegHit"));
+	RightUpperLegHitComponent->SetupAttachment(GetMesh(), FName("RightUpLegSocket"));
+	RightUpperLegHitComponent->SetRelativeRotation(FRotator(83, -3, -10));
+	RightUpperLegHitComponent->SetRelativeLocation(FVector(21, -12, -4));
+	RightUpperLegHitComponent->SetCapsuleRadius(7, false);
+	RightUpperLegHitComponent->SetCapsuleHalfHeight(30, false);
+
+
+	LeftLegHitComponent = CreateDefaultSubobject<UHitCapsuleComponent>(TEXT("LeftLegHit"));
+	LeftLegHitComponent->SetupAttachment(GetMesh(), FName("LeftLegSocket"));
+	LeftLegHitComponent->SetRelativeRotation(FRotator(85.838082, 166, 167.246881));
+	LeftLegHitComponent->SetRelativeLocation(FVector(26.034162, -8.716644, 0.657409));
+	LeftLegHitComponent->SetCapsuleRadius(7, false);
+	LeftLegHitComponent->SetCapsuleHalfHeight(27, false);
+
+
+	RightLegHitComponent = CreateDefaultSubobject<UHitCapsuleComponent>(TEXT("RightLegHit"));
+	RightLegHitComponent->SetupAttachment(GetMesh(), FName("RightLegSocket"));
+	RightLegHitComponent->SetRelativeRotation(FRotator(89, 6, 5));
+	RightLegHitComponent->SetRelativeLocation(FVector(26.7f, -7, -3));
+	RightLegHitComponent->SetCapsuleRadius(7, false);
+	RightLegHitComponent->SetCapsuleHalfHeight(27, false);
+
+	HeadHitComponent = CreateDefaultSubobject<UHitCapsuleComponent>(TEXT("HeadHit"));
+	HeadHitComponent->SetupAttachment(GetMesh(), FName("HeadSocket"));
+	HeadHitComponent->SetRelativeLocation(FVector(-12.136649, 11, 1.6f));
+	HeadHitComponent->SetRelativeRotation(FRotator(90.000000, -174.948847, -174.948847));
+	HeadHitComponent->SetCapsuleRadius(10, false);
+	HeadHitComponent->SetCapsuleHalfHeight(12, false);
+	HeadHitComponent->SetHitDimageMultiplier(2.0f);
+
+	DropResourceComponent = CreateDefaultSubobject<UDropResourceComponent>(TEXT("DropResComp"));
+
+	CharacterCaptureComponent = CreateDefaultSubobject<UCharacterCaptureComponent>(TEXT("CaptureComponent"));
+	CharacterCaptureComponent->SetupAttachment(GetMesh(), FName("HeadSocket"));
+	CharacterCaptureComponent->SetRelativeRotation(FRotator(161, -90, 91));
+	CharacterCaptureComponent->SetRelativeLocation(FVector(-11, -9, -8));
 }
 
 // Called when the game starts or when spawned

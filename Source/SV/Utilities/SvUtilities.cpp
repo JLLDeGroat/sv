@@ -11,6 +11,7 @@
 #include "NiagaraSystem.h"
 #include "../Player/Managers/SelectionManager.h"
 #include "../Interfaces/Selectable.h"
+#include "Engine/TextureRenderTarget2D.h"
 
 ECollisionChannel USvUtilities::GetFloorTargetChannel() {
 	return ECollisionChannel::ECC_GameTraceChannel1;
@@ -73,6 +74,17 @@ UClass* USvUtilities::GetClass(FString reference) {
 
 UTexture2D* USvUtilities::GetTexture(FString reference) {
 	return Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), NULL, *reference, NULL, LOAD_None, NULL));
+}
+
+UTextureRenderTarget2D* USvUtilities::GetRenderTarget2D(int targetNumber) {
+	FString targetNumberAsString = FString::SanitizeFloat(targetNumber, 0);
+	FString reference = "/Script/Engine.TextureRenderTarget2D'/Game/RenderTargets/RenderTarget" + targetNumberAsString + "_RT.RenderTarget" + targetNumberAsString + "_RT'";
+	//FString reference = "/Script/Engine.TextureRenderTarget2D'/Game/RenderTargets/RenderTarget1_RT.RenderTarget1_RT'";
+	
+	FSoftObjectPath RenderTargetPath(reference);
+	UTextureRenderTarget2D* LoadedRenderTarget = Cast<UTextureRenderTarget2D>(RenderTargetPath.TryLoad());
+	return LoadedRenderTarget;
+	//return Cast<UTextureRenderTarget2D>(StaticLoadObject(UTextureRenderTarget2D::StaticClass(), NULL, *reference, NULL, LOAD_None, NULL));
 }
 
 float USvUtilities::GetGridGape() { return 100.0f; }
@@ -238,4 +250,25 @@ AActor* USvUtilities::AttemptToGetCurrentSelectedActor(UWorld* world) {
 void USvUtilities::AttemptToStartStatUpdater(AActor* statOwner, EStatisticType statType, float value) {
 	auto gameMode = GetGameMode(statOwner->GetWorld());
 	gameMode->StartStatRunnable(statOwner, statType, value);
+}
+
+FString USvUtilities::GetSocketNameFromAttachment(EAttachType attachmentType) {
+	FString result = "invalid";
+	switch (attachmentType) {
+	case EAttachType::AT_RightHolster:
+		result = "SecondaryHolsterSocket";
+		break;
+	case EAttachType::AT_Backpack:
+		result = "BackPackSocket";
+		break;
+	case EAttachType::AT_RightHand:
+		result = "RightHandSocket";
+		break;
+	}
+
+	return result;
+}
+
+UMaterial* USvUtilities::GetBulletHoleMaterial() {
+	return GetMaterial("/Script/Engine.Material'/Game/Decals/BulletHoles/BulletHole1_M.BulletHole1_M'");
 }

@@ -27,7 +27,7 @@ void UDestroyComponent::DestroyThisActor() {
 			allMelee[i]->Destroy();
 
 	auto primary = equipmentComponent->GetPrimaryEquipment();
-	if (primary)primary->Destroy();
+	if (primary) primary->Destroy();
 
 	owner->Destroy();
 }

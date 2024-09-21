@@ -27,7 +27,7 @@ void UGunFireComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-
+	Random = FRandomStream(FMath::RandRange(FMath::RandRange(0, 5000), FMath::RandRange(5001, 10000)));
 }
 
 
@@ -55,7 +55,7 @@ void UGunFireComponent::SetMeshAndSocketName(UStaticMeshComponent* meshComponent
 
 void UGunFireComponent::FireAtLocation(FVector location, float accuracyRadius) {
 	auto owner = GetOwner();
-	
+
 	auto bulletStart = GetGunFireStartLocation();
 
 	auto equipmentDetails = owner->GetComponentByClass<UEquipmentDetailsComponent>();
@@ -77,7 +77,7 @@ void UGunFireComponent::FireAtLocation(FVector location, float accuracyRadius) {
 	if (newBullet) {
 		auto bulletDetails = newBullet->GetComponentByClass<UBulletDetailsComponent>();
 		if (bulletDetails && equipmentDetails) {
-			bulletDetails->SetBaseDamage(equipmentDetails->GetBaseDamage());
+			bulletDetails->SetBaseDamage(Random.RandRange(equipmentDetails->GetMinBaseDamage(), equipmentDetails->GetMaxBaseDamage()));
 			bulletDetails->SetGunShotFrom(owner);
 		}
 		auto bulletTravel = newBullet->GetComponentByClass<UTravelComponent>();
@@ -87,6 +87,4 @@ void UGunFireComponent::FireAtLocation(FVector location, float accuracyRadius) {
 		if (muzzleFlash)
 			muzzleFlash->ActivateMuzzleFlash();
 	}
-
-
 }

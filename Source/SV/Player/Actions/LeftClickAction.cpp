@@ -49,7 +49,7 @@ void ULeftClickAction::BeginPlay()
 
 	// ...
 }
-#pragma optimize("", off)
+
 void ULeftClickAction::DoAction() {
 	if (IsWithinValidControlLimiter()) {
 		ResetActionEffects();
@@ -160,7 +160,7 @@ void ULeftClickAction::DoAction() {
 		}
 	}
 }
-#pragma optimize("", on)
+
 void ULeftClickAction::DoWorldAction() {
 	auto controller = GetOwner<APlayerController>();
 	auto pawn = controller->GetPawn();
@@ -171,6 +171,7 @@ void ULeftClickAction::DoWorldAction() {
 	if (Hit.GetActor()) {
 		auto movementComp = pawn->GetComponentByClass<UWorldPawnMovementComponent>();
 		auto getClickedLocation = Hit.GetActor()->GetActorLocation();
+		getClickedLocation.Z = pawn->GetActorLocation().Z;
 		movementComp->MoveToNewLocation(getClickedLocation);
 
 		auto gameMode = GetWorld()->GetAuthGameMode<AWorldGameMode>();

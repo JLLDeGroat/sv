@@ -55,8 +55,6 @@ void UTargetAction::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 		CurrentTargetAccuracy, CurrentTargetAccuracyDecay, CurrentTargetBaseAccuracy);
 
 	TargetingIndicator->SetActorScale3D(gunAccuracy);
-
-	UDebugMessages::LogError(this, FString::SanitizeFloat(DeltaTime));
 }
 
 void UTargetAction::DoAction() {

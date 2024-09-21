@@ -16,10 +16,27 @@ ULightAttachmentComponent::ULightAttachmentComponent() {
 	DirectionalLightComponent = CreateDefaultSubobject<USpotLightComponent>(TEXT("SpotLight"));
 	DirectionalLightComponent->SetupAttachment(GetAttachmentRoot(), FName("LightSocket"));
 
+	//DirectionalLightComponent->SetIntensity(20000);
+	//DirectionalLightComponent->SetAttenuationRadius(1000);
+	//DirectionalLightComponent->SetInnerConeAngle(15);
+	//DirectionalLightComponent->SetOuterConeAngle(40);
+	//DirectionalLightComponent->SetSoftSourceRadius(100);
+	//DirectionalLightComponent->SetRelativeRotation(FRotator(00, 180, 0));
+}
+
+void ULightAttachmentComponent::BeginPlay() {
+	Super::BeginPlay();
+	SwitchOn();
+}
+
+void ULightAttachmentComponent::SwitchOn() {
 	DirectionalLightComponent->SetIntensity(20000);
 	DirectionalLightComponent->SetAttenuationRadius(1000);
 	DirectionalLightComponent->SetInnerConeAngle(15);
 	DirectionalLightComponent->SetOuterConeAngle(40);
 	DirectionalLightComponent->SetSoftSourceRadius(100);
 	DirectionalLightComponent->SetRelativeRotation(FRotator(00, 180, 0));
+}
+void ULightAttachmentComponent::SwitchOff() {
+	DirectionalLightComponent->SetIntensity(0);
 }

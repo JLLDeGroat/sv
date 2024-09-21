@@ -5,16 +5,17 @@
 #include "CoreMinimal.h"
 #include "Base/AnimAccessComponent.h"
 #include "../../Enums/EEquipmentEnums.h"
+#include "../../Enums/ECharacterEnums.h"
 #include "EquipmentComponent.generated.h"
 
 class AEquipment;
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class SV_API UEquipmentComponent : public UAnimAccessComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	// Sets default values for this component's properties
 	UEquipmentComponent(const FObjectInitializer& ObjectInitializer);
 
@@ -23,22 +24,33 @@ public:
 	TArray<AEquipment*> GetAllMeleeEquipment();
 
 	AEquipment* GetPrimaryEquipment();
+	AEquipment* GetSecondaryEquipment();
+
+	bool GetCanSwapWeapon();
+	void SwapWeapon();
+	void FinishSwapWeapon();
+
+	void HolsterCurrentMainEquipment();
+	void UnholsterNewMainEquipment();
 
 	void EquipPrimary(EGun gunType);
-	void AttachEquipmentToSocket(EAttachType attachmentType, AEquipment* equipment, FString socketName);
+	void EquipSecondary(EGun gunType);
+	void AttachEquipmentToSocket(EAttachType attachmentType, AEquipment* equipment);
 
 	void ReloadEquipment();
-
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void FireEquippedGun();
 	int GetActionPointsNeededToUseEquipment();
 private:
+	UPROPERTY() AEquipment* CurrentMainEquipment;
 	UPROPERTY() TArray<AEquipment*> Equipment;
+
+	ECharacterAnimState GetAnimStateFromGunType(EGun gunType);
 };

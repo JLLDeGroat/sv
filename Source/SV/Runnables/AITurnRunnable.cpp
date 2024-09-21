@@ -23,7 +23,7 @@
 #include "AI/PreMoveChecker.h"
 #include "AI/PostMoveChecker.h"
 
-#pragma optimize("", off)
+
 
 void UAITurnRunnable::ActivateThread() {
 	UDebugMessages::LogDisplay(this, "Starting AI turns");
@@ -135,7 +135,7 @@ void UAITurnRunnable::ActivateThread() {
 		},
 		TStatId(), nullptr, ENamedThreads::GameThread);
 }
-#pragma optimize("", off)
+
 
 void UAITurnRunnable::KillThreads() {
 	if (PreMoveRunnable) {

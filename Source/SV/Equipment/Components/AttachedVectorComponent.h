@@ -28,6 +28,9 @@ public:
 	FVector GetHolsteredLocation();
 	FRotator GetHolsteredRotation();
 
+	void UseAttachedVectors();
+	void UseHolstedVectors();
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

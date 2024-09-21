@@ -14,6 +14,7 @@
 #include "../../Generations/RoadGenerations.h"
 #include "../../Generations/EnemyGeneration.h"
 #include "../../Generations/PlayerGeneration.h"
+#include "../../Generations/StaticSpawnerGeneration.h"
 #include "../../../Environment/Natural/RockSection.h"
 
 
@@ -94,6 +95,12 @@ void UGenericLevel::GenerateLevel() {
 		->Generate();
 
 	auto playerGen = NewObject<UPlayerGeneration>(this)
+		->SetupGeneration(GetWorld(), RandomStream, ObstacleAllowedLocations)
+		->SetStartAndEndZones(SpawnZone, EndZone)
+		->Generate();
+
+	auto staticSpawnerGen = NewObject<UStaticSpawnerGeneration>(this)
+		->SetAmountToSpawn(10)
 		->SetupGeneration(GetWorld(), RandomStream, ObstacleAllowedLocations)
 		->SetStartAndEndZones(SpawnZone, EndZone)
 		->Generate();

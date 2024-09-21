@@ -14,7 +14,7 @@
 #include "MissionTypes/SurvivalChecker.h"
 #include "MissionTypes/TraverseChecker.h"
 
-#pragma optimize("", off)
+
 void UWinLossCheckerRunnable::ActivateThread() {
 	UDebugMessages::LogDisplay(this, "checking winloss");
 
@@ -132,4 +132,3 @@ void UWinLossCheckerRunnable::SetHasCompletedThisMission() {
 bool UWinLossCheckerRunnable::GetIsComplete() {
 	return bIsComplete;
 }
-#pragma optimize("", on)

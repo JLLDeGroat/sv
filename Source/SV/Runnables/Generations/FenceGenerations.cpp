@@ -7,7 +7,7 @@
 #include "../../Environment/Natural/SoilPlot.h"
 #include "../../World/WorldGridItemActor.h"
 
-#pragma optimize("", off)
+
 UBaseGenerations* UFenceGenerations::Generate() {
 	TemplatedRequiredLocations = GenerateRequiredLocations();
 
@@ -124,4 +124,3 @@ void UFenceGenerations::BuildPlot(FVector loc) {
 		}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-#pragma optimize("", on)

@@ -51,6 +51,7 @@ private:
 
 	void GenerateWorldLocationData();
 	void GenerateWorldLocationMissionsData();
+	void GenerateBaseResourceAmounts();
 
 	UPROPERTY() int BaseChance;
 	UPROPERTY() int MaxOffshoots;

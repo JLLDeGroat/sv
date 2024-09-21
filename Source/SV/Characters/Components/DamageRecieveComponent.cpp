@@ -45,7 +45,7 @@ void UDamageRecieveComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	// ...
 }
 
-float UDamageRecieveComponent::DoDamage(float multiplier, int damage, float impulseDamage, FRotator angleOfDamage) {
+float UDamageRecieveComponent::DoDamage(float multiplier, int damage, float impulseDamage, FRotator angleOfDamage, FVector locationOfDamage) {
 	auto details = GetOwner()->GetComponentByClass<UCharacterDetailsComponent>();
 	if (!details) {
 		UDebugMessages::LogError(this, "No details component, cannot take damage");

@@ -20,7 +20,7 @@ void UAttachedVectorComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
+
 }
 
 
@@ -68,4 +68,15 @@ FVector UAttachedVectorComponent::GetHolsteredLocation() {
 }
 FRotator UAttachedVectorComponent::GetHolsteredRotation() {
 	return HolsteredRotation;
+}
+
+void UAttachedVectorComponent::UseAttachedVectors() {
+	auto owner = GetOwner();
+	owner->SetActorRelativeRotation(AttachedRotation);
+	owner->SetActorRelativeLocation(AttachedLocation);
+}
+void UAttachedVectorComponent::UseHolstedVectors() {
+	auto owner = GetOwner();
+	owner->SetActorRelativeRotation(HolsteredRotation);
+	owner->SetActorRelativeLocation(HolsteredLocation);
 }

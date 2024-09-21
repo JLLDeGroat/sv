@@ -26,6 +26,7 @@ public:
 		MaxCapacity = 4;
 		Range = 600;
 		Radius = 6;
+		Description = "Undefined";
 	}
 
 	EThrowable GetThrowable() const { return ThrowableType; }
@@ -40,6 +41,8 @@ public:
 	int GetRange() const { return Range; }
 	int GetRadius() const { return Radius; }
 
+	FString GetDescription() { return Description; }
+
 protected:
 
 	UPROPERTY() EThrowable ThrowableType;
@@ -50,6 +53,7 @@ protected:
 	UPROPERTY() int MaxCapacity;
 	UPROPERTY() int Range;
 	UPROPERTY() int Radius;
+	UPROPERTY() FString Description;
 };
 
 
@@ -63,8 +67,8 @@ public:
 	}
 
 	FThrowableDataItem* GetThrowableByType(EThrowable throwable) {
-		for (int i = 0; i < ThrowableDataItems.Num(); i++) 
-			if (ThrowableDataItems[i].GetThrowable() == throwable) 
+		for (int i = 0; i < ThrowableDataItems.Num(); i++)
+			if (ThrowableDataItems[i].GetThrowable() == throwable)
 				return &ThrowableDataItems[i];
 
 		return nullptr;

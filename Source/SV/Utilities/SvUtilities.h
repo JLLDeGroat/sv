@@ -3,6 +3,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "../Enums/EWorldEnums.h"
+#include "../Enums/EEquipmentEnums.h"
 #include "SvUtilities.generated.h"
 /**
  *
@@ -14,6 +15,7 @@ class UObjectivesManager;
 class UWinLossManager;
 class USvGameInstance;
 class UTexture2D;
+class UTextureRenderTarget2D;
 
 struct FCurrentGameData;
 
@@ -41,6 +43,7 @@ public:
 	static UMaterial* GetMaterial(FString reference);
 	static UClass* GetClass(FString reference);
 	static UTexture2D* GetTexture(FString reference);
+	static UTextureRenderTarget2D* GetRenderTarget2D(int targetNumber);
 
 	static float GetGridGape();
 
@@ -70,6 +73,10 @@ public:
 	static AActor* AttemptToGetCurrentSelectedActor(UWorld* world);
 
 	static void AttemptToStartStatUpdater(AActor* statOwner, EStatisticType statType, float value = 0.0f);
+
+	static FString GetSocketNameFromAttachment(EAttachType attachmentType);
+
+	static UMaterial* GetBulletHoleMaterial();
 
 private:
 

@@ -13,6 +13,7 @@
 #include "../Components/DropResourceComponent.h"
 #include "../Components/CharacterDetailsComponent.h"
 #include "../Components/PickupResourceComponent.h"
+#include "../Components/SpawnInComponent.h"
 #include "../../Player/Components/PawnCameraComponent.h"
 #include "../../Player/Components/CameraOverlapComponent.h"
 #include "../../Player/GamePlayerController.h"
@@ -30,6 +31,7 @@ UCharAnimInstance::UCharAnimInstance(const FObjectInitializer& ObjectInitializer
 	Speed = 0;
 	bIsAttacking = false;
 	AnimPlayRate = 1.0f;
+	CharacterAnimState = ECharacterAnimState::AS_AR;
 }
 
 void UCharAnimInstance::NativeUpdateAnimation(float DeltaSeconds) {
@@ -74,6 +76,13 @@ void UCharAnimInstance::SetIsAiActive(bool val) {
 void UCharAnimInstance::SetIsPickingUp(bool val) {
 	bIsPickingUp = val;
 }
+void UCharAnimInstance::SetIsSpawningFromGround(bool val) {
+	bSpawningFromGround = val;
+}
+void UCharAnimInstance::SetCharacterAnimState(ECharacterAnimState animState) {
+	CharacterAnimState = animState;
+}
+
 void UCharAnimInstance::OnGunFire() {
 	auto owningActor = GetOwningActor();
 	auto equipmentComponent = owningActor->GetComponentByClass<UEquipmentComponent>();
@@ -196,7 +205,7 @@ void UCharAnimInstance::OnHolsterWeapon() {
 
 	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([equipmentComponent, primaryEquipment]
 		{
-			equipmentComponent->AttachEquipmentToSocket(EAttachType::AT_Backpack, primaryEquipment, "BackPackSocket");
+			equipmentComponent->AttachEquipmentToSocket(EAttachType::AT_Backpack, primaryEquipment);
 		},
 		TStatId(), nullptr, ENamedThreads::GameThread);
 }
@@ -212,7 +221,7 @@ void UCharAnimInstance::OnUnholsteredWeapon() {
 
 	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([equipmentComponent, primaryEquipment]
 		{
-			equipmentComponent->AttachEquipmentToSocket(EAttachType::AT_RightHand, primaryEquipment, "RightHandSocket");
+			equipmentComponent->AttachEquipmentToSocket(EAttachType::AT_RightHand, primaryEquipment);
 		},
 		TStatId(), nullptr, ENamedThreads::GameThread);
 }
@@ -305,4 +314,52 @@ void UCharAnimInstance::OnFinishPickup() {
 		->InsertVariables(owningActor)
 		->Initialise(owningActor->GetWorld())
 		->Begin();
+}
+
+void UCharAnimInstance::SpawningFromGroundStartMovingUp() {
+	auto owningActor = GetOwningActor();
+	if (owningActor && owningActor->GetComponentByClass<USpawnInComponent>()) {
+		auto component = owningActor->GetComponentByClass<USpawnInComponent>();
+		component->SetComponentTickEnabled(true);
+	}
+}
+void UCharAnimInstance::SpawningFromGroundFinishMovingUp() {
+	UDebugMessages::LogError(this, "this one currently does nothing");
+}
+void UCharAnimInstance::SpawningFromGroundAlterMovingUpSpeed(float speed) {
+	auto owningActor = GetOwningActor();
+	if (owningActor && owningActor->GetComponentByClass<USpawnInComponent>()) {
+		auto component = owningActor->GetComponentByClass<USpawnInComponent>();
+		component->UpdateMovementSpeed(speed);
+	}
+}
+
+
+void UCharAnimInstance::OnHolsterCurrentWeapon() {
+	auto owningActor = GetOwningActor();
+	if (owningActor && owningActor->GetComponentByClass<UEquipmentComponent>()) {
+		auto equipmentComponent = owningActor->GetComponentByClass<UEquipmentComponent>();
+		equipmentComponent->HolsterCurrentMainEquipment();
+	}
+}
+void UCharAnimInstance::OnUnHolsterNewWeapon() {
+	auto owningActor = GetOwningActor();
+	if (owningActor && owningActor->GetComponentByClass<UEquipmentComponent>()) {
+		auto equipmentComponent = owningActor->GetComponentByClass<UEquipmentComponent>();
+		equipmentComponent->UnholsterNewMainEquipment();
+	}
+}
+
+void UCharAnimInstance::OnFinishWeaponSwapping() {
+	auto owningActor = GetOwningActor();
+	if (owningActor && owningActor->GetComponentByClass<UEquipmentComponent>()) {
+
+		auto equipmentComponent = owningActor->GetComponentByClass<UEquipmentComponent>();
+
+		FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([equipmentComponent]
+			{
+				equipmentComponent->FinishSwapWeapon();
+			},
+			TStatId(), nullptr, ENamedThreads::GameThread);
+	}
 }

@@ -25,7 +25,7 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	float DoDamage(float multiplier, int damage, float impulseDamage = 500.0f, FRotator angleOfDamage = FRotator::ZeroRotator);
+	float DoDamage(float multiplier, int damage, float impulseDamage = 500.0f, FRotator angleOfDamage = FRotator::ZeroRotator, FVector locationOfDamage = FVector::ZeroVector);
 
 protected:
 	UFUNCTION() void OnDeathHandleCallback();

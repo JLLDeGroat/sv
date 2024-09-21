@@ -33,13 +33,15 @@ public:
 	void SetIsTakenDamage(bool val);
 	void SetIsAiActive(bool val);
 	void SetIsPickingUp(bool val);
+	void SetCharacterAnimState(ECharacterAnimState animState);
+
+	void SetIsSpawningFromGround(bool val);
 
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnGunFire();
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnFinishFire();
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnFinishFire_PostDelay();
 	FTimerHandle OnFinishFireHandle;
-
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnMeleeHit();
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnFinishMelee();
@@ -60,6 +62,16 @@ public:
 
 	void UpdateAnimPlayRate(float newRate);
 
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void SpawningFromGroundStartMovingUp();
+	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void SpawningFromGroundFinishMovingUp();
+	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void SpawningFromGroundAlterMovingUpSpeed(float speed);
+
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnHolsterCurrentWeapon();
+	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnUnHolsterNewWeapon();
+	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnFinishWeaponSwapping();
+
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) float Speed;
@@ -67,6 +79,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsAttacking;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsThrowing;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) EAttackType AttackType;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) ECharacterAnimState CharacterAnimState;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) float AnimPlayRate;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsCrouching;
@@ -76,6 +89,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsAiActive;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsPickingUp;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bSpawningFromGround;
 
 private:
 

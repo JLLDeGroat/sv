@@ -7,6 +7,7 @@
 #include "../../Characters/Components/EquipmentComponent.h"
 #include "../../Characters/Components/HealthAndStatusWidgetComponent.h"
 #include "../../Characters/Components/ThrowableComponent.h"
+#include "../../Characters/Components/CharacterCaptureComponent.h"
 #include "../../Equipment/Components/EquipmentDetailsComponent.h"
 #include "../../Equipment/Equipment.h"
 #include "../SvUtilities.h"
@@ -51,6 +52,10 @@ void ACharacterSpawnerActor::BeginPlay()
 				equipmentComponent->EquipPrimary(GunType);
 			}
 
+			if (SecondaryGunType != EGun::INVALID && equipmentComponent) {
+				equipmentComponent->EquipSecondary(SecondaryGunType);
+			}
+
 			auto characterDetails = actor->GetComponentByClass<UCharacterDetailsComponent>();
 			if (!characterDetails)
 				return UDebugMessages::LogError(this, "could not get character details");
@@ -64,7 +69,7 @@ void ACharacterSpawnerActor::BeginPlay()
 
 			if (characterDetails->GetCharacterControl() == ECharacterControl::CC_Player) {
 				auto gameInstance = USvUtilities::GetGameInstance(GetWorld());
-				
+
 				if (gameInstance) {
 					auto currentGameDataManager = gameInstance->GetCurrentGameDataManager();
 					if (!currentGameDataManager)
@@ -74,6 +79,11 @@ void ACharacterSpawnerActor::BeginPlay()
 					if (currentGameData) {
 						auto memberId = currentGameData->AddCrewMember(characterDetails->GetCharacterName(), "", "", characterDetails->GetHealth(), characterDetails->GetMaxHealth());
 						characterDetails->SetCharacterId(memberId);
+
+						auto crewAmount = currentGameData->GetCrew().Num();
+						auto captureComponent = actor->GetComponentByClass<UCharacterCaptureComponent>();
+						if (captureComponent)
+							captureComponent->SetToRenderTargetNumber(crewAmount);
 
 						if (GrenadeAmount > 0) {
 							for (int i = 0; i < GrenadeAmount; i++) {
@@ -91,6 +101,13 @@ void ACharacterSpawnerActor::BeginPlay()
 						auto primary = equipmentComponent->GetPrimaryEquipment();
 						auto primaryEquipment = primary->GetComponentByClass<UEquipmentDetailsComponent>();
 						primaryEquipment->SetEquipmentId(gunId);
+					}
+
+					if (SecondaryGunType != EGun::INVALID) {
+						auto gunId = currentGameData->AddSecondaryToCrew(SecondaryGunType);
+						auto secondary = equipmentComponent->GetSecondaryEquipment();
+						auto secondaryEquipment = secondary->GetComponentByClass<UEquipmentDetailsComponent>();
+						secondaryEquipment->SetEquipmentId(gunId);
 					}
 				}
 			}

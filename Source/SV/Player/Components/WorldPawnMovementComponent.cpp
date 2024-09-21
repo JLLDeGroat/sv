@@ -11,10 +11,12 @@
 #include "../../GameModes/WorldGameMode.h"
 #include "../../GameModes/WorldManagers/WorldDirectionManager.h"
 #include "../../Delegates/WorldDelegates.h"
+#include "../../Characters/Anim/WorldCharAnimInstance.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 
 // Sets default values for this component's properties
-UWorldPawnMovementComponent::UWorldPawnMovementComponent()
+UWorldPawnMovementComponent::UWorldPawnMovementComponent(const FObjectInitializer& ObjectInitializer)
+	: UAnimAccessComponent(ObjectInitializer)
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -44,7 +46,7 @@ void UWorldPawnMovementComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	FRotator newRotation = GetOwner()->GetActorRotation();
 	FRotator requiredRotation = newRotation;
 
-	newLocation = UKismetMathLibrary::VInterpTo_Constant(GetOwner()->GetActorLocation(), MovementLocation, DeltaTime, 300);
+	newLocation = UKismetMathLibrary::VInterpTo_Constant(GetOwner()->GetActorLocation(), MovementLocation, DeltaTime, 50);
 	requiredRotation = UGridUtilities::FindLookAtRotation(newLocation, MovementLocation);
 	newRotation = UKismetMathLibrary::RInterpTo_Constant(GetOwner()->GetActorRotation(), requiredRotation, DeltaTime, 500);
 	newRotation.Pitch = GetOwner()->GetActorRotation().Pitch;
@@ -82,6 +84,7 @@ void UWorldPawnMovementComponent::TickComponent(float DeltaTime, ELevelTick Tick
 		if (!worldDelegates)
 			return UDebugMessages::LogError(this, "failed to get world delegates");
 
+		WorldAnimInstance->SetIsMoving(false);
 		worldDelegates->_OnWorldMovementComplete.Broadcast(newGridLocation);
 	}
 }
@@ -90,4 +93,5 @@ void UWorldPawnMovementComponent::TickComponent(float DeltaTime, ELevelTick Tick
 void UWorldPawnMovementComponent::MoveToNewLocation(FVector gridSpot) {
 	SetComponentTickEnabled(true);
 	MovementLocation = gridSpot;
+	WorldAnimInstance->SetIsMoving(true);
 }

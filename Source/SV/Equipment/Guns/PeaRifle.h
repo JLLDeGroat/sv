@@ -21,7 +21,6 @@ class SV_API APeaRifle : public AEquipment
 public:
 
 	APeaRifle(const FObjectInitializer& ObjectInitializer);
-
 	virtual void SetupAttachVector() override;
 
 protected:

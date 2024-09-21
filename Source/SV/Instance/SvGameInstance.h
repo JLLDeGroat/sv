@@ -15,9 +15,10 @@ class URouteDataManager;
 class ULevelGenerationManager;
 class UMissionDetailsManager;
 class UCurrentGameDataManager;
-/**
- * 
- */
+class USupplyDataManager;
+class UWeaponDataManager;
+class UThrowableDataManager;
+
 UCLASS()
 class SV_API USvGameInstance : public UGameInstance
 {
@@ -27,21 +28,20 @@ public:
 	USvGameInstance();
 
 	void GetSkillDataItem(FString name, FSkillDataItem& dataItem);
-	void GetThrowableDataItem(EThrowable throwable, FThrowableDataItem& item);
 	void GetGameTypeDescription(EGameModeType gameMode, FGameTypeDescriptionItem& item);
 
 	URouteDataManager* GetRouteDataManager();
 
-
 	//gets data loaded from file, all names/last names and bios
 	FCrewMemberData* GetPossibleCrewData();
-
 	UMissionDetailsManager* GetMissionDetailsManager();
 	UCurrentGameDataManager* GetCurrentGameDataManager();
+	USupplyDataManager* GetSupplyDataManager();
+	UWeaponDataManager* GetWeaponDataManager();
+	UThrowableDataManager* GetThrowableDataManager();
 protected:
 
 	UPROPERTY() FSkillData SkillData;
-	UPROPERTY() FThrowableData ThrowableData;
 	UPROPERTY() FGameTypeDescriptions GameTypeDescriptions;
 	UPROPERTY() FCrewMemberData CrewMemberData;
 
@@ -55,4 +55,7 @@ private:
 	UPROPERTY() ULevelGenerationManager* LevelGenManager;
 	UPROPERTY() UMissionDetailsManager* MissionManager;
 	UPROPERTY() UCurrentGameDataManager* CurrentGameDataManager;
+	UPROPERTY() USupplyDataManager* SupplyDataManager;
+	UPROPERTY() UWeaponDataManager* WeaponDataManager;
+	UPROPERTY() UThrowableDataManager* ThrowableDataManager;
 };

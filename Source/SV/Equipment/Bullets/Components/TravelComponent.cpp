@@ -44,3 +44,7 @@ void UTravelComponent::StartTravel(FVector location) {
 	SetComponentTickEnabled(true);
 }
 
+void UTravelComponent::EndTravel() {
+	SetComponentTickEnabled(false);
+}
+

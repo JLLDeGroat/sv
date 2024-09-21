@@ -112,7 +112,7 @@ void UTargetDetailsWidget::OnTargetIconClicked(FGuid Id, FVector Location) {
 void UTargetDetailsWidget::HideOrReset() {
 	OnClearTargetData();
 }
-#pragma optimize("", off)
+
 void UTargetDetailsWidget::CycleTarget() {
 	auto playerController = GetWorld()->GetFirstPlayerController<AGamePlayerController>();
 	if (!playerController)
@@ -209,7 +209,7 @@ void UTargetDetailsWidget::CycleTarget() {
 		}
 	}
 }
-#pragma optimize("", off)
+
 UVerticalBox* UTargetDetailsWidget::GetDetailsBox() const {
 	auto verticalBoxWidget = GetWidgetFromName("TargetDataBox");
 	if (verticalBoxWidget->IsA<UVerticalBox>())

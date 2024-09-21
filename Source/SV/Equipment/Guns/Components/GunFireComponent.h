@@ -35,5 +35,7 @@ private:
 
 	UPROPERTY() UStaticMeshComponent* GunFireStartMesh;
 	UPROPERTY() FString GunFireStartSocketName;
+
+	UPROPERTY() FRandomStream Random;
 		
 };

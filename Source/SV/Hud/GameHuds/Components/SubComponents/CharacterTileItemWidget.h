@@ -7,9 +7,9 @@
 #include "CharacterTileItemWidget.generated.h"
 
 class UWidgetAnimation;
-/**
- *
- */
+class UButton;
+class UImage; 
+
 UCLASS()
 class SV_API UCharacterTileItemWidget : public UUserWidget
 {
@@ -23,6 +23,8 @@ public:
 	AActor* GetRepresentedActor();
 
 	UFUNCTION() void SimulateOnCharacterButtonClicked(AActor* actor);
+
+	void UpdateCameraCallback();
 protected:
 
 	UFUNCTION() void OnCharacterButtonClicked();
@@ -35,7 +37,13 @@ protected:
 
 	UFUNCTION() void Deactivate();
 
+	UPROPERTY(meta = (BindWidget)) UButton* CharacterButton;
+	UPROPERTY(meta = (BindWidget)) UImage* CharacterImage;
+
 private:
+
+	FTimerHandle UpdateCameraHandle;
+	UPROPERTY() UTexture2D* CurrentCameraTexture;
 
 	UPROPERTY() bool Activating;
 	UPROPERTY() bool Activated;

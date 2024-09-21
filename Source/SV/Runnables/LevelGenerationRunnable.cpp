@@ -7,7 +7,7 @@
 #include "Generations/LevelIndex/TwoBuildingsLevel.h"
 
 
-#pragma optimize("", off)
+
 ULevelGenerationRunnable* ULevelGenerationRunnable::InsertVariables(ELevelGenType levelGen) {
 	GenType = levelGen;
 	return this;
@@ -40,4 +40,4 @@ void ULevelGenerationRunnable::ActivateThread() {
 		->Setup(GetWorld(), RandomStream)
 		->GenerateLevel();
 }
-#pragma optimize("", on)
+

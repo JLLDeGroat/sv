@@ -19,6 +19,7 @@ class UAnimSpeedComponent;
 class UHealthAndStatusWidgetComponent;
 class UAIComponent;
 class UDropResourceComponent;
+class USpawnInComponent;
 /**
  * 
  */
@@ -62,4 +63,5 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UHealthAndStatusWidgetComponent* HealthAndStatusComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UAIComponent* AiComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UDropResourceComponent* DropResourceComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) USpawnInComponent* SpawnInComponent;
 };

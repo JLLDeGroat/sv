@@ -17,7 +17,7 @@ public:
 	UTravelComponent();
 
 	void StartTravel(FVector location);
-
+	void EndTravel();
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

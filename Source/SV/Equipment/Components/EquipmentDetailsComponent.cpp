@@ -8,11 +8,13 @@ UEquipmentDetailsComponent::UEquipmentDetailsComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 
-	BaseDamage = 1;
+	BaseDamageMaximum = 1;
+	BaseDamageMinimum = 1;
 	CritMultiplier = 1.0f;
 	bIsRange = false;
 	bIsMelee = false;
 	bIsPrimaryEquipment = false;
+	bIsSecondaryEquipment = false;
 	Accuracy = 500;
 	AccuracyDecay = 1;
 	MaxAccuracyDeviation = 75;
@@ -46,11 +48,18 @@ void UEquipmentDetailsComponent::SetIsRange(bool val) {
 	bIsRange = val;
 }
 
-int UEquipmentDetailsComponent::GetBaseDamage() const {
-	return BaseDamage;
+int UEquipmentDetailsComponent::GetMinBaseDamage() const {
+	return BaseDamageMinimum;
 }
-void UEquipmentDetailsComponent::SetBaseDamage(int amount) {
-	BaseDamage = amount;
+void UEquipmentDetailsComponent::SetMinBaseDamage(int amount) {
+	BaseDamageMinimum = amount;
+}
+
+int UEquipmentDetailsComponent::GetMaxBaseDamage() const {
+	return BaseDamageMaximum;
+}
+void UEquipmentDetailsComponent::SetMaxBaseDamage(int amount) {
+	BaseDamageMaximum = amount;
 }
 
 float UEquipmentDetailsComponent::GetCritMultiplier() const {
@@ -79,6 +88,13 @@ bool UEquipmentDetailsComponent::GetCanOverwatch() {
 }
 void UEquipmentDetailsComponent::SetCanOverwatch(bool val) {
 	bCanOverwatch = val;
+}
+
+void UEquipmentDetailsComponent::SetIsSecondaryEquipment(bool val) {
+	bIsSecondaryEquipment = val;
+}
+bool UEquipmentDetailsComponent::GetIsSecondaryEquipment() {
+	return bIsSecondaryEquipment;
 }
 
 void UEquipmentDetailsComponent::SetIsPrimaryEquipment(bool val) {
@@ -155,4 +171,11 @@ void UEquipmentDetailsComponent::SetEquipmentId(FGuid id) {
 }
 FGuid UEquipmentDetailsComponent::GetEquipmentId() {
 	return EquipmentId;
+}
+
+EAttachType UEquipmentDetailsComponent::GetHolsterAttachType() {
+	return HolsterType;
+}
+void UEquipmentDetailsComponent::SetHolsterAttachType(EAttachType attachType) {
+	HolsterType = attachType;
 }

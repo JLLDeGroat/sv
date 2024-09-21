@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 /**
- * 
+ *
  */
 class SV_API EConfigurationEnums
 {
@@ -22,6 +22,18 @@ UENUM(BlueprintType)
 enum class EGameModeType : uint8 {
 	INVALID = 0,
 	EMT_Classic = 1,
+};
+
+
+
+
+UENUM(BlueprintType)
+enum class EStockCategory : uint8 {
+	INVALID = 0,
+	SC_Primary,
+	SC_Secondary,
+	SC_Throwable,
+	SC_Armour
 };
 
 

@@ -5,6 +5,7 @@
 #include "../../Utilities/SvUtilities.h"
 #include "../../Utilities/GridUtilities.h"
 #include "../../Instance/SvGameInstance.h"
+#include "../../Instance/Managers/ThrowableDataManager.h"
 #include "../Anim/CharAnimInstance.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "../../Equipment/Throwable/Grenade.h"
@@ -78,9 +79,9 @@ void UThrowableComponent::AddThrowable(EThrowable throwable, int amount, FGuid t
 	}
 
 	auto instance = USvUtilities::GetGameInstance(GetOwner()->GetWorld());
-	FThrowableDataItem dataItem;
-	instance->GetThrowableDataItem(throwable, dataItem);
-	Throwables.Emplace(FThrowable(dataItem, 1, thrownId));
+	auto throwableData = instance->GetThrowableDataManager();
+	auto dataItem = throwableData->GetThrowableData()->GetThrowableByType(throwable);
+	Throwables.Emplace(FThrowable(*dataItem, 1, thrownId));
 }
 
 void UThrowableComponent::ThrowAtLocation(FVector location) {
@@ -96,9 +97,9 @@ void UThrowableComponent::AddThrowableToPreviouslyThrown(EThrowable throwable, i
 	}
 
 	auto instance = USvUtilities::GetGameInstance(GetOwner()->GetWorld());
-	FThrowableDataItem dataItem;
-	instance->GetThrowableDataItem(throwable, dataItem);
-	PreviouslyThrownThrowables.Emplace(FThrowable(dataItem, 1, thrownId));
+	auto throwableData = instance->GetThrowableDataManager();
+	auto dataItem = throwableData->GetThrowableData()->GetThrowableByType(throwable);
+	PreviouslyThrownThrowables.Emplace(FThrowable(*dataItem, 1, thrownId));
 }
 TArray<FThrowable> UThrowableComponent::GetPreviouslyThrownThrowables() {
 	return PreviouslyThrownThrowables;

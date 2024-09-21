@@ -26,8 +26,14 @@ protected:
 	UFUNCTION() void OnDestroyCallback();
 	FTimerHandle DestroyTimer;
 
+	void DisableBullet();
+
 private:
 
 	void AttemptToInitiateBulletSound();
+
+	FVector GetLocationToSpawnBulletHole(UStaticMeshComponent* hitMesh);
+
+	UPROPERTY() bool bIsDisabled;
 
 };

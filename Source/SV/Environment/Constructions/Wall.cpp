@@ -3,11 +3,12 @@
 
 #include "Wall.h"
 #include "Components/StaticMeshComponent.h"
+#include "../Components/EnvironmentDetailsComponent.h"
 #include "../../Utilities/SvUtilities.h"
 
-AWall::AWall(const FObjectInitializer& ObjectInitializer) 
+AWall::AWall(const FObjectInitializer& ObjectInitializer)
 	: AEnvironmentActor(ObjectInitializer) {
-	
+
 	WallMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	SetupEnvironmentMeshComponent(WallMeshComponent);
 
@@ -17,4 +18,7 @@ AWall::AWall(const FObjectInitializer& ObjectInitializer)
 	if (wallMesh) {
 		WallMeshComponent->SetStaticMesh(wallMesh);
 	}
+
+	DetailsComponent = CreateDefaultSubobject<UEnvironmentDetailsComponent>(TEXT("Details"));
+	DetailsComponent->SetThickness(1);
 }

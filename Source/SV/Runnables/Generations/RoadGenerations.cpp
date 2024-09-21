@@ -5,7 +5,7 @@
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "../../Environment/Natural/NaturalRoad.h"
 
-#pragma optimize("", off)
+
 
 URoadGenerations::URoadGenerations() {
 	MaxTotalIteraions = 3000;
@@ -175,4 +175,3 @@ TArray<FVector> URoadGenerations::GetAdjacentGridItems(FVector item) {
 	}
 	return result;
 }
-#pragma optimize("", on)

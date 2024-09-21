@@ -5,7 +5,7 @@
 #include "../../../World/WorldGridItemActor.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 
-#pragma optimize("", off)
+
 UBaseGenerations::UBaseGenerations() {
 
 }
@@ -344,4 +344,3 @@ TArray<FVector> UBaseGenerations::RemoveListFromList(TArray<FVector> bigList, TA
 }
 
 
-#pragma optimize("", on)

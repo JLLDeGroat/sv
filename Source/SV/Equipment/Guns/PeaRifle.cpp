@@ -26,7 +26,8 @@ APeaRifle::APeaRifle(const FObjectInitializer& ObjectInitializer) : AEquipment(O
 	GunFireComponent->SetMeshAndSocketName(GunMesh, "FireSocket");
 
 	EquipmentDetailsComponent->SetIsRange(true);
-	EquipmentDetailsComponent->SetBaseDamage(25);
+	EquipmentDetailsComponent->SetMinBaseDamage(13);
+	EquipmentDetailsComponent->SetMaxBaseDamage(37);
 	EquipmentDetailsComponent->SetAccuracy(500);
 	EquipmentDetailsComponent->SetAccuracyDecay(.075f);
 	EquipmentDetailsComponent->SetBaseAccuracy(.35f);
@@ -35,8 +36,9 @@ APeaRifle::APeaRifle(const FObjectInitializer& ObjectInitializer) : AEquipment(O
 	EquipmentDetailsComponent->SetGunType(EGun::G_PeaRifle);
 	EquipmentDetailsComponent->SetCanOverwatch(true);
 	EquipmentDetailsComponent->SetOverwatchApCost(2);
+	EquipmentDetailsComponent->SetHolsterAttachType(EAttachType::AT_Backpack);
 
-	AttachedVectorComponent->SetAttachedVectors(FVector(4, 2, 0), FRotator(0, 112.5, 182));
+	AttachedVectorComponent->SetAttachedVectors(FVector(4, 2, 1), FRotator(0, 112.5, -173));
 	AttachedVectorComponent->SetHolsteredVectors(FVector(0, 0, 0), FRotator(0, 100, 0));
 
 	MuzzleFlashComponent = CreateDefaultSubobject<UMuzzleFlashComponent>(TEXT("MuzzleFlash"));
@@ -49,6 +51,7 @@ APeaRifle::APeaRifle(const FObjectInitializer& ObjectInitializer) : AEquipment(O
 	LightAttachmentComponent->SetRelativeScale3D(FVector(.15f));
 	LightAttachmentComponent->SetRelativeRotation(FRotator(0, -90, 0));
 	LightAttachmentComponent->SetRelativeLocation(FVector(-2, 9, -2));
+	LightAttachmentComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void APeaRifle::SetupAttachVector() {

@@ -25,7 +25,7 @@ UExtractionAction::UExtractionAction(const FObjectInitializer& ObjectInitializer
 	:UBaseActionComponent(ObjectInitializer) {
 
 }
-#pragma optimize("", off)
+
 void UExtractionAction::DoAction() {
 	if (IsWithinValidControlLimiter()) {
 		ResetActionEffects();
@@ -93,4 +93,3 @@ void UExtractionAction::DoAction() {
 		}
 	}
 }
-#pragma optimize("", on)

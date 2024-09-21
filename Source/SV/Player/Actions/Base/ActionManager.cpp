@@ -13,6 +13,7 @@
 #include "../OverwatchAction.h"
 #include "../ExtractionAction.h"
 #include "../PickupAction.h"
+#include "../SwapWeaponAction.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 
 // Sets default values for this component's properties
@@ -33,6 +34,7 @@ UActionManager::UActionManager()
 	OverwatchComponent = CreateDefaultSubobject<UOverwatchAction>(TEXT("OverwatchAction"));
 	ExtractionComponent = CreateDefaultSubobject<UExtractionAction>(TEXT("ExtractionAction"));
 	PickupActionComponent = CreateDefaultSubobject<UPickupAction>(TEXT("PickupAction"));
+	SwapActionComponent = CreateDefaultSubobject<USwapWeaponAction>(TEXT("SwapAction"));
 }
 
 
@@ -87,6 +89,11 @@ void UActionManager::DoActionFromUI(EActionType actionType) {
 		ActivateToggleActionComponent->DoAction();
 	}
 	break;
+	case EActionType::AT_SwapWeapon:
+	{
+		SwapActionComponent->DoAction();
+	}
+	break;
 	default:
 	{
 		UDebugMessages::LogDisplay(this, "Failed to get an action");
@@ -122,4 +129,7 @@ UCycleTargetAction* UActionManager::GetCycleTargetAction() {
 }
 UOverwatchAction* UActionManager::GetOverwatchAction() {
 	return OverwatchComponent;
+}
+USwapWeaponAction* UActionManager::GetSwapWeaponAction() {
+	return SwapActionComponent;
 }

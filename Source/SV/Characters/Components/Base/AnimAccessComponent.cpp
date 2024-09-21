@@ -4,6 +4,8 @@
 #include "AnimAccessComponent.h"
 #include "../../BaseCharacter.h"
 #include "../../Anim/CharAnimInstance.h"
+#include "../../Anim/WorldCharAnimInstance.h"
+#include "../../../Player/WorldPawn.h"
 
 // Sets default values for this component's properties
 UAnimAccessComponent::UAnimAccessComponent(const FObjectInitializer& ObjectInitializer)
@@ -22,6 +24,11 @@ void UAnimAccessComponent::BeginPlay()
 	ABaseCharacter* character = Cast<ABaseCharacter>(GetOwner());
 	if (character)
 		AnimInstance = Cast<UCharAnimInstance>(character->GetMesh()->GetAnimInstance());
+
+	AWorldPawn* worldPawn = Cast<AWorldPawn>(GetOwner());
+	if (worldPawn)
+		WorldAnimInstance = Cast<UWorldCharAnimInstance>(worldPawn->GetSkeleMeshComponent()->GetAnimInstance());
+
 }
 
 

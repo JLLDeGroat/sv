@@ -8,7 +8,7 @@
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "Behaviours/AIMeleeAttack.h"
 
-#pragma optimize("", off)
+
 void UPostMoveChecker::ActivateThread() {
 	Super::ActivateThread();
 
@@ -39,4 +39,3 @@ void UPostMoveChecker::ActivateThread() {
 	SetCheckerHasCompleted();
 	UDebugMessages::LogDisplay(this, "Ending Post Move");
 }
-#pragma optimize("", on)

@@ -8,7 +8,7 @@
 #include "HitCapsuleComponent.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class SV_API UHitCapsuleComponent : public UCapsuleComponent, public IHitComponent
@@ -20,10 +20,14 @@ public:
 	UHitCapsuleComponent(const FObjectInitializer& ObjectInitializer);
 
 	void SetHitDimageMultiplier(float value);
+	void SetThickness(int thickness);
 
 	virtual FVector GetWorldLocation() override;
 	virtual float GetHitDamageMultiplier() override;
+	virtual int GetThickness() override;
+
 private:
 
 	UPROPERTY() float DamageMultiplier;
+	UPROPERTY() int Thickness;
 };

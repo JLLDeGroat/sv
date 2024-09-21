@@ -25,6 +25,11 @@ public:
 	void SetGunShotFrom(AActor* gun);
 	AActor* GetGunShotFrom();
 
+	int GetPenetrationAbility();
+	void SetPenetrationAbility(int ability);
+
+	void RemoveFromPenetrationAbility(int amount);
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -40,5 +45,7 @@ private:
 	UPROPERTY() int BaseImpulse;
 
 	UPROPERTY() AActor* GunShotFrom;
+
+	UPROPERTY() int PenetrationAbility;
 		
 };

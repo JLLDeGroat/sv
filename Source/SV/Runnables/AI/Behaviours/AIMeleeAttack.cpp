@@ -40,14 +40,14 @@ void UAIMeleeAttack::DoBehaviour() {
 
 			if (!bestEquipment && currentAttackerDetails->GetActionPoints() >= equipmentDetails->GetApCost()) {
 				bestEquipment = meleeEquipment[i];
-				bestEquipmentAttack = equipmentDetails->GetBaseDamage();
+				bestEquipmentAttack = FMath::RandRange(equipmentDetails->GetMinBaseDamage(), equipmentDetails->GetMaxBaseDamage());
 				continue;
 			}
 
 			if (bestEquipment && currentAttackerDetails->GetActionPoints() >= equipmentDetails->GetApCost()) {
-				if (equipmentDetails->GetBaseDamage() > bestEquipmentAttack) {
+				if (equipmentDetails->GetMaxBaseDamage() > bestEquipmentAttack) {
 					bestEquipment = meleeEquipment[i];
-					bestEquipmentAttack = equipmentDetails->GetBaseDamage();
+					bestEquipmentAttack = FMath::RandRange(equipmentDetails->GetMinBaseDamage(), equipmentDetails->GetMaxBaseDamage());
 					continue;
 				}
 			}

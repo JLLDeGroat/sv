@@ -25,6 +25,12 @@ enum class ECharacterControl : uint8 {
 	CC_Player = 2
 };
 
+UENUM(BlueprintType)
+enum class ECharacterAnimState : uint8 {
+	INVALID = 0,
+	AS_AR = 1,
+	AS_PISTOL = 2
+};
 
 UENUM(BlueprintType)
 enum class EAttackType : uint8 {
@@ -73,5 +79,6 @@ enum class EActionType :uint8 {
 	AT_Overwatch = 5,
 	AT_Extract = 6,
 	AT_Pickup = 7,
-	AT_Interact = 8
+	AT_Interact = 8,
+	AT_SwapWeapon = 9,
 };

@@ -38,6 +38,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateMainObjectiveText, FString, T
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateSubObjectiveOneText, FString, Text);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateSubObjectiveTwoText, FString, Text);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnResourceChange, EResourceType, ResourceType);
 
 
 /**
@@ -83,4 +84,6 @@ public:
 	FUpdateMainObjectiveText _UpdateMainObjectiveText;
 	FUpdateSubObjectiveOneText _UpdateSubObjectiveOneText;
 	FUpdateSubObjectiveTwoText _UpdateSubObjectiveTwoText;
+
+	FOnResourceChange _OnResourceChange;
 };

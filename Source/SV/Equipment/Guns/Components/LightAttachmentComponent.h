@@ -9,15 +9,20 @@
 class USpotLightComponent;
 
 /**
- * 
+ *
  */
 UCLASS()
 class SV_API ULightAttachmentComponent : public UStaticMeshComponent
 {
 	GENERATED_BODY()
-	
+
 public:
 	ULightAttachmentComponent();
+
+	virtual void BeginPlay() override;
+
+	void SwitchOn();
+	void SwitchOff();
 
 protected:
 

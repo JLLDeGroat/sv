@@ -12,13 +12,15 @@
 #include "Managers/LevelGenerationManager.h"
 #include "Managers/MissionDetailsManager.h"
 #include "Managers/CurrentGameDataManager.h"
+#include "Managers/SupplyDataManager.h"
+#include "Managers/WeaponDataManager.h"
+#include "Managers/ThrowableDataManager.h"
 
 USvGameInstance::USvGameInstance() {
 
 	FString skillStringData;
 
 	ReadFile("Base/sv_sd", &SkillData);
-	ReadFile("Base/sv_td", &ThrowableData);
 	ReadFile("Base/sv_gtd", &GameTypeDescriptions);
 	ReadFile("Base/sv_cmd", &CrewMemberData);
 
@@ -26,6 +28,9 @@ USvGameInstance::USvGameInstance() {
 	LevelGenManager = NewObject<ULevelGenerationManager>();
 	MissionManager = NewObject<UMissionDetailsManager>();
 	CurrentGameDataManager = NewObject<UCurrentGameDataManager>();
+	SupplyDataManager = NewObject<USupplyDataManager>();
+	WeaponDataManager = NewObject<UWeaponDataManager>();
+	ThrowableDataManager = NewObject<UThrowableDataManager>();
 }
 
 void USvGameInstance::ReadModData(FString modName, FString& fileText) {
@@ -43,11 +48,6 @@ void USvGameInstance::ReadModData(FString modName, FString& fileText) {
 void USvGameInstance::GetSkillDataItem(FString name, FSkillDataItem& dataItem) {
 	auto foundDataItem = SkillData.GetItemByName(name);
 	dataItem = *foundDataItem;
-}
-
-void USvGameInstance::GetThrowableDataItem(EThrowable throwable, FThrowableDataItem& item) {
-	auto foundDataItem = ThrowableData.GetThrowableByType(throwable);
-	item = *foundDataItem;
 }
 
 void USvGameInstance::GetGameTypeDescription(EGameModeType gameMode, FGameTypeDescriptionItem& item) {
@@ -77,4 +77,14 @@ UMissionDetailsManager* USvGameInstance::GetMissionDetailsManager() {
 
 UCurrentGameDataManager* USvGameInstance::GetCurrentGameDataManager() {
 	return CurrentGameDataManager;
+}
+
+USupplyDataManager* USvGameInstance::GetSupplyDataManager() {
+	return SupplyDataManager;
+}
+UWeaponDataManager* USvGameInstance::GetWeaponDataManager() {
+	return WeaponDataManager;
+}
+UThrowableDataManager* USvGameInstance::GetThrowableDataManager() {
+	return ThrowableDataManager;
 }

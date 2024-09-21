@@ -7,6 +7,7 @@
 #include "Wall.generated.h"
 
 class UStaticMeshComponent;
+class UEnvironmentDetailsComponent;
 /**
  * 
  */
@@ -22,5 +23,7 @@ public:
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* WallMeshComponent;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UEnvironmentDetailsComponent* DetailsComponent;
 
 };

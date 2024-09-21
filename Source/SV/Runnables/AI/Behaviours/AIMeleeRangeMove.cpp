@@ -19,7 +19,7 @@ UAIMeleeRangeMove::UAIMeleeRangeMove(const FObjectInitializer& ObjectInitializer
 	:UBaseAIBehaviour(ObjectInitializer) {
 
 }
-#pragma optimize("", off)
+
 void UAIMeleeRangeMove::DoBehaviour() {
 	auto closestCharacter = GetAllCharacters()[0];
 
@@ -204,4 +204,3 @@ FVector UAIMeleeRangeMove::GetPointBetweenVectors(FVector StartVector, FVector E
 
 	return TargetVector;
 }
-#pragma optimize("", on)

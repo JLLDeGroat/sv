@@ -49,7 +49,7 @@ void AWorldGenerationActors::TwoBuildingLevel() {
 }
 
 
-#pragma optimize("", off)
+
 void AWorldGenerationActors::TearDownCurrentGen() {
 	auto actors = GetWorld()->GetCurrentLevel()->Actors;
 
@@ -98,4 +98,3 @@ void AWorldGenerationActors::DestroyAllDebugActors() {
 		}
 	}
 }
-#pragma optimize("", on)

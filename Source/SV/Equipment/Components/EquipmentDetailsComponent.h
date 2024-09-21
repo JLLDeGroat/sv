@@ -8,12 +8,12 @@
 #include "EquipmentDetailsComponent.generated.h"
 
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class SV_API UEquipmentDetailsComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	// Sets default values for this component's properties
 	UEquipmentDetailsComponent();
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -24,12 +24,15 @@ public:
 	bool GetIsRange() const;
 	void SetIsRange(bool val);
 
-	int GetBaseDamage() const;
-	void SetBaseDamage(int amount);
+	int GetMinBaseDamage() const;
+	void SetMinBaseDamage(int amount);
+
+	int GetMaxBaseDamage() const;
+	void SetMaxBaseDamage(int amount);
 
 	float GetCritMultiplier() const;
 	void SetCritMultiplier(float amount);
-	
+
 	void SetApCost(int amount);
 	int GetApCost() const;
 
@@ -41,6 +44,9 @@ public:
 
 	void SetIsPrimaryEquipment(bool val);
 	bool GetIsPrimaryEquipment();
+
+	void SetIsSecondaryEquipment(bool val);
+	bool GetIsSecondaryEquipment();
 
 	void SetAccuracy(float val);
 	float GetAccuracy();
@@ -73,6 +79,8 @@ public:
 	void SetEquipmentId(FGuid id);
 	FGuid GetEquipmentId();
 
+	EAttachType GetHolsterAttachType();
+	void SetHolsterAttachType(EAttachType attachType);
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -80,7 +88,8 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsRange;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsMelee;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) int BaseDamage;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) int BaseDamageMinimum;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) int BaseDamageMaximum;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) float CritMultiplier;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bCanOverwatch;
@@ -95,11 +104,13 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) float MaxAccuracyDeviation;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsPrimaryEquipment;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsSecondaryEquipment;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) int Rounds;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) int MaxRounds;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) EGun GunType;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) FGuid EquipmentId;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) EAttachType HolsterType;
 
 };

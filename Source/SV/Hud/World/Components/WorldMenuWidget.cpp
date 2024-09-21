@@ -36,16 +36,20 @@ void UWorldMenuWidget::NativeConstruct() {
 
 void UWorldMenuWidget::WorldMapClicked() {
 	CloseWorldPage("SquadPage");
+	CloseWorldPage("SupplyPage");
 	OpenWorldPage("WorldPage");
 }
 
 void UWorldMenuWidget::SquadClicked() {
-	OpenWorldPage("SquadPage");
+	CloseWorldPage("SupplyPage");
 	CloseWorldPage("WorldPage");
+	OpenWorldPage("SquadPage");
 }
 
 void UWorldMenuWidget::SuppliesClicked() {
-
+	CloseWorldPage("SquadPage");
+	CloseWorldPage("WorldPage");
+	OpenWorldPage("SupplyPage");
 }
 
 

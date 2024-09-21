@@ -13,19 +13,20 @@
 #include "../../../../Player/Components/PawnCameraComponent.h"
 #include "Animation/WidgetAnimation.h"
 #include "../../../../Delegates/HudDelegates.h"
+#include "../../../../Characters/Components/CharacterCaptureComponent.h"
+#include "Components/Image.h"
+#include "Kismet/KismetRenderingLibrary.h"
 
 void UCharacterTileItemWidget::NativeConstruct() {
 	Super::NativeConstruct();
 
-	auto button = UUserWidgetHelpers::GetButtonFromWidget(this, "CharacterButton");
-
-	if (!button)
+	if (!CharacterButton)
 		return UDebugMessages::LogError(this, "could not find character button");
 
-	button->OnClicked.AddDynamic(this, &UCharacterTileItemWidget::OnCharacterButtonClicked);
-	button->OnHovered.AddDynamic(this, &UCharacterTileItemWidget::OnHovered);
-	button->OnUnhovered.AddDynamic(this, &UCharacterTileItemWidget::OnUnhovered);
-		
+	CharacterButton->OnClicked.AddDynamic(this, &UCharacterTileItemWidget::OnCharacterButtonClicked);
+	CharacterButton->OnHovered.AddDynamic(this, &UCharacterTileItemWidget::OnHovered);
+	CharacterButton->OnUnhovered.AddDynamic(this, &UCharacterTileItemWidget::OnUnhovered);
+
 	auto hudDelegates = UHudDelegates::GetInstance();
 	if (!hudDelegates)
 		return UDebugMessages::LogError(this, "could not find hud delegates");
@@ -36,7 +37,17 @@ void UCharacterTileItemWidget::NativeConstruct() {
 
 void UCharacterTileItemWidget::SetRepresentedActor(AActor* actor) {
 	RepresentedActor = actor;
+	UpdateCameraCallback();
 }
+
+void UCharacterTileItemWidget::UpdateCameraCallback() {
+	auto captureComponent = RepresentedActor->GetComponentByClass<UCharacterCaptureComponent>();
+	if (captureComponent && CharacterImage) {
+		CurrentCameraTexture = captureComponent->ConvertRenderTargetToTexture2D();
+		CharacterImage->SetBrushFromTexture(CurrentCameraTexture);
+	}
+}
+
 AActor* UCharacterTileItemWidget::GetRepresentedActor() {
 	return RepresentedActor;
 }

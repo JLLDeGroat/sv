@@ -67,6 +67,9 @@ void UActionsComponent::SendActionsToUI() {
 				primaryEquipmentDetails->GetRounds() > 0)
 				hudDelegates->_AddActionIconToHud.Broadcast(EActionType::AT_Shoot, "F");
 		}
+
+		if (equipmentComponent->GetCanSwapWeapon())
+			hudDelegates->_AddActionIconToHud.Broadcast(EActionType::AT_SwapWeapon, ".");
 	}
 
 	auto activateToggleComponent = GetOwner()->GetComponentByClass<UActivateTogglesComponent>();

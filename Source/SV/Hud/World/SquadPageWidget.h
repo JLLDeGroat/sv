@@ -7,17 +7,17 @@
 #include "../../Interfaces/UI/WorldPage.h"
 #include "SquadPageWidget.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class SV_API USquadPageWidget : public UUserWidget, public IWorldPage
 {
 	GENERATED_BODY()
-	
+
 public:
 
 	virtual void NativeConstruct() override;
 	virtual void OpenPage() override;
+
+protected:
 
 };

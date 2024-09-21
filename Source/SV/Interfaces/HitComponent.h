@@ -23,8 +23,7 @@ class SV_API IHitComponent {
 public:
 
 	virtual FVector GetWorldLocation() = 0;
-
 	virtual float GetHitDamageMultiplier() = 0;
-
+	virtual int GetThickness() = 0;
 };
 

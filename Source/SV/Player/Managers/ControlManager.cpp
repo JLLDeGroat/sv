@@ -133,6 +133,15 @@ void UControlManager::OnUIItemUnhovered() {
 }
 
 void UControlManager::UpdateControlLimit(EControlLimit controlLimit) {
+	if (controlLimit == EControlLimit::CL_NONE) {
+		auto selectionManager = GetOwner()->GetComponentByClass<USelectionManager>();
+		if (!selectionManager)
+			return UDebugMessages::LogError(this, "failed to get selection manager");
+
+		//forces a re-tick
+		selectionManager->SetCurrentMousedLocation(FVector(-100, 0, 0));
+	}
+
 	ControlLimits = controlLimit;
 }
 EControlLimit UControlManager::GetControlLimit() {

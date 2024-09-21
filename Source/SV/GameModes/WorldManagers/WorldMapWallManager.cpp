@@ -109,4 +109,4 @@ bool UWorldMapWallManager::IsWithinRoute(FVector2D loc) {
 FVector UWorldMapWallManager::Make3DLocation(FVector2D loc) {
 	return FVector(loc.Y * Vector2DTo3DMultiplier, loc.X * Vector2DTo3DMultiplier, 0);
 }
-#pragma optimize("", on)
+

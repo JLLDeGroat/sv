@@ -96,6 +96,43 @@ protected:
 	UPROPERTY() FGuid Id;
 };
 
+USTRUCT()
+struct SV_API FCrewSecondaries
+{
+	GENERATED_BODY()
+public:
+	FCrewSecondaries() {
+		GunType = EGun::INVALID;
+		CrewMember = FGuid::FGuid();
+		Id = FGuid::FGuid();
+	}
+
+	FCrewSecondaries(EGun gun, FGuid guid = FGuid::FGuid()) {
+		GunType = gun;
+		CrewMember = guid;
+		Id = FGuid::NewGuid();
+	}
+
+	bool TryAssignMemberToId(FGuid memberId) {
+		if (CrewMember == FGuid::FGuid()) {
+			CrewMember = memberId;
+			return true;
+		}
+		return false;
+	}
+
+	void UnnasignMember() { CrewMember = FGuid::FGuid(); }
+
+	FGuid GetSecondaryId() const { return Id; }
+	FGuid GetCrewMemberId() const { return CrewMember; }
+	EGun GetSecondaryGunType() const { return GunType; }
+
+protected:
+	UPROPERTY() EGun GunType;
+	UPROPERTY() FGuid CrewMember;
+	UPROPERTY() FGuid Id;
+};
+
 
 USTRUCT()
 struct SV_API FToolItem
@@ -255,11 +292,45 @@ public:
 		return primary.GetPrimaryId();
 	}
 
+
 	TArray<FCrewPrimaries> GetCrewPrimaries() { return CrewPrimaries; }
 	FCrewPrimaries* GetCrewPrimary(FGuid crewId) {
 		for (int i = 0; i < CrewPrimaries.Num(); i++)
 			if (CrewPrimaries[i].GetCrewMemberId() == crewId)
 				return &CrewPrimaries[i];
+
+		return nullptr;
+	}
+#pragma endregion
+
+#pragma region Secondaries
+
+	bool AssignSecondaryToCrew(FGuid primary, FGuid member) {
+		for (int i = 0; i < CrewSecondaries.Num(); i++)
+			if (CrewSecondaries[i].GetPrimaryId() == primary)
+				return CrewSecondaries[i].TryAssignMemberToId(member);
+
+		return false;
+	}
+
+	void UnnassignSecondaryFromCrew(FGuid primary) {
+		for (int i = 0; i < CrewSecondaries.Num(); i++)
+			if (CrewSecondaries[i].GetPrimaryId() == primary)
+				CrewSecondaries[i].UnnasignMember();
+	}
+
+	FGuid AddSecondaryToCrew(EGun gunType) {
+		auto primary = FCrewPrimaries(gunType);
+		CrewSecondaries.Emplace(primary);
+		return primary.GetPrimaryId();
+	}
+
+
+	TArray<FCrewPrimaries> GetCrewSecondaries() { return CrewSecondaries; }
+	FCrewPrimaries* GetCrewSecondary(FGuid crewId) {
+		for (int i = 0; i < CrewSecondaries.Num(); i++)
+			if (CrewSecondaries[i].GetCrewMemberId() == crewId)
+				return &CrewSecondaries[i];
 
 		return nullptr;
 	}
@@ -355,6 +426,7 @@ protected:
 	UPROPERTY() TArray<FCrew> Crew;
 	UPROPERTY() TArray<FCrew> DeadCrew;
 	UPROPERTY() TArray<FCrewPrimaries> CrewPrimaries;
+	UPROPERTY() TArray<FCrewPrimaries> CrewSecondaries;
 	UPROPERTY() TArray<FCrewTools> CrewTools;
 
 	UPROPERTY() FCurrentMission CurrentMission;

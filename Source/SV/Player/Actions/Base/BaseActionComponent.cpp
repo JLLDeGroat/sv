@@ -13,6 +13,7 @@
 #include "../LeftClickAction.h"
 #include "../RightClickAction.h"
 #include "../../../Delegates/GameplayDelegates.h"
+#include "../../../Interfaces/Selectable.h"
 // Sets default values for this component's properties
 UBaseActionComponent::UBaseActionComponent(const FObjectInitializer& ObjectInitializer) : UActorComponent(ObjectInitializer)
 {
@@ -61,7 +62,13 @@ void UBaseActionComponent::GetTargetLocation(FHitResult& hit, FVector& targetLoc
 	collisionParams.AddObjectTypesToQuery(USvUtilities::GetEnvironmentChannel());
 	collisionParams.AddObjectTypesToQuery(USvUtilities::GetFloorTargetChannel());
 
+	auto selectionComponent = GetOwner()->GetComponentByClass<USelectionManager>();
+	if (!SelectionManager->GetSelected()) {
+		return UDebugMessages::LogError(this, "failed to get selected actor");
+	}
+
 	FCollisionQueryParams queryParams;
+	queryParams.AddIgnoredActor(SelectionManager->GetSelected()->GetAsActor());
 
 	GetWorld()->LineTraceSingleByObjectType(hit, cameraComp->GetComponentLocation(), targetLocation, collisionParams, queryParams);
 

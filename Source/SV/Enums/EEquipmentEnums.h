@@ -17,7 +17,8 @@ enum class EThrowable : uint8 {
 UENUM(BlueprintType)
 enum class EGun : uint8 {
 	INVALID = 0,
-	G_PeaRifle = 1
+	G_PeaRifle = 1,
+	G_UrfGun = 2,
 };
 
 
@@ -33,7 +34,8 @@ UENUM(BlueprintType)
 enum class EAttachType : uint8 {
 	INVALID = 0,
 	AT_Backpack,
-	AT_RightHand
+	AT_RightHand,
+	AT_RightHolster,
 };
 
 UENUM(BlueprintType)
