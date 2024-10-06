@@ -48,6 +48,9 @@ public:
 
 	void FireEquippedGun();
 	int GetActionPointsNeededToUseEquipment();
+
+	void TryActivateMainEquipment();
+	void TryDeactivateMainEquipment();
 private:
 	UPROPERTY() AEquipment* CurrentMainEquipment;
 	UPROPERTY() TArray<AEquipment*> Equipment;

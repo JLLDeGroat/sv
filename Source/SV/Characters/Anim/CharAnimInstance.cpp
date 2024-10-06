@@ -92,6 +92,29 @@ void UCharAnimInstance::SetIsHealingAlly(bool val) {
 	bIsHealingAlly = val;
 }
 
+void UCharAnimInstance::OnGunPreFireActivate() {
+	auto owningActor = GetOwningActor();
+	auto equipmentComponent = owningActor->GetComponentByClass<UEquipmentComponent>();
+	if (equipmentComponent)
+		FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([equipmentComponent]
+			{
+				//TODO assuming its a gun
+				equipmentComponent->TryActivateMainEquipment();
+			},
+			TStatId(), nullptr, ENamedThreads::GameThread);
+}
+void UCharAnimInstance::OnGunPostFireDeactivate() {
+	auto owningActor = GetOwningActor();
+	auto equipmentComponent = owningActor->GetComponentByClass<UEquipmentComponent>();
+	if (equipmentComponent)
+		FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([equipmentComponent]
+			{
+				//TODO assuming its a gun
+				equipmentComponent->TryDeactivateMainEquipment();
+			},
+			TStatId(), nullptr, ENamedThreads::GameThread);
+}
+
 void UCharAnimInstance::OnGunFire() {
 	auto owningActor = GetOwningActor();
 	auto equipmentComponent = owningActor->GetComponentByClass<UEquipmentComponent>();

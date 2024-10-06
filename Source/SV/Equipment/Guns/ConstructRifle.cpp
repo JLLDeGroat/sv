@@ -8,6 +8,7 @@
 #include "Components/GunFireComponent.h"
 #include "Components/MuzzleFlashComponent.h"
 #include "../Bullets/PlasmaBullet.h"
+#include "Components/GunActivationComponent.h"
 
 AConstructRifle::AConstructRifle(const FObjectInitializer& ObjectInitializer) : AEquipment(ObjectInitializer) {
 
@@ -114,4 +115,25 @@ AConstructRifle::AConstructRifle(const FObjectInitializer& ObjectInitializer) : 
 	MuzzleFlashComponent->SetupAttachment(CannonSectionComponent, FName("FireSocket"));
 
 	GunFireComponent->SetBulletClass(APlasmaBullet::StaticClass());
+
+	ActivationComponent = CreateDefaultSubobject<UGunActivationComponent>(TEXT("Activation"));
+
+	TArray<UStaticMeshComponent*> spinupMeshes;
+	spinupMeshes.Emplace(MidSectionComponent);
+	spinupMeshes.Emplace(MidSection2Component);
+	spinupMeshes.Emplace(MidSection3Component);
+	spinupMeshes.Emplace(MidSection4Component);
+	ActivationComponent->SetupForEngineSpinUpActivation(spinupMeshes);
+
+	MuzzleFlashComponent->SetFlashPelletColour(FLinearColor(FVector4(.75f, .11f, .56f, 1)));
+	MuzzleFlashComponent->SetMuzzleFlashColour(FLinearColor(FVector4(.75f, .11f, .56f, 1)));
+	MuzzleFlashComponent->SetMuzzleFlashSystem("/Script/Niagara.NiagaraSystem'/Game/Effects/Trails/PlasmaFlash_N.PlasmaFlash_N'");
+}
+
+void AConstructRifle::OnConstruction(const FTransform& Transform) {
+	Super::OnConstruction(Transform);
+
+	//MuzzleFlashComponent->SetVariableVec4(FName("MuzzleFlash"), FVector4(.75f, .11f, .56f, 1));
+	//auto flashComp = MuzzleFlashComponent->GetFlashHeatPelletComponent();
+	//flashComp->SetVariableVec4(FName("FlashColour"), FVector4(.75f, .11f, .56f, 1));
 }

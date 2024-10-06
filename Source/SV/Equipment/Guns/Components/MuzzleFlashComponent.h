@@ -10,12 +10,20 @@
  *
  */
 UCLASS()
-class SV_API UMuzzleFlashComponent : public UNiagaraComponent
+class SV_API UMuzzleFlashComponent : public USceneComponent
 {
 	GENERATED_BODY()
 public:
 	UMuzzleFlashComponent();
 	void ActivateMuzzleFlash();
+
+	void SetFlashPelletColour(FLinearColor colour);
+	void SetMuzzleFlashColour(FLinearColor colour);
+
+	void SetMuzzleFlashSystem(FString sys);
+
+	UNiagaraComponent* GetFlashHeatPelletComponent();
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UNiagaraComponent* FlashHeatPelletComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UNiagaraComponent* MuzzleFlashComponent;
 };

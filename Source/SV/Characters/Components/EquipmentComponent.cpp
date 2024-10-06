@@ -17,6 +17,7 @@
 #include "../../Equipment/Components/EquipmentDetailsComponent.h"
 #include "../../Equipment/Components/AttachedVectorComponent.h"
 #include "../Anim/CharAnimInstance.h"
+#include "../../Equipment/Guns/Components/GunActivationComponent.h"
 #include "../../Utilities/SvUtilities.h"
 
 // Sets default values for this component's properties
@@ -286,4 +287,21 @@ ECharacterAnimState UEquipmentComponent::GetAnimStateFromGunType(EGun gunType) {
 	}
 
 	return ECharacterAnimState::INVALID;
+}
+
+void UEquipmentComponent::TryActivateMainEquipment() {
+	if (CurrentMainEquipment) {
+		auto activationComp = CurrentMainEquipment->GetComponentByClass<UGunActivationComponent>();
+		if (activationComp) {
+			activationComp->ActivateGun();
+		}
+	}
+}
+void UEquipmentComponent::TryDeactivateMainEquipment() {
+	if (CurrentMainEquipment) {
+		auto activationComp = CurrentMainEquipment->GetComponentByClass<UGunActivationComponent>();
+		if (activationComp) {
+			activationComp->DeactivateGun();
+		}
+	}
 }

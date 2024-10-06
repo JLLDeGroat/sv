@@ -31,7 +31,7 @@ UAttackComponent::UAttackComponent(const FObjectInitializer& ObjectInitializer)
 
 void UAttackComponent::BeginPlay() {
 	Super::BeginPlay();
-	SetComponentTickInterval(false);
+	SetComponentTickEnabled(false);
 }
 
 void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {

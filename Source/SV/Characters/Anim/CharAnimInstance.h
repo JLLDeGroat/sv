@@ -40,6 +40,8 @@ public:
 	void SetIsHealingSelf(bool val);
 	void SetIsHealingAlly(bool val);
 
+	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnGunPreFireActivate();
+	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnGunPostFireDeactivate();
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnGunFire();
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnFinishFire();

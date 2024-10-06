@@ -10,6 +10,7 @@ class UStaticMeshComponent;
 class USceneComponent;
 class UGunFireComponent;
 class UMuzzleFlashComponent;
+class UGunActivationComponent;
 
 UCLASS()
 class SV_API AConstructRifle : public AEquipment
@@ -19,6 +20,8 @@ class SV_API AConstructRifle : public AEquipment
 public:
 
 	AConstructRifle(const FObjectInitializer& ObjectInitializer);
+
+	virtual void OnConstruction(const FTransform& Transform) override;
 
 protected:
 
@@ -36,4 +39,6 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UGunFireComponent* GunFireComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UMuzzleFlashComponent* MuzzleFlashComponent;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UGunActivationComponent* ActivationComponent;
 };

@@ -56,6 +56,9 @@ APeaRifle::APeaRifle(const FObjectInitializer& ObjectInitializer) : AEquipment(O
 	LightAttachmentComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	GunFireComponent->SetBulletClass(ABullet::StaticClass());
+
+	MuzzleFlashComponent->SetFlashPelletColour(FLinearColor(FVector4(.76f, .69f, .29f, 1)));
+	MuzzleFlashComponent->SetMuzzleFlashColour(FLinearColor(FVector4(.76f, .64f, .63f, 1)));
 }
 
 void APeaRifle::SetupAttachVector() {
