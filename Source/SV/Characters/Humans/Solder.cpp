@@ -24,6 +24,7 @@
 #include "../Components/HitCapsuleComponent.h"
 #include "../Components/DropResourceComponent.h"
 #include "../Components/CharacterCaptureComponent.h"
+#include "../Components/HealthKitsComponent.h"
 
 // Sets default values
 ASolder::ASolder(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(ObjectInitializer)
@@ -173,6 +174,8 @@ ASolder::ASolder(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(O
 	CharacterCaptureComponent->SetupAttachment(GetMesh(), FName("HeadSocket"));
 	CharacterCaptureComponent->SetRelativeRotation(FRotator(161, -90, 91));
 	CharacterCaptureComponent->SetRelativeLocation(FVector(-11, -9, -8));
+
+	HealthKitsComponent = CreateDefaultSubobject<UHealthKitsComponent>(TEXT("HealthKits"));
 }
 
 // Called when the game starts or when spawned

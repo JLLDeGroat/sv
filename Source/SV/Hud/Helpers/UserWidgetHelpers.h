@@ -38,6 +38,13 @@ public:
 
 	static UTexture2D* GetTextureForResourceType(EResourceType rType);
 
-	static void DesignButton(UUserWidget* widget, FString btnName);
-	static void DesignButton(UButton* btn);
+	static UTexture2D* GetRandomMissionImage();
+
+	static void DesignButton(UUserWidget* widget, FString btnName, int fontSize = 24);
+	static void DesignButton(UButton* btn, int fontSize = 24);
+	static void DesignButtonTextOnly(UButton* btn, int fontSize = 24);
+
+	static void SetButtonText(UButton* btn, FString text);
+
+	static void DesignText(UTextBlock* textBlock, int fontSize = 24);
 };

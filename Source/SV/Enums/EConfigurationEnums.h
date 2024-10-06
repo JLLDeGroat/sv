@@ -36,5 +36,11 @@ enum class EStockCategory : uint8 {
 	SC_Armour
 };
 
-
+UENUM(BlueprintType)
+enum class ETutorials : uint8 {
+	INVALID = 0,
+	T_WorldNavigation = 1,
+	T_EquipmentSelect = 2,
+	T_Supplies = 3
+};
 

@@ -65,3 +65,17 @@ void UAIComponent::Overlapped(UPrimitiveComponent* OverlappedComp, AActor* Other
 void UAIComponent::OnDelayFinished() {
 	AiActivationSphere->SetSphereRadius(Radius);
 }
+
+void UAIComponent::SetAttackRoute(EAIBehaviourAttackRoutes aRoute) {
+	AIAttackRoute = aRoute;
+}
+void UAIComponent::SetMovementRoute(EAIBehaviourMoveRoutes mRoute) {
+	AIMoveRoute = mRoute;
+}
+
+EAIBehaviourAttackRoutes UAIComponent::GetAttackRoute() {
+	return AIAttackRoute;
+}
+EAIBehaviourMoveRoutes UAIComponent::GetMovementRoute() {
+	return AIMoveRoute;
+}

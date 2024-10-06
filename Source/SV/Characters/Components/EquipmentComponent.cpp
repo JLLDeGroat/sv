@@ -6,6 +6,7 @@
 #include "AttackComponent.h"
 #include "../../Equipment/Guns/PeaRifle.h"
 #include "../../Equipment/Guns/UrfGun.h"
+#include "../../Equipment/Guns/ConstructRifle.h"
 #include "../../Equipment/Bullets/Bullet.h"
 #include "../../Equipment/Guns/Components/GunFireComponent.h"
 #include "../../Equipment/Guns/Components/LightAttachmentComponent.h"
@@ -45,14 +46,25 @@ void UEquipmentComponent::EquipPrimary(EGun gunType) {
 	case EGun::G_PeaRifle:
 		cls = APeaRifle::StaticClass();
 		break;
+	case EGun::G_ConstructRifle:
+		cls = AConstructRifle::StaticClass();
+		break;
 	}
 
 	if (!cls) return UDebugMessages::LogError(this, "Invalid primary set, will not attach primary");
 
 	auto gun = GetOwner()->GetWorld()->SpawnActor<AEquipment>(cls);
 	auto skeleMesh = GetOwner()->GetComponentByClass<USkeletalMeshComponent>();
+
+	auto gunDetailsComponent = gun->GetComponentByClass<UEquipmentDetailsComponent>();
+
 	if (skeleMesh) {
-		gun->AttachToComponent(skeleMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("RightHandSocket"));
+		/*gun->AttachToComponent(skeleMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("RightHandSocket"));*/
+		gun->AttachToComponent(skeleMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+			FName(USvUtilities::GetSocketNameFromAttachment(gunDetailsComponent->GetEquipSocket())));
+
+		if (gunDetailsComponent->GetRelativeScaleOnEquip() != FVector::ZeroVector)
+			gun->SetActorRelativeScale3D(gunDetailsComponent->GetRelativeScaleOnEquip());
 
 		auto attachVectors = gun->GetComponentByClass<UAttachedVectorComponent>();
 		if (attachVectors)
@@ -122,8 +134,10 @@ void UEquipmentComponent::FireEquippedGun() {
 		//assuming AR uses basic bullets
 		/*auto equipment = Equipment[0];*/
 		auto gunFire = CurrentMainEquipment->GetComponentByClass<UGunFireComponent>();
-		if (gunFire)
-			gunFire->FireAtLocation(attackComponent->GetCurrentTargetLocation(), attackComponent->GetCurrentAttackRandomRadius());
+		if (!gunFire)
+			return UDebugMessages::LogDisplay(this, "current main equipment has no gunfire component");
+
+		gunFire->FireAtLocation(attackComponent->GetCurrentTargetLocation(), attackComponent->GetCurrentAttackRandomRadius());
 	}
 }
 
@@ -236,7 +250,9 @@ void UEquipmentComponent::UnholsterNewMainEquipment() {
 	if (lightAttachment)
 		lightAttachment->SwitchOn();
 
-	AttachEquipmentToSocket(EAttachType::AT_RightHand, equipmentToUnholster);
+	auto equipmentDetails = equipmentToUnholster->GetComponentByClass<UEquipmentDetailsComponent>();
+
+	AttachEquipmentToSocket(equipmentDetails->GetEquipSocket(), equipmentToUnholster);
 }
 
 void UEquipmentComponent::AttachEquipmentToSocket(EAttachType attachmentType, AEquipment* equipment) {

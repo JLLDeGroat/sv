@@ -41,11 +41,11 @@ void UObjectivesWidget::UpdateTextItem(FString str, FString textName) {
 }
 
 void UObjectivesWidget::BeginDestroy() {
-	auto hudDelegates = UHudDelegates::GetInstance();
+	/*auto hudDelegates = UHudDelegates::GetInstance();
 	if (hudDelegates) {
 		hudDelegates->_UpdateMainObjectiveText.RemoveDynamic(this, &UObjectivesWidget::UpdateMainObjective);
 		hudDelegates->_UpdateSubObjectiveOneText.RemoveDynamic(this, &UObjectivesWidget::UpdateSecondaryObjective);
 		hudDelegates->_UpdateSubObjectiveTwoText.RemoveDynamic(this, &UObjectivesWidget::UpdateTertiaryObjective);
-	}
+	}*/
 	Super::BeginDestroy();
 }

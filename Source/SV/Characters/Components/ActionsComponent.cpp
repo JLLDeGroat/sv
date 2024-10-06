@@ -11,6 +11,7 @@
 #include "../../Delegates/HudDelegates.h"
 #include "../../Characters/Components/CharacterDetailsComponent.h"
 #include "../../Characters/Components/ActivateTogglesComponent.h"
+#include "../../Characters/Components/HealthKitsComponent.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 
 // Sets default values for this component's properties
@@ -86,6 +87,16 @@ void UActionsComponent::SendActionsToUI() {
 	auto throwableComponent = GetOwner()->GetComponentByClass<UThrowableComponent>();
 	if (throwableComponent && throwableComponent->GetThrowableAmount(EThrowable::T_Grenade))
 		hudDelegates->_AddActionIconToHud.Broadcast(EActionType::AT_Grenade, "G");
+
+	auto healthKitsComponent = GetOwner()->GetComponentByClass<UHealthKitsComponent>();
+	if (healthKitsComponent) {
+		if (healthKitsComponent->GetHealthKitAmounts(EHealthKits::HK_Basic))
+			hudDelegates->_AddActionIconToHud.Broadcast(EActionType::AT_BasicHealthKit, "");
+
+		if (healthKitsComponent->GetHealthKitAmounts(EHealthKits::HK_Large))
+			hudDelegates->_AddActionIconToHud.Broadcast(EActionType::AT_LargeHealthKit, "");
+	}
+
 
 	if (bCanExtract) {
 		hudDelegates->_AddActionIconToHud.Broadcast(EActionType::AT_Extract, "E");

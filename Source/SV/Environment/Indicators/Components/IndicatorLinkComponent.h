@@ -19,7 +19,11 @@ public:
 	void SetPickupIndicatingTo(AActor* actor);
 	AActor* GetPickupIndicatingTo();
 
+	void SetToolIndicatingTo(AActor* actor);
+	AActor* GetToolIndicatingTo();
+
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) AActor* PickupIndicatingTo;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) AActor* ToolIndicatingTo;
 };

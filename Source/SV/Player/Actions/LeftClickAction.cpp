@@ -16,16 +16,20 @@
 #include "../../Characters/Components/AttackComponent.h"
 #include "../../Characters/Components/ThrowableComponent.h"
 #include "../../Characters/Components/ActionsComponent.h"
+#include "../../Characters/Components/HealthKitsComponent.h"
 #include "../../Interfaces/SvChar.h"
 #include "../../Interfaces/Selectable.h"
 #include "../../Equipment/Equipment.h"
 #include "../../Equipment/Components/EquipmentDetailsComponent.h"
+#include "../../Environment/Indicators/Components/IndicatorLinkComponent.h"
 #include "../Components/WorldPawnMovementComponent.h"
 #include "../../GameModes/WorldGameMode.h"
 #include "../../GameModes/WorldManagers/WorldDirectionManager.h"
 #include "../../Delegates/HudDelegates.h"
+#include "../../Delegates/TutorialDelegates.h"
 #include "TargetAction.h"
 #include "OverwatchAction.h"
+#include "HealthKitUseComponent.h"
 
 // Sets default values for this component's properties
 ULeftClickAction::ULeftClickAction(const FObjectInitializer& ObjectInitializer) : UBaseActionComponent(ObjectInitializer)
@@ -38,6 +42,7 @@ ULeftClickAction::ULeftClickAction(const FObjectInitializer& ObjectInitializer) 
 	ValidCameraStates.Emplace(ECameraState::CS_GunTarget);
 	ValidCameraStates.Emplace(ECameraState::CS_ThrowTarget);
 	ValidCameraStates.Emplace(ECameraState::CS_Overwatch);
+	ValidCameraStates.Emplace(ECameraState::CS_ToolUsage);
 	// ...
 }
 
@@ -74,51 +79,56 @@ void ULeftClickAction::DoAction() {
 			return UDebugMessages::LogError(this, "failed to get hud delegates, cannot do left click action");
 
 		if (pawnCameraComponent->GetCurrentCameraState() == ECameraState::CS_GunTarget) {
-			auto targetLocation = FVector::ZeroVector;
-			FHitResult TestHit;
-			GetTargetLocation(TestHit, targetLocation, pawnCamera);
+			WhileGunTargetActive(pawnCameraComponent, pawnCamera, pawnOverlapCameraComponent, controller, hudDelegates);
+			//auto targetLocation = FVector::ZeroVector;
+			//FHitResult TestHit;
+			//GetTargetLocation(TestHit, targetLocation, pawnCamera);
 
-			pawnOverlapCameraComponent->ShrinkOverlapComponent();
-			//DrawDebugLine(GetWorld(), pawnCamera->GetComponentLocation(), targetLocation, FColor::Cyan, false, 60.0f, 0, 5);
+			//pawnOverlapCameraComponent->ShrinkOverlapComponent();
+			////DrawDebugLine(GetWorld(), pawnCamera->GetComponentLocation(), targetLocation, FColor::Cyan, false, 60.0f, 0, 5);
 
-			hudDelegates->_AimTargetVisibility.Broadcast(false);
+			//hudDelegates->_AimTargetVisibility.Broadcast(false);
 
-			auto selected = SelectionManager->GetSelected();
-			auto actor = selected->GetAsActor();
-			auto targetingComponent = actor->GetComponentByClass<UTargetingComponent>();
-			if (selected && targetingComponent) {
-				auto currentTargetData = targetingComponent->GetCurrentMainTarget();
+			//auto selected = SelectionManager->GetSelected();
+			//auto actor = selected->GetAsActor();
+			//auto targetingComponent = actor->GetComponentByClass<UTargetingComponent>();
+			//if (selected && targetingComponent) {
+			//	auto currentTargetData = targetingComponent->GetCurrentMainTarget();
 
-				auto equipmentComponent = actor->GetComponentByClass<UEquipmentComponent>();
-				auto detailsComponent = actor->GetComponentByClass<UCharacterDetailsComponent>();
+			//	auto equipmentComponent = actor->GetComponentByClass<UEquipmentComponent>();
+			//	auto detailsComponent = actor->GetComponentByClass<UCharacterDetailsComponent>();
 
-				auto equipment = equipmentComponent->GetPrimaryEquipment();
+			//	auto equipment = equipmentComponent->GetPrimaryEquipment();
 
-				if (!equipmentComponent || !detailsComponent || !equipment)
-					return UDebugMessages::LogError(this, "could not get equipment or details component, will not begin try attack");
+			//	if (!equipmentComponent || !detailsComponent || !equipment)
+			//		return UDebugMessages::LogError(this, "could not get equipment or details component, will not begin try attack");
 
-				auto equipmentDetails = equipment->GetComponentByClass<UEquipmentDetailsComponent>();
+			//	auto equipmentDetails = equipment->GetComponentByClass<UEquipmentDetailsComponent>();
 
-				if (!equipmentDetails)
-					return UDebugMessages::LogError(this, "could not get equipment details component");
+			//	if (!equipmentDetails)
+			//		return UDebugMessages::LogError(this, "could not get equipment details component");
 
-				equipmentDetails->RemoveFromRounds(1);
-				detailsComponent->RemoveActionPoints(equipmentComponent->GetActionPointsNeededToUseEquipment());
+			//	equipmentDetails->RemoveFromRounds(1);
+			//	detailsComponent->RemoveActionPoints(equipmentComponent->GetActionPointsNeededToUseEquipment());
 
-				auto attackComponent = selected->GetAsActor()->GetComponentByClass<UAttackComponent>();
+			//	auto attackComponent = selected->GetAsActor()->GetComponentByClass<UAttackComponent>();
 
-				auto targetAction = controller->GetComponentByClass<UTargetAction>();
-				if (!targetAction)
-					return UDebugMessages::LogError(this, "no targeting action, failed");
+			//	auto targetAction = controller->GetComponentByClass<UTargetAction>();
+			//	if (!targetAction)
+			//		return UDebugMessages::LogError(this, "no targeting action, failed");
 
-				attackComponent->TryAttackLocation(currentTargetData->GetShootLocation(), targetLocation, targetAction->GetTargetingIndicatorRadius());
-				pawnCameraComponent->DoCinematicAttackCameraMovement(selected->GetAsActor(), currentTargetData->GetCharacter()->GetAsActor());
+			//	attackComponent->TryAttackLocation(currentTargetData->GetShootLocation(), targetLocation, targetAction->GetTargetingIndicatorRadius());
+			//	pawnCameraComponent->DoCinematicAttackCameraMovement(selected->GetAsActor(), currentTargetData->GetCharacter()->GetAsActor());
 
-				UpdateControlLimit(EControlLimit::CL_NoClick);
-			}
+			//	UpdateControlLimit(EControlLimit::CL_NoClick);
+			//}
 		}
-		else if (pawnCameraComponent->GetCurrentCameraState() == ECameraState::CS_ThrowTarget) {
-			auto selected = SelectionManager->GetSelected();
+		else if (pawnCameraComponent->GetCurrentCameraState() == ECameraState::CS_ToolUsage)
+			WhileToolUseActive(controller);
+		else if (pawnCameraComponent->GetCurrentCameraState() == ECameraState::CS_ThrowTarget)
+			WhileThrowTargetActive(pawnCameraComponent);
+		/*
+		{auto selected = SelectionManager->GetSelected();
 			auto actor = selected->GetAsActor();
 
 			auto grenadeDestinationLocation = ControlManager->GetGrenadeIndicatorActorLocation();
@@ -130,33 +140,21 @@ void ULeftClickAction::DoAction() {
 			ControlManager->SetCanMouseDesignateExplosionRadiusActor(false);
 
 			pawnCameraComponent->UpdateCameraState(ECameraState::CS_Throw, FVector::ZeroVector, FVector::ZeroVector, true);
-		}
-		else if (pawnCameraComponent->GetCurrentCameraState() == ECameraState::CS_Overwatch) {
-			auto overwatchAction = controller->GetComponentByClass<UOverwatchAction>();
-			if (!overwatchAction)
-				return UDebugMessages::LogError(this, "failed to get overwatch action");
+	}*/
+		else if (pawnCameraComponent->GetCurrentCameraState() == ECameraState::CS_Overwatch)
+			WhileOverwatchActive(pawnCameraComponent, controller);
+		//{
+		//	auto overwatchAction = controller->GetComponentByClass<UOverwatchAction>();
+		//	if (!overwatchAction)
+		//		return UDebugMessages::LogError(this, "failed to get overwatch action");
 
-			overwatchAction->SetOverwatch();
-			pawnCameraComponent->UpdateCameraState(ECameraState::CS_Control, FVector::ZeroVector, FVector::ZeroVector, true);
+		//	overwatchAction->SetOverwatch();
+		//	pawnCameraComponent->UpdateCameraState(ECameraState::CS_Control, FVector::ZeroVector, FVector::ZeroVector, true);
 
-			ControlManager->SetCanMouseDesignateSelectionDecal(true);
-		}
+		//	ControlManager->SetCanMouseDesignateSelectionDecal(true);
+		//}
 		else {
-			if (Hit.GetActor() && SelectionManager->TrySetSelected(Hit.GetActor())) {
-				SelectionManager->GetSelected()->TryVisualiseTargets();
-
-				auto actionsComponent = Hit.GetActor()->GetComponentByClass<UActionsComponent>();
-
-				if (!actionsComponent)
-					return UDebugMessages::LogError(this, "failed to get actions component");
-
-				actionsComponent->SendActionsToUI();
-				hudDelegates->_CheckCharacterTileIsActive.Broadcast(Hit.GetActor());
-			}
-			else {
-				hudDelegates->_HideOrResetUIWidget.Broadcast();
-				hudDelegates->_ResetCharacterTileWidget.Broadcast();
-			}
+			WhileGeneric(&Hit, hudDelegates);
 		}
 	}
 }
@@ -174,10 +172,130 @@ void ULeftClickAction::DoWorldAction() {
 		getClickedLocation.Z = pawn->GetActorLocation().Z;
 		movementComp->MoveToNewLocation(getClickedLocation);
 
+		auto tutorialDelegates = UTutorialDelegates::GetInstance();
+		if (!tutorialDelegates)
+			return UDebugMessages::LogError(this, "failed to get tutorial delegates");
+
+		tutorialDelegates->_OnCompleteTutorial.Broadcast(ETutorials::T_WorldNavigation);
+
 		auto gameMode = GetWorld()->GetAuthGameMode<AWorldGameMode>();
 		if (gameMode && gameMode->GetComponentByClass<UWorldDirectionManager>()) {
 			auto worldDirectionManager = gameMode->GetComponentByClass<UWorldDirectionManager>();
 			worldDirectionManager->ClearDirections();
 		}
+	}
+}
+
+
+void ULeftClickAction::WhileGunTargetActive(UPawnCameraComponent* cameraComponent, UCameraComponent* camera, UCameraOverlapComponent* cameraOverlap, APlayerController* controller, UHudDelegates* hudDelegates) {
+	auto targetLocation = FVector::ZeroVector;
+	FHitResult TestHit;
+	GetTargetLocation(TestHit, targetLocation, camera);
+
+	cameraOverlap->ShrinkOverlapComponent();
+	//DrawDebugLine(GetWorld(), pawnCamera->GetComponentLocation(), targetLocation, FColor::Cyan, false, 60.0f, 0, 5);
+
+	hudDelegates->_AimTargetVisibility.Broadcast(false);
+
+	auto selected = SelectionManager->GetSelected();
+	auto actor = selected->GetAsActor();
+	auto targetingComponent = actor->GetComponentByClass<UTargetingComponent>();
+	if (selected && targetingComponent) {
+		auto currentTargetData = targetingComponent->GetCurrentMainTarget();
+
+		auto equipmentComponent = actor->GetComponentByClass<UEquipmentComponent>();
+		auto detailsComponent = actor->GetComponentByClass<UCharacterDetailsComponent>();
+
+		auto equipment = equipmentComponent->GetPrimaryEquipment();
+
+		if (!equipmentComponent || !detailsComponent || !equipment)
+			return UDebugMessages::LogError(this, "could not get equipment or details component, will not begin try attack");
+
+		auto equipmentDetails = equipment->GetComponentByClass<UEquipmentDetailsComponent>();
+
+		if (!equipmentDetails)
+			return UDebugMessages::LogError(this, "could not get equipment details component");
+
+		equipmentDetails->RemoveFromRounds(1);
+		detailsComponent->RemoveActionPoints(equipmentComponent->GetActionPointsNeededToUseEquipment());
+
+		auto attackComponent = selected->GetAsActor()->GetComponentByClass<UAttackComponent>();
+
+		auto targetAction = controller->GetComponentByClass<UTargetAction>();
+		if (!targetAction)
+			return UDebugMessages::LogError(this, "no targeting action, failed");
+
+		attackComponent->TryAttackLocation(currentTargetData->GetShootLocation(), targetLocation, targetAction->GetTargetingIndicatorRadius());
+		cameraComponent->DoCinematicAttackCameraMovement(selected->GetAsActor(), currentTargetData->GetCharacter()->GetAsActor());
+
+		UpdateControlLimit(EControlLimit::CL_NoClick);
+	}
+}
+void ULeftClickAction::WhileThrowTargetActive(UPawnCameraComponent* cameraComponent) {
+	auto selected = SelectionManager->GetSelected();
+	auto actor = selected->GetAsActor();
+
+	auto grenadeDestinationLocation = ControlManager->GetGrenadeIndicatorActorLocation();
+	auto throwableComponent = selected->GetAsActor()->GetComponentByClass<UThrowableComponent>();
+
+	if (throwableComponent)
+		throwableComponent->ThrowAtLocation(grenadeDestinationLocation);
+
+	ControlManager->SetCanMouseDesignateExplosionRadiusActor(false);
+
+	cameraComponent->UpdateCameraState(ECameraState::CS_Throw, FVector::ZeroVector, FVector::ZeroVector, true);
+}
+void ULeftClickAction::WhileOverwatchActive(UPawnCameraComponent* cameraComponent, APlayerController* controller) {
+	auto overwatchAction = controller->GetComponentByClass<UOverwatchAction>();
+	if (!overwatchAction)
+		return UDebugMessages::LogError(this, "failed to get overwatch action");
+
+	overwatchAction->SetOverwatch();
+	cameraComponent->UpdateCameraState(ECameraState::CS_Control, FVector::ZeroVector, FVector::ZeroVector, true);
+
+	ControlManager->SetCanMouseDesignateSelectionDecal(true);
+}
+void ULeftClickAction::WhileToolUseActive(APlayerController* controller) {
+	FHitResult Hit;
+	controller->GetHitResultUnderCursor(USvUtilities::GetClickableEnvironmentChannel(), false, Hit);
+
+	auto selected = SelectionManager->GetSelected();
+	if (!selected)
+		return UDebugMessages::LogError(this, "failed to get selected");
+
+	auto selectedAsActor = selected->GetAsActor();
+	auto healthKitComponent = selectedAsActor->GetComponentByClass<UHealthKitsComponent>();
+
+	if (!healthKitComponent)
+		return UDebugMessages::LogError(this, "failed to get health kit component");
+
+	if (Hit.GetActor()) {
+		auto indicatingComp = Hit.GetActor()->GetComponentByClass<UIndicatorLinkComponent>();
+		if (indicatingComp && indicatingComp->GetToolIndicatingTo()) {
+			auto indicatingActor = indicatingComp->GetToolIndicatingTo();
+			healthKitComponent->BeginUseActiveHealthKitOnActor(indicatingActor);
+
+			auto healthKitActionComponent = GetOwner()->GetComponentByClass<UHealthKitUseComponent>();
+			if (healthKitActionComponent)
+				healthKitActionComponent->RemoveAllHealthKitIndicators();
+		}
+	}
+}
+
+void ULeftClickAction::WhileGeneric(FHitResult* hit, UHudDelegates* hudDelegates) {
+	if (hit->GetActor() && SelectionManager->TrySetSelected(hit->GetActor())) {
+		SelectionManager->GetSelected()->TryVisualiseTargets();
+
+		auto actionsComponent = hit->GetActor()->GetComponentByClass<UActionsComponent>();
+
+		if (!actionsComponent)
+			return UDebugMessages::LogError(this, "failed to get actions component");
+
+		actionsComponent->SendActionsToUI();
+		hudDelegates->_CheckCharacterTileIsActive.Broadcast(hit->GetActor());
+	}
+	else {
+		hudDelegates->_HideOrResetUIWidget.Broadcast();
+		hudDelegates->_ResetCharacterTileWidget.Broadcast();
 	}
 }

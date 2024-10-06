@@ -9,9 +9,9 @@
 class UInputAction;
 class UInputMappingContext;
 class ULeftClickAction;
-/**
- * 
- */
+class UWorldDirectionOptionComponent;
+
+
 UCLASS()
 class SV_API AWorldPlayerController : public APlayerController
 {
@@ -22,6 +22,7 @@ public:
 	AWorldPlayerController();
 
 	virtual void SetupInputComponent() override;
+	virtual void Tick(float DeltaTime) override;
 	virtual void BeginPlay() override;
 	
 protected:
@@ -30,4 +31,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true")) UInputAction* ClickAction;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) ULeftClickAction* LeftClickActionComponent;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UWorldDirectionOptionComponent* DirectionOptionComponent;
 };

@@ -79,8 +79,14 @@ public:
 	void SetEquipmentId(FGuid id);
 	FGuid GetEquipmentId();
 
+	EAttachType GetEquipSocket();
+	void SetEquipSocket(EAttachType equipmentSocket);
+
 	EAttachType GetHolsterAttachType();
 	void SetHolsterAttachType(EAttachType attachType);
+
+	FVector GetRelativeScaleOnEquip();
+	void SetRelativeScaleOnEquip(FVector loc);
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -112,5 +118,8 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) EGun GunType;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) FGuid EquipmentId;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) EAttachType HolsterType;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) EAttachType EquipSocket;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) FVector RelativeScaleOnEquip;
 
 };

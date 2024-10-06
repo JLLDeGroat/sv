@@ -97,20 +97,22 @@ void UTargetingComponent::DetermineTargetData() {
 			// owner->GetWorld()->LineTraceSingleByChannel(Hit, ownerLocation, location)
 		}
 
-		auto hudDelegates = UHudDelegates::GetInstance();
-		if (!hudDelegates)
-			return UDebugMessages::LogError(this, "failed to get hud delegates, wont add targets to hud");
+		if (details->GetCharacterControl() == ECharacterControl::CC_Player) {
+			auto hudDelegates = UHudDelegates::GetInstance();
+			if (!hudDelegates)
+				return UDebugMessages::LogError(this, "failed to get hud delegates, wont add targets to hud");
 
-		hudDelegates->_ClearTargetDataHud.Broadcast();
-		for (int i = 0; i < TargetData.Num(); i++) {
-			if (i == 0)
-				CurrentMainTargetId = TargetData[i].GetId();
+			hudDelegates->_ClearTargetDataHud.Broadcast();
+			for (int i = 0; i < TargetData.Num(); i++) {
+				if (i == 0)
+					CurrentMainTargetId = TargetData[i].GetId();
 
-			//DrawDebugLine(owner->GetWorld(), TargetData[i].GetShootLocation() + FVector(0, 0, 100),
-				//TargetData[i].GetCharacter()->GetSelectableGridLocation(), FColor::Blue, true, 60, 1, 5);
+				//DrawDebugLine(owner->GetWorld(), TargetData[i].GetShootLocation() + FVector(0, 0, 100),
+					//TargetData[i].GetCharacter()->GetSelectableGridLocation(), FColor::Blue, true, 60, 1, 5);
 
-			hudDelegates->_AddTargetDataToHud.Broadcast(TargetData[i].GetId(), TargetData[i].GetShootLocation(),
-				TargetData[i].GetCharacter()->GetSelectableGridLocation());
+				hudDelegates->_AddTargetDataToHud.Broadcast(TargetData[i].GetId(), TargetData[i].GetShootLocation(),
+					TargetData[i].GetCharacter()->GetSelectableGridLocation());
+			}
 		}
 	}
 }

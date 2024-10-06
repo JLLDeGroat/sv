@@ -14,6 +14,7 @@
 #include "../ExtractionAction.h"
 #include "../PickupAction.h"
 #include "../SwapWeaponAction.h"
+#include "../HealthKitUseComponent.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 
 // Sets default values for this component's properties
@@ -35,6 +36,7 @@ UActionManager::UActionManager()
 	ExtractionComponent = CreateDefaultSubobject<UExtractionAction>(TEXT("ExtractionAction"));
 	PickupActionComponent = CreateDefaultSubobject<UPickupAction>(TEXT("PickupAction"));
 	SwapActionComponent = CreateDefaultSubobject<USwapWeaponAction>(TEXT("SwapAction"));
+	HealthKitUseComponent = CreateDefaultSubobject<UHealthKitUseComponent>(TEXT("HealthKitAction"));
 }
 
 
@@ -92,6 +94,26 @@ void UActionManager::DoActionFromUI(EActionType actionType) {
 	case EActionType::AT_SwapWeapon:
 	{
 		SwapActionComponent->DoAction();
+	}
+	break;
+	case EActionType::AT_BasicHealthKit:
+	{
+		HealthKitUseComponent->DoBasicHealth();
+	}
+	break;
+	case EActionType::AT_LargeHealthKit:
+	{
+		HealthKitUseComponent->DoLargeHealth();
+	}
+	break;
+	case EActionType::AT_AnditodeKit:
+	{
+		HealthKitUseComponent->DoAntidote();
+	}
+	break;
+	case EActionType::AT_FlameRetardentKit:
+	{
+		HealthKitUseComponent->DoFlameRetardent();
 	}
 	break;
 	default:

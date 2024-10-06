@@ -9,43 +9,43 @@
 #include "Components/NewGameOptionsWidget.h"
 #include "Components/GridPanel.h"
 #include "Components/CancelButtonWidget.h"
+#include "../Helpers/UserWidgetHelpers.h"
 
 void UMainMenuLayoutWidget::NativeConstruct() {
 	Super::NativeConstruct();
 
 	auto quitWidget = GetWidgetFromName("QuitButton");
-	auto startWidget = GetWidgetFromName("startButton");
+	auto startWidget = GetWidgetFromName("StartButton");
 
 	auto mainMenuWidget = GetWidgetFromName("MainMenuWidget");
-	MainMenuGrid = (UGridPanel*)mainMenuWidget;
 
-	if (quitWidget->IsA<UButton>()) {
-		auto btn = (UButton*)quitWidget;
-		btn->OnClicked.AddDynamic(this, &UMainMenuLayoutWidget::OnQuitClicked);
+	if (QuitButton) {
+		QuitButton->OnClicked.AddDynamic(this, &UMainMenuLayoutWidget::OnQuitClicked);
+		UUserWidgetHelpers::DesignButton(QuitButton);
 	}
 
-	if (startWidget->IsA<UButton>()) {
-		auto btn = (UButton*)startWidget;
-		btn->OnClicked.AddDynamic(this, &UMainMenuLayoutWidget::GoToNewGameOptions);
+	if (StartButton) {
+		StartButton->OnClicked.AddDynamic(this, &UMainMenuLayoutWidget::GoToNewGameOptions);
+		UUserWidgetHelpers::DesignButton(StartButton);
 	}
 
-	auto newGameOptions = GetWidgetFromName("NewGameOptions");
+	NewGameOptionsWidget = (UNewGameOptionsWidget*)GetWidgetFromName("NewGameOptions");
 	auto classicGameOptions = GetWidgetFromName("ClassicGameModeOptions");
-
-	NewGameOptionsWidget = (UNewGameOptionsWidget*)newGameOptions;
 
 	if (NewGameOptionsWidget) NewGameOptionsWidget->SetVisibility(ESlateVisibility::Hidden);
 
 	auto cancelWidget = GetWidgetFromName("CancelButton");
-	CancelButtonWidget = (UCancelButtonWidget*)cancelWidget;
 
-	if (CancelButtonWidget) {
-		auto cancelButtonWidget = CancelButtonWidget->GetWidgetFromName("CancelButton");
+	if (CancelButton) {
+		CancelButton->SetVisibility(ESlateVisibility::Hidden);
+
+		auto cancelButtonWidget = CancelButton->GetWidgetFromName("CancelButton");
 		auto cancelButton = (UButton*)cancelButtonWidget;
-		if (cancelButton) cancelButton->OnClicked.AddDynamic(this, &UMainMenuLayoutWidget::GoToMainMenu);
+		if (cancelButton) {
+			UUserWidgetHelpers::DesignButton(cancelButton);
+			cancelButton->OnClicked.AddDynamic(this, &UMainMenuLayoutWidget::GoToMainMenu);
+		}
 	}
-
-	if (CancelButtonWidget) CancelButtonWidget->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UMainMenuLayoutWidget::OnStartClicked() {
@@ -59,15 +59,15 @@ void UMainMenuLayoutWidget::OnQuitClicked() {
 
 void UMainMenuLayoutWidget::GoToMainMenu() {
 	NewGameOptionsWidget->SetVisibility(ESlateVisibility::Hidden);
-	CancelButtonWidget->SetVisibility(ESlateVisibility::Hidden);
+	CancelButton->SetVisibility(ESlateVisibility::Hidden);
 
-	MainMenuGrid->SetVisibility(ESlateVisibility::Visible);
+	MainMenuWidget->SetVisibility(ESlateVisibility::Visible);
 }
 void UMainMenuLayoutWidget::GoToNewGameOptions() {
-	MainMenuGrid->SetVisibility(ESlateVisibility::Hidden);
+	MainMenuWidget->SetVisibility(ESlateVisibility::Hidden);
 
 	NewGameOptionsWidget->SetVisibility(ESlateVisibility::Visible);
-	CancelButtonWidget->SetVisibility(ESlateVisibility::Visible);
+	CancelButton->SetVisibility(ESlateVisibility::Visible);
 
 	NewGameOptionsWidget->ResetWidget();
 }

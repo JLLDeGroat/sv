@@ -15,10 +15,21 @@ enum class EThrowable : uint8 {
 };
 
 UENUM(BlueprintType)
+enum class EHealthKits : uint8 {
+	INVALID = 0,
+	HK_Basic = 1,
+	HK_Large = 2,
+	HK_Antidote = 3,
+	HK_Antiburn
+};
+
+UENUM(BlueprintType)
 enum class EGun : uint8 {
 	INVALID = 0,
 	G_PeaRifle = 1,
 	G_UrfGun = 2,
+	G_ConstructRifle = 3,
+	G_ConstructLaser = 4,
 };
 
 
@@ -35,7 +46,11 @@ enum class EAttachType : uint8 {
 	INVALID = 0,
 	AT_Backpack,
 	AT_RightHand,
+	AT_RightArm,
 	AT_RightHolster,
+
+	AT_LeftHand,
+	AT_LeftArm,
 };
 
 UENUM(BlueprintType)

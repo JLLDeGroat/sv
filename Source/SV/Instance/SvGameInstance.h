@@ -18,6 +18,7 @@ class UCurrentGameDataManager;
 class USupplyDataManager;
 class UWeaponDataManager;
 class UThrowableDataManager;
+class UHealthKitDataManager;
 
 UCLASS()
 class SV_API USvGameInstance : public UGameInstance
@@ -39,6 +40,7 @@ public:
 	USupplyDataManager* GetSupplyDataManager();
 	UWeaponDataManager* GetWeaponDataManager();
 	UThrowableDataManager* GetThrowableDataManager();
+	UHealthKitDataManager* GetHealthKitDataManager();
 protected:
 
 	UPROPERTY() FSkillData SkillData;
@@ -58,4 +60,5 @@ private:
 	UPROPERTY() USupplyDataManager* SupplyDataManager;
 	UPROPERTY() UWeaponDataManager* WeaponDataManager;
 	UPROPERTY() UThrowableDataManager* ThrowableDataManager;
+	UPROPERTY() UHealthKitDataManager* HealthKitDataManager;
 };

@@ -16,6 +16,8 @@ UBaseAIBehaviour::UBaseAIBehaviour(const FObjectInitializer& ObjectInitializer)
 		aiDelegates->_AICharacterFinishedBehaviour.AddDynamic(this, &UBaseAIBehaviour::SetCompletedBehaviour);
 	else
 		UDebugMessages::LogError(this, "failed to bind to delegate");
+
+	_randomStream = FRandomStream(123);
 }
 
 
@@ -71,7 +73,7 @@ void UBaseAIBehaviour::SpawnDebugGrid_SetIsStart(FVector location, float delay) 
 	location += FVector(-50, -50, 0);
 	FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, location, delay] {
 		auto actor = world->SpawnActor<AWorldGridItemActor>(location, FRotator::ZeroRotator);
-		actor->SetIsStart(); 
+		actor->SetIsStart();
 		actor->SetAutoDestroy(delay);
 		}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
@@ -135,4 +137,27 @@ void UBaseAIBehaviour::SpawnDebugGrid_SetIsSpawn(TArray<FVector> locations, FVec
 void UBaseAIBehaviour::SpawnDebugGrid_SetIsObstacle(TArray<FVector> locations, FVector offset, float delay) {
 	for (int i = 0; i < locations.Num(); i++)
 		SpawnDebugGrid_SetIsObstacle(locations[i] + offset, delay);
+}
+
+TScriptInterface<ISvChar> UBaseAIBehaviour::GetClosestCharacter() {
+
+	TScriptInterface<ISvChar> svChar;
+	float closestDistance = FLT_MAX;
+
+	auto thisLoc = ThisEnemy->GetActorLocation();
+
+	auto all = GetAllCharacters();
+	for (int i = 0; i < all.Num(); i++) {
+		if (all[i]) {
+			auto thisLocation = all[i]->GetAsActor()->GetActorLocation();
+			auto distance = FVector::Dist(thisLocation, thisLoc);
+
+			if (distance < closestDistance) {
+				svChar = all[i];
+				closestDistance = distance;
+			}
+		}
+	}
+
+	return svChar;
 }

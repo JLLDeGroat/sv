@@ -29,13 +29,15 @@ public:
 
 protected:
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) TSubclassOf<ABaseCharacter> CharacterClass;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) EGun GunType;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) EGun SecondaryGunType;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) FString OverrideCharacterName;
- 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* RootMesh;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawner Debug Options") TSubclassOf<ABaseCharacter> CharacterClass;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawner Debug Options") EGun GunType;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawner Debug Options") EGun SecondaryGunType;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawner Debug Options") FString OverrideCharacterName;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) int GrenadeAmount;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawner Debug Options") UStaticMeshComponent* RootMesh;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawner Debug Options") int GrenadeAmount;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawner Debug Options") int HealthKitAmount;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawner Debug Options") int TakeImmediateDamage;
 
 };

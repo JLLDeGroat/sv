@@ -15,6 +15,7 @@
 #include "Managers/SupplyDataManager.h"
 #include "Managers/WeaponDataManager.h"
 #include "Managers/ThrowableDataManager.h"
+#include "Managers/HealthKitDataManager.h"
 
 USvGameInstance::USvGameInstance() {
 
@@ -31,6 +32,7 @@ USvGameInstance::USvGameInstance() {
 	SupplyDataManager = NewObject<USupplyDataManager>();
 	WeaponDataManager = NewObject<UWeaponDataManager>();
 	ThrowableDataManager = NewObject<UThrowableDataManager>();
+	HealthKitDataManager = NewObject<UHealthKitDataManager>();
 }
 
 void USvGameInstance::ReadModData(FString modName, FString& fileText) {
@@ -87,4 +89,7 @@ UWeaponDataManager* USvGameInstance::GetWeaponDataManager() {
 }
 UThrowableDataManager* USvGameInstance::GetThrowableDataManager() {
 	return ThrowableDataManager;
+}
+UHealthKitDataManager* USvGameInstance::GetHealthKitDataManager() {
+	return HealthKitDataManager;
 }

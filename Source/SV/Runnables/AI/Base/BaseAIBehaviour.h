@@ -47,6 +47,9 @@ protected:
 	void SpawnDebugGrid_SetIsOffshoot(TArray<FVector> locations, FVector offset = FVector(0, 0, -50), float delay = .0001f);
 	void SpawnDebugGrid_SetIsSpawn(TArray<FVector> locations, FVector offset = FVector(0, 0, -50), float delay = .0001f);
 	void SpawnDebugGrid_SetIsObstacle(TArray<FVector> locations, FVector offset = FVector(0, 0, -50), float delay = .0001f);
+
+	TScriptInterface<ISvChar> GetClosestCharacter();
+	FRandomStream GetRandomStream() { return _randomStream; }
 private:
 
 	UPROPERTY() AActor* ThisEnemy;
@@ -54,5 +57,7 @@ private:
 	UPROPERTY() TArray<TScriptInterface<ISvChar>> BehaviourTargets;
 
 	UPROPERTY() bool CompletedBehaviour;
+
+	UPROPERTY() FRandomStream _randomStream;
 
 };

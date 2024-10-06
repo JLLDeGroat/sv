@@ -18,6 +18,7 @@ UEquipmentDetailsComponent::UEquipmentDetailsComponent()
 	Accuracy = 500;
 	AccuracyDecay = 1;
 	MaxAccuracyDeviation = 75;
+	RelativeScaleOnEquip = FVector::ZeroVector;
 }
 
 
@@ -178,4 +179,17 @@ EAttachType UEquipmentDetailsComponent::GetHolsterAttachType() {
 }
 void UEquipmentDetailsComponent::SetHolsterAttachType(EAttachType attachType) {
 	HolsterType = attachType;
+}
+
+EAttachType UEquipmentDetailsComponent::GetEquipSocket() {
+	return EquipSocket;
+}
+void UEquipmentDetailsComponent::SetEquipSocket(EAttachType equipmentSocket) {
+	EquipSocket = equipmentSocket;
+}
+FVector UEquipmentDetailsComponent::GetRelativeScaleOnEquip() {
+	return RelativeScaleOnEquip;
+}
+void UEquipmentDetailsComponent::SetRelativeScaleOnEquip(FVector loc) {
+	RelativeScaleOnEquip = loc;
 }

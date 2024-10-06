@@ -85,5 +85,4 @@ private:
 
 	UPROPERTY() AEquipment* ThrownEquipment;
 	UPROPERTY() TArray<FVector> Trajectories;
-
 };

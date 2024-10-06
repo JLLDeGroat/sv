@@ -7,6 +7,7 @@
 #include "../../Interfaces/SvChar.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "Behaviours/AIMeleeAttack.h"
+#include "../../Characters/Components/AIComponent.h"
 
 
 void UPostMoveChecker::ActivateThread() {
@@ -17,24 +18,36 @@ void UPostMoveChecker::ActivateThread() {
 	auto sourceLoc = UGridUtilities::GetNormalisedGridLocation(GetThisEnemy()->GetAsActor()->GetActorLocation());
 	auto closestCharacter = GetAllCharacters()[0];
 
-	//check if already next to player
-	if (USvUtilities::AreGridLocationsAdjacent(
-		UGridUtilities::GetNormalisedGridLocation(GetThisEnemy()->GetAsActor()->GetActorLocation()),
-		UGridUtilities::GetNormalisedGridLocation(closestCharacter->GetAsActor()->GetActorLocation())))
-	{
-		UDebugMessages::LogDisplay(this, "Is now Adjacent after movement, attempt to attack");
+	auto aiComponent = GetThisEnemy()->GetAsActor()->GetComponentByClass<UAIComponent>();
 
-		auto meleeBehaviour = CreateBehaviourClass(UAIMeleeAttack::StaticClass());
-		if (!meleeBehaviour)
-			return UDebugMessages::LogError(this, "failed to get melee behaviour class");
+	auto postMoveBehaviour = CreateBehaviourClass(aiComponent->GetAttackRoute());
+	if (!postMoveBehaviour)
+		return UDebugMessages::LogError(this, "failed to get Post Move behaviour class");
 
-		meleeBehaviour->SetBehaviourTarget(closestCharacter);
-		meleeBehaviour->DoBehaviour();
+	postMoveBehaviour->DoBehaviour();
 
-		while (!meleeBehaviour->GetCompletedBehaviourAndWaitIfNot(.1f) && bIsAlive) {
-			UDebugMessages::LogDisplay(this, "waiting on melee behaviour");
-		}
+	while (!postMoveBehaviour->GetCompletedBehaviourAndWaitIfNot(.1f) && bIsAlive) {
+		UDebugMessages::LogDisplay(this, "waiting on Post Move behaviour");
 	}
+
+	////check if already next to player
+	//if (USvUtilities::AreGridLocationsAdjacent(
+	//	UGridUtilities::GetNormalisedGridLocation(GetThisEnemy()->GetAsActor()->GetActorLocation()),
+	//	UGridUtilities::GetNormalisedGridLocation(closestCharacter->GetAsActor()->GetActorLocation())))
+	//{
+	//	UDebugMessages::LogDisplay(this, "Is now Adjacent after movement, attempt to attack");
+
+	//	auto postMoveBehaviour = CreateBehaviourClass(aiComponent->GetAttackRoute());
+	//	if (!postMoveBehaviour)
+	//		return UDebugMessages::LogError(this, "failed to get melee behaviour class");
+
+	//	postMoveBehaviour->SetBehaviourTarget(closestCharacter);
+	//	postMoveBehaviour->DoBehaviour();
+
+	//	while (!postMoveBehaviour->GetCompletedBehaviourAndWaitIfNot(.1f) && bIsAlive) {
+	//		UDebugMessages::LogDisplay(this, "waiting on melee behaviour");
+	//	}
+	//}
 
 	SetCheckerHasCompleted();
 	UDebugMessages::LogDisplay(this, "Ending Post Move");

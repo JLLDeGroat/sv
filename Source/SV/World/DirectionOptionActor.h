@@ -8,16 +8,21 @@
 
 class UDecalComponent;
 class UBoxComponent;
+class UMaterialInstanceDynamic;
 UCLASS()
 class SV_API ADirectionOptionActor : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	ADirectionOptionActor();
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	void ActivateArrowEmission();
+	void DeactivateArrowEmission();
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -25,5 +30,7 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UDecalComponent* ArrowDecalComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UBoxComponent* ClickBoxComponent;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UMaterialInstanceDynamic* DynamicInstance;
 
 };

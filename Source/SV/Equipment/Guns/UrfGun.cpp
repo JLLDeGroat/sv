@@ -9,6 +9,7 @@
 #include "../Components/EquipmentDetailsComponent.h"
 #include "../Components/AttachedVectorComponent.h"
 #include "Components/MuzzleFlashComponent.h"
+#include "../Bullets/Bullet.h"
 
 
 AUrfGun::AUrfGun(const FObjectInitializer& ObjectInitializer)
@@ -54,6 +55,7 @@ AUrfGun::AUrfGun(const FObjectInitializer& ObjectInitializer)
 	EquipmentDetailsComponent->SetCanOverwatch(true);
 	EquipmentDetailsComponent->SetOverwatchApCost(1);
 	EquipmentDetailsComponent->SetHolsterAttachType(EAttachType::AT_RightHolster);
+	EquipmentDetailsComponent->SetEquipSocket(EAttachType::AT_RightHand);
 
 	AttachedVectorComponent->SetAttachedVectors(FVector(6, 2, 1.5f), FRotator(0, 103, -175));
 	AttachedVectorComponent->SetHolsteredVectors(FVector(13.0, -10, 0), FRotator(90, 0, 90));
@@ -70,6 +72,8 @@ AUrfGun::AUrfGun(const FObjectInitializer& ObjectInitializer)
 	LightAttachmentComponent->SetRelativeLocation(FVector(-2, 1, 1));
 
 	LightAttachmentComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	GunFireComponent->SetBulletClass(ABullet::StaticClass());
 }
 
 void AUrfGun::OnConstruction(const FTransform& Transform) {

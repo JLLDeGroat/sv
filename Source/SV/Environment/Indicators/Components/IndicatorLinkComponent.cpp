@@ -23,3 +23,10 @@ void UIndicatorLinkComponent::SetPickupIndicatingTo(AActor* actor) {
 AActor* UIndicatorLinkComponent::GetPickupIndicatingTo() {
 	return PickupIndicatingTo;
 }
+
+void UIndicatorLinkComponent::SetToolIndicatingTo(AActor* actor) {
+	PickupIndicatingTo = actor;
+}
+AActor* UIndicatorLinkComponent::GetToolIndicatingTo() {
+	return PickupIndicatingTo;
+}

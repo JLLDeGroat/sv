@@ -19,6 +19,9 @@ ECollisionChannel USvUtilities::GetFloorTargetChannel() {
 ECollisionChannel USvUtilities::GetClickableChannel() {
 	return ECollisionChannel::ECC_GameTraceChannel2;
 }
+ECollisionChannel USvUtilities::GetClickableEnvironmentChannel() {
+	return ECollisionChannel::ECC_GameTraceChannel8;
+}
 ECollisionChannel USvUtilities::GetEnvironmentChannel() {
 	return ECollisionChannel::ECC_GameTraceChannel3;
 }
@@ -80,7 +83,7 @@ UTextureRenderTarget2D* USvUtilities::GetRenderTarget2D(int targetNumber) {
 	FString targetNumberAsString = FString::SanitizeFloat(targetNumber, 0);
 	FString reference = "/Script/Engine.TextureRenderTarget2D'/Game/RenderTargets/RenderTarget" + targetNumberAsString + "_RT.RenderTarget" + targetNumberAsString + "_RT'";
 	//FString reference = "/Script/Engine.TextureRenderTarget2D'/Game/RenderTargets/RenderTarget1_RT.RenderTarget1_RT'";
-	
+
 	FSoftObjectPath RenderTargetPath(reference);
 	UTextureRenderTarget2D* LoadedRenderTarget = Cast<UTextureRenderTarget2D>(RenderTargetPath.TryLoad());
 	return LoadedRenderTarget;
@@ -263,6 +266,16 @@ FString USvUtilities::GetSocketNameFromAttachment(EAttachType attachmentType) {
 		break;
 	case EAttachType::AT_RightHand:
 		result = "RightHandSocket";
+		break;
+
+	case EAttachType::AT_RightArm:
+		result = "RightForeArmSocket";
+		break;
+	case EAttachType::AT_LeftArm:
+		result = "LeftForeArmSocket";
+		break;
+	case EAttachType::AT_LeftHand:
+		result = "LeftHandSocket";
 		break;
 	}
 

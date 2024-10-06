@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "../../Base/BaseRunnable.h"
+#include "../../../Enums/EAIEnums.h"
 #include "BaseAITurnManager.generated.h"
 
 class ISvChar;
@@ -45,6 +46,8 @@ protected:
 	TArray<TScriptInterface<ISvChar>> GetAllCharacters();
 
 	UBaseAIBehaviour* CreateBehaviourClass(UClass* cls);
+	UBaseAIBehaviour* CreateBehaviourClass(EAIBehaviourMoveRoutes mRoute);
+	UBaseAIBehaviour* CreateBehaviourClass(EAIBehaviourAttackRoutes aRoute);
 
 private:
 

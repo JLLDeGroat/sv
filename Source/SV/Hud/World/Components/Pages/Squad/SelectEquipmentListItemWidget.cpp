@@ -11,6 +11,8 @@
 
 void USelectEquipmentListItemWidget::NativeConstruct() {
 	Super::NativeConstruct();
+
+	if (AmountText)UUserWidgetHelpers::DesignText(AmountText);
 }
 
 void USelectEquipmentListItemWidget::AddPrimaryDelegate() {
@@ -65,9 +67,9 @@ uint8 USelectEquipmentListItemWidget::GetTool() {
 
 int USelectEquipmentListItemWidget::AddToAmount(int amount) {
 	Amount += amount;
-	auto text = UUserWidgetHelpers::GetTextBlockFromWidget(this, "AmountText");
-	if (text)
-		text->SetText(FText::FromString("x " + FString::SanitizeFloat(Amount, 0)));
+
+	if (AmountText)
+		AmountText->SetText(FText::FromString("x " + FString::SanitizeFloat(Amount, 0)));
 
 	return Amount;
 }

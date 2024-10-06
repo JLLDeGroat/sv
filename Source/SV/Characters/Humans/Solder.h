@@ -26,7 +26,7 @@ class UInventoryComponent;
 class UHitCapsuleComponent;
 class UHitBoxComponent;
 class UCharacterCaptureComponent;
-
+class UHealthKitsComponent;
 UCLASS()
 class SV_API ASolder : public ABaseCharacter, public IMovable
 {
@@ -79,6 +79,7 @@ protected:
 	UPROPERTY(BlueprintreadWrite, EditAnywhere) UHitCapsuleComponent* RightUpperLegHitComponent;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UHitCapsuleComponent* HeadHitComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UHealthKitsComponent* HealthKitsComponent;
 
 public:
 	// Called every frame

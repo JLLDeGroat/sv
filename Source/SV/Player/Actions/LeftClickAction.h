@@ -7,13 +7,18 @@
 #include "LeftClickAction.generated.h"
 
 class USelectionManager;
+class UPawnCameraComponent;
+class UCameraComponent;
+class APlayerController;
+class UHudDelegates;
+class UCameraOverlapComponent;
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class SV_API ULeftClickAction : public UBaseActionComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	// Sets default values for this component's properties
 	ULeftClickAction(const FObjectInitializer& ObjectInitializer);
 
@@ -21,5 +26,14 @@ public:
 	void DoAction();
 	void DoWorldAction();
 
-		
+
+private:
+
+	void WhileGunTargetActive(UPawnCameraComponent* cameraComponent, UCameraComponent* camera, UCameraOverlapComponent* cameraOverlap, APlayerController* controller, UHudDelegates* hudDelegates);
+	void WhileThrowTargetActive(UPawnCameraComponent* cameraComponent);
+	void WhileOverwatchActive(UPawnCameraComponent* cameraComponent, APlayerController* controller);
+	void WhileToolUseActive(APlayerController* controller);
+
+	void WhileGeneric(FHitResult* hit, UHudDelegates* hudDelegates);
+
 };

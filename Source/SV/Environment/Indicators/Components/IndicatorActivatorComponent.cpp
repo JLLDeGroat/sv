@@ -45,7 +45,17 @@ UIndicatorActivatorComponent::UIndicatorActivatorComponent(const FObjectInitiali
 
 	bIsActivated = false;
 	PrimaryComponentTick.bCanEverTick = true;
+
+	auto material = USvUtilities::GetMaterial("/Script/Engine.Material'/Game/Materials/ExtractionIndicator_M.ExtractionIndicator_M'");
+	IndicatorMaterial = UMaterialInstanceDynamic::Create(material, this);
+	TopRingMeshComponent->SetMaterial(0, IndicatorMaterial);
+	BottomRingMeshComponent->SetMaterial(0, IndicatorMaterial);
 }
+
+void UIndicatorActivatorComponent::SetMaterialColour(FLinearColor color) {
+	IndicatorMaterial->SetVectorParameterValue("IndicatorColour", color);
+}
+
 
 void UIndicatorActivatorComponent::BeginPlay() {
 	Super::BeginPlay();

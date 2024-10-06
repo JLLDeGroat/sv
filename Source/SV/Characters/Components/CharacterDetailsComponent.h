@@ -37,6 +37,7 @@ public:
 	int GetMaxHealth() const;
 
 	void RemoveHealth(int health, bool& isDead);
+	void AddHealth(int health);
 
 	void RemoveMovementPoints(int amount);
 	void AddMovementPoints(int amount);

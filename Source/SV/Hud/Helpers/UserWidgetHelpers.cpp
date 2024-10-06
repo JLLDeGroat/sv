@@ -4,6 +4,7 @@
 #include "UserWidgetHelpers.h"
 #include "Components/Image.h"
 #include "Components/Button.h"
+#include "Components/TextBlock.h"
 #include "Blueprint/UserWidget.h"
 #include "../../Utilities/SvUtilities.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
@@ -83,6 +84,10 @@ UTexture2D* UUserWidgetHelpers::GetTextureForActionType(EActionType actionType) 
 	case EActionType::AT_SwapWeapon:
 		texture = USvUtilities::GetTexture("/Script/Engine.Texture2D'/Game/Images/UI/WeaponSwap.WeaponSwap'");
 		break;
+	case EActionType::AT_BasicHealthKit:
+	case EActionType::AT_LargeHealthKit:
+		texture = USvUtilities::GetTexture("/Script/Engine.Texture2D'/Game/Images/UI/HealIcon.HealIcon'");
+		break;
 	}
 	return texture;
 }
@@ -97,16 +102,23 @@ UTexture2D* UUserWidgetHelpers::GetTextureForResourceType(EResourceType rType) {
 	return texture;
 }
 
+UTexture2D* UUserWidgetHelpers::GetRandomMissionImage() {
+	auto random = FMath::RandRange(1, 12);
+	auto reference = "/Script/Engine.Texture2D'/Game/Images/Levels/levelImage" + FString::SanitizeFloat(random, 0) + ".levelImage" + FString::SanitizeFloat(random, 0) + "'";
 
-void UUserWidgetHelpers::DesignButton(UUserWidget* widget, FString btnName) {
+	auto texture = USvUtilities::GetTexture(reference);
+	return texture;
+}
+
+void UUserWidgetHelpers::DesignButton(UUserWidget* widget, FString btnName, int fontSize) {
 	auto btn = GetButtonFromWidget(widget, btnName);
 	if (btn)
-		DesignButton(btn);
+		DesignButton(btn, fontSize);
 	else
 		UDebugMessages::LogError(widget, "failed to get button for design");
 }
 
-void UUserWidgetHelpers::DesignButton(UButton* btn) {
+void UUserWidgetHelpers::DesignButton(UButton* btn, int fontSize) {
 	auto normalTexture = USvUtilities::GetTexture("/Script/Engine.Texture2D'/Game/Images/UI/BasicButton.BasicButton'");
 	auto hoveredTexture = USvUtilities::GetTexture("/Script/Engine.Texture2D'/Game/Images/UI/BasicButtonHovered.BasicButtonHovered'");
 	auto pressedTexture = USvUtilities::GetTexture("/Script/Engine.Texture2D'/Game/Images/UI/BasicButtonSelected.BasicButtonSelected'");
@@ -124,5 +136,38 @@ void UUserWidgetHelpers::DesignButton(UButton* btn) {
 	style.Hovered.OutlineSettings.CornerRadii = FVector4(10);
 	style.Hovered.OutlineSettings.RoundingType = ESlateBrushRoundingType::FixedRadius;
 
+	UWidget* ButtonContent = btn->GetChildAt(0);
+	if (UTextBlock* TextBlock = Cast<UTextBlock>(ButtonContent))
+		UUserWidgetHelpers::DesignText(TextBlock, fontSize);
+
 	btn->SetStyle(style);
+}
+
+void UUserWidgetHelpers::DesignButtonTextOnly(UButton* btn, int fontSize) {
+	UWidget* ButtonContent = btn->GetChildAt(0);
+	if (UTextBlock* TextBlock = Cast<UTextBlock>(ButtonContent))
+		UUserWidgetHelpers::DesignText(TextBlock, fontSize);
+}
+
+void UUserWidgetHelpers::SetButtonText(UButton* btn, FString text) {
+	UWidget* ButtonContent = btn->GetChildAt(0);
+	if (UTextBlock* TextBlock = Cast<UTextBlock>(ButtonContent)) {
+		TextBlock->SetText(FText::FromString(text));
+	}
+}
+
+void UUserWidgetHelpers::DesignText(UTextBlock* textBlock, int fontSize) {
+	// /Script/Engine.Font'/Game/Fonts/Aaargh_Font.Aaargh_Font'
+	// /Script/Engine.Font'/Game/Fonts/AARDC____Font.AARDC____Font'
+	// /Script/Engine.Font'/Game/Fonts/Urba_Font.Urba_Font'
+	FString reference = "/Script/Engine.Font'/Game/Fonts/Urba_Font.Urba_Font'";
+	auto fontObj = Cast<UObject>(StaticLoadObject(UObject::StaticClass(), NULL, *reference, NULL, LOAD_None, NULL));
+
+	if (!fontObj)
+		UDebugMessages::LogError(textBlock, "failed to get fontObj");
+
+	FSlateFontInfo FontInfo;
+	FontInfo.FontObject = fontObj;
+	FontInfo.Size = fontSize;
+	textBlock->SetFont(FontInfo);
 }

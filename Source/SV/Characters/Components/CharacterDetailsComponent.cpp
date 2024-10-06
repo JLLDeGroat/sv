@@ -62,6 +62,13 @@ void UCharacterDetailsComponent::RemoveHealth(int health, bool& isDead) {
 	}
 }
 
+void UCharacterDetailsComponent::AddHealth(int health) {
+	Health += health;
+	if (Health > MaxHealth) {
+		Health = MaxHealth;
+	}
+}
+
 void UCharacterDetailsComponent::RefreshOnNewTurn() {
 	MovementPoints = MaxMovementPoints;
 	ActionPoints = MaxActionPoints;

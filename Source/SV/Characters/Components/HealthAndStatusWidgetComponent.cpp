@@ -108,6 +108,10 @@ void UHealthAndStatusWidgetComponent::UpdateOnHealthChange() {
 			cPanelSlot->SetPadding(margin);
 		}
 	}
+	else {
+		float newHealthPercent = GetPercentageOfHealth(newHealth, MaxHealth);
+		HealthProgressBar->SetPercent(newHealthPercent);
+	}
 }
 
 

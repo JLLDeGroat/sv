@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Base/AnimAccessComponent.h"
+#include "../../Enums/EAIEnums.h"
 #include "AIComponent.generated.h"
 
 class USphereComponent;
@@ -24,6 +25,14 @@ public:
 	void SetIsAiActive(bool val);
 	bool GetIsActiveAi();
 
+	void SetAttackRoute(EAIBehaviourAttackRoutes aRoute);
+	void SetMovementRoute(EAIBehaviourMoveRoutes mRoute);
+
+	EAIBehaviourAttackRoutes GetAttackRoute();
+	EAIBehaviourMoveRoutes GetMovementRoute();
+
+
+
 protected:
 	UFUNCTION() void Overlapped(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -39,5 +48,8 @@ protected:
 	FTimerHandle DelayFinish;
 
 	UPROPERTY(BlueprintreadWrite, EditAnywhere) float Radius;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) EAIBehaviourAttackRoutes AIAttackRoute;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) EAIBehaviourMoveRoutes AIMoveRoute;
 
 };

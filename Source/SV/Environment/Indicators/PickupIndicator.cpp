@@ -10,22 +10,7 @@ APickupIndicator::APickupIndicator()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
-
-	BaseMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BaseMesh"));
-	RootComponent = BaseMeshComponent;
-
-	auto baseMesh = USvUtilities::GetStaticMesh("/Script/Engine.StaticMesh'/Game/Environment/ExtractionItems/ExtractionLocationItem_MainBowl.ExtractionLocationItem_MainBowl'");
-	if (baseMesh) {
-		BaseMeshComponent->SetStaticMesh(baseMesh);
-	}
-	BaseMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	ActivatorIndicator = CreateDefaultSubobject<UIndicatorActivatorComponent>(TEXT("Indicator"));
-	ActivatorIndicator->SetupAttachment(RootComponent);
-	ActivatorIndicator->SetBoxExtent(FVector(20, 20, 32));
-	ActivatorIndicator->SetRelativeLocation(FVector(0, 0, 35));
 	ActivatorIndicator->SetIndicatorType(EIndicatorType::IT_Interact);
-
 	LinkComponent = CreateDefaultSubobject<UIndicatorLinkComponent>(TEXT("LinkComponent"));
 }
 // Called when the game starts or when spawned

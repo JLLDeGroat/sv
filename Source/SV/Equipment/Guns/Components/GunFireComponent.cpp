@@ -4,6 +4,7 @@
 #include "GunFireComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
+#include "../../Bullets/Base/BaseBullet.h"
 #include "../../Bullets/Bullet.h"
 #include "../../Bullets/Components/TravelComponent.h"
 #include "../../Bullets/Components/BulletDetailsComponent.h"
@@ -21,22 +22,8 @@ UGunFireComponent::UGunFireComponent()
 }
 
 
-// Called when the game starts
-void UGunFireComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-	// ...
-	Random = FRandomStream(FMath::RandRange(FMath::RandRange(0, 5000), FMath::RandRange(5001, 10000)));
-}
-
-
-// Called every frame
-void UGunFireComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
+void UGunFireComponent::SetBulletClass(TSubclassOf<ABaseBullet> clss) {
+	BulletClass = clss;
 }
 
 FVector UGunFireComponent::GetGunFireStartLocation() {
@@ -70,8 +57,10 @@ void UGunFireComponent::FireAtLocation(FVector location, float accuracyRadius) {
 
 	UDebugMessages::LogDisplay(this, "spawning bullet at: " + bulletStart.ToString());
 
-	auto newBullet = owner->GetWorld()->SpawnActor<ABullet>(bulletStart, bulletRotation);
+	if (!BulletClass)
+		return UDebugMessages::LogError(this, "failed to get bullet class");
 
+	auto newBullet = owner->GetWorld()->SpawnActor<ABaseBullet>(BulletClass, bulletStart, bulletRotation);
 	auto muzzleFlash = owner->GetComponentByClass<UMuzzleFlashComponent>();
 
 	if (newBullet) {

@@ -3,18 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "Base/BaseIndicatorActor.h"
 #include "ExtractionIndicator.generated.h"
 
-class UStaticMeshComponent;
-class UIndicatorActivatorComponent;
-
 UCLASS()
-class SV_API AExtractionIndicator : public AActor
+class SV_API AExtractionIndicator : public ABaseIndicatorActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	AExtractionIndicator();
 
@@ -22,34 +19,10 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	/*virtual void Tick(float DeltaTime) override;
+public:
 
-	void ActivateIndicator();
-	void DeactivateIndicator();*/
 
 protected:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* BaseMeshComponent;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) UIndicatorActivatorComponent* ActivatorIndicator;
 
-	/*UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* BaseMeshComponent;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* BottomRingMeshComponent;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* TopRingMeshComponent;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) UBoxComponent* IndicatorActivator;
-
-	UFUNCTION() void Overlapped(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION() void OverlapEnded(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
-	UPROPERTY() float Speed;
-	UPROPERTY() float DefaultSpeed;
-
-	UFUNCTION() void StartTickAgain();
-	FTimerHandle StartTickHandle;
-
-	UPROPERTY() bool bIsActivated;*/
 
 };

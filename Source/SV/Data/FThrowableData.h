@@ -6,12 +6,6 @@
 #include "../Enums/EEquipmentEnums.h"
 #include "FThrowableData.generated.h"
 
-/**
- *
- */
-
-
-
 USTRUCT()
 struct FThrowableDataItem
 {

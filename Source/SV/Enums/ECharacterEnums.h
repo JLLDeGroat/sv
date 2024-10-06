@@ -55,6 +55,7 @@ enum class ECameraState : uint8 {
 	CS_ThrowTarget,
 	CS_Throw,
 	CS_Overwatch,
+	CS_ToolUsage
 };
 
 
@@ -81,4 +82,9 @@ enum class EActionType :uint8 {
 	AT_Pickup = 7,
 	AT_Interact = 8,
 	AT_SwapWeapon = 9,
+	AT_BasicHealthKit = 10,
+	AT_LargeHealthKit = 11,
+	AT_AnditodeKit = 12,
+	AT_FlameRetardentKit = 13,
+
 };

@@ -21,7 +21,7 @@ UAIMeleeRangeMove::UAIMeleeRangeMove(const FObjectInitializer& ObjectInitializer
 }
 
 void UAIMeleeRangeMove::DoBehaviour() {
-	auto closestCharacter = GetAllCharacters()[0];
+	auto closestCharacter = GetClosestCharacter();
 
 	auto sourceLoc = UGridUtilities::GetNormalisedGridLocation(GetThisEnemy()->GetActorLocation());
 

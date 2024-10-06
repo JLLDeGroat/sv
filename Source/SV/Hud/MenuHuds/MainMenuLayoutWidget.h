@@ -9,6 +9,7 @@
 class UNewGameOptionsWidget;
 class UCancelButtonWidget;
 class UGridPanel;
+class UButton;
 
 /**
  *
@@ -31,10 +32,11 @@ protected:
 	UFUNCTION() void GoToMainMenu();
 	UFUNCTION() void GoToNewGameOptions();
 
-private:
+	UPROPERTY(meta = (BindWidget)) UButton* StartButton;
+	UPROPERTY(meta = (BindWidget)) UButton* QuitButton;
+	UPROPERTY(meta = (BindWidget)) UGridPanel* MainMenuWidget;
 
-	UPROPERTY() UGridPanel* MainMenuGrid;
-
+	UPROPERTY(meta = (BindWidget)) UCancelButtonWidget* CancelButton;
 	UPROPERTY() UNewGameOptionsWidget* NewGameOptionsWidget;
-	UPROPERTY() UCancelButtonWidget* CancelButtonWidget;
+
 };

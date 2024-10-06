@@ -9,6 +9,7 @@
 #include "../Components/EquipmentDetailsComponent.h"
 #include "../Components/AttachedVectorComponent.h"
 #include "Components/MuzzleFlashComponent.h"
+#include "../Bullets/Bullet.h"
 
 APeaRifle::APeaRifle(const FObjectInitializer& ObjectInitializer) : AEquipment(ObjectInitializer) {
 
@@ -37,6 +38,7 @@ APeaRifle::APeaRifle(const FObjectInitializer& ObjectInitializer) : AEquipment(O
 	EquipmentDetailsComponent->SetCanOverwatch(true);
 	EquipmentDetailsComponent->SetOverwatchApCost(2);
 	EquipmentDetailsComponent->SetHolsterAttachType(EAttachType::AT_Backpack);
+	EquipmentDetailsComponent->SetEquipSocket(EAttachType::AT_RightHand);
 
 	AttachedVectorComponent->SetAttachedVectors(FVector(4, 2, 1), FRotator(0, 112.5, -173));
 	AttachedVectorComponent->SetHolsteredVectors(FVector(0, 0, 0), FRotator(0, 100, 0));
@@ -52,6 +54,8 @@ APeaRifle::APeaRifle(const FObjectInitializer& ObjectInitializer) : AEquipment(O
 	LightAttachmentComponent->SetRelativeRotation(FRotator(0, -90, 0));
 	LightAttachmentComponent->SetRelativeLocation(FVector(-2, 9, -2));
 	LightAttachmentComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	GunFireComponent->SetBulletClass(ABullet::StaticClass());
 }
 
 void APeaRifle::SetupAttachVector() {

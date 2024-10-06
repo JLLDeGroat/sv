@@ -14,12 +14,20 @@
 #include "VgCore/Domain/Debug/DebugMessages.h"
 
 #include "../../../Utilities/GridUtilities.h"
+#include "../../../Utilities/SvUtilities.h"
+#include "../../../Interfaces/SvChar.h"
 
 UAIMeleeAttack::UAIMeleeAttack(const FObjectInitializer& ObjectInitializer)
 	: UBaseAIBehaviour(ObjectInitializer) {
 }
 
 void UAIMeleeAttack::DoBehaviour() {
+	if (!CanMeleeAnyone()) {
+		UDebugMessages::LogWarning(this, "cannot melee anyone, not in range");
+		SetCompletedBehaviour();
+		return;
+	}
+
 	auto equipmentComponent = GetThisEnemy()->GetComponentByClass<UEquipmentComponent>();
 	auto currentAttackerDetails = GetThisEnemy()->GetComponentByClass<UCharacterDetailsComponent>();
 
@@ -120,4 +128,23 @@ void UAIMeleeAttack::DoBehaviour() {
 			attackComponent->TryAttackTarget(sourceLoc, targetCharacter, false);
 		},
 		TStatId(), nullptr, ENamedThreads::GameThread);
+}
+
+bool UAIMeleeAttack::CanMeleeAnyone() {
+
+	auto allCharacters = GetAllCharacters();
+
+	for (int i = 0; i < allCharacters.Num(); i++) {
+		if (allCharacters[i]) {
+			if (USvUtilities::AreGridLocationsAdjacent(
+				UGridUtilities::GetNormalisedGridLocation(GetThisEnemy()->GetActorLocation()),
+				UGridUtilities::GetNormalisedGridLocation(allCharacters[i]->GetAsActor()->GetActorLocation())))
+			{
+				SetBehaviourTarget(allCharacters[i]);
+				return true;
+			}
+		}
+	}
+
+	return false;
 }

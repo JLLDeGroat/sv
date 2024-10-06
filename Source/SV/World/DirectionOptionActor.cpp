@@ -24,12 +24,12 @@ ADirectionOptionActor::ADirectionOptionActor()
 	ArrowDecalComponent->SetRelativeScale3D(FVector(.15f));
 
 	auto material = USvUtilities::GetMaterial("/Script/Engine.Material'/Game/Decals/DirectionDecal_M.DirectionDecal_M'");
-	auto matInstance = UMaterialInstanceDynamic::Create(material, this);
+	DynamicInstance = UMaterialInstanceDynamic::Create(material, this);
 
-	matInstance->SetScalarParameterValue("Emission", 5);
-	matInstance->SetVectorParameterValue("DecalColour", FVector(0, 0.771772f, .8333333f));
+	DynamicInstance->SetScalarParameterValue("Emission", 1.5f);
+	DynamicInstance->SetVectorParameterValue("DecalColour", FVector(0, 0.771772f, .8333333f));
 	if (material)
-		ArrowDecalComponent->SetMaterial(0, matInstance);
+		ArrowDecalComponent->SetMaterial(0, DynamicInstance);
 }
 
 // Called when the game starts or when spawned
@@ -44,5 +44,12 @@ void ADirectionOptionActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ADirectionOptionActor::ActivateArrowEmission() {
+	DynamicInstance->SetScalarParameterValue("Emission", 5);
+}
+void ADirectionOptionActor::DeactivateArrowEmission() {
+	DynamicInstance->SetScalarParameterValue("Emission", 1.5f);
 }
 

@@ -19,4 +19,9 @@ public:
 	UAIMeleeAttack(const FObjectInitializer& ObjectInitializer);
 
 	virtual void DoBehaviour() override;
+
+private:
+
+	bool CanMeleeAnyone();
+
 };

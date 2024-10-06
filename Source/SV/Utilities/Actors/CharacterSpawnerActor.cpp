@@ -9,6 +9,8 @@
 #include "../../Characters/Components/ThrowableComponent.h"
 #include "../../Characters/Components/CharacterCaptureComponent.h"
 #include "../../Equipment/Components/EquipmentDetailsComponent.h"
+#include "../../Characters/Components/DamageRecieveComponent.h"
+#include "../../Characters/Components/HealthKitsComponent.h"
 #include "../../Equipment/Equipment.h"
 #include "../SvUtilities.h"
 #include "Components/StaticMeshComponent.h"
@@ -89,9 +91,17 @@ void ACharacterSpawnerActor::BeginPlay()
 							for (int i = 0; i < GrenadeAmount; i++) {
 								auto toolId = currentGameData->AddToolToCrew(EToolType::TT_Throwable, (uint8)EThrowable::T_Grenade);
 								currentGameData->AssignToolToCrew(toolId, memberId);
-
 								auto throwableComponent = actor->GetComponentByClass<UThrowableComponent>();
 								throwableComponent->AddThrowable(EThrowable::T_Grenade, 1, toolId);
+							}
+						}
+
+						if (HealthKitAmount > 0) {
+							for (int i = 0; i < HealthKitAmount; i++) {
+								auto kitId = currentGameData->AddToolToCrew(EToolType::TT_HealthKit, (uint8)EHealthKits::HK_Basic);
+								currentGameData->AssignToolToCrew(kitId, memberId);
+								auto throwableComponent = actor->GetComponentByClass<UHealthKitsComponent>();
+								throwableComponent->AddHealthKits(EHealthKits::HK_Basic, 1, kitId);
 							}
 						}
 					}
@@ -110,6 +120,14 @@ void ACharacterSpawnerActor::BeginPlay()
 						secondaryEquipment->SetEquipmentId(gunId);
 					}
 				}
+			}
+
+			if (TakeImmediateDamage > 0) {
+				auto damageRecieveComponent = actor->GetComponentByClass<UDamageRecieveComponent>();
+				if (!damageRecieveComponent)
+					UDebugMessages::LogError(this, "cannot take immediate damage, no UDamageRecieveComponent component");
+				else
+					damageRecieveComponent->DoDamage(1, TakeImmediateDamage);
 			}
 		}
 		Destroy();

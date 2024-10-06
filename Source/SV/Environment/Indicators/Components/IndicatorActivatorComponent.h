@@ -19,6 +19,7 @@ public:
 	UIndicatorActivatorComponent(const FObjectInitializer& ObjectInitializer);
 
 	void SetIndicatorType(EIndicatorType indicatorType);
+	void SetMaterialColour(FLinearColor color);
 
 protected:
 	virtual void BeginPlay() override;
@@ -34,6 +35,8 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* BottomRingMeshComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* TopRingMeshComponent;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UMaterialInstanceDynamic* IndicatorMaterial;
 
 	UPROPERTY() bool bIsActivated;
 	UPROPERTY() float Speed;

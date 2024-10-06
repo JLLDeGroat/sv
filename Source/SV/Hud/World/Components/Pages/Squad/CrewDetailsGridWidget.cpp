@@ -16,24 +16,29 @@ void UCrewDetailsGridWidget::NativeConstruct() {
 
 	SetVisibility(ESlateVisibility::Hidden);
 
-	auto primaryButton = UUserWidgetHelpers::GetButtonFromWidget(this, "PrimaryBtn");
-	if (primaryButton)
-		primaryButton->OnClicked.AddDynamic(this, &UCrewDetailsGridWidget::PrimaryClicked);
-
-	auto equipmentImage1 = (UUserWidget*)GetWidgetFromName(FName("EquipmentSlot1"));
-	auto equipmentButton1 = UUserWidgetHelpers::GetButtonFromWidget(equipmentImage1, "EquipmentButton");
-	if (equipmentButton1)
+	if (PrimaryBtn) {
+		PrimaryBtn->OnClicked.AddDynamic(this, &UCrewDetailsGridWidget::PrimaryClicked);
+		UUserWidgetHelpers::DesignButtonTextOnly(PrimaryBtn);
+	}
+	auto equipmentButton1 = UUserWidgetHelpers::GetButtonFromWidget(EquipmentSlot1, "EquipmentButton");
+	if (equipmentButton1) {
 		equipmentButton1->OnClicked.AddDynamic(this, &UCrewDetailsGridWidget::Tool1Clicked);
-
-	auto equipmentImage2 = (UUserWidget*)GetWidgetFromName(FName("EquipmentSlot2"));
-	auto equipmentButton2 = UUserWidgetHelpers::GetButtonFromWidget(equipmentImage2, "EquipmentButton");
-	if (equipmentButton2)
+		UUserWidgetHelpers::DesignButtonTextOnly(equipmentButton1);
+		UUserWidgetHelpers::SetButtonText(equipmentButton1, "Tool 1");
+	}
+	auto equipmentButton2 = UUserWidgetHelpers::GetButtonFromWidget(EquipmentSlot2, "EquipmentButton");
+	if (equipmentButton2) {
 		equipmentButton2->OnClicked.AddDynamic(this, &UCrewDetailsGridWidget::Tool2Clicked);
+		UUserWidgetHelpers::DesignButtonTextOnly(equipmentButton2);
+		UUserWidgetHelpers::SetButtonText(equipmentButton2, "Tool 2");
+	}
 
-	auto equipmentImage3 = (UUserWidget*)GetWidgetFromName(FName("EquipmentSlot3"));
-	auto equipmentButton3 = UUserWidgetHelpers::GetButtonFromWidget(equipmentImage3, "EquipmentButton");
-	if (equipmentButton3)
+	auto equipmentButton3 = UUserWidgetHelpers::GetButtonFromWidget(EquipmentSlot3, "EquipmentButton");
+	if (equipmentButton3) {
 		equipmentButton3->OnClicked.AddDynamic(this, &UCrewDetailsGridWidget::Tool3Clicked);
+		UUserWidgetHelpers::DesignButtonTextOnly(equipmentButton3);
+		UUserWidgetHelpers::SetButtonText(equipmentButton3, "Tool 3");
+	}
 
 
 	CurrentCrewId = FGuid::FGuid();
@@ -54,9 +59,8 @@ void UCrewDetailsGridWidget::InitialiseGridForCrewMember(FGuid crewMember) {
 
 	CurrentCrewId = crewMemberData->GetId();
 
-	auto primaryImageSlot = UUserWidgetHelpers::GetImageFromWidget(this, "PrimaryImage");
-	if (primaryImageSlot) {
-		primaryImageSlot->SetBrushFromTexture(UUserWidgetHelpers::GetTextureForGun(primary->GetPrimaryGunType()));
+	if (PrimaryImage) {
+		PrimaryImage->SetBrushFromTexture(UUserWidgetHelpers::GetTextureForGun(primary->GetPrimaryGunType()));
 	}
 	else return UDebugMessages::LogError(this, "failed to get primary image btn");
 
@@ -107,16 +111,11 @@ void UCrewDetailsGridWidget::OpenToolSelectionMenu(int toolIndex) {
 }
 
 void UCrewDetailsGridWidget::ResetDetailsGrid() {
-	auto primaryImageSlot = UUserWidgetHelpers::GetImageFromWidget(this, "PrimaryImage");
+	auto eq1ImageSlot = UUserWidgetHelpers::GetImageFromWidget(EquipmentSlot1, "EquipmentImage");
+	auto eq2ImageSlot = UUserWidgetHelpers::GetImageFromWidget(EquipmentSlot2, "EquipmentImage");
+	auto eq3ImageSlot = UUserWidgetHelpers::GetImageFromWidget(EquipmentSlot3, "EquipmentImage");
 
-	auto equipmentImage1 = (UUserWidget*)GetWidgetFromName(FName("EquipmentSlot1"));
-	auto equipmentImage2 = (UUserWidget*)GetWidgetFromName(FName("EquipmentSlot2"));
-	auto equipmentImage3 = (UUserWidget*)GetWidgetFromName(FName("EquipmentSlot3"));
-	auto eq1ImageSlot = UUserWidgetHelpers::GetImageFromWidget(equipmentImage1, "EquipmentImage");
-	auto eq2ImageSlot = UUserWidgetHelpers::GetImageFromWidget(equipmentImage2, "EquipmentImage");
-	auto eq3ImageSlot = UUserWidgetHelpers::GetImageFromWidget(equipmentImage3, "EquipmentImage");
-
-	if (primaryImageSlot) ResetPrimaryInventoryImage(primaryImageSlot);
+	if (PrimaryImage) ResetPrimaryInventoryImage(PrimaryImage);
 
 	if (eq1ImageSlot) ResetEquipmentInventoryImage(eq1ImageSlot);
 	if (eq2ImageSlot) ResetEquipmentInventoryImage(eq2ImageSlot);

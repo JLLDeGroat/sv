@@ -7,6 +7,8 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
+#include "Components/WorldDirectionOptionComponent.h"
+#include "../Utilities/SvUtilities.h"
 
 AWorldPlayerController::AWorldPlayerController() {
 	bShowMouseCursor = true;
@@ -16,6 +18,12 @@ AWorldPlayerController::AWorldPlayerController() {
 	ClickAction = LoadObject<UInputAction>(this, TEXT("/Script/EnhancedInput.InputAction'/Game/Controls/IA_Click.IA_Click'"));
 
 	LeftClickActionComponent = CreateDefaultSubobject<ULeftClickAction>(TEXT("LeftClickAction"));
+
+	DirectionOptionComponent = CreateDefaultSubobject<UWorldDirectionOptionComponent>(TEXT("WorldDirection"));
+}
+
+void AWorldPlayerController::Tick(float DeltaTime) {
+	Super::Tick(DeltaTime);
 }
 
 void AWorldPlayerController::BeginPlay() {

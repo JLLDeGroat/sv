@@ -37,6 +37,9 @@ public:
 
 	void SetIsSpawningFromGround(bool val);
 
+	void SetIsHealingSelf(bool val);
+	void SetIsHealingAlly(bool val);
+
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnGunFire();
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnFinishFire();
@@ -72,6 +75,11 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnUnHolsterNewWeapon();
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnFinishWeaponSwapping();
 
+	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnHealingComplete();
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnSpawnHealthKit();
+	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnDespawnHealthKit();
+	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void SetHealthKitActivation(bool val);
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) float Speed;
@@ -89,7 +97,12 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsAiActive;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsPickingUp;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsHealingSelf;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsHealingAlly;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bSpawningFromGround;
+
+	UFUNCTION(BlueprintPure, meta = (BlueprintThreadSafe)) bool GetIsHealing();
 
 private:
 

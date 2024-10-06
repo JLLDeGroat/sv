@@ -21,6 +21,10 @@ void USupplierListItemWidget::NativeConstruct() {
 		UUserWidgetHelpers::DesignButton(PurchaseButton);
 		PurchaseButton->OnClicked.AddDynamic(this, &USupplierListItemWidget::OnPurchaseClicked);
 	}
+
+	if (DescriptionText) UUserWidgetHelpers::DesignText(DescriptionText); 
+	if (AmountOwnedText) UUserWidgetHelpers::DesignText(AmountOwnedText);
+	if (ItemName) UUserWidgetHelpers::DesignText(ItemName);
 }
 
 void USupplierListItemWidget::SetNameOfItem(FString name) {
@@ -109,7 +113,7 @@ void USupplierListItemWidget::OnPurchaseClicked() {
 		for (const TPair<EResourceType, int>& pair : Costs) {
 			auto resItem = resources->GetResource(pair.Key);
 			resItem->RemoveFromAmount(pair.Value);
-			
+
 			auto hudDelegates = UHudDelegates::GetInstance();
 			if (!hudDelegates)
 				return UDebugMessages::LogError(this, "failed to get hud delegates");

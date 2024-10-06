@@ -21,6 +21,6 @@ public:
 
 protected:
 
-	UPROPERTY() UBaseAIBehaviour* MeleeBehaviour;
+	UPROPERTY() UBaseAIBehaviour* MovementBehaviour;
 
 };

@@ -22,8 +22,10 @@ void UClassicGameMapGenerationRunnable::ActivateThread() {
 
 	UDebugMessages::LogDisplay(this, "finding valid Routes");
 	FindValidRoutes();
+	UDebugMessages::LogDisplay(this, "found valid Routes");
 	UDebugMessages::LogDisplay(this, "finding valid off shoots Routes");
 	FindValidOffshoots();
+	UDebugMessages::LogDisplay(this, "found valid off shoots Routes");
 
 	auto instance = USvUtilities::GetGameInstance(GetWorld());
 
@@ -39,9 +41,13 @@ void UClassicGameMapGenerationRunnable::ActivateThread() {
 	routeManager->SetCurrentOffshoots(Offshoots);
 	routeManager->SetCurrentLocationOnRoute(ChosenPrimaryRoute[0]);
 
+	UDebugMessages::LogDisplay(this, "GenerateWorldLocationData");
 	GenerateWorldLocationData();
+	UDebugMessages::LogDisplay(this, "GenerateWorldLocationMissionsData");
 	GenerateWorldLocationMissionsData();
+	UDebugMessages::LogDisplay(this, "GenerateCrewMembers");
 	GenerateCrewMembers();
+	UDebugMessages::LogDisplay(this, "GenerateBaseResourceAmounts");
 	GenerateBaseResourceAmounts();
 
 	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([widget] {
@@ -133,12 +139,16 @@ bool UClassicGameMapGenerationRunnable::IsAdjacentToNonPreviousLocations(TArray<
 
 
 void UClassicGameMapGenerationRunnable::FindValidOffshoots() {
-	while (Offshoots.Num() < MaxOffshoots)
+	auto iterations = 0;
+	while (Offshoots.Num() < MaxOffshoots && iterations < 5) {
 		for (int i = 1; i < ChosenPrimaryRoute.Num() - 1; i++) {
 			auto newArr = TArray<FVector2D>();
 			newArr.Emplace(ChosenPrimaryRoute[i]);
 			FindValidOffshootsRecursive(newArr, true);
 		}
+		iterations += 1;
+		UDebugMessages::LogDisplay(this, "FindValidOffshoots iteration");
+	}
 
 	auto widget = GameModeWidget;
 	auto finalOffshoots = Offshoots;

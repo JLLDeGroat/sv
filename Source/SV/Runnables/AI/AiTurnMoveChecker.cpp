@@ -9,6 +9,7 @@
 
 #include "../../Characters/Components/GridMovementComponent.h"
 #include "../../Characters/Components/CharacterDetailsComponent.h"
+#include "../../Characters/Components/AIComponent.h"
 
 #include "Behaviours/AIMeleeRangeMove.h"
 
@@ -19,13 +20,15 @@ void UAiTurnMoveChecker::ActivateThread() {
 	//TODO create behaviour aroud movement
 	//currently assuming all is melee and will move into melee range
 
-	MeleeBehaviour = CreateBehaviourClass(UAIMeleeRangeMove::StaticClass());
-	if (!MeleeBehaviour)
+	auto aiComponent = GetThisEnemy()->GetAsActor()->GetComponentByClass<UAIComponent>();
+
+	MovementBehaviour = CreateBehaviourClass(aiComponent->GetMovementRoute());
+	if (!MovementBehaviour)
 		return UDebugMessages::LogError(this, "found no melee movement behaviour");
 
-	MeleeBehaviour->DoBehaviour();
+	MovementBehaviour->DoBehaviour();
 
-	while (!MeleeBehaviour->GetCompletedBehaviourAndWaitIfNot(.1f) && bIsAlive) {
+	while (!MovementBehaviour->GetCompletedBehaviourAndWaitIfNot(.1f) && bIsAlive) {
 		if (GetThisEnemyIsValidAndAlive()) {
 			UDebugMessages::LogDisplay(this, "waiting on melee range movement behaviour");
 		}

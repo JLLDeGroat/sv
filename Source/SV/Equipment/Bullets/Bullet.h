@@ -3,44 +3,25 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "Base/BaseBullet.h"
 #include "Bullet.generated.h"
 
-class UBulletCollisionComponent;
-class UStaticMeshComponent;
-class UTravelComponent;
-class UBulletDetailsComponent;
-class UBulletTrailComponent;
-class UBulletSoundComponent;
-class UBulletHitSoundComponent;
-class UBulletRearComponent;
 
 UCLASS()
-class SV_API ABullet : public AActor
+class SV_API ABullet : public ABaseBullet
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
-	ABullet();
+	ABullet(const FObjectInitializer& ObjectInitializer);
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* BulletMeshComponent;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) UBulletCollisionComponent* BulletCollisionComponent;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) UTravelComponent* TravelComponent;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) UBulletDetailsComponent* BulletDetailsComponent;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) UBulletTrailComponent* BulletTrailComponent;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) UBulletSoundComponent* BulletFireSoundComponent;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) UBulletHitSoundComponent* BulletHitSoundComponent;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) UBulletRearComponent* BulletRearComponent;
 
-
-	UFUNCTION() void OnAutoDestroyCallback();
-
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

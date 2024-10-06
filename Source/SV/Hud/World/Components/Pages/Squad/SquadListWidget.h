@@ -6,8 +6,9 @@
 #include "Blueprint/UserWidget.h"
 #include "SquadListWidget.generated.h"
 
+class UButton;
 /**
- * 
+ *
  */
 UCLASS()
 class SV_API USquadListWidget : public UUserWidget
@@ -15,7 +16,7 @@ class SV_API USquadListWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	
+
 	void SetupCrewList();
 	virtual void NativeConstruct() override;
 
@@ -27,6 +28,13 @@ protected:
 	UFUNCTION() void Crew4Clicked();
 	UFUNCTION() void Crew5Clicked();
 	UFUNCTION() void Crew6Clicked();
+
+	UPROPERTY(meta = (BindWidget)) UButton* CrewBtn1;
+	UPROPERTY(meta = (BindWidget)) UButton* CrewBtn2;
+	UPROPERTY(meta = (BindWidget)) UButton* CrewBtn3;
+	UPROPERTY(meta = (BindWidget)) UButton* CrewBtn4;
+	UPROPERTY(meta = (BindWidget)) UButton* CrewBtn5;
+	UPROPERTY(meta = (BindWidget)) UButton* CrewBtn6;
 
 private:
 

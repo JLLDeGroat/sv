@@ -13,24 +13,15 @@
 #include "Components/BulletRearComponent.h"
 
 // Sets default values
-ABullet::ABullet()
+ABullet::ABullet(const FObjectInitializer& ObjectInitializer) : ABaseBullet(ObjectInitializer)
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	BulletMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BulletMesh"));
-	RootComponent = BulletMeshComponent;
-	BulletMeshComponent->SetCanEverAffectNavigation(false);
-	BulletMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	BulletCollisionComponent = CreateDefaultSubobject<UBulletCollisionComponent>(TEXT("BulletCollision"));
-	BulletCollisionComponent->SetupAttachment(RootComponent);
 	BulletCollisionComponent->SetRelativeLocation(FVector(-7, 0, 0));
 	BulletCollisionComponent->SetCapsuleRadius(1, false);
 	BulletCollisionComponent->SetCapsuleHalfHeight(10, false);
 	BulletCollisionComponent->SetRelativeRotation(FRotator(90, 0, 0));
-
-	TravelComponent = CreateDefaultSubobject<UTravelComponent>(TEXT("Travel"));
 
 	auto bulletMesh = USvUtilities::GetStaticMesh("/Script/Engine.StaticMesh'/Game/Equipment/Bullets/Bullet.Bullet'");
 	if (bulletMesh) {
@@ -40,18 +31,12 @@ ABullet::ABullet()
 		BulletMeshComponent->SetMaterial(0, bulletMat);
 	}
 
-	BulletDetailsComponent = CreateDefaultSubobject<UBulletDetailsComponent>(TEXT("BulletDetails"));
-	BulletTrailComponent = CreateDefaultSubobject<UBulletTrailComponent>(TEXT("BulletTrail"));
-	BulletTrailComponent->SetupAttachment(RootComponent);
+	auto basicAssetRef = "/Script/Niagara.NiagaraSystem'/Game/Effects/Trails/BasicBulletTrail_N.BasicBulletTrail_N'";
+	auto niagaraSystem = USvUtilities::GetNiagaraSystem(basicAssetRef);
+	if (niagaraSystem) {
+		BulletTrailComponent->SetAsset(niagaraSystem);
+	}
 
-
-	BulletFireSoundComponent = CreateDefaultSubobject<UBulletSoundComponent>(TEXT("FireSound"));
-	BulletHitSoundComponent = CreateDefaultSubobject<UBulletHitSoundComponent>(TEXT("HitSound"));
-	BulletHitSoundComponent->SetSphereRadius(0);
-	BulletFireSoundComponent->SetSphereRadius(0);
-
-	BulletRearComponent = CreateDefaultSubobject<UBulletRearComponent>(TEXT("ReadComp"));
-	BulletRearComponent->SetupAttachment(RootComponent);
 	BulletRearComponent->SetSphereRadius(1);
 	BulletRearComponent->SetRelativeLocation(FVector(-30, 0, 0));
 }
@@ -75,6 +60,3 @@ void ABullet::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 }
 
-void ABullet::OnAutoDestroyCallback() {
-	Destroy();
-}

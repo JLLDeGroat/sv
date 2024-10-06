@@ -5,27 +5,40 @@
 #include "../../../../../Utilities/SvUtilities.h"
 #include "../../../../../Instance/SvGameInstance.h"
 #include "../../../../../Instance/Managers/CurrentGameDataManager.h"
+#include "../../../../../Delegates/TutorialDelegates.h"
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "CrewDetailsGridWidget.h"
+#include "../../../../Helpers/UserWidgetHelpers.h"
 
 void USquadListWidget::NativeConstruct() {
 	Super::NativeConstruct();
 
-	auto btn1 = (UButton*)GetWidgetFromName("CrewBtn1");
-	auto btn2 = (UButton*)GetWidgetFromName("CrewBtn2");
-	auto btn3 = (UButton*)GetWidgetFromName("CrewBtn3");
-	auto btn4 = (UButton*)GetWidgetFromName("CrewBtn4");
-	auto btn5 = (UButton*)GetWidgetFromName("CrewBtn5");
-	auto btn6 = (UButton*)GetWidgetFromName("CrewBtn6");
-
-	if (btn1) btn1->OnClicked.AddDynamic(this, &USquadListWidget::Crew1Clicked);
-	if (btn2) btn2->OnClicked.AddDynamic(this, &USquadListWidget::Crew2Clicked);
-	if (btn3) btn3->OnClicked.AddDynamic(this, &USquadListWidget::Crew3Clicked);
-	if (btn4) btn4->OnClicked.AddDynamic(this, &USquadListWidget::Crew4Clicked);
-	if (btn5) btn5->OnClicked.AddDynamic(this, &USquadListWidget::Crew5Clicked);
-	if (btn6) btn6->OnClicked.AddDynamic(this, &USquadListWidget::Crew6Clicked);
+	if (CrewBtn1) {
+		CrewBtn1->OnClicked.AddDynamic(this, &USquadListWidget::Crew1Clicked);
+		UUserWidgetHelpers::DesignButton(CrewBtn1);
+	}
+	if (CrewBtn2) {
+		CrewBtn2->OnClicked.AddDynamic(this, &USquadListWidget::Crew2Clicked);
+		UUserWidgetHelpers::DesignButton(CrewBtn2);
+	}
+	if (CrewBtn3) {
+		CrewBtn3->OnClicked.AddDynamic(this, &USquadListWidget::Crew3Clicked);
+		UUserWidgetHelpers::DesignButton(CrewBtn3);
+	}
+	if (CrewBtn4) {
+		CrewBtn4->OnClicked.AddDynamic(this, &USquadListWidget::Crew4Clicked);
+		UUserWidgetHelpers::DesignButton(CrewBtn4);
+	}
+	if (CrewBtn5) {
+		CrewBtn5->OnClicked.AddDynamic(this, &USquadListWidget::Crew5Clicked);
+		UUserWidgetHelpers::DesignButton(CrewBtn5);
+	}
+	if (CrewBtn6) {
+		CrewBtn6->OnClicked.AddDynamic(this, &USquadListWidget::Crew6Clicked);
+		UUserWidgetHelpers::DesignButton(CrewBtn6);
+	}
 
 }
 
@@ -72,6 +85,12 @@ void USquadListWidget::Crew6Clicked() {
 }
 
 void USquadListWidget::ShowCrewDetails(int crewClicked) {
+	auto tutorialDelegates = UTutorialDelegates::GetInstance();
+	if (!tutorialDelegates)
+		return UDebugMessages::LogError(this, "failed to get tutorial delegates");
+
+	tutorialDelegates->_OnTryShowTutorial.Broadcast(ETutorials::T_EquipmentSelect);
+
 	UDebugMessages::LogDisplay(this, "crew clicked " + FString::SanitizeFloat(crewClicked));
 
 	auto parentWidget = (UUserWidget*)GetOuter()->GetOuter();

@@ -14,6 +14,8 @@
 #include "../Components/CharacterDetailsComponent.h"
 #include "../Components/PickupResourceComponent.h"
 #include "../Components/SpawnInComponent.h"
+#include "../Components/HealthKitsComponent.h"
+#include "../Components/AIComponent.h"
 #include "../../Player/Components/PawnCameraComponent.h"
 #include "../../Player/Components/CameraOverlapComponent.h"
 #include "../../Player/GamePlayerController.h"
@@ -24,6 +26,7 @@
 #include "../Components/AIComponent.h"
 #include "Animation/AnimNode_StateMachine.h"
 #include "../../Runnables/PostMovementRunnable.h"
+#include "NiagaraComponent.h"
 
 UCharAnimInstance::UCharAnimInstance(const FObjectInitializer& ObjectInitializer)
 	: UAnimInstance(ObjectInitializer) {
@@ -82,6 +85,12 @@ void UCharAnimInstance::SetIsSpawningFromGround(bool val) {
 void UCharAnimInstance::SetCharacterAnimState(ECharacterAnimState animState) {
 	CharacterAnimState = animState;
 }
+void UCharAnimInstance::SetIsHealingSelf(bool val) {
+	bIsHealingSelf = val;
+}
+void UCharAnimInstance::SetIsHealingAlly(bool val) {
+	bIsHealingAlly = val;
+}
 
 void UCharAnimInstance::OnGunFire() {
 	auto owningActor = GetOwningActor();
@@ -119,8 +128,11 @@ void UCharAnimInstance::OnFinishFire() {
 			},
 			TStatId(), nullptr, ENamedThreads::GameThread);
 
-	GetWorld()->GetTimerManager().SetTimer(OnFinishFireHandle, this, &UCharAnimInstance::OnFinishFire_PostDelay, 1.0f, false);
+	auto hasAiComponent = owningActor->GetComponentByClass<UAIComponent>();
+	if (!hasAiComponent)
+		GetWorld()->GetTimerManager().SetTimer(OnFinishFireHandle, this, &UCharAnimInstance::OnFinishFire_PostDelay, 1.0f, false);
 }
+
 void UCharAnimInstance::OnFinishFire_PostDelay() {
 	auto owningActor = GetOwningActor();
 	if (owningActor) {
@@ -362,4 +374,57 @@ void UCharAnimInstance::OnFinishWeaponSwapping() {
 			},
 			TStatId(), nullptr, ENamedThreads::GameThread);
 	}
+}
+
+void UCharAnimInstance::OnHealingComplete() {
+	auto owningActor = GetOwningActor();
+	if (owningActor && owningActor->GetComponentByClass<UHealthKitsComponent>()) {
+		auto healthKitComponent = owningActor->GetComponentByClass<UHealthKitsComponent>();
+		healthKitComponent->UseActiveHealthKitOnActor();
+	}
+}
+void UCharAnimInstance::OnSpawnHealthKit() {
+	auto owningActor = GetOwningActor();
+	if (owningActor && owningActor->GetComponentByClass<UHealthKitsComponent>()) {
+		auto healthKitComponent = owningActor->GetComponentByClass<UHealthKitsComponent>();
+		FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([healthKitComponent]
+			{
+				healthKitComponent->SpawnHealthKitOnHand();
+			},
+			TStatId(), nullptr, ENamedThreads::GameThread);
+	}
+}
+void UCharAnimInstance::OnDespawnHealthKit() {
+	auto owningActor = GetOwningActor();
+	if (owningActor && owningActor->GetComponentByClass<UHealthKitsComponent>()) {
+		auto healthKitComponent = owningActor->GetComponentByClass<UHealthKitsComponent>();
+		FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([healthKitComponent]
+			{
+				healthKitComponent->DespawnHealthKitOnHand();
+			},
+			TStatId(), nullptr, ENamedThreads::GameThread);
+	}
+}
+
+void UCharAnimInstance::SetHealthKitActivation(bool val) {
+	auto owningActor = GetOwningActor();
+	if (owningActor && owningActor->GetComponentByClass<UHealthKitsComponent>()) {
+		auto healthKitcomponent = owningActor->GetComponentByClass<UHealthKitsComponent>();
+		auto healthKit = healthKitcomponent->GetHealthKitActor();
+
+		AnimPlayRate = val ? .4f : 1.0f;
+
+		if (!healthKit)
+			return UDebugMessages::LogError(this, "failed to get healthkit actor");
+
+		auto niagaraComp = healthKit->GetComponentByClass<UNiagaraComponent>();
+		if (niagaraComp) {
+			if (val) niagaraComp->Activate();
+			else niagaraComp->Deactivate();
+		}
+	}
+}
+
+bool UCharAnimInstance::GetIsHealing() {
+	return bIsHealingAlly || bIsHealingSelf;
 }

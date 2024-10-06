@@ -26,6 +26,7 @@ class SV_API USvUtilities : public UObject
 public:
 	static ECollisionChannel GetFloorTargetChannel();
 	static ECollisionChannel GetClickableChannel();
+	static ECollisionChannel GetClickableEnvironmentChannel();
 	static ECollisionChannel GetEnvironmentChannel();
 	static ECollisionChannel GetBulletCollisionChannel();
 

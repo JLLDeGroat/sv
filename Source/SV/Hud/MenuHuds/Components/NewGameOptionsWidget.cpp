@@ -10,15 +10,14 @@
 #include "Components/TextBlock.h"
 #include "GameModes/ClassicGameModeWidget.h"
 #include "../../../Runnables/ClassicGameMapGenerationRunnable.h"
+#include "../../Helpers/UserWidgetHelpers.h"
 
 void UNewGameOptionsWidget::NativeConstruct() {
 	Super::NativeConstruct();
 
-	auto classicGameButton = GetClassicGameButton();
-	classicGameButton->OnClicked.AddDynamic(this, &UNewGameOptionsWidget::OnClassicGameClicked);
+	ClassicBtn->OnClicked.AddDynamic(this, &UNewGameOptionsWidget::OnClassicGameClicked);
 
-	auto startButton = GetBeginGameButton();
-	startButton->OnClicked.AddDynamic(this, &UNewGameOptionsWidget::OnStartGameClicked);
+	BeginGameButton->OnClicked.AddDynamic(this, &UNewGameOptionsWidget::OnStartGameClicked);
 	SetStartButtonVisibility(false);
 
 	auto classicWidget = GetWidgetFromName("ClassicMode");
@@ -26,16 +25,20 @@ void UNewGameOptionsWidget::NativeConstruct() {
 	ClassicGameModeWidget = classic;
 
 	ClassicGameModeWidget->SetVisibility(ESlateVisibility::Hidden);
+
+	UUserWidgetHelpers::DesignButton(ClassicBtn);
+	UUserWidgetHelpers::DesignButton(BeginGameButton);
+	UUserWidgetHelpers::DesignButton(ComingSoonBtn);
+
+	UUserWidgetHelpers::DesignText(TitleText);
+	UUserWidgetHelpers::DesignText(DescriptionText);
 }
 
 void UNewGameOptionsWidget::ResetWidget() {
 	SetStartButtonVisibility(false);
 
-	auto descBlock = GetDescriptionBlock();
-	auto titleBlock = GetTitleBlock();
-
-	titleBlock->SetText(FText::FromString(""));
-	descBlock->SetText(FText::FromString(""));
+	TitleText->SetText(FText::FromString(""));
+	DescriptionText->SetText(FText::FromString(""));
 }
 
 void UNewGameOptionsWidget::OnClassicGameClicked() {
@@ -56,8 +59,7 @@ void UNewGameOptionsWidget::OnStartGameClicked() {
 }
 
 void UNewGameOptionsWidget::SetStartButtonVisibility(bool val) {
-	auto beginGameButton = GetBeginGameButton();
-	beginGameButton->SetVisibility(val ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+	BeginGameButton->SetVisibility(val ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 }
 
 void UNewGameOptionsWidget::UpdateTitleAndDescriptions(EGameModeType gameMode) {
@@ -66,38 +68,14 @@ void UNewGameOptionsWidget::UpdateTitleAndDescriptions(EGameModeType gameMode) {
 	instance->GetGameTypeDescription(EGameModeType::EMT_Classic, item);
 
 
-	auto titleText = GetTitleBlock();
-	auto descriptionText = GetDescriptionBlock();
-
-	titleText->SetText(FText::FromString(item.GetTitle()));
+	TitleText->SetText(FText::FromString(item.GetTitle()));
 
 	auto descriptions = item.GetDescriptions();
 	FString totalDesc = "";
 	for (int i = 0; i < descriptions.Num(); i++) {
 		totalDesc += descriptions[i] + "\r\n";
 	}
-	descriptionText->SetText(FText::FromString(totalDesc));
-}
-
-UButton* UNewGameOptionsWidget::GetBeginGameButton() {
-	auto widget = GetWidgetFromName("BeginGameButton");
-	auto button = (UButton*)widget;
-	return button;
-}
-UButton* UNewGameOptionsWidget::GetClassicGameButton() {
-	auto widget = GetWidgetFromName("ClassicBtn");
-	auto button = (UButton*)widget;
-	return button;
-}
-UTextBlock* UNewGameOptionsWidget::GetTitleBlock() {
-	auto widget = GetWidgetFromName("TitleText");
-	auto block = (UTextBlock*)widget;
-	return block;
-}
-UTextBlock* UNewGameOptionsWidget::GetDescriptionBlock() {
-	auto widget = GetWidgetFromName("DescriptionText");
-	auto block = (UTextBlock*)widget;
-	return block;
+	DescriptionText->SetText(FText::FromString(totalDesc));
 }
 
 void UNewGameOptionsWidget::OnGenCompleted() {

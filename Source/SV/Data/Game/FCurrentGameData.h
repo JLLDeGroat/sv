@@ -10,6 +10,7 @@
 #include "Stats/FCrewMemberStats.h"
 #include "World/FCurrentWorldData.h"
 #include "Resource/FResourceData.h"
+#include "Tutorials/FTutorialData.h"
 #include "FCurrentGameData.generated.h"
 
 
@@ -422,6 +423,12 @@ public:
 
 #pragma endregion
 
+#pragma region TutorialData
+
+	FTutorialData* GetTutorialData() { return &TutorialData; }
+
+#pragma endregion
+
 protected:
 	UPROPERTY() TArray<FCrew> Crew;
 	UPROPERTY() TArray<FCrew> DeadCrew;
@@ -433,4 +440,5 @@ protected:
 	UPROPERTY() TArray<FCurrentMission> HistoricMissions;
 	UPROPERTY() FCurrentWorldData WorldData;
 	UPROPERTY() FResourceData ResourceData;
+	UPROPERTY() FTutorialData TutorialData;
 };

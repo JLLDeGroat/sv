@@ -16,6 +16,7 @@
 #include "Kismet/GameplayStatics.h"
 
 
+
 void UMissionDescriptionWidget::NativeConstruct() {
 	Super::NativeConstruct();
 	SetVisibility(ESlateVisibility::Hidden);
@@ -25,9 +26,15 @@ void UMissionDescriptionWidget::NativeConstruct() {
 		worldDelegates->_OnWorldMovementComplete.AddDynamic(this, &UMissionDescriptionWidget::OnWorldMoveComplete);
 	}
 
-	auto startButton = UUserWidgetHelpers::GetButtonFromWidget(this, "StartMissionBtn");
-	if (startButton)
-		startButton->OnClicked.AddDynamic(this, &UMissionDescriptionWidget::OnStartMissionClicked);
+	if (StartMissionBtn) {
+		StartMissionBtn->OnClicked.AddDynamic(this, &UMissionDescriptionWidget::OnStartMissionClicked);
+		UUserWidgetHelpers::DesignButton(StartMissionBtn);
+	}
+
+	if (MissionTypeText) UUserWidgetHelpers::DesignText(MissionTypeText);
+	if (MissionTitleText) UUserWidgetHelpers::DesignText(MissionTitleText);
+	if (MissionDescriptionText) UUserWidgetHelpers::DesignText(MissionDescriptionText);
+	if (MissionFluffText) UUserWidgetHelpers::DesignText(MissionFluffText);
 }
 
 bool UMissionDescriptionWidget::GetMoveCompleted() const {
@@ -90,6 +97,9 @@ void UMissionDescriptionWidget::OnWorldMoveComplete(FVector2D MovedToLocation) {
 	auto completedImage = UUserWidgetHelpers::GetImageFromWidget(this, "CompletedImage");
 	if (completedImage)
 		completedImage->SetVisibility(missionDetails->GetIsCompleted() ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+
+	if (MissionImage)
+		MissionImage->SetBrushFromTexture(UUserWidgetHelpers::GetRandomMissionImage());
 }
 
 void UMissionDescriptionWidget::OnStartMissionClicked() {

@@ -8,6 +8,8 @@
 #include "SelectEquipmentListItemWidget.generated.h"
 
 class UButton;
+class UTextBlock;
+
 /**
  *
  */
@@ -47,6 +49,8 @@ protected:
 
 	UPROPERTY() EToolType ToolType;
 	UPROPERTY() uint8 Tool;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UTextBlock* AmountText;
 
 private:
 	UButton* GetActivateButton();

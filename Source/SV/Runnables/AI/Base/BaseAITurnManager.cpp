@@ -6,6 +6,8 @@
 
 #include "../Behaviours/AIMeleeAttack.h"
 #include "../Behaviours/AIMeleeRangeMove.h"
+#include "../Behaviours/AiRangeAttack.h"
+#include "../Behaviours/AiRangeMove.h"
 
 #include "../../../Interfaces/SvChar.h"
 #include "../../../Characters/Components/CharacterDetailsComponent.h"
@@ -82,3 +84,37 @@ UBaseAIBehaviour* UBaseAITurnManager::CreateBehaviourClass(UClass* cls) {
 	return behaviour;
 }
 
+UBaseAIBehaviour* UBaseAITurnManager::CreateBehaviourClass(EAIBehaviourMoveRoutes mRoute) {
+	UBaseAIBehaviour* behaviour = nullptr;
+
+	switch (mRoute) {
+	case EAIBehaviourMoveRoutes::BMR_Range:
+		behaviour = NewObject<UAiRangeMove>(this);
+		break;
+	case EAIBehaviourMoveRoutes::BMR_Melee:
+		behaviour = NewObject<UAIMeleeRangeMove>(this);
+		break;
+	}
+
+	if (behaviour)
+		behaviour->SetEnemyAndCharacters(ThisEnemy->GetAsActor(), AllCharacters);
+
+	return behaviour;
+}
+UBaseAIBehaviour* UBaseAITurnManager::CreateBehaviourClass(EAIBehaviourAttackRoutes aRoute) {
+	UBaseAIBehaviour* behaviour = nullptr;
+
+	switch (aRoute) {
+	case EAIBehaviourAttackRoutes::BAR_Range:
+		behaviour = NewObject<UAiRangeAttack>(this);
+		break;
+	case EAIBehaviourAttackRoutes::BAR_Melee:
+		behaviour = NewObject<UAIMeleeAttack>(this);
+		break;
+	}
+
+	if (behaviour)
+		behaviour->SetEnemyAndCharacters(ThisEnemy->GetAsActor(), AllCharacters);
+
+	return behaviour;
+}
