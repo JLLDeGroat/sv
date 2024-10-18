@@ -33,7 +33,7 @@ void UAttackComponent::BeginPlay() {
 	Super::BeginPlay();
 	SetComponentTickEnabled(false);
 }
-
+#pragma optimize("", off)
 void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
@@ -95,7 +95,7 @@ void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		}
 	}
 }
-
+#pragma optimize("", on)
 void UAttackComponent::UpdateCurrentAttackState(EAttackState attackState) {
 	CurrentAttackState = attackState;
 	CurrentTargetCharacter = nullptr;
@@ -243,8 +243,10 @@ EAttackType UAttackComponent::DetermineAttackStateFromDirection(FVector currentG
 	InitialRotation = movementAtRot;
 	MoveToLocation = movementLoc;
 
+	auto movemantAtRotAsVector = movementAtRot.Vector();
+
 	if (movementAtRot.Vector().Y > 0) {
-		if (targetLookAtRot.Vector().X > 0) {
+		if (targetLookAtRot.Vector().X < 0) {
 			AdditionalRotation = FRotator(0, 90, 0);
 			return EAttackType::AT_MoveAndFire_Left;
 		}

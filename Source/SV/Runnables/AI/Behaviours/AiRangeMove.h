@@ -3,20 +3,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "../Base/BaseAIBehaviour.h"
+#include "Base/BaseAIBehaviour.h"
 #include "AiRangeMove.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class SV_API UAiRangeMove : public UBaseAIBehaviour
 {
 	GENERATED_BODY()
-	
+
 public:
 
 	UAiRangeMove(const FObjectInitializer& ObjectInitializer);
 
 	virtual void DoBehaviour() override;
+private:
+
+	bool CheckPositionIsGoodForRange(FVector loc);
 };

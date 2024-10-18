@@ -61,6 +61,9 @@ public:
 	FTargetData* GetCurrentMainTarget();
 	FTargetData* GetTargetDataForActor(AActor* actor);
 
+	void DetermineTheoreticalTargetData(FVector location);
+	TArray<FTargetData> GetCurrentTheoreticalTargetData();
+
 	void SetCurrentMainTargetId(FGuid targetId);
 
 protected:
@@ -69,7 +72,7 @@ protected:
 
 
 	bool ObtainPotentialTargetList(TArray<TScriptInterface<ISvChar>>& FoundCharacters) const;
-	TArray<FVector> GetPotentialShootingLocations(bool includeCurrentLocation);
+	TArray<FVector> GetPotentialShootingLocations(bool includeCurrentLocation, FVector startingLoc = FVector::ZeroVector);
 
 public:
 	// Called every frame
@@ -77,9 +80,10 @@ public:
 
 private:
 	UPROPERTY() TArray<FTargetData> TargetData;
+	UPROPERTY() TArray<FTargetData> TheoreticalTargetData;
 	UPROPERTY() FGuid CurrentMainTargetId;
 
 
-	bool GetCanTarget(FVector possibleLocation, TScriptInterface<ISvChar> character);
+	bool GetCanTarget(FVector possibleLocation, TScriptInterface<ISvChar> character, FTargetData& foundData);
 
 };

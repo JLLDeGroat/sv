@@ -86,6 +86,7 @@ float UDamageRecieveComponent::DoDamage(float multiplier, int damage, float impu
 		}
 		skeleton->SetSimulatePhysics(true);
 		skeleton->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+		skeleton->SetCollisionResponseToChannel(USvUtilities::GetEnvironmentChannel(), ECR_Block);
 
 		if (angleOfDamage == FRotator::ZeroRotator)
 			UDebugMessages::LogError(this, "location was zero vector, cannot add impulse on death");

@@ -3,9 +3,10 @@
 
 #include "BaseAIBehaviour.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
-#include "../../../Interfaces/SvChar.h"
-#include "../../../Delegates/AIDelegates.h"
-#include "../../../World/WorldGridItemActor.h"
+#include "../../../../Interfaces/SvChar.h"
+#include "../../../../Delegates/AIDelegates.h"
+#include "../../../../World/WorldGridItemActor.h"
+#include "../Components/AiMovementComponent.h"
 
 UBaseAIBehaviour::UBaseAIBehaviour(const FObjectInitializer& ObjectInitializer)
 	: UObject(ObjectInitializer) {
@@ -18,6 +19,8 @@ UBaseAIBehaviour::UBaseAIBehaviour(const FObjectInitializer& ObjectInitializer)
 		UDebugMessages::LogError(this, "failed to bind to delegate");
 
 	_randomStream = FRandomStream(123);
+
+	MovementComponent = CreateDefaultSubobject<UAiMovementComponent>(TEXT("Movement"));
 }
 
 
@@ -61,6 +64,8 @@ void UBaseAIBehaviour::SetCompletedBehaviour() {
 	UDebugMessages::LogDisplay(this, "Behaviour set to complete");
 
 	ClearInternalFlags(EInternalObjectFlags::Async);
+
+	MovementComponent->ClearInternalFlags(EInternalObjectFlags::Async);
 
 	auto aiDelegates = UAIDelegates::GetInstance();
 	if (aiDelegates)

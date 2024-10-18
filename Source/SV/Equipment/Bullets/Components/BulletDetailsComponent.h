@@ -30,6 +30,9 @@ public:
 
 	void RemoveFromPenetrationAbility(int amount);
 
+	void CompleteSetup();
+	bool GetIsSetup();
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -47,5 +50,6 @@ private:
 	UPROPERTY() AActor* GunShotFrom;
 
 	UPROPERTY() int PenetrationAbility;
+	UPROPERTY() bool bSetup;
 		
 };

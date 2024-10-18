@@ -7,9 +7,10 @@
 #include "BaseAIBehaviour.generated.h"
 
 class ISvChar;
+class UAiMovementComponent;
 
 /**
- * 
+ *
  */
 UCLASS()
 class SV_API UBaseAIBehaviour : public UObject
@@ -34,6 +35,8 @@ public:
 	bool GetCompletedBehaviourAndWaitIfNot(float seconds);
 	UFUNCTION() void SetCompletedBehaviour();
 
+	UAiMovementComponent* GetMovementComponent() { return MovementComponent; }
+
 protected:
 
 	void SpawnDebugGrid_SetIsStart(FVector location, float delay = .0001f);
@@ -50,6 +53,8 @@ protected:
 
 	TScriptInterface<ISvChar> GetClosestCharacter();
 	FRandomStream GetRandomStream() { return _randomStream; }
+
+	UPROPERTY() UAiMovementComponent* MovementComponent;
 private:
 
 	UPROPERTY() AActor* ThisEnemy;

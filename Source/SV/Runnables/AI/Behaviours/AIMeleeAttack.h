@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "../Base/BaseAIBehaviour.h"
+#include "Base/BaseAIBehaviour.h"
 #include "AIMeleeAttack.generated.h"
 
 /**

@@ -71,3 +71,19 @@ FVector2D UGridUtilities::GetRouteLocationFrom3DLoc(FVector loc, bool bRemoveOff
 	else
 		return FVector2D((loc.Y) / multiplier, (loc.X) / multiplier);
 }
+
+TArray<FVector> UGridUtilities::GetAllLocationsWithinRadius(FVector location, int radius) {
+	auto radiusReal = radius * 100;
+
+	TArray<FVector> locations;
+
+	for (int x = -radiusReal; x < radiusReal; x += 100) {
+		for (int y = -radiusReal; y < radiusReal; y += 100) {
+			locations.Add(location + FVector(x, y, 0));
+			//y + 100;
+		}
+		//x + 100;
+	}
+
+	return locations;
+}

@@ -131,29 +131,31 @@ void UCharAnimInstance::OnGunFire() {
 void UCharAnimInstance::OnFinishFire() {
 	auto owningActor = GetOwningActor();
 
-	bIsAttacking = false;
-	auto attackComponent = owningActor->GetComponentByClass<UAttackComponent>();
+	if (owningActor) {
+		bIsAttacking = false;
+		auto attackComponent = owningActor->GetComponentByClass<UAttackComponent>();
 
-	auto playerController = owningActor->GetWorld()->GetFirstPlayerController<AGamePlayerController>();
-	auto pawn = playerController->GetPawn();
-	auto cameraComponent = pawn->GetComponentByClass<UPawnCameraComponent>();
-	auto cameraOverlapComponent = pawn->GetComponentByClass<UCameraOverlapComponent>();
-	auto currentAttackType = AttackType;
+		auto playerController = owningActor->GetWorld()->GetFirstPlayerController<AGamePlayerController>();
+		auto pawn = playerController->GetPawn();
+		auto cameraComponent = pawn->GetComponentByClass<UPawnCameraComponent>();
+		auto cameraOverlapComponent = pawn->GetComponentByClass<UCameraOverlapComponent>();
+		auto currentAttackType = AttackType;
 
-	if (currentAttackType == EAttackType::AT_MoveAndFire_Right ||
-		currentAttackType == EAttackType::AT_MoveAndFire_Left ||
-		currentAttackType == EAttackType::AT_BasicFire &&
-		(attackComponent && cameraComponent && cameraOverlapComponent))
-		FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([attackComponent]
-			{
-				attackComponent->ReturnCharacterAnimationSpeedsToNormal();
-				attackComponent->UpdateCurrentAttackState(EAttackState::CS_Return);
-			},
-			TStatId(), nullptr, ENamedThreads::GameThread);
+		if (currentAttackType == EAttackType::AT_MoveAndFire_Right ||
+			currentAttackType == EAttackType::AT_MoveAndFire_Left ||
+			currentAttackType == EAttackType::AT_BasicFire &&
+			(attackComponent && cameraComponent && cameraOverlapComponent))
+			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([attackComponent]
+				{
+					attackComponent->ReturnCharacterAnimationSpeedsToNormal();
+					attackComponent->UpdateCurrentAttackState(EAttackState::CS_Return);
+				},
+				TStatId(), nullptr, ENamedThreads::GameThread);
 
-	auto hasAiComponent = owningActor->GetComponentByClass<UAIComponent>();
-	if (!hasAiComponent)
-		GetWorld()->GetTimerManager().SetTimer(OnFinishFireHandle, this, &UCharAnimInstance::OnFinishFire_PostDelay, 1.0f, false);
+		auto hasAiComponent = owningActor->GetComponentByClass<UAIComponent>();
+		if (!hasAiComponent)
+			GetWorld()->GetTimerManager().SetTimer(OnFinishFireHandle, this, &UCharAnimInstance::OnFinishFire_PostDelay, 1.0f, false);
+	}
 }
 
 void UCharAnimInstance::OnFinishFire_PostDelay() {

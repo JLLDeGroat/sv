@@ -66,6 +66,49 @@ FTargetData* UTargetingComponent::GetTargetDataForActor(AActor* actor) {
 	return nullptr;
 }
 
+void UTargetingComponent::DetermineTheoreticalTargetData(FVector location) {
+	TheoreticalTargetData.Empty();
+
+	if (location == FVector::ZeroVector)
+		return UDebugMessages::LogError(this, "location is zero vector, and wont work with theoretical target data");
+
+	auto owner = GetOwner();
+	auto svChar = GetOwner<ISvChar>();
+	auto details = owner->GetComponentByClass<UCharacterDetailsComponent>();
+
+	if (details) {
+		TArray<TScriptInterface<ISvChar>> characters;
+		ObtainPotentialTargetList(characters);
+
+		auto possibleLocations = GetPotentialShootingLocations(false, location);
+
+		for (int i = 0; i < characters.Num(); i++) {
+			auto characterLocation = location;
+
+			possibleLocations.Sort([possibleLocations, characterLocation](const FVector A, const FVector B) {
+				return FVector::DistSquared(characterLocation, A) < FVector::DistSquared(characterLocation, B);
+				});
+
+			FTargetData foundData;
+			if (GetCanTarget(characterLocation, characters[i], foundData)) {
+				TheoreticalTargetData.Emplace(foundData);
+				continue;
+			}
+
+			for (int j = 0; j < possibleLocations.Num(); j++) {
+				if (GetCanTarget(possibleLocations[j], characters[i], foundData)) {
+					TheoreticalTargetData.Emplace(foundData);
+					break;
+				}
+			}
+			// owner->GetWorld()->LineTraceSingleByChannel(Hit, ownerLocation, location)
+		}
+	}
+}
+TArray<FTargetData> UTargetingComponent::GetCurrentTheoreticalTargetData() {
+	return TheoreticalTargetData;
+}
+
 void UTargetingComponent::DetermineTargetData() {
 	TargetData.Empty();
 
@@ -87,12 +130,17 @@ void UTargetingComponent::DetermineTargetData() {
 				});
 
 			auto startingLocation = svChar->GetSelectableGridLocation();
-			if (GetCanTarget(startingLocation, characters[i]))
+			FTargetData foundData;
+			if (GetCanTarget(startingLocation, characters[i], foundData)) {
+				TargetData.Emplace(foundData);
 				continue;
+			}
 
 			for (int j = 0; j < possibleLocations.Num(); j++) {
-				if (GetCanTarget(possibleLocations[j], characters[i]))
+				if (GetCanTarget(possibleLocations[j], characters[i], foundData)) {
+					TargetData.Emplace(foundData);
 					break;
+				}
 			}
 			// owner->GetWorld()->LineTraceSingleByChannel(Hit, ownerLocation, location)
 		}
@@ -131,10 +179,13 @@ bool UTargetingComponent::ObtainPotentialTargetList(TArray<TScriptInterface<ISvC
 	return !FoundCharacters.IsEmpty();
 }
 
-TArray<FVector> UTargetingComponent::GetPotentialShootingLocations(bool includeCurrentLocation) {
+TArray<FVector> UTargetingComponent::GetPotentialShootingLocations(bool includeCurrentLocation, FVector startingLoc) {
 	auto svChar = GetOwner<ISvChar>();
 
-	auto startingLocation = svChar->GetSelectableGridLocation();
+	auto startingLocation = startingLoc == FVector::ZeroVector ?
+		svChar->GetSelectableGridLocation() :
+		startingLoc;
+
 	TArray<FVector> locations;
 
 	auto gridMovementComponent = GetOwner()->GetComponentByClass<UGridMovementComponent>();
@@ -151,7 +202,7 @@ TArray<FVector> UTargetingComponent::GetPotentialShootingLocations(bool includeC
 	return finalLocations;
 }
 
-bool UTargetingComponent::GetCanTarget(FVector possibleLocation, TScriptInterface<ISvChar> character) {
+bool UTargetingComponent::GetCanTarget(FVector possibleLocation, TScriptInterface<ISvChar> character, FTargetData& foundData) {
 	auto svChar = GetOwner<ISvChar>();
 	auto headLocation = svChar->GetHeadZHeight();
 	auto hitComponents = character->GetHitComponents();
@@ -160,8 +211,8 @@ bool UTargetingComponent::GetCanTarget(FVector possibleLocation, TScriptInterfac
 		GetOwner()->GetWorld()->LineTraceSingleByChannel(Hit, possibleLocation, hitComponents[x]->GetWorldLocation(), USvUtilities::GetEnvironmentChannel());
 
 		if (!Hit.bBlockingHit) {
-			TargetData.Emplace(FTargetData(possibleLocation, character,
-				FVector(possibleLocation.X, possibleLocation.Y, headLocation)));
+			foundData = FTargetData(possibleLocation, character,
+				FVector(possibleLocation.X, possibleLocation.Y, headLocation));
 			return true;
 		}
 	}

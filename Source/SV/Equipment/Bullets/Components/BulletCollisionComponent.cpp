@@ -8,6 +8,7 @@
 #include "../../../Characters/Components/HitBoxComponent.h"
 #include "../../../Characters/Components/DamageRecieveComponent.h"
 #include "../../../Characters/Components/CharacterDetailsComponent.h"
+#include "../../../Characters/Components/AIComponent.h"
 #include "BulletHitSoundComponent.h"
 #include "BulletDetailsComponent.h"
 #include "TravelComponent.h"
@@ -17,6 +18,8 @@
 
 #include "../../../Environment/EnvironmentActor.h"
 #include "../../../Environment/Components/EnvironmentDetailsComponent.h"
+
+#include "../../../Effects/BloodHitEffect.h"
 
 
 UBulletCollisionComponent::UBulletCollisionComponent(const FObjectInitializer& ObjectInitializer)
@@ -39,11 +42,14 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent* OverlappedComp, 
 	if (bIsDisabled)
 		return;
 
+	auto bulletDetails = GetOwner()->GetComponentByClass<UBulletDetailsComponent>();
+	if (!bulletDetails->GetIsSetup())
+		return UDebugMessages::LogWarning(this, "collision happened before setup, ignoring");
+
 	UDebugMessages::LogDisplay(this, "overlapped " + OtherActor->GetName() + " comp: " + OtherComp->GetName());
 
 	if (OtherComp->Implements<UHitComponent>()) {
 		TScriptInterface<IHitComponent> hitComp = OtherComp;
-		auto bulletDetails = GetOwner()->GetComponentByClass<UBulletDetailsComponent>();
 		auto damageRecieve = OtherActor->GetComponentByClass<UDamageRecieveComponent>();
 		auto otherCharacterDetails = OtherActor->GetComponentByClass<UCharacterDetailsComponent>();
 		auto damageDone = 0;
@@ -67,6 +73,13 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent* OverlappedComp, 
 		auto meshComponent = GetOwner()->GetComponentByClass<UStaticMeshComponent>();
 		if (meshComponent)
 			meshComponent->SetVisibility(false);
+
+		auto reverseRotation = GetOwner()->GetActorRotation();
+		reverseRotation.Yaw += 180;
+
+		auto spatterActor = GetWorld()->SpawnActor<ABloodHitEffect>(meshComponent->GetComponentLocation(), reverseRotation);
+		if (!spatterActor)
+			UDebugMessages::LogWarning(this, "failed to spawn spatter actor");
 
 		auto sourceGun = bulletDetails->GetGunShotFrom();
 		if (!sourceGun || !sourceGun->GetAttachParentActor())
@@ -99,7 +112,6 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent* OverlappedComp, 
 		reverseRotation.Yaw += 180;
 		GetWorld()->SpawnActor<ABulletHoleDecal>(GetLocationToSpawnBulletHole(meshComponent), reverseRotation);
 
-		auto bulletDetails = GetOwner()->GetComponentByClass<UBulletDetailsComponent>();
 		auto environmentDetails = environment->GetComponentByClass<UEnvironmentDetailsComponent>();
 		if (bulletDetails) {
 

@@ -51,3 +51,9 @@ void UBulletDetailsComponent::SetPenetrationAbility(int ability) {
 void UBulletDetailsComponent::RemoveFromPenetrationAbility(int amount) {
 	PenetrationAbility -= amount;
 }
+void UBulletDetailsComponent::CompleteSetup() {
+	bSetup = true;
+}
+bool UBulletDetailsComponent::GetIsSetup() {
+	return bSetup;
+}

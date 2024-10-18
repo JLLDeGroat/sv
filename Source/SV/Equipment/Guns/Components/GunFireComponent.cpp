@@ -68,6 +68,7 @@ void UGunFireComponent::FireAtLocation(FVector location, float accuracyRadius) {
 		if (bulletDetails && equipmentDetails) {
 			bulletDetails->SetBaseDamage(Random.RandRange(equipmentDetails->GetMinBaseDamage(), equipmentDetails->GetMaxBaseDamage()));
 			bulletDetails->SetGunShotFrom(owner);
+			bulletDetails->CompleteSetup();
 		}
 		auto bulletTravel = newBullet->GetComponentByClass<UTravelComponent>();
 		if (bulletTravel)

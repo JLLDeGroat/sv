@@ -22,6 +22,8 @@ public:
 	static FVector GetRouteLocationAs3DLoc(FVector2D loc, bool bAddOffset = false);
 	static FVector2D GetRouteLocationFrom3DLoc(FVector loc, bool bRemoveOffset = false);
 
+	static TArray<FVector> GetAllLocationsWithinRadius(FVector location, int radius);
+
 private:
 
 	static float NormalizeGridValue(float loc);
