@@ -8,6 +8,7 @@
 #include "../Behaviours/AIMeleeRangeMove.h"
 #include "../Behaviours/AiRangeAttack.h"
 #include "../Behaviours/AiRangeMove.h"
+#include "../Behaviours/AiSuicideAttack.h"
 
 #include "../../../Interfaces/SvChar.h"
 #include "../../../Characters/Components/CharacterDetailsComponent.h"
@@ -110,6 +111,9 @@ UBaseAIBehaviour* UBaseAITurnManager::CreateBehaviourClass(EAIBehaviourAttackRou
 		break;
 	case EAIBehaviourAttackRoutes::BAR_Melee:
 		behaviour = NewObject<UAIMeleeAttack>(this);
+		break;
+	case EAIBehaviourAttackRoutes::BAR_Suicide:
+		behaviour = NewObject<UAiSuicideAttack>(this);
 		break;
 	}
 

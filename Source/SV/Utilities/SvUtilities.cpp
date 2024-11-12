@@ -12,6 +12,10 @@
 #include "../Player/Managers/SelectionManager.h"
 #include "../Interfaces/Selectable.h"
 #include "Engine/TextureRenderTarget2D.h"
+#include "GeometryCache.h"
+#include "GeometryCollection/GeometryCollection.h"
+#include "GeometryCollection/GeometryCollectionComponent.h"
+
 
 ECollisionChannel USvUtilities::GetFloorTargetChannel() {
 	return ECollisionChannel::ECC_GameTraceChannel1;
@@ -284,4 +288,32 @@ FString USvUtilities::GetSocketNameFromAttachment(EAttachType attachmentType) {
 
 UMaterial* USvUtilities::GetBulletHoleMaterial() {
 	return GetMaterial("/Script/Engine.Material'/Game/Decals/BulletHoles/BulletHole1_M.BulletHole1_M'");
+}
+
+UGeometryCache* USvUtilities::GetGeometryCache(FString reference) {
+	return Cast<UGeometryCache>(StaticLoadObject(UGeometryCache::StaticClass(), NULL, *reference, NULL, LOAD_None, NULL));
+}
+
+UGeometryCache* USvUtilities::GetRandomBloodSpatterGeoCache() {
+
+	int random = FMath::RandRange(1, 5);
+	FString reference = "/Script/GeometryCache.GeometryCache'/Game/Effects/Spatter/Spatter3.Spatter3'";
+
+	switch (random) {
+	case 1:
+	case 2:
+		reference = "/Script/GeometryCache.GeometryCache'/Game/Effects/Spatter/Spatter4.Spatter4'";
+	case 3:
+		reference = "/Script/GeometryCache.GeometryCache'/Game/Effects/Spatter/Spatter5.Spatter5'";
+	case 4:
+		reference = "/Script/GeometryCache.GeometryCache'/Game/Effects/Spatter/Spatter3.Spatter3'";
+	default:
+		reference = "/Script/GeometryCache.GeometryCache'/Game/Effects/Spatter/Spatter6.Spatter6'";
+	}
+
+	return GetGeometryCache(reference);
+}
+
+UGeometryCollection* USvUtilities::GetGeometryCollection(FString reference) {
+	return Cast<UGeometryCollection>(StaticLoadObject(UGeometryCollection::StaticClass(), NULL, *reference, NULL, LOAD_None, NULL));
 }

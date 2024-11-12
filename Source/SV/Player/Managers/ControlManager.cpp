@@ -143,6 +143,7 @@ void UControlManager::UpdateControlLimit(EControlLimit controlLimit) {
 	}
 
 	ControlLimits = controlLimit;
+	UDebugMessages::LogDisplay(this, "new limit " + EControllerEnums::GetControlLimitAsString(ControlLimits));
 }
 EControlLimit UControlManager::GetControlLimit() {
 	return ControlLimits;

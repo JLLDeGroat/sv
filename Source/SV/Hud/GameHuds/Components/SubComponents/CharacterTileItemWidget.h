@@ -30,6 +30,7 @@ protected:
 	UFUNCTION() void OnCharacterButtonClicked();
 	UFUNCTION() void OnHovered();
 	UFUNCTION() void OnUnhovered();
+	UFUNCTION() void OnSodlierDeath(AActor* DeadSoldier);
 	UPROPERTY() AActor* RepresentedActor;
 
 	UPROPERTY(BlueprintReadOnly, Transient, meta = (BindWidgetAnim)) UWidgetAnimation* AnimateIn;
@@ -39,6 +40,7 @@ protected:
 
 	UPROPERTY(meta = (BindWidget)) UButton* CharacterButton;
 	UPROPERTY(meta = (BindWidget)) UImage* CharacterImage;
+	UPROPERTY(meta = (BindWidget)) UImage* DeathImage;
 
 private:
 

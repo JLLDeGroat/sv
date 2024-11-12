@@ -14,6 +14,7 @@
 #include "../../Instance/Managers/CurrentGameDataManager.h"
 #include "../../Instance/SvGameInstance.h"
 #include "../../Runnables/Checkers/WinLossCheckerRunnable.h"
+#include "../../Delegates/HudDelegates.h"
 #include "../Anim/CharAnimInstance.h"
 #include "DropResourceComponent.h"
 // Sets default values for this component's properties
@@ -62,6 +63,7 @@ float UDamageRecieveComponent::DoDamage(float multiplier, int damage, float impu
 	if (statusComponent) {
 		UDebugMessages::LogDisplay(this, "updating health change on status widget");
 		statusComponent->UpdateOnHealthChange();
+		statusComponent->TakenDamage(total);
 	}
 
 	AnimInstance->SetIsTakenDamage(true);
@@ -114,6 +116,14 @@ float UDamageRecieveComponent::DoDamage(float multiplier, int damage, float impu
 		if (dropResource) {
 			dropResource->AttemptToDropResource();
 		}
+
+		auto hudDelegates = UHudDelegates::GetInstance();
+		if (!hudDelegates) {
+			UDebugMessages::LogError(this, "failed to get hud delegates");
+			return 0.0f;
+		}
+
+		hudDelegates->_OnSoldierDeath.Broadcast(owner);
 
 		USvUtilities::AttemptToStartWinLossChecker(GetWorld());
 	}

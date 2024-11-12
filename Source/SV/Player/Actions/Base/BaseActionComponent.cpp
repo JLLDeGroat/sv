@@ -47,7 +47,7 @@ bool UBaseActionComponent::IsInValidCameraState(ECameraState currentCameraState)
 		if (ValidCameraStates[i] == currentCameraState) return true;
 	}
 
-	UDebugMessages::LogWarning(this, "not in valid camera state to do action");
+	UDebugMessages::LogWarning(this, "not in valid camera state to do action, current state " + ECharacterEnums::GetCameraStateAsString(currentCameraState));
 	return false;
 }
 

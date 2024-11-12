@@ -2,6 +2,7 @@
 
 
 #include "HitCapsuleComponent.h"
+#include "ModularSkeletonComponent.h"
 #include "../../Utilities/SvUtilities.h"
 
 UHitCapsuleComponent::UHitCapsuleComponent(const FObjectInitializer& ObjectInitializer)
@@ -38,4 +39,27 @@ int UHitCapsuleComponent::GetThickness() {
 
 void UHitCapsuleComponent::SetThickness(int thickness) {
 	Thickness = thickness;
+}
+int UHitCapsuleComponent::GetSpatterBackDistance() {
+	return GetScaledCapsuleRadius();
+}
+
+void UHitCapsuleComponent::SetModularComponent(UModularSkeletonComponent* component) {
+	ModularComponent = component;
+}
+UModularSkeletonComponent* UHitCapsuleComponent::GetModularComponent() {
+	return ModularComponent;
+}
+void UHitCapsuleComponent::DamageModularComponent(int amount, FVector direction) {
+	ModularComponent->RemoveHealth(amount);
+
+	if (ModularComponent->GetIsDead()) {
+		SetGenerateOverlapEvents(false);
+		ModularComponent->DestroyModularComponent(direction);
+	}
+}
+
+void UHitCapsuleComponent::AddEquipmentAsModularChild(AEquipment* equipment) {
+	if (ModularComponent)
+		ModularComponent->AddChildEquipment(equipment);
 }

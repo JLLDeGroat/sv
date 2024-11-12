@@ -158,8 +158,16 @@ void UTargetingComponent::DetermineTargetData() {
 				//DrawDebugLine(owner->GetWorld(), TargetData[i].GetShootLocation() + FVector(0, 0, 100),
 					//TargetData[i].GetCharacter()->GetSelectableGridLocation(), FColor::Blue, true, 60, 1, 5);
 
+				auto target = TargetData[i].GetCharacter()->GetAsActor();
+				auto detailsComp = target->GetComponentByClass<UCharacterDetailsComponent>();
+				if (!detailsComp)
+				{
+					UDebugMessages::LogError(this, "failed to get target component");
+					continue;
+				}
+
 				hudDelegates->_AddTargetDataToHud.Broadcast(TargetData[i].GetId(), TargetData[i].GetShootLocation(),
-					TargetData[i].GetCharacter()->GetSelectableGridLocation());
+					TargetData[i].GetCharacter()->GetSelectableGridLocation(), detailsComp->GetTargetIcon());
 			}
 		}
 	}

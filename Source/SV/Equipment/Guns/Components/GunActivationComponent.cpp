@@ -22,6 +22,11 @@ void UGunActivationComponent::TickComponent(float DeltaTime, ELevelTick TickType
 		UseEngineSpinupTick();
 }
 
+void UGunActivationComponent::BeginPlay() {
+	Super::BeginPlay();
+	SetComponentTickEnabled(false);
+}
+
 void UGunActivationComponent::SetupForEngineSpinUpActivation(TArray<UStaticMeshComponent*> comps) {
 	bUseEngineSpinup = true;
 

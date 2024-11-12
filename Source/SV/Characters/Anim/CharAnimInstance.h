@@ -39,6 +39,7 @@ public:
 
 	void SetIsHealingSelf(bool val);
 	void SetIsHealingAlly(bool val);
+	void SetIsSuiciding(bool val);
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnGunPreFireActivate();
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnGunPostFireDeactivate();
@@ -82,6 +83,8 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnSpawnHealthKit();
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnDespawnHealthKit();
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void SetHealthKitActivation(bool val);
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnSuicideExplosion();
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) float Speed;
@@ -103,6 +106,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsHealingAlly;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bSpawningFromGround;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsSuiciding;
 
 	UFUNCTION(BlueprintPure, meta = (BlueprintThreadSafe)) bool GetIsHealing();
 

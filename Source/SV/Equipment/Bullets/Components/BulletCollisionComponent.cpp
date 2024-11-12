@@ -61,11 +61,19 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent* OverlappedComp, 
 		}
 		else {
 			bulletDetails->RemoveFromPenetrationAbility(hitComp->GetThickness());
+
+			auto damageMultiplier = hitComp->GetHitDamageMultiplier();
+			auto baseDamage = bulletDetails->GetBaseDamage();
+
 			if (!otherCharacterDetails->GetIsDead()) {
-				damageDone = damageRecieve->DoDamage(hitComp->GetHitDamageMultiplier(), bulletDetails->GetBaseDamage(),
+				damageDone = damageRecieve->DoDamage(damageMultiplier, baseDamage,
 					bulletDetails->GetBaseImpulse(), GetOwner()->GetActorRotation());
 				UDebugMessages::LogDisplay(this, "bullet did " + FString::SanitizeFloat(damageDone, 0) + " damage");
 				AttemptToInitiateBulletSound();
+
+				if (hitComp->GetModularComponent()) {
+					hitComp->DamageModularComponent(damageMultiplier * baseDamage, GetOwner()->GetActorRotation().Vector());
+				}
 			}
 		}
 		//TODO:
@@ -80,6 +88,9 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent* OverlappedComp, 
 		auto spatterActor = GetWorld()->SpawnActor<ABloodHitEffect>(meshComponent->GetComponentLocation(), reverseRotation);
 		if (!spatterActor)
 			UDebugMessages::LogWarning(this, "failed to spawn spatter actor");
+		else {
+			spatterActor->MoveBackSplatter(hitComp->GetSpatterBackDistance());
+		}
 
 		auto sourceGun = bulletDetails->GetGunShotFrom();
 		if (!sourceGun || !sourceGun->GetAttachParentActor())

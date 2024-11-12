@@ -16,6 +16,8 @@ class UWinLossManager;
 class USvGameInstance;
 class UTexture2D;
 class UTextureRenderTarget2D;
+class UGeometryCache;
+class UGeometryCollection;
 
 struct FCurrentGameData;
 
@@ -78,6 +80,10 @@ public:
 	static FString GetSocketNameFromAttachment(EAttachType attachmentType);
 
 	static UMaterial* GetBulletHoleMaterial();
+
+	static UGeometryCache* GetGeometryCache(FString reference);
+	static UGeometryCache* GetRandomBloodSpatterGeoCache();
+	static UGeometryCollection* GetGeometryCollection(FString reference);
 
 private:
 

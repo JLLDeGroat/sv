@@ -21,6 +21,7 @@ protected:
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void BeginPlay() override;
 
 	void SetupForEngineSpinUpActivation(TArray<UStaticMeshComponent*> meshes);
 

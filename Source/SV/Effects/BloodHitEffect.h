@@ -7,6 +7,7 @@
 #include "BloodHitEffect.generated.h"
 
 class UNiagaraComponent;
+class UGeometryCacheComponent;
 
 UCLASS()
 class SV_API ABloodHitEffect : public AActor
@@ -17,14 +18,23 @@ public:
 	// Sets default values for this actor's properties
 	ABloodHitEffect();
 
+	void MoveBackSplatter(float movement);
+
 
 protected:
 
 	virtual void BeginPlay() override;
 
-	UPROPERTY() UNiagaraComponent* BloodSpatter;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UNiagaraComponent* BloodSpatter;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UGeometryCacheComponent* BackBloodSplatter;
 
 	UFUNCTION() void OnDelay();
+	UFUNCTION() void OnBackSpatterComplete();
 	FTimerHandle OnAutoKill;
+	FTimerHandle OnBackSpatterCompleteAnim;
+
+private:
+
+	UPROPERTY() float SpatterSpeed = 4.0f;
 
 };

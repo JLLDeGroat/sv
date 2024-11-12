@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "../../../Enums/ECharacterEnums.h"
 #include "Blueprint/UserWidget.h"
 #include "TargetDetailsWidget.generated.h"
 
@@ -12,7 +13,7 @@ class UTargetDetailsRowWidget;
 class UTargetDetailsRowItemWidget;
 
 /**
- * 
+ *
  */
 UCLASS()
 class SV_API UTargetDetailsWidget : public UUserWidget
@@ -25,7 +26,7 @@ public:
 
 protected:
 
-	UFUNCTION() void OnAddTargetData(FGuid Id, FVector SourceLocation, FVector TargetLocation);
+	UFUNCTION() void OnAddTargetData(FGuid Id, FVector SourceLocation, FVector TargetLocation, ETargetIcon TargetIcon);
 	UFUNCTION() void OnClearTargetData();
 	UFUNCTION() void OnTargetIconClicked(FGuid Id, FVector Location);
 	UFUNCTION() void HideOrReset();
@@ -42,5 +43,5 @@ private:
 
 	UTargetDetailsRowWidget* CreateTargetDetailsRowWidget() const;
 	UTargetDetailsRowItemWidget* CreateTargetDetailsRowItemWidget() const;
-	
+
 };

@@ -35,7 +35,7 @@ public:
 
 private:
 
-	TArray<AActor*> ActorsCaughtInExplosion;
+	UPROPERTY() TArray<AActor*> ActorsCaughtInExplosion;
 
 	FTimerHandle FuseHandle;
 

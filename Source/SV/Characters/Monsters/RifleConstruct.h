@@ -20,7 +20,9 @@ class UHealthAndStatusWidgetComponent;
 class UAIComponent;
 class UDropResourceComponent;
 class USpawnInComponent;
+class UModularSkeletonComponent;
 class UTargetingComponent;
+class USuicideComponent;
 /**
  *
  */
@@ -35,10 +37,20 @@ public:
 	virtual UGridMovementComponent* GetGridMovementComponent() override;
 
 	virtual void OnConstruction(const FTransform& Transform) override;
+	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
 
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UTargetingComponent* TargetingComponent;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UModularSkeletonComponent* HeadSkelComp;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UModularSkeletonComponent* LeftArmSkelComp;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UModularSkeletonComponent* LeftLegSkelComp;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UModularSkeletonComponent* RightArmSkelComp;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UModularSkeletonComponent* RightLegSkelComp;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) USuicideComponent* SuicideComponent;
+
 
 };

@@ -16,6 +16,7 @@
 #include "Components/HitBoxComponent.h"
 #include "Components/HitCapsuleComponent.h"
 #include "Components/EquipmentComponent.h"
+#include "Components/StatusEffectsComponent.h"
 #include "Components/HealthAndStatusWidgetComponent.h"
 
 // Sets default values
@@ -30,6 +31,7 @@ ABaseCharacter::ABaseCharacter(const FObjectInitializer& ObjectInitializer) : AC
 	GetCapsuleComponent()->SetCollisionResponseToChannel(USvUtilities::GetTriggerableChannel(), ECR_Overlap);
 
 	DetailsComponent = CreateDefaultSubobject<UCharacterDetailsComponent>(TEXT("DetailsComponent"));
+	StatusEffectsComponent = CreateDefaultSubobject<UStatusEffectsComponent>(TEXT("StatusEffects"));
 
 	SetActorScale3D(FVector(.8f));
 }

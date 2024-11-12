@@ -16,6 +16,7 @@
 #include "../Components/SpawnInComponent.h"
 #include "../Components/HealthKitsComponent.h"
 #include "../Components/AIComponent.h"
+#include "../Components/SuicideComponent.h"
 #include "../../Player/Components/PawnCameraComponent.h"
 #include "../../Player/Components/CameraOverlapComponent.h"
 #include "../../Player/GamePlayerController.h"
@@ -90,6 +91,9 @@ void UCharAnimInstance::SetIsHealingSelf(bool val) {
 }
 void UCharAnimInstance::SetIsHealingAlly(bool val) {
 	bIsHealingAlly = val;
+}
+void UCharAnimInstance::SetIsSuiciding(bool val) {
+	bIsSuiciding = val;
 }
 
 void UCharAnimInstance::OnGunPreFireActivate() {
@@ -446,6 +450,21 @@ void UCharAnimInstance::SetHealthKitActivation(bool val) {
 		if (niagaraComp) {
 			if (val) niagaraComp->Activate();
 			else niagaraComp->Deactivate();
+		}
+	}
+}
+
+void UCharAnimInstance::OnSuicideExplosion() {
+	auto owningActor = GetOwningActor();
+	if (owningActor) {
+		auto suicideComponent = owningActor->GetComponentByClass<USuicideComponent>();
+
+		if (suicideComponent) {
+			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([suicideComponent]
+				{
+					suicideComponent->ActivateSuicide();
+				},
+				TStatId(), nullptr, ENamedThreads::GameThread);
 		}
 	}
 }

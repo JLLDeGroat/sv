@@ -33,6 +33,8 @@ AGruntConstruct::AGruntConstruct(const FObjectInitializer& ObjectInitializer) : 
 
 	AiComponent->SetMovementRoute(EAIBehaviourMoveRoutes::BMR_Melee);
 	AiComponent->SetAttackRoute(EAIBehaviourAttackRoutes::BAR_Melee);
+
+	DetailsComponent->SetTargetIcon(ETargetIcon::TI_ConstructMelee);
 }
 
 UGridMovementComponent* AGruntConstruct::GetGridMovementComponent() {

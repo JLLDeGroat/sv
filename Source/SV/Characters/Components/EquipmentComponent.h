@@ -37,6 +37,8 @@ public:
 	void EquipSecondary(EGun gunType);
 	void AttachEquipmentToSocket(EAttachType attachmentType, AEquipment* equipment);
 
+	void UnEquip(AEquipment* equipment);
+
 	void ReloadEquipment();
 protected:
 	// Called when the game starts

@@ -7,6 +7,7 @@
 #include "../../Interfaces/SvChar.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "Behaviours/AIMeleeAttack.h"
+#include "../../Characters/Components/AIComponent.h"
 
 void UPreMoveChecker::ActivateThread() {
 	Super::ActivateThread();
@@ -26,8 +27,12 @@ void UPreMoveChecker::ActivateThread() {
 	{
 		UDebugMessages::LogDisplay(this, "Already Adjacent, attempt to attack");
 		//TODO: should check if this enemy wants to melee or run to cover
+		auto aiComponent = GetThisEnemy()->GetAsActor()->GetComponentByClass<UAIComponent>();
 
-		MeleeBehaviour = CreateBehaviourClass(UAIMeleeAttack::StaticClass());
+		if (aiComponent)
+			return UDebugMessages::LogError(this, "failed to get ai component");
+
+		MeleeBehaviour = CreateBehaviourClass(aiComponent->GetAttackRoute());
 		if (!MeleeBehaviour)
 			return UDebugMessages::LogError(this, "failed to get melee behaviour class");
 

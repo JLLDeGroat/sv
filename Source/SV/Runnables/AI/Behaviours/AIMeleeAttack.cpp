@@ -129,22 +129,3 @@ void UAIMeleeAttack::DoBehaviour() {
 		},
 		TStatId(), nullptr, ENamedThreads::GameThread);
 }
-
-bool UAIMeleeAttack::CanMeleeAnyone() {
-
-	auto allCharacters = GetAllCharacters();
-
-	for (int i = 0; i < allCharacters.Num(); i++) {
-		if (allCharacters[i]) {
-			if (USvUtilities::AreGridLocationsAdjacent(
-				UGridUtilities::GetNormalisedGridLocation(GetThisEnemy()->GetActorLocation()),
-				UGridUtilities::GetNormalisedGridLocation(allCharacters[i]->GetAsActor()->GetActorLocation())))
-			{
-				SetBehaviourTarget(allCharacters[i]);
-				return true;
-			}
-		}
-	}
-
-	return false;
-}

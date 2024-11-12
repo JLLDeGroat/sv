@@ -148,3 +148,9 @@ void UCharacterDetailsComponent::SetCharacterId(FGuid guid) {
 bool UCharacterDetailsComponent::GetIsDead() {
 	return Health <= 0;
 }
+ETargetIcon UCharacterDetailsComponent::GetTargetIcon() {
+	return TargetIcon;
+}
+void UCharacterDetailsComponent::SetTargetIcon(ETargetIcon targetIcon) {
+	TargetIcon = targetIcon;
+}

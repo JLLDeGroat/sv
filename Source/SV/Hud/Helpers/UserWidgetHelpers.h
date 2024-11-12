@@ -15,7 +15,7 @@ class UButton;
 class UTextBlock;
 
 /**
- * 
+ *
  */
 UCLASS()
 class SV_API UUserWidgetHelpers : public UObject
@@ -23,7 +23,7 @@ class SV_API UUserWidgetHelpers : public UObject
 	GENERATED_BODY()
 
 public:
-	
+
 	static UImage* GetImageFromWidget(UUserWidget* widget, FString widgetName);
 	static UButton* GetButtonFromWidget(UUserWidget* widget, FString widgetName);
 	static UTextBlock* GetTextBlockFromWidget(UUserWidget* widget, FString widgetName);
@@ -46,5 +46,7 @@ public:
 
 	static void SetButtonText(UButton* btn, FString text);
 
-	static void DesignText(UTextBlock* textBlock, int fontSize = 24);
+	static void DesignText(UTextBlock* textBlock, int fontSize = 24, FLinearColor linearColor = FLinearColor::White);
+
+	static UTexture2D* GetTargetIcon(ETargetIcon TargetIcon);
 };

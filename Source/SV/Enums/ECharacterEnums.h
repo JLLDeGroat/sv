@@ -7,17 +7,6 @@
 /**
  *
  */
-class SV_API ECharacterEnums
-{
-public:
-	template< typename T >
-	static FORCEINLINE FString ToString(T EnumValue)
-	{
-		static_assert(TIsUEnumClass< T >::Value, "'T' template parameter to EnumToString must be a valid UEnum");
-		return StaticEnum< T >()->GetNameStringByIndex((int32)EnumValue);
-	}
-};
-
 UENUM(BlueprintType)
 enum class ECharacterControl : uint8 {
 	INVALID = 0,
@@ -87,4 +76,36 @@ enum class EActionType :uint8 {
 	AT_AnditodeKit = 12,
 	AT_FlameRetardentKit = 13,
 
+};
+
+UENUM(BlueprintType)
+enum class ETargetIcon :uint8 {
+	INVALiD = 0,
+	TI_ConstructRange = 1,
+	TI_ConstructMelee = 2
+};
+
+UENUM(BlueprintType)
+enum class EDebuffType : uint8 {
+	INVALID = 0,
+	DBT_Accuracy = 1,
+};
+
+class SV_API ECharacterEnums
+{
+public:
+	template< typename T >
+	static FORCEINLINE FString ToString(T EnumValue)
+	{
+		static_assert(TIsUEnumClass< T >::Value, "'T' template parameter to EnumToString must be a valid UEnum");
+		return StaticEnum< T >()->GetNameStringByIndex((int32)EnumValue);
+	}
+
+	static FORCEINLINE FString GetCameraStateAsString(ECameraState cState) {
+		UEnum* EnumPtr = FindObject<UEnum>(GetTransientPackage(), TEXT("ECameraState"), true);
+		if (EnumPtr)
+			return EnumPtr->GetNameStringByValue((int64)cState);
+		else
+			return "FOUND_INVALID";
+	}
 };

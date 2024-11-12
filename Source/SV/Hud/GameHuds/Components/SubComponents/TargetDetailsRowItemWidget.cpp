@@ -7,6 +7,7 @@
 #include "../../../../Player/GamePlayerController.h"
 #include "../../../../Player/Managers/ControlManager.h"
 
+#include "Components/Image.h"
 #include "Components/Button.h"
 
 void UTargetDetailsRowItemWidget::NativeConstruct() {
@@ -70,4 +71,8 @@ UButton* UTargetDetailsRowItemWidget::GetItemButton() const {
 	if (btn->IsA<UButton>())
 		return (UButton*)btn;
 	return nullptr;
+}
+
+void UTargetDetailsRowItemWidget::SetImage(UTexture2D* Texture) {
+	RowItemImage->SetBrushFromTexture(Texture);
 }

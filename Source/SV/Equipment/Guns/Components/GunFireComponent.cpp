@@ -47,7 +47,7 @@ void UGunFireComponent::FireAtLocation(FVector location, float accuracyRadius) {
 
 	auto equipmentDetails = owner->GetComponentByClass<UEquipmentDetailsComponent>();
 	auto randomUnitVector = FVector(FMath::RandRange(0, 1), FMath::RandRange(0, 1), FMath::RandRange(0, 1));
-	auto randomFloatInRange = FMath::RandRange(0.00f, accuracyRadius);
+	auto randomFloatInRange = FMath::RandRange(-accuracyRadius, accuracyRadius);
 	auto offsetLoc = randomUnitVector * randomFloatInRange;
 	auto finalLoc = location + offsetLoc;
 

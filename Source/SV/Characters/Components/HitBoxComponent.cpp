@@ -3,6 +3,7 @@
 
 #include "HitBoxComponent.h"
 #include "../../Utilities/SvUtilities.h"
+#include "ModularSkeletonComponent.h"
 
 UHitBoxComponent::UHitBoxComponent(const FObjectInitializer& ObjectInitializer)
 	: UBoxComponent(ObjectInitializer) {
@@ -13,7 +14,7 @@ UHitBoxComponent::UHitBoxComponent(const FObjectInitializer& ObjectInitializer)
 	SetCollisionObjectType(USvUtilities::GetBulletCollisionObjectChannel());
 
 	SetCanEverAffectNavigation(false);
-	DamageMultiplier = 1.0f; 
+	DamageMultiplier = 1.0f;
 	Thickness = 1;
 
 	/*SetVisibility(true);
@@ -38,4 +39,24 @@ void UHitBoxComponent::SetThickness(int thickness) {
 
 int UHitBoxComponent::GetThickness() {
 	return Thickness;
+}
+
+int UHitBoxComponent::GetSpatterBackDistance() {
+	auto extent = GetScaledBoxExtent();
+	return (extent.X + extent.Y) / 2;
+}
+
+void UHitBoxComponent::SetModularComponent(UModularSkeletonComponent* component) {
+	ModularComponent = component;
+}
+UModularSkeletonComponent* UHitBoxComponent::GetModularComponent() {
+	return ModularComponent;
+}
+void UHitBoxComponent::DamageModularComponent(int amount, FVector direction) {
+
+}
+
+void UHitBoxComponent::AddEquipmentAsModularChild(AEquipment* equipment) {
+	if (ModularComponent)
+		ModularComponent->AddChildEquipment(equipment);
 }

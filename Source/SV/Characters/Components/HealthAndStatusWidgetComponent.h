@@ -8,9 +8,9 @@
 
 class UCameraComponent;
 class UProgressBar;
-
+class UHealthAndStatusWidget;
 /**
- * 
+ *
  */
 UCLASS()
 class SV_API UHealthAndStatusWidgetComponent : public UWidgetComponent
@@ -25,15 +25,21 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 
-	void SetName(FString name) const;
-	void SetPercentage(float value) const;
+	void SetName(FString name);
+	void SetPercentage(float value);
 
 	void UpdateOnHealthChange();
+
+	void TakenDamage(int amount);
+	void TakenStatusEffect(FString status);
 
 protected:
 
 	UFUNCTION() void InternalHealthChangeCallback();
 	UFUNCTION() void RecentHealthChangeCallback();
+
+	UFUNCTION() void OnDamageResetTimerCallback();
+	UFUNCTION() void OnStatusEffectTimerCallback();
 
 private:
 
@@ -42,15 +48,13 @@ private:
 	UPROPERTY() FTimerHandle InternalHealthChangeTimer;
 	UPROPERTY() FTimerHandle RecentHealthChangeTimer;
 
+	UPROPERTY() FTimerHandle DamageTakenResetTimer;
+	UPROPERTY() FTimerHandle StatusEffectResetTimer;
+
+	UPROPERTY() int TotalTakenDamage;
 
 	UPROPERTY() float CurrentPercent;
 	UPROPERTY() float RecentPercentChange;
-
-	float GetCurrentPercentage();
-
-	UPROPERTY() FString PercentName = "HealthBar";
-	UPROPERTY() FString DynamicPercentName = "DynamicHealthBar";
-	UPROPERTY() FString NameTag = "NameTag";
 
 	UPROPERTY() int CurrentHealth;
 	UPROPERTY() int RecentHealthChange;
@@ -58,9 +62,7 @@ private:
 
 	UPROPERTY() float HealthChangeDelay;
 
-	UPROPERTY() UProgressBar* HealthProgressBar;
-	UPROPERTY() UProgressBar* DynamicHealthProgressBar;
-
 	float GetPercentageOfHealth(float value, float maxValue);
 
+	FORCEINLINE UHealthAndStatusWidget* GetHealthWidget();
 };

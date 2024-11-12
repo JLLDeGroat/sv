@@ -7,6 +7,8 @@
 #include "../../../../Delegates/AIDelegates.h"
 #include "../../../../World/WorldGridItemActor.h"
 #include "../Components/AiMovementComponent.h"
+#include "../../../../Utilities/SvUtilities.h"
+#include "../../../../Utilities/GridUtilities.h"
 
 UBaseAIBehaviour::UBaseAIBehaviour(const FObjectInitializer& ObjectInitializer)
 	: UObject(ObjectInitializer) {
@@ -165,4 +167,23 @@ TScriptInterface<ISvChar> UBaseAIBehaviour::GetClosestCharacter() {
 	}
 
 	return svChar;
+}
+
+bool UBaseAIBehaviour::CanMeleeAnyone() {
+
+	auto allCharacters = GetAllCharacters();
+
+	for (int i = 0; i < allCharacters.Num(); i++) {
+		if (allCharacters[i]) {
+			if (USvUtilities::AreGridLocationsAdjacent(
+				UGridUtilities::GetNormalisedGridLocation(GetThisEnemy()->GetActorLocation()),
+				UGridUtilities::GetNormalisedGridLocation(allCharacters[i]->GetAsActor()->GetActorLocation())))
+			{
+				SetBehaviourTarget(allCharacters[i]);
+				return true;
+			}
+		}
+	}
+
+	return false;
 }

@@ -13,7 +13,8 @@
 				"CoreUObject",
 				"AIModule",
 				"UMG",
-				"Niagara"
+				"Niagara",
+				"GeometryCache"
 			]
 		}
 	],
@@ -27,6 +28,10 @@
 		},
 		{
 			"Name": "ModularGameplay",
+			"Enabled": true
+		},
+		{
+			"Name": "NiagaraFluids",
 			"Enabled": true
 		}
 	]

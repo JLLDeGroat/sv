@@ -10,6 +10,7 @@
 #include "../../../../Player/Managers/SelectionManager.h"
 #include "../../../../Interfaces/Selectable.h"
 #include "../../../../Characters/Components/ActionsComponent.h"
+#include "../../../../Characters/Components/CharacterDetailsComponent.h"
 #include "../../../../Player/Components/PawnCameraComponent.h"
 #include "Animation/WidgetAnimation.h"
 #include "../../../../Delegates/HudDelegates.h"
@@ -27,12 +28,16 @@ void UCharacterTileItemWidget::NativeConstruct() {
 	CharacterButton->OnHovered.AddDynamic(this, &UCharacterTileItemWidget::OnHovered);
 	CharacterButton->OnUnhovered.AddDynamic(this, &UCharacterTileItemWidget::OnUnhovered);
 
+	DeathImage->SetVisibility(ESlateVisibility::Hidden);
+
 	auto hudDelegates = UHudDelegates::GetInstance();
 	if (!hudDelegates)
 		return UDebugMessages::LogError(this, "could not find hud delegates");
 
 	hudDelegates->_ResetCharacterTileWidget.AddDynamic(this, &UCharacterTileItemWidget::Deactivate);
 	hudDelegates->_CheckCharacterTileIsActive.AddDynamic(this, &UCharacterTileItemWidget::SimulateOnCharacterButtonClicked);
+
+	hudDelegates->_OnSoldierDeath.AddDynamic(this, &UCharacterTileItemWidget::OnSodlierDeath);
 }
 
 void UCharacterTileItemWidget::SetRepresentedActor(AActor* actor) {
@@ -60,39 +65,45 @@ void UCharacterTileItemWidget::OnCharacterButtonClicked() {
 	if (Activated)
 		return;
 
-	Activating = true;
+	if (RepresentedActor) {
+		auto details = RepresentedActor->GetComponentByClass<UCharacterDetailsComponent>();
+		if (details && !details->GetIsDead()) {
 
-	auto hudDelegates = UHudDelegates::GetInstance();
-	if (!hudDelegates)
-		return UDebugMessages::LogError(this, "could not find hud delegates");
-	hudDelegates->_ResetCharacterTileWidget.Broadcast();
+			Activating = true;
 
-	auto controller = GetWorld()->GetFirstPlayerController();
-	auto manager = controller->GetComponentByClass<UActionManager>();
+			auto hudDelegates = UHudDelegates::GetInstance();
+			if (!hudDelegates)
+				return UDebugMessages::LogError(this, "could not find hud delegates");
+			hudDelegates->_ResetCharacterTileWidget.Broadcast();
 
-	auto selectionManager = controller->GetComponentByClass<USelectionManager>();
+			auto controller = GetWorld()->GetFirstPlayerController();
+			auto manager = controller->GetComponentByClass<UActionManager>();
 
-	if (!selectionManager)
-		return UDebugMessages::LogError(this, "failed to get selection manager");
+			auto selectionManager = controller->GetComponentByClass<USelectionManager>();
 
-	if (RepresentedActor && selectionManager->TrySetSelected(RepresentedActor)) {
-		selectionManager->GetSelected()->TryVisualiseTargets();
+			if (!selectionManager)
+				return UDebugMessages::LogError(this, "failed to get selection manager");
 
-		auto actionsComponent = RepresentedActor->GetComponentByClass<UActionsComponent>();
-		if (!actionsComponent)
-			return UDebugMessages::LogError(this, "failed to get actions component");
+			if (RepresentedActor && selectionManager->TrySetSelected(RepresentedActor)) {
+				selectionManager->GetSelected()->TryVisualiseTargets();
 
-		actionsComponent->SendActionsToUI();
+				auto actionsComponent = RepresentedActor->GetComponentByClass<UActionsComponent>();
+				if (!actionsComponent)
+					return UDebugMessages::LogError(this, "failed to get actions component");
 
-		auto pawn = controller->GetPawn();
-		if (pawn && pawn->GetComponentByClass<UPawnCameraComponent>())
-			pawn->GetComponentByClass<UPawnCameraComponent>()->UpdateCameraState(ECameraState::CS_ReTarget, RepresentedActor->GetActorLocation());
+				actionsComponent->SendActionsToUI();
 
-		if (AnimateIn)
-			PlayAnimationForward(AnimateIn);
+				auto pawn = controller->GetPawn();
+				if (pawn && pawn->GetComponentByClass<UPawnCameraComponent>())
+					pawn->GetComponentByClass<UPawnCameraComponent>()->UpdateCameraState(ECameraState::CS_ReTarget, RepresentedActor->GetActorLocation());
 
-		Activated = true;
-		Activating = false;
+				if (AnimateIn)
+					PlayAnimationForward(AnimateIn);
+
+				Activated = true;
+				Activating = false;
+			}
+		}
 	}
 }
 
@@ -117,4 +128,9 @@ void UCharacterTileItemWidget::Deactivate() {
 		Activated = false;
 		UDebugMessages::LogDisplay(this, "Deactivate");
 	}
+}
+
+void UCharacterTileItemWidget::OnSodlierDeath(AActor* DeadSoldier) {
+	if (DeadSoldier == RepresentedActor)
+		DeathImage->SetVisibility(ESlateVisibility::Visible);
 }

@@ -11,7 +11,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHudItemHovered);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHudItemUnhovered);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FClearTargetDataHud);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FAddTargetDataToHud, FGuid, Id, FVector, SourceLocation, FVector, TargetLocation);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FAddTargetDataToHud, FGuid, Id, FVector, SourceLocation, FVector, TargetLocation, ETargetIcon, TargetIcon);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FTargetIconClicked, FGuid, Id, FVector, Location);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAimTargetVisibility, bool, bVisibility);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FAddActionIconToHud, EActionType, ActionType, FString, ShortCutLetter);
@@ -39,6 +39,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateSubObjectiveOneText, FString,
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateSubObjectiveTwoText, FString, Text);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnResourceChange, EResourceType, ResourceType);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSoldierDeath, AActor*, DeadSoldier);
 
 
 /**
@@ -86,4 +88,5 @@ public:
 	FUpdateSubObjectiveTwoText _UpdateSubObjectiveTwoText;
 
 	FOnResourceChange _OnResourceChange;
+	FOnSoldierDeath _OnSoldierDeath;
 };

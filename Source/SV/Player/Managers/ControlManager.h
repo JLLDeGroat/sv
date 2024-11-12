@@ -28,10 +28,10 @@ public:
 	void SetGridSelectionActor(AGridSelectionActor* gridSelectionActor);
 	AGridSelectionActor* GetGridSelectionActor();
 
-	FORCEINLINE bool GetCanMouseDesignateSelectionDecal();
+	bool GetCanMouseDesignateSelectionDecal();
 	void SetCanMouseDesignateSelectionDecal(bool val);
 
-	FORCEINLINE bool GetCanMouseDesignateExplosionRadiusActor();
+	bool GetCanMouseDesignateExplosionRadiusActor();
 	void SetCanMouseDesignateExplosionRadiusActor(bool val);
 
 	void TickShowGrenadeIndicator(FVector mouseLocation);

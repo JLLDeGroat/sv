@@ -30,5 +30,6 @@ UENUM(BlueprintType)
 enum class EAIBehaviourAttackRoutes : uint8 {
 	INVALID = 0,
 	BAR_Melee,
-	BAR_Range
+	BAR_Range,
+	BAR_Suicide
 };

@@ -10,7 +10,7 @@
 
 class ACharacterAIController;
 class AAIController;
-
+class UStatusEffectsComponent;
 class UCharacterDetailsComponent;
 
 UCLASS()
@@ -40,7 +40,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UCharacterDetailsComponent* DetailsComponent;
-
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStatusEffectsComponent* StatusEffectsComponent;
 
 public:	
 	// Called every frame

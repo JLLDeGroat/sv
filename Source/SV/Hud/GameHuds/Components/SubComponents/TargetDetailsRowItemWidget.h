@@ -7,15 +7,15 @@
 #include "TargetDetailsRowItemWidget.generated.h"
 
 class UButton;
-
+class UImage;
 /**
- * 
+ *
  */
 UCLASS()
 class SV_API UTargetDetailsRowItemWidget : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
 public:
 
 	virtual void NativeConstruct() override;
@@ -30,12 +30,15 @@ public:
 
 	UButton* GetItemButton() const;
 
+	void SetImage(UTexture2D* Texture);
 protected:
 
 	UFUNCTION() void OnButtonClicked();
 
 	UFUNCTION() void OnButtonUnHovered();
 	UFUNCTION() void OnButtonHovered();
+
+	UPROPERTY(meta = (BindWidget)) UImage* RowItemImage;
 
 private:
 

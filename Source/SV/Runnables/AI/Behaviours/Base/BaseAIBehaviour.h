@@ -55,6 +55,9 @@ protected:
 	FRandomStream GetRandomStream() { return _randomStream; }
 
 	UPROPERTY() UAiMovementComponent* MovementComponent;
+
+	bool CanMeleeAnyone();
+
 private:
 
 	UPROPERTY() AActor* ThisEnemy;

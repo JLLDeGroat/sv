@@ -17,6 +17,7 @@
 #include "../../../Player/PlayerPawn.h"
 #include "../../../Player/Components/PawnCameraComponent.h"
 #include "Components/Button.h"
+#include "../../Helpers/UserWidgetHelpers.h"
 
 void UTargetDetailsWidget::NativeConstruct() {
 	auto hudDelegates = UHudDelegates::GetInstance();
@@ -32,7 +33,7 @@ void UTargetDetailsWidget::NativeConstruct() {
 	hudDelegates->_CycleToNextTarget.AddDynamic(this, &UTargetDetailsWidget::CycleTarget);
 }
 
-void UTargetDetailsWidget::OnAddTargetData(FGuid Id, FVector SourceLocation, FVector TargetLocation) {
+void UTargetDetailsWidget::OnAddTargetData(FGuid Id, FVector SourceLocation, FVector TargetLocation, ETargetIcon TargetIcon) {
 	UDebugMessages::LogDisplay(this, "adding target data to hud " + Id.ToString());
 
 	auto verticalDetailsBox = GetDetailsBox();
@@ -45,6 +46,9 @@ void UTargetDetailsWidget::OnAddTargetData(FGuid Id, FVector SourceLocation, FVe
 	newHorizontalRowItem->SetTargetLocation(TargetLocation);
 	newHorizontalRowItem->SetId(Id);
 
+	auto imageTexture = UUserWidgetHelpers::GetTargetIcon(TargetIcon);
+	newHorizontalRowItem->SetImage(imageTexture);
+
 	if (!lastHorizontalBox || lastHorizontalBox->GetChildrenCount() >= 3) {
 		auto newHorizontalWidget = CreateTargetDetailsRowWidget();
 
@@ -53,8 +57,8 @@ void UTargetDetailsWidget::OnAddTargetData(FGuid Id, FVector SourceLocation, FVe
 
 		if (!lastHorizontalBox) {
 			auto itemWidgetButton = newHorizontalRowItem->GetItemButton();
-			itemWidgetButton->WidgetStyle.Normal.TintColor = FSlateColor(FLinearColor(0, 175, 175, 1));
-			itemWidgetButton->WidgetStyle.Normal.OutlineSettings.Color = FSlateColor(FLinearColor(0, 55, 255, 1));
+			itemWidgetButton->WidgetStyle.Normal.TintColor = FSlateColor(FLinearColor(0, 175, 175, .4f));
+			//itemWidgetButton->WidgetStyle.Normal.OutlineSettings.Color = FSlateColor(FLinearColor(0, 55, 255, 1));
 		}
 
 		verticalDetailsBox->AddChildToVerticalBox(newHorizontalWidget);
@@ -83,12 +87,12 @@ void UTargetDetailsWidget::OnTargetIconClicked(FGuid Id, FVector Location) {
 			auto itemWidgetButton = itemWidget->GetItemButton();
 
 			if (itemWidget->GetId() == Id) {
-				itemWidgetButton->WidgetStyle.Normal.TintColor = FSlateColor(FLinearColor(0, 175, 175, 1));
-				itemWidgetButton->WidgetStyle.Normal.OutlineSettings.Color = FSlateColor(FLinearColor(0, 55, 255, 1));
+				itemWidgetButton->WidgetStyle.Normal.TintColor = FSlateColor(FLinearColor(0, 175, 175, .4f));
+				//itemWidgetButton->WidgetStyle.Normal.OutlineSettings.Color = FSlateColor(FLinearColor(0, 55, 255, 1));
 			}
 			else {
 				itemWidgetButton->WidgetStyle.Normal.TintColor = FSlateColor(FLinearColor(0, 175, 175, 0));
-				itemWidgetButton->WidgetStyle.Normal.OutlineSettings.Color = FSlateColor(FLinearColor(0, 55, 255, 0));
+				//itemWidgetButton->WidgetStyle.Normal.OutlineSettings.Color = FSlateColor(FLinearColor(0, 55, 255, 0));
 			}
 		}
 	}

@@ -26,6 +26,7 @@ void UObjectivesManager::SetupMainObjective() {
 	if (hudDelegates->_UpdateMainObjectiveText.IsBound()) {
 		UDebugMessages::LogDisplay(this, "_UpdateMainObjectiveText is bound");
 		hudDelegates->_UpdateMainObjectiveText.Broadcast(MainObjective.GetObjectiveText());
+		GetWorld()->GetTimerManager().SetTimer(MainDelayerHandle, this, &UObjectivesManager::MainDelayerHandleCallback, 1.0f, false);
 	}
 	else
 		GetWorld()->GetTimerManager().SetTimer(MainDelayerHandle, this, &UObjectivesManager::MainDelayerHandleCallback, 1.0f, false);

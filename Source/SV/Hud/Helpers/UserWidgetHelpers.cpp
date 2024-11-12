@@ -156,7 +156,7 @@ void UUserWidgetHelpers::SetButtonText(UButton* btn, FString text) {
 	}
 }
 
-void UUserWidgetHelpers::DesignText(UTextBlock* textBlock, int fontSize) {
+void UUserWidgetHelpers::DesignText(UTextBlock* textBlock, int fontSize, FLinearColor linearColor) {
 	// /Script/Engine.Font'/Game/Fonts/Aaargh_Font.Aaargh_Font'
 	// /Script/Engine.Font'/Game/Fonts/AARDC____Font.AARDC____Font'
 	// /Script/Engine.Font'/Game/Fonts/Urba_Font.Urba_Font'
@@ -170,4 +170,20 @@ void UUserWidgetHelpers::DesignText(UTextBlock* textBlock, int fontSize) {
 	FontInfo.FontObject = fontObj;
 	FontInfo.Size = fontSize;
 	textBlock->SetFont(FontInfo);
+
+	FSlateColor color = FSlateColor(linearColor);
+	textBlock->SetColorAndOpacity(color);
+}
+
+UTexture2D* UUserWidgetHelpers::GetTargetIcon(ETargetIcon TargetIcon) {
+	UTexture2D* texture = nullptr;
+	switch (TargetIcon) {
+	case ETargetIcon::TI_ConstructRange:
+		texture = USvUtilities::GetTexture("/Script/Engine.Texture2D'/Game/Images/UI/ConstructRange.ConstructRange'");
+		break;
+	case ETargetIcon::TI_ConstructMelee:
+		texture = USvUtilities::GetTexture("/Script/Engine.Texture2D'/Game/Images/UI/ConstructMelee.ConstructMelee'");
+		break;
+	}
+	return texture;
 }

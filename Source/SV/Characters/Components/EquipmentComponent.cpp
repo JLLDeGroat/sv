@@ -19,6 +19,7 @@
 #include "../Anim/CharAnimInstance.h"
 #include "../../Equipment/Guns/Components/GunActivationComponent.h"
 #include "../../Utilities/SvUtilities.h"
+#include "StatusEffectsComponent.h"
 
 // Sets default values for this component's properties
 UEquipmentComponent::UEquipmentComponent(const FObjectInitializer& ObjectInitializer)
@@ -130,6 +131,10 @@ void UEquipmentComponent::UpdateActorVisibility(bool value) {
 void UEquipmentComponent::FireEquippedGun() {
 	auto attackComponent = GetOwner()->GetComponentByClass<UAttackComponent>();
 	if (attackComponent) {
+
+		if (!CurrentMainEquipment)
+			return UDebugMessages::LogError(this, "cannot fire gun, there is no current main equipment");
+
 		//TODO:
 		//assuming equipped gun is an AR
 		//assuming AR uses basic bullets
@@ -138,7 +143,15 @@ void UEquipmentComponent::FireEquippedGun() {
 		if (!gunFire)
 			return UDebugMessages::LogDisplay(this, "current main equipment has no gunfire component");
 
-		gunFire->FireAtLocation(attackComponent->GetCurrentTargetLocation(), attackComponent->GetCurrentAttackRandomRadius());
+		float debuff = 0.00f;
+		auto statusEffectComponent = GetOwner()->GetComponentByClass<UStatusEffectsComponent>();
+		if (!statusEffectComponent)
+			UDebugMessages::LogWarning(this, "firer has no status effect component");
+		else {
+			statusEffectComponent->TryGetDebuffValue(EDebuffType::DBT_Accuracy, debuff);
+			UDebugMessages::LogDisplay(this, "found debuff value of " + FString::SanitizeFloat(debuff, 2));
+		}
+		gunFire->FireAtLocation(attackComponent->GetCurrentTargetLocation(), (attackComponent->GetCurrentAttackRandomRadius() + debuff));
 	}
 }
 
@@ -287,6 +300,20 @@ ECharacterAnimState UEquipmentComponent::GetAnimStateFromGunType(EGun gunType) {
 	}
 
 	return ECharacterAnimState::INVALID;
+}
+
+void UEquipmentComponent::UnEquip(AEquipment* equipment) {
+	for (int i = 0; i < Equipment.Num(); i++) {
+		if (Equipment[i] == equipment) {
+			if (Equipment[i] == CurrentMainEquipment)
+				CurrentMainEquipment = nullptr;
+
+
+
+			Equipment.RemoveAt(i);
+			return;
+		}
+	}
 }
 
 void UEquipmentComponent::TryActivateMainEquipment() {

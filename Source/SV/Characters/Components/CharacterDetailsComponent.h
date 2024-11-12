@@ -67,6 +67,9 @@ public:
 	void SetCharacterId(FGuid guid);
 
 	bool GetIsDead();
+
+	ETargetIcon GetTargetIcon();
+	void SetTargetIcon(ETargetIcon targetIcon);
 private:
 
 	UPROPERTY() ECharacterControl ControlType;
@@ -79,4 +82,5 @@ private:
 	UPROPERTY() bool bCanVault;
 	UPROPERTY() FString CharacterName;
 	UPROPERTY() FGuid CharacterId;
+	UPROPERTY() ETargetIcon TargetIcon;
 };

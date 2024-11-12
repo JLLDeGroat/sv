@@ -5,6 +5,7 @@
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "../../Interfaces/Movable.h"
 #include "../../Interfaces/Selectable.h"
+#include "../../Utilities/SvUtilities.h"
 #include "../Managers/SelectionManager.h"
 #include "../Components/PawnCameraComponent.h"
 
@@ -57,6 +58,13 @@ void URightClickAction::DoAction() {
 				auto currentActorGridLocation = selected->GetSelectableGridLocation();
 				//move the z axis lower to hit fence items
 				currentActorGridLocation.Z -= 50;
+
+				//check if locations are the same
+				if (selectedMouseLocation.X == currentActorGridLocation.X &&
+					selectedMouseLocation.Y == currentActorGridLocation.Y &&
+					USvUtilities::GetTileElevation(selectedMouseLocation) == USvUtilities::GetTileElevation(currentActorGridLocation)) {
+					return UDebugMessages::LogWarning(this, "trying to move to location already at");
+				}
 
 				UDebugMessages::LogDisplay(this, "Moving from " + currentActorGridLocation.ToString() + " to: " + selectedMouseLocation.ToString());
 				//testing grid system
