@@ -70,6 +70,9 @@ public:
 
 	ETargetIcon GetTargetIcon();
 	void SetTargetIcon(ETargetIcon targetIcon);
+
+	void SetBloodType(EBloodType bType);
+	EBloodType GetBloodType();
 private:
 
 	UPROPERTY() ECharacterControl ControlType;
@@ -83,4 +86,5 @@ private:
 	UPROPERTY() FString CharacterName;
 	UPROPERTY() FGuid CharacterId;
 	UPROPERTY() ETargetIcon TargetIcon;
+	UPROPERTY() EBloodType BloodType;
 };

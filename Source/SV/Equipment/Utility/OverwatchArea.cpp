@@ -15,6 +15,8 @@
 #include "../../Player/Actions/TargetAction.h"
 #include "../../Player/Components/PawnCameraComponent.h"
 #include "../../Delegates/GameplayDelegates.h"
+#include "../../GameModes/Managers/OverwatchManager.h"
+#include "../../Utilities/SvUtilities.h"
 // Sets default values
 AOverwatchArea::AOverwatchArea()
 {
@@ -78,14 +80,21 @@ void AOverwatchArea::OnOverlapped(UPrimitiveComponent* OverlappedComp, AActor* O
 		return UDebugMessages::LogError(this, "could not find overwatch owner");
 
 	if (OtherComp->IsA<UBoxComponent>() || OtherComp->IsA<UCapsuleComponent>()) {
-		bIsActive = true;
+		auto characterDetails = OverwatchOwner->GetComponentByClass<UCharacterDetailsComponent>();
+		auto otherDetails = OtherActor->GetComponentByClass<UCharacterDetailsComponent>();
 
-		auto attackComponent = OverwatchOwner->GetComponentByClass<UAttackComponent>();
-		if (!attackComponent)
-			return UDebugMessages::LogError(this, "failed to get attack component");
+		if (characterDetails && otherDetails && characterDetails->GetCharacterControl() != otherDetails->GetCharacterControl()) {
 
-		attackComponent->TryActivateOverwatch(OtherActor, OtherComp);
-		Destroy();
+			bIsActive = true;
+
+			auto overwatchManager = USvUtilities::GetGameModeOverwatchManager(GetWorld());
+
+			if (!overwatchManager)
+				return UDebugMessages::LogError(this, "cannot do overwatch, there is no overwatch manager");
+
+			overwatchManager->AddToOverwatchPotentials(OverwatchOwner, OtherActor, OtherComp);
+			Destroy();
+		}
 	}
 }
 void AOverwatchArea::SetOverWatchOwner(AActor* actor) {

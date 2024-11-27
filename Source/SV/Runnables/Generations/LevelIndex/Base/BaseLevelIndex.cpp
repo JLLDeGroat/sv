@@ -8,6 +8,7 @@
 #include "../../../../GameModes/Managers/LevelSpawnerManager.h"
 #include "../../../../Environment/Natural/RockSection.h"
 #include "../../../../World/WorldGridItemActor.h"
+#include "../../../../Environment/Fog/FogManager.h"
 
 
 UBaseLevelIndex::UBaseLevelIndex() {
@@ -44,6 +45,26 @@ void UBaseLevelIndex::CreateGrid(int maxX, int maxY, int elevation) {
 				if (j == 0)
 					TwoDGrid.Emplace(FVector2D(i, x));
 			}
+		}
+	}
+
+	AFogManager* fogManager = nullptr;
+	auto& actors = GetWorld()->GetCurrentLevel()->Actors;
+	for (int i = 0; i < actors.Num(); i++) {
+		if (actors[i]) {
+			if (AFogManager* fManager = Cast<AFogManager>(actors[i])) {
+				fogManager = fManager;
+				break;
+			}
+		}
+	}
+
+	if (fogManager) {
+		for (int i = 0; i < Grid.Num(); i++) {
+			auto grid = Grid[i];
+			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([fogManager, grid] {
+				fogManager->AddComponentAtLocation(grid);
+				}, TStatId(), nullptr, ENamedThreads::GameThread);
 		}
 	}
 }

@@ -53,7 +53,7 @@ bool UAiMovementComponent::AttemptToRouteToPossibleLocation(TScriptInterface<ISv
 	//SpawnDebugGrid_SetIsEnd(locationToMoveTo, 1.0f);
 
 	auto gridLoc = UGridUtilities::GetNormalisedGridLocation(locationToMoveTo);
-	auto foundRoute = gridMovementComponent->FindRoute(sourceLoc, gridLoc, true);
+	auto foundRoute = gridMovementComponent->FindRoute(sourceLoc, gridLoc, false);
 
 	if (!foundRoute.IsEmpty())
 		finalLocations = foundRoute;
@@ -62,7 +62,7 @@ bool UAiMovementComponent::AttemptToRouteToPossibleLocation(TScriptInterface<ISv
 		USvUtilities::GetAdjacentGridTiles(gridLoc, adjacentLocs);
 
 		for (int i = 0; i < adjacentLocs.Num(); i++) {
-			foundRoute = gridMovementComponent->FindRoute(sourceLoc, adjacentLocs[i], true);
+			foundRoute = gridMovementComponent->FindRoute(sourceLoc, adjacentLocs[i], false);
 			if (!foundRoute.IsEmpty()) {
 				UDebugMessages::LogWarning(this, "had to go with a second choice for movement");
 				finalLocations = foundRoute;

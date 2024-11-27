@@ -11,6 +11,7 @@
 #include "../../../../Player/GamePlayerController.h"
 #include "../../../../Player/Actions/Base/ActionManager.h"
 #include "../../../../Delegates/HudDelegates.h"
+#include "../ActionListWidget.h"
 
 void UActionListItemWidget::NativeConstruct() {
 	Super::NativeConstruct();
@@ -61,11 +62,26 @@ void UActionListItemWidget::OnButtonUnHovered() {
 		return UDebugMessages::LogError(this, "could not get hud delegeats, cannot do target icon clicked");
 
 	hudDelegates->_OnHudItemUnhovered.Broadcast();
+	auto parent = (UActionListWidget*)GetOuter()->GetOuter();
+	if (parent) {
+		parent->HideDescriptionWidget();
+	}
 }
+#pragma optimize("", off)
 void UActionListItemWidget::OnButtonHovered() {
 	auto hudDelegates = UHudDelegates::GetInstance();
 	if (!hudDelegates)
 		return UDebugMessages::LogError(this, "could not get hud delegeats, cannot do target icon clicked");
 
+	auto parent = (UActionListWidget*)GetOuter()->GetOuter();
+	if (parent) {
+		FString name, desc;
+		UUserWidgetHelpers::GetNameAndDescriptionFromAction(Action, name, desc);
+
+		parent->ShowDescriptionWidgetWithData(name, desc);
+	}
+
+
 	hudDelegates->_OnHudItemHovered.Broadcast();
 }
+#pragma optimize("", on)

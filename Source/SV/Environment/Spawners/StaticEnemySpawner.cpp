@@ -3,6 +3,7 @@
 
 #include "StaticEnemySpawner.h"
 #include "../../Characters/Monsters/GruntConstruct.h"
+#include "../../Characters/Monsters/RifleConstruct.h"
 #include "../../Characters/Components/SpawnInComponent.h"
 #include "../../Utilities/SvUtilities.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
@@ -38,8 +39,14 @@ void AStaticEnemySpawner::BeginPlay() {
 
 void AStaticEnemySpawner::StartSpawn() {
 
+	auto random = FMath::RandRange(1, 101);
+	UClass* characterClass = AGruntConstruct::StaticClass();
+
+	if (random > 65)
+		characterClass = ARifleConstruct::StaticClass();
+
 	auto location = GetActorLocation();
-	auto newGrunt = GetWorld()->SpawnActor<ABaseCharacter>(AGruntConstruct::StaticClass(), location, FRotator(0));
+	auto newGrunt = GetWorld()->SpawnActor<ABaseCharacter>(characterClass, location, FRotator(0));
 	if (newGrunt) {
 		auto spawnInComponent = newGrunt->GetComponentByClass<USpawnInComponent>();
 		if (!spawnInComponent) {

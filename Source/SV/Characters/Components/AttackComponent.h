@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Base/AnimAccessComponent.h"
 #include "../../Enums/ECharacterEnums.h"
+#include "../../Enums/EConfigurationEnums.h"
 #include "AttackComponent.generated.h"
 
 class ISvChar;
@@ -21,7 +22,7 @@ public:
 
 	UAttackComponent(const FObjectInitializer& ObjectInitializer);
 
-	void TryActivateOverwatch(AActor* targetActor, UPrimitiveComponent* OtherComp);
+	EOverwatchResult TryActivateOverwatch(AActor* targetActor, UPrimitiveComponent* OtherComp);
 	void TryAttackTarget(FVector sourceGridLocation, TScriptInterface<ISvChar> targetCharacter, bool bIsRange = true);
 	void TryAttackLocation(FVector sourceGridLocation, FVector location, float locationRadius, bool bIsRange = true);
 

@@ -49,4 +49,6 @@ public:
 	static void DesignText(UTextBlock* textBlock, int fontSize = 24, FLinearColor linearColor = FLinearColor::White);
 
 	static UTexture2D* GetTargetIcon(ETargetIcon TargetIcon);
+
+	static bool GetNameAndDescriptionFromAction(EActionType actionType, FString& name, FString& desc);
 };

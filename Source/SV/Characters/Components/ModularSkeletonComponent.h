@@ -29,7 +29,7 @@ public:
 	bool GetIsDead();
 
 	void AddDebuffOnDestroy(EDebuffType debuff, float amount);
-	void SetupStaticMeshComp(FString meshref, FVector loc = FVector::ZeroVector, FRotator rot = FRotator::ZeroRotator);
+	void SetupStaticMeshComp(USkeletalMeshComponent* skeleMeshComp, FString meshref, FVector loc = FVector::ZeroVector, FRotator rot = FRotator::ZeroRotator);
 	TMap<EDebuffType, float> GetDebuffsOnDestruction();
 
 	void DestroyModularComponent(FVector direction);
@@ -39,7 +39,6 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) int Health;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) TMap<EDebuffType, float> DebuffsOnDestroy;
-
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UPhysicsFieldComponent* ExplosionField;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UGeometryCollectionComponent* DestructibleMesh;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) URadialVector* RadialVector;

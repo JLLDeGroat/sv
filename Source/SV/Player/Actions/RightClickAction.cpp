@@ -34,8 +34,6 @@ void URightClickAction::BeginPlay()
 
 void URightClickAction::DoAction() {
 	if (IsWithinValidControlLimiter()) {
-		ResetActionEffects();
-
 		auto owner = GetOwner<AGamePlayerController>();
 		auto pawn = owner->GetPawn();
 		auto pawnCameraComponent = pawn->GetComponentByClass<UPawnCameraComponent>();
@@ -43,6 +41,7 @@ void URightClickAction::DoAction() {
 		if (!IsInValidCameraState(pawnCameraComponent->GetCurrentCameraState()))
 			return;
 
+		ResetActionEffects();
 		auto selected = SelectionManager->GetSelected();
 
 		if (selected) {
@@ -83,8 +82,10 @@ void URightClickAction::DoAction() {
 					"left.");
 
 				UDebugMessages::LogDisplay(this, "moving");
-				movable->GetGridMovementComponent()->MoveAcrossGrid(SelectionManager->GetLocationPath());
-				UpdateControlLimit(EControlLimit::CL_NoClick);
+
+				if (movable->GetGridMovementComponent()->MoveAcrossGrid(SelectionManager->GetLocationPath()))
+					UpdateControlLimit(EControlLimit::CL_NoClick);
+				else UDebugMessages::LogWarning(this, "failed to move to new location");
 			}
 		}
 	}

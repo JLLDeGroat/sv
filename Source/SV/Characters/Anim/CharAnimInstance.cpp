@@ -28,6 +28,8 @@
 #include "Animation/AnimNode_StateMachine.h"
 #include "../../Runnables/PostMovementRunnable.h"
 #include "NiagaraComponent.h"
+#include "../../Utilities/SvUtilities.h"
+#include "../../GameModes/Managers/OverwatchManager.h"
 
 UCharAnimInstance::UCharAnimInstance(const FObjectInitializer& ObjectInitializer)
 	: UAnimInstance(ObjectInitializer) {
@@ -145,13 +147,17 @@ void UCharAnimInstance::OnFinishFire() {
 		auto cameraOverlapComponent = pawn->GetComponentByClass<UCameraOverlapComponent>();
 		auto currentAttackType = AttackType;
 
+		bool isOverwatchAttack = cameraComponent->GetCurrentCameraState() == ECameraState::CS_OverwatchCinematicShoot;
+
 		if (currentAttackType == EAttackType::AT_MoveAndFire_Right ||
 			currentAttackType == EAttackType::AT_MoveAndFire_Left ||
 			currentAttackType == EAttackType::AT_BasicFire &&
 			(attackComponent && cameraComponent && cameraOverlapComponent))
-			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([attackComponent]
+			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([attackComponent, isOverwatchAttack]
 				{
-					attackComponent->ReturnCharacterAnimationSpeedsToNormal();
+					if (!isOverwatchAttack)
+						attackComponent->ReturnCharacterAnimationSpeedsToNormal();
+
 					attackComponent->UpdateCurrentAttackState(EAttackState::CS_Return);
 				},
 				TStatId(), nullptr, ENamedThreads::GameThread);
@@ -170,14 +176,31 @@ void UCharAnimInstance::OnFinishFire_PostDelay() {
 		auto cameraComponent = pawn->GetComponentByClass<UPawnCameraComponent>();
 		auto cameraOverlapComponent = pawn->GetComponentByClass<UCameraOverlapComponent>();
 
+		bool wasOverwatch = cameraComponent->GetCurrentCameraState() == ECameraState::CS_OverwatchCinematicShoot;
+
 		if (cameraComponent && cameraOverlapComponent && playerController)
-			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([cameraComponent, cameraOverlapComponent, playerController]
+			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([cameraComponent, cameraOverlapComponent, playerController, wasOverwatch]
 				{
 					cameraComponent->UpdateCameraState(ECameraState::CS_Control);
 					cameraOverlapComponent->ResetOverlapComponent();
 					playerController->SetMouseAsUi();
 				},
 				TStatId(), nullptr, ENamedThreads::GameThread);
+
+		if (wasOverwatch) {
+			auto overwatchManager = USvUtilities::GetGameModeOverwatchManager(owningActor->GetWorld());
+
+			if (!overwatchManager->GetIsCurrentlyOverwatchAnimating()) {
+				return UDebugMessages::LogError(this, "tried to end overwatch animation, but its not currently overwatching");
+			}
+
+			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([overwatchManager]
+				{
+					overwatchManager->OnOverwatchItemComplete();
+				},
+				TStatId(), nullptr, ENamedThreads::GameThread);
+
+		}
 	}
 }
 

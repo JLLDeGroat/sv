@@ -141,8 +141,11 @@ void UPawnCameraComponent::DoCinematicAttackCameraMovement(AActor* attacker, AAc
 }
 void UPawnCameraComponent::DoOverwatchCinematicAttackCameraMovement(AActor* attacker, AActor* target) {
 	CurrentCameraState = ECameraState::CS_OverwatchCinematicShoot;
-	ReturnLocation = CameraComponent->GetComponentLocation();
+	//ReturnLocation = CameraComponent->GetComponentLocation();
 	CinematicAttackCameraMovement(attacker, target);
+}
+void UPawnCameraComponent::SetOverwatchReturnLocation(FVector loc) {
+	ReturnLocation = loc;
 }
 void UPawnCameraComponent::CinematicAttackCameraMovement(AActor* attacker, AActor* target) {
 	CinematicActorAttacker = attacker;

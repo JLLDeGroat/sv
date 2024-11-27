@@ -187,3 +187,64 @@ UTexture2D* UUserWidgetHelpers::GetTargetIcon(ETargetIcon TargetIcon) {
 	}
 	return texture;
 }
+
+bool UUserWidgetHelpers::GetNameAndDescriptionFromAction(EActionType actionType, FString& name, FString& desc) {
+	name = "UNKNOWN";
+	desc = "UNKNOWN";
+	switch (actionType) {
+	case EActionType::AT_FlameRetardentKit:
+		name = "Flame Retardent Kit";
+		desc = "apply a kit to stop the affects of burning, or burns.";
+		break;
+	case EActionType::AT_Shoot:
+		name = "Shoot";
+		desc = "Enter Targetting and line up a shot on the enemy filth.";
+		break;
+	case EActionType::AT_AnditodeKit:
+		name = "Antitode";
+		desc = "apply a kit to stop the affects of poison, or harmful chemicals.";
+		break;
+	case EActionType::AT_BasicHealthKit:
+		name = "Health kit";
+		desc = "apply a kit to regain some health.";
+		break;
+	case EActionType::AT_Extract:
+		name = "Extract";
+		desc = "Live to go further Down, better than being up.";
+		break;
+	case EActionType::AT_Grenade:
+		name = "Grenade";
+		desc = "throw a grenade, limited in their number. be careful where it lands.";
+		break;
+	case EActionType::AT_Interact:
+		name = "Interact";
+		desc = "interact with the environment and leave your mark on the world";
+		break;
+	case EActionType::AT_LargeHealthKit:
+		name = "Large Health kit";
+		desc = "apply a kit to regain lots health.";
+		break;
+	case EActionType::AT_Overwatch:
+		name = "Overwatch";
+		desc = "Focus all attention on a certain area and take reaction shots on the scum that enter it.";
+		break;
+	case EActionType::AT_Pickup:
+		name = "Pick up";
+		desc = "Pick up, scavenge, it may be all you get.";
+		break;
+	case EActionType::AT_Reload:
+		name = "Reload";
+		desc = "reload your current weapon. Keep it full, they are everywhere.";
+		break;
+	case EActionType::AT_Sleep:
+		name = "Skip";
+		desc = "Sometimes its best to do nothing at all... Nothing at all";
+		break;
+	case EActionType::AT_SwapWeapon:
+		name = "Swap weapon";
+		desc = "Swap to your altenate gift from above";
+		break;
+	}
+
+	return name != desc;
+}

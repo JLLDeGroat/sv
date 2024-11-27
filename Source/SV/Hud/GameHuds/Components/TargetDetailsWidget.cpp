@@ -49,7 +49,7 @@ void UTargetDetailsWidget::OnAddTargetData(FGuid Id, FVector SourceLocation, FVe
 	auto imageTexture = UUserWidgetHelpers::GetTargetIcon(TargetIcon);
 	newHorizontalRowItem->SetImage(imageTexture);
 
-	if (!lastHorizontalBox || lastHorizontalBox->GetChildrenCount() >= 3) {
+	if (!lastHorizontalBox) { //|| lastHorizontalBox->GetChildrenCount() >= 3) {
 		auto newHorizontalWidget = CreateTargetDetailsRowWidget();
 
 		if (!newHorizontalWidget)

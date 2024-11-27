@@ -30,4 +30,5 @@ AWall::AWall(const FObjectInitializer& ObjectInitializer)
 
 	DetailsComponent = CreateDefaultSubobject<UEnvironmentDetailsComponent>(TEXT("Details"));
 	DetailsComponent->SetThickness(1);
+	DetailsComponent->SetAffectsFog(true);
 }

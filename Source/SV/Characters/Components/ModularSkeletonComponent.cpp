@@ -24,6 +24,7 @@ UModularSkeletonComponent::UModularSkeletonComponent(const FObjectInitializer& O
 
 	//StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("mesh"));
 	DestructibleMesh = CreateDefaultSubobject<UGeometryCollectionComponent>(TEXT("Destruction"));
+	DestructibleMesh->SetupAttachment(this);
 	ExplosionField = CreateDefaultSubobject<UPhysicsFieldComponent>(TEXT("PhysicsField"));
 	ExplosionField->SetupAttachment(DestructibleMesh);
 
@@ -32,12 +33,14 @@ UModularSkeletonComponent::UModularSkeletonComponent(const FObjectInitializer& O
 	RadialVector = CreateDefaultSubobject<URadialVector>(TEXT("RadialVector"));
 	RadialFallOff = CreateDefaultSubobject<URadialFalloff>(TEXT("RadialFalloff"));
 
+	//DestructibleMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 	DestructibleMesh->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
-	DestructibleMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
+	DestructibleMesh->SetCollisionResponseToChannel(USvUtilities::GetEnvironmentChannel(), ECR_Block);
+	DestructibleMesh->SetCollisionResponseToChannel(USvUtilities::GetFloorTargetChannel(), ECR_Block);
+	/*DestructibleMesh->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+	DestructibleMesh->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Block);*/
 	//DestructibleMesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 
-	DestructibleMesh->SetCollisionResponseToChannel(USvUtilities::GetEnvironmentChannel(), ECR_Block);
-	DestructibleMesh->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 	//static ConstructorHelpers::FObjectFinder<UGeometryCollection> GeometryCollectionAsset(TEXT("/Script/GeometryCollectionEngine.GeometryCollection'/Game/Characters/Construct/Construct_Head_Mesh_Construct_Head_Mesh/GC_ConstructHead.GC_ConstructHead'"));
 	/*auto geoCollection = USvUtilities::GetGeometryCollection("/Script/GeometryCollectionEngine.GeometryCollection'/Game/Characters/Construct/Construct_Head_Mesh_Construct_Head_Mesh/GC_ConstructHead.GC_ConstructHead'");
 	if (geoCollection) {
@@ -79,29 +82,37 @@ void UModularSkeletonComponent::AddDebuffOnDestroy(EDebuffType debuff, float amo
 TMap<EDebuffType, float> UModularSkeletonComponent::GetDebuffsOnDestruction() {
 	return DebuffsOnDestroy;
 }
-
-void UModularSkeletonComponent::SetupStaticMeshComp(FString meshref, FVector loc, FRotator rot) {
+#pragma optimize("", off)
+void UModularSkeletonComponent::SetupStaticMeshComp(USkeletalMeshComponent* skeleMeshComp, FString meshref, FVector loc, FRotator rot) {
 	auto geoCollection = USvUtilities::GetGeometryCollection(meshref);
 	if (geoCollection) {
+		if (GetOwner() && GetOwner()->GetRootComponent()) {
+			//DestructibleMesh->AttachToComponent(skeleMeshComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+			//DestructibleMesh->SetCollisionResponseToChannel(USvUtilities::GetEnvironmentChannel(), ECR_Block);
+			//DestructibleMesh->SetCollisionResponseToChannel(USvUtilities::GetFloorTargetChannel(), ECR_Block);
+			//DestructibleMesh->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+			//DestructibleMesh->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Block);
+		}
+
 		DestructibleMesh->SetRestCollection(geoCollection);
 		DestructibleMesh->SetSimulatePhysics(false);
 		DestructibleMesh->SetEnableGravity(false);
 		DestructibleMesh->SetVisibility(false);
-		DestructibleMesh->SetupAttachment(GetAttachmentRoot());
 		DestructibleMesh->SetRelativeLocation(loc);
 		DestructibleMesh->SetRelativeRotation(rot);
 	}
-
-	if (GetOwner() && GetOwner()->GetRootComponent()) {
-		DestructibleMesh->SetupAttachment(this);
-	}
 }
-
+#pragma optimize("", on)
 void UModularSkeletonComponent::DestroyModularComponent(FVector direction) {
 	SetVisibility(false);
 	DestructibleMesh->SetVisibility(true);
 	DestructibleMesh->SetSimulatePhysics(true);
 	DestructibleMesh->SetEnableGravity(true);
+	DestructibleMesh->SetCollisionResponseToChannel(USvUtilities::GetEnvironmentChannel(), ECR_Block);
+	DestructibleMesh->SetCollisionResponseToChannel(USvUtilities::GetFloorTargetChannel(), ECR_Block);
+	/*DestructibleMesh->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+	DestructibleMesh->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Block);*/
+	DestructibleMesh->RecreatePhysicsState();
 
 
 	FVector CenterOfExplosion = DestructibleMesh->GetComponentLocation();

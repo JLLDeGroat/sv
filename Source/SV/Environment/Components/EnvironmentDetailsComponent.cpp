@@ -11,6 +11,7 @@ UEnvironmentDetailsComponent::UEnvironmentDetailsComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 
 	Thickness = 5;
+	AffectsFog = false;
 	// ...
 }
 
@@ -19,4 +20,11 @@ void UEnvironmentDetailsComponent::SetThickness(int value) {
 }
 int UEnvironmentDetailsComponent::GetThickness() {
 	return Thickness;
+}
+
+void UEnvironmentDetailsComponent::SetAffectsFog(bool affectsFog) {
+	AffectsFog = affectsFog;
+}
+bool UEnvironmentDetailsComponent::GetAffectsFog() {
+	return AffectsFog;
 }

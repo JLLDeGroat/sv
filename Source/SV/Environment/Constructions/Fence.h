@@ -7,6 +7,7 @@
 #include "Fence.generated.h"
 
 class UVaultableComponent;
+class UEnvironmentDetailsComponent;
 
 /**
  * 
@@ -24,4 +25,5 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* FenceMeshComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UVaultableComponent* VaultableComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UEnvironmentDetailsComponent* DetailsComponent;
 };

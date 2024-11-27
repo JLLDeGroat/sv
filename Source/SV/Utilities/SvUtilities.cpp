@@ -4,6 +4,7 @@
 #include "SvUtilities.h"
 #include "../GameModes/GameplayMode.h"
 #include "../GameModes/Managers/CharacterManager.h"
+#include "../GameModes/Managers/OverwatchManager.h"
 #include "../Interfaces/Gameplay.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "../Instance/SvGameInstance.h"
@@ -16,6 +17,8 @@
 #include "GeometryCollection/GeometryCollection.h"
 #include "GeometryCollection/GeometryCollectionComponent.h"
 
+#include "../Characters/Components/CharacterDetailsComponent.h"
+#include "../Environment/Components/VaultableComponent.h"
 
 ECollisionChannel USvUtilities::GetFloorTargetChannel() {
 	return ECollisionChannel::ECC_GameTraceChannel1;
@@ -43,6 +46,10 @@ ECollisionChannel USvUtilities::GetWorldSelectChannel() {
 
 ECollisionChannel USvUtilities::GetTriggerableChannel() {
 	return ECC_GameTraceChannel7;
+}
+
+ECollisionChannel USvUtilities::GetFogCollisionObjectChannel() {
+	return ECC_GameTraceChannel9;
 }
 
 int USvUtilities::FormatLocation(float val) {
@@ -107,6 +114,10 @@ UCharacterManager* USvUtilities::GetGameModeCharacterManager(UWorld* world) {
 UObjectivesManager* USvUtilities::GetGameModeObjectiveManager(UWorld* world) {
 	auto gameMode = GetGameMode(world);
 	return gameMode->GetObjectivesManager();
+}
+UOverwatchManager* USvUtilities::GetGameModeOverwatchManager(UWorld* world) {
+	auto gameMode = GetGameMode(world);
+	return gameMode->GetOverwatchManager();
 }
 
 void USvUtilities::GetAdjacentGridTiles(FVector location, TArray<FVector>& adjacentTiles) {
@@ -297,18 +308,15 @@ UGeometryCache* USvUtilities::GetGeometryCache(FString reference) {
 UGeometryCache* USvUtilities::GetRandomBloodSpatterGeoCache() {
 
 	int random = FMath::RandRange(1, 5);
-	FString reference = "/Script/GeometryCache.GeometryCache'/Game/Effects/Spatter/Spatter3.Spatter3'";
+	FString reference = "/Script/GeometryCache.GeometryCache'/Game/Effects/Spatter/Spatter7.Spatter7'";
 
 	switch (random) {
 	case 1:
 	case 2:
-		reference = "/Script/GeometryCache.GeometryCache'/Game/Effects/Spatter/Spatter4.Spatter4'";
+		reference = "/Script/GeometryCache.GeometryCache'/Game/Effects/Spatter/Spatter8.Spatter8'";
 	case 3:
-		reference = "/Script/GeometryCache.GeometryCache'/Game/Effects/Spatter/Spatter5.Spatter5'";
 	case 4:
-		reference = "/Script/GeometryCache.GeometryCache'/Game/Effects/Spatter/Spatter3.Spatter3'";
-	default:
-		reference = "/Script/GeometryCache.GeometryCache'/Game/Effects/Spatter/Spatter6.Spatter6'";
+		reference = "/Script/GeometryCache.GeometryCache'/Game/Effects/Spatter/Spatter9.Spatter9'";
 	}
 
 	return GetGeometryCache(reference);
@@ -316,4 +324,112 @@ UGeometryCache* USvUtilities::GetRandomBloodSpatterGeoCache() {
 
 UGeometryCollection* USvUtilities::GetGeometryCollection(FString reference) {
 	return Cast<UGeometryCollection>(StaticLoadObject(UGeometryCollection::StaticClass(), NULL, *reference, NULL, LOAD_None, NULL));
+}
+
+UMaterial* USvUtilities::GetRandomBloodSpatterForWall() {
+	auto reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter10_M.WallSpatter10_M'";
+
+	auto random = FMath::RandRange(0, 9);
+	switch (random) {
+	case 1:
+		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter1_M.WallSpatter1_M'";
+		break;
+	case 2:
+		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter2_M.WallSpatter2_M'";
+		break;
+	case 3:
+		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter3_M.WallSpatter3_M'";
+		break;
+	case 4:
+		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter4_M.WallSpatter4_M'";
+		break;
+	case 5:
+		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter5_M.WallSpatter5_M'";
+		break;
+	case 6:
+		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter6_M.WallSpatter6_M'";
+		break;
+	case 7:
+		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter7_M.WallSpatter7_M'";
+		break;
+	case 8:
+		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter8_M.WallSpatter8_M'";
+		break;
+	case 9:
+		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter9_M.WallSpatter9_M'";
+		break;
+	}
+
+	return GetMaterial(reference);
+}
+UMaterial* USvUtilities::GetRandomBloodSpatterForFloor() {
+	auto reference = "/Script/Engine.Material'/Game/Decals/Spatters/Floor/FloorSpatter1_M.FloorSpatter1_M'";
+	auto random = FMath::RandRange(0, 7);
+	switch (random) {
+	case 1:
+		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Floor/FloorSpatter2_M.FloorSpatter2_M'";
+		break;
+	case 2:
+		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Floor/FloorSpatter3_M.FloorSpatter3_M'";
+		break;
+	case 3:
+		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Floor/FloorSpatter4_M.FloorSpatter4_M'";
+		break;
+	case 4:
+		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Floor/FloorSpatter5_M.FloorSpatter5_M'";
+		break;
+	case 5:
+		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Floor/FloorSpatter6_M.FloorSpatter6_M'";
+		break;
+	case 6:
+		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Floor/FloorSpatter7_M.FloorSpatter7_M'";
+		break;
+	case 7:
+		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Floor/FloorSpatter8_M.FloorSpatter8_M'";
+		break;
+	}
+	return GetMaterial(reference);
+}
+
+
+float USvUtilities::GetNoFogValue() {
+	return 0.01f;
+}
+float USvUtilities::GetFogValue() {
+	return 1;
+}
+float USvUtilities::GetFullFogValue() {
+	return 5;
+}
+FString USvUtilities::GetFogVariableName() {
+	return "FogAmount";
+}
+
+void USvUtilities::GetAdjacentTilesForFogCalculation(AActor* startActor, TArray<FVector>& validAdjacentTiles) {
+	TArray<FVector> adjacentTiles;
+	GetAdjacentGridTiles(startActor->GetActorLocation(), adjacentTiles);
+
+	bool bIgnoreVaultables = true; // fog calc does not care about vaultables
+
+	for (int i = 0; i < adjacentTiles.Num(); i++) {
+		FHitResult EnvironmentHit;
+		startActor->GetWorld()->LineTraceSingleByChannel(EnvironmentHit, startActor->GetActorLocation(), adjacentTiles[i], USvUtilities::GetEnvironmentChannel());
+
+		FHitResult EntityHit;
+		FCollisionQueryParams EntityHitParams;
+		EntityHitParams.AddIgnoredActor(startActor);
+		startActor->GetWorld()->LineTraceSingleByChannel(EntityHit, startActor->GetActorLocation(), adjacentTiles[i], USvUtilities::GetClickableChannel(), EntityHitParams);
+
+
+		auto detailsComponent = startActor->GetComponentByClass<UCharacterDetailsComponent>();
+		auto hasVaultComponentAndCanVault = EnvironmentHit.GetActor() && EnvironmentHit.GetActor()->GetComponentByClass<UVaultableComponent>()
+			&& detailsComponent && detailsComponent->GetCanVault();
+
+		if ((!EnvironmentHit.bBlockingHit && !EntityHit.bBlockingHit) ||
+			(EnvironmentHit.bBlockingHit && hasVaultComponentAndCanVault && !bIgnoreVaultables))
+		{
+			validAdjacentTiles.Emplace(adjacentTiles[i]);
+		}
+		//else UDebugMessages::LogError(this, "Invalid spot " + adjacentTiles[i].ToString());
+	}
 }

@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "PreMoveChecker.h"
 #include "../../Utilities/GridUtilities.h"
 #include "../../Utilities/SvUtilities.h"
@@ -9,6 +6,7 @@
 #include "Behaviours/AIMeleeAttack.h"
 #include "../../Characters/Components/AIComponent.h"
 
+#pragma optimize("", off)
 void UPreMoveChecker::ActivateThread() {
 	Super::ActivateThread();
 
@@ -29,7 +27,7 @@ void UPreMoveChecker::ActivateThread() {
 		//TODO: should check if this enemy wants to melee or run to cover
 		auto aiComponent = GetThisEnemy()->GetAsActor()->GetComponentByClass<UAIComponent>();
 
-		if (aiComponent)
+		if (!aiComponent)
 			return UDebugMessages::LogError(this, "failed to get ai component");
 
 		MeleeBehaviour = CreateBehaviourClass(aiComponent->GetAttackRoute());
@@ -98,3 +96,4 @@ void UPreMoveChecker::DetermineClosestCharactersToThisEnemy() {
 TArray<TScriptInterface<ISvChar>> UPreMoveChecker::GetCurrentTarget() {
 	return Targets;
 }
+#pragma optimize("", on)

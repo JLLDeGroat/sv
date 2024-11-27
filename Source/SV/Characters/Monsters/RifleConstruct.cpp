@@ -103,15 +103,15 @@ void ARifleConstruct::PostInitializeComponents()
 	if (GetMesh()) {
 		if (HeadSkelComp) {
 			HeadSkelComp->SetLeaderPoseComponent(GetMesh());
-			HeadSkelComp->SetupStaticMeshComp("/Script/GeometryCollectionEngine.GeometryCollection'/Game/Characters/Construct/Construct_GeoCollections/GC_ConstructHead.GC_ConstructHead'", FVector(-20, 10, 135));
+			HeadSkelComp->SetupStaticMeshComp(GetMesh(), "/Script/GeometryCollectionEngine.GeometryCollection'/Game/Characters/Construct/Construct_GeoCollections/GC_ConstructHead.GC_ConstructHead'", FVector(-20, 10, 135));
 		}
 		if (LeftArmSkelComp) {
 			LeftArmSkelComp->SetLeaderPoseComponent(GetMesh());
-			LeftArmSkelComp->SetupStaticMeshComp("/Script/GeometryCollectionEngine.GeometryCollection'/Game/Characters/Construct/Construct_GeoCollections/ConstructLeftArm.ConstructLeftArm'", FVector(12.5f, -11.25f, 91), FRotator(-43, 90, -90));
+			LeftArmSkelComp->SetupStaticMeshComp(GetMesh(), "/Script/GeometryCollectionEngine.GeometryCollection'/Game/Characters/Construct/Construct_GeoCollections/ConstructLeftArm.ConstructLeftArm'", FVector(12.5f, -11.25f, 91), FRotator(-43, 90, -90));
 		}
 		if (RightArmSkelComp) {
 			RightArmSkelComp->SetLeaderPoseComponent(GetMesh());
-			RightArmSkelComp->SetupStaticMeshComp("/Script/GeometryCollectionEngine.GeometryCollection'/Game/Characters/Construct/Construct_GeoCollections/ConstructLeftArm.ConstructLeftArm'", FVector(-60, -11.25f, 91), FRotator(-43, 90, -90));
+			RightArmSkelComp->SetupStaticMeshComp(GetMesh(), "/Script/GeometryCollectionEngine.GeometryCollection'/Game/Characters/Construct/Construct_GeoCollections/ConstructLeftArm.ConstructLeftArm'", FVector(-60, -11.25f, 91), FRotator(-43, 90, -90));
 		}
 
 		if (LeftLegSkelComp) LeftLegSkelComp->SetLeaderPoseComponent(GetMesh());

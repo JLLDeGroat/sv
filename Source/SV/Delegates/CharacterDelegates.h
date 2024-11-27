@@ -9,6 +9,8 @@
  * 
  */
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFogGenerationComplete);
+
 class ABaseCharacter;
 
 UCLASS()
@@ -24,4 +26,6 @@ public:
 		}
 		return characterDelegates;
 	}
+
+	FOnFogGenerationComplete _OnFogGenerationComplete;
 };

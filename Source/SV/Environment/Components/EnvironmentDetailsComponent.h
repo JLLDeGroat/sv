@@ -19,8 +19,11 @@ public:
 	void SetThickness(int value);
 	int GetThickness();
 
+	void SetAffectsFog(bool affectsFog);
+	bool GetAffectsFog();
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) int Thickness;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool AffectsFog;
 
 };

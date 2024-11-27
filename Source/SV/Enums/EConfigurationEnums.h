@@ -44,3 +44,11 @@ enum class ETutorials : uint8 {
 	T_Supplies = 3
 };
 
+UENUM(BlueprintType)
+enum class EOverwatchResult :uint8 {
+	INVALID = 0,
+	OR_Started = 1,
+	OR_Delay = 2,
+	OR_Error = 3
+};
+

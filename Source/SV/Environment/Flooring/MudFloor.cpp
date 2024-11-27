@@ -30,4 +30,5 @@ AMudFloor::AMudFloor(const FObjectInitializer& ObjectInitializer)
 
 	EnvironmentDetails = CreateDefaultSubobject<UEnvironmentDetailsComponent>(TEXT("Details"));
 	EnvironmentDetails->SetThickness(100);
+	EnvironmentDetails->SetAffectsFog(false);
 }

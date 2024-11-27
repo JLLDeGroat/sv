@@ -6,6 +6,9 @@
 #include "SubComponents/ActionListItemWidget.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "Components/VerticalBox.h"
+#include "Components/GridPanel.h"
+#include "Components/TextBlock.h"
+#include "../../Helpers/UserWidgetHelpers.h"
 
 void UActionListWidget::NativeConstruct() {
 	Super::NativeConstruct();
@@ -18,6 +21,11 @@ void UActionListWidget::NativeConstruct() {
 	hudDelegates->_ResetActionIcons.AddDynamic(this, &UActionListWidget::ClearVerticalBox);
 
 	hudDelegates->_HideOrResetUIWidget.AddDynamic(this, &UActionListWidget::HideOrReset);
+
+	DescriptionGrid->SetVisibility(ESlateVisibility::Hidden);
+
+	UUserWidgetHelpers::DesignText(DescriptionText, 19);
+	UUserWidgetHelpers::DesignText(NameText);
 }
 
 void UActionListWidget::CreateAndAddActionItem(EActionType actionType, FString shortCut) {
@@ -47,5 +55,17 @@ void UActionListWidget::ClearVerticalBox() {
 	if (!verticalBox)
 		return UDebugMessages::LogError(this, "failed to get vertical box");
 
+	DescriptionGrid->SetVisibility(ESlateVisibility::Hidden);
 	verticalBox->ClearChildren();
+}
+
+void UActionListWidget::ShowDescriptionWidgetWithData(FString name, FString desc) {
+	NameText->SetText(FText::FromString(name));
+	DescriptionText->SetText(FText::FromString(desc));
+
+	DescriptionGrid->SetVisibility(ESlateVisibility::Visible);
+}
+
+void UActionListWidget::HideDescriptionWidget() {
+	DescriptionGrid->SetVisibility(ESlateVisibility::Hidden);
 }

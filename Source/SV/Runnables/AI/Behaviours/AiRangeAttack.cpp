@@ -35,13 +35,11 @@ void UAiRangeAttack::DoBehaviour() {
 			attackComponent->TryAttackLocation(thisTarget->GetShootLocation(), targetLocation, 25);
 		}
 	}
-	else UDebugMessages::LogError(this, "failed to get a target");
-
-	/*for (int i = 0; i < targetData.Num(); i++) {
-		UDebugMessages::LogDisplay(this, targetData[i].GetCharacter()->GetAsActor()->GetName());
-	}*/
-
-	//SetCompletedBehaviour();
+	else {
+		UDebugMessages::LogError(this, "failed to get a target");
+		UDebugMessages::LogError(this, "TODO: need to check on overwatch");
+		SetCompletedBehaviour();
+	}
 }
 
 FVector UAiRangeAttack::GetWhereToShootCharacter(TScriptInterface<ISvChar> character, FVector startLocation) {

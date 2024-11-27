@@ -15,6 +15,7 @@ class ULevelSpawnerManager;
 class UObjectivesManager;
 class UWinLossCheckerRunnable;
 class UStatUpdateRunnable;
+class UOverwatchManager;
 /**
  *
  */
@@ -32,6 +33,7 @@ public:
 	//inherited from IGameplay
 	virtual UCharacterManager* GetCharacterManager() override;
 	virtual UObjectivesManager* GetObjectivesManager() override;
+	virtual UOverwatchManager* GetOverwatchManager() override;
 	virtual void EndTurn() override;
 	virtual void BeginPlayerTurn() override;
 
@@ -47,6 +49,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UTurnManager* TurnManager;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) ULevelSpawnerManager* LevelSpawnerManager;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UObjectivesManager* ObjectivesManager;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UOverwatchManager* OverwatchManager;
 	UPROPERTY() UBaseRunnable* LevelGenThread;
 	UPROPERTY() UWinLossCheckerRunnable* WinLossCheckerThread;
 	UPROPERTY() TArray<UStatUpdateRunnable*> StatRunnables;

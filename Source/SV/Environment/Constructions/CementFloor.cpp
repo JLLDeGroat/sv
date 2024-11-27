@@ -2,7 +2,7 @@
 
 
 #include "CementFloor.h"
-
+#include "../Components/EnvironmentDetailsComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "../../Utilities/SvUtilities.h"
 
@@ -19,4 +19,8 @@ ACementFloor::ACementFloor(const FObjectInitializer& ObjectInitializer)
 	if (wallMesh) {
 		FloorMeshComponent->SetStaticMesh(wallMesh);
 	}
+
+	DetailsComponent = CreateDefaultSubobject<UEnvironmentDetailsComponent>(TEXT("Details"));
+	DetailsComponent->SetThickness(1);
+	DetailsComponent->SetAffectsFog(false);
 }

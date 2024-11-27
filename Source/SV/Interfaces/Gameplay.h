@@ -9,6 +9,7 @@
 
 class UCharacterManager;
 class UObjectivesManager;
+class UOverwatchManager;
 
 /**
  *
@@ -28,6 +29,7 @@ public:
 
 	virtual UCharacterManager* GetCharacterManager() = 0;
 	virtual UObjectivesManager* GetObjectivesManager() = 0;
+	virtual UOverwatchManager* GetOverwatchManager() = 0;
 
 	virtual void EndTurn() = 0;
 	virtual void BeginPlayerTurn() = 0;

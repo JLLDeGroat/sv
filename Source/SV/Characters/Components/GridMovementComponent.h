@@ -74,7 +74,7 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void MoveAcrossGrid(TArray<FVector> movementLocs);
+	bool MoveAcrossGrid(TArray<FVector> movementLocs);
 	void MovementLoop();
 
 	TArray<FVector> FindRoute(FVector start, FVector end, bool bisAI = false);

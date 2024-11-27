@@ -8,6 +8,7 @@
 
 class UToggleRadiusComponent;
 class UToggleMovementComponent;
+class UEnvironmentDetailsComponent;
 /**
  * 
  */
@@ -29,5 +30,6 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UToggleMovementComponent* ToggleMovement;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UToggleRadiusComponent* ToggleRadius;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UEnvironmentDetailsComponent* DetailsComponent;
 	
 };

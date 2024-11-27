@@ -7,6 +7,7 @@
 #include "CementFloor.generated.h"
 
 class UStaticMeshComponent;
+class UEnvironmentDetailsComponent;
 
 UCLASS()
 class SV_API ACementFloor : public AEnvironmentActor
@@ -20,5 +21,5 @@ public:
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* FloorMeshComponent;
-
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UEnvironmentDetailsComponent* DetailsComponent;
 };

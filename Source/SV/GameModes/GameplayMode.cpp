@@ -9,6 +9,7 @@
 #include "Managers/CharacterManager.h"
 #include "Managers/LevelSpawnerManager.h"
 #include "Managers/ObjectivesManager.h"
+#include "Managers/OverwatchManager.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "../Runnables/LevelGenerationRunnable.h"
 #include "../Runnables/Checkers/WinLossCheckerRunnable.h"
@@ -23,6 +24,7 @@ AGameplayMode::AGameplayMode() {
 	TurnManager = CreateDefaultSubobject<UTurnManager>(TEXT("TurnManager"));
 	LevelSpawnerManager = CreateDefaultSubobject<ULevelSpawnerManager>(TEXT("SpawnerManager"));
 	ObjectivesManager = CreateDefaultSubobject<UObjectivesManager>(TEXT("ObjectiveManager"));
+	OverwatchManager = CreateDefaultSubobject<UOverwatchManager>(TEXT("OverwatchManager"));
 }
 
 void AGameplayMode::BeginPlay() {
@@ -94,4 +96,8 @@ void AGameplayMode::StartStatRunnable(AActor* statOwner, EStatisticType statType
 	}
 
 	StatRunnables.Emplace(newStatRunnable);
+}
+
+UOverwatchManager* AGameplayMode::GetOverwatchManager() {
+	return OverwatchManager;
 }

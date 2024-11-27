@@ -20,6 +20,8 @@ public:
 
 	void MoveBackSplatter(float movement);
 
+	void SetBloodSpatterAssetFor(AActor* actor);
+
 
 protected:
 

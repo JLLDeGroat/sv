@@ -150,6 +150,8 @@ ABaseConstruct::ABaseConstruct(const FObjectInitializer& ObjectInitializer)
 	DropResourceComponent = CreateDefaultSubobject<UDropResourceComponent>(TEXT("DropRes"));
 
 	SpawnInComponent = CreateDefaultSubobject<USpawnInComponent>(TEXT("SpawnIn"));
+
+	DetailsComponent->SetBloodType(EBloodType::BT_PurpleCrystal);
 }
 
 

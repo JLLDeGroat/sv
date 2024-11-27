@@ -21,6 +21,7 @@
 #include "../../Player/Actions/TargetAction.h"
 #include "../../Player/Components/PawnCameraComponent.h"
 #include "../../Player/Utility/TargetingIndicatorActor.h"
+#include "../../GameModes/Managers/OverwatchManager.h"
 
 UAttackComponent::UAttackComponent(const FObjectInitializer& ObjectInitializer)
 	: UAnimAccessComponent(ObjectInitializer)
@@ -127,34 +128,38 @@ void UAttackComponent::ReturnCharacterAnimationSpeedsToNormal() {
 	}
 }
 
-void UAttackComponent::TryActivateOverwatch(AActor* targetActor, UPrimitiveComponent* componentWithinOverwatch) {
+EOverwatchResult UAttackComponent::TryActivateOverwatch(AActor* targetActor, UPrimitiveComponent* componentWithinOverwatch) {
 	auto owner = GetOwner();
 	auto controller = GetWorld()->GetFirstPlayerController();
 	auto pawnCameraComponent = controller->GetPawn()->GetComponentByClass<UPawnCameraComponent>();
 
 	auto targetComponent = owner->GetComponentByClass<UTargetingComponent>();
 
-	if (!targetComponent)
-		return UDebugMessages::LogError(this, "could not find target component");
+	if (!targetComponent) {
+		UDebugMessages::LogError(this, "could not find target component");
+		return EOverwatchResult::OR_Error;
+	}
 
 	targetComponent->DetermineTargetData();
 	auto targetData = targetComponent->GetTargetDataForActor(targetActor);
-	if (!targetData) return UDebugMessages::LogWarning(this, "could not find target data, TODO set retry for hal fa second");
+	if (!targetData) {
+		UDebugMessages::LogWarning(this, "could not find target data, TODO set retry for half a second");
+		return EOverwatchResult::OR_Delay;
+	}
 
 	auto attackComponent = owner->GetComponentByClass<UAttackComponent>();
-	if (!attackComponent) return UDebugMessages::LogError(this, "could not get attak component");
-
-	auto equpmentComponent = owner->GetComponentByClass<UEquipmentComponent>();
-	if (!equpmentComponent) return UDebugMessages::LogError(this, "could not get equipment component");
-
-	if (!equpmentComponent->GetPrimaryEquipment() || !equpmentComponent->GetPrimaryEquipment()->GetComponentByClass<UEquipmentDetailsComponent>())
-		return UDebugMessages::LogError(this, "could not get equipment component");
-
-	auto equipmentDetails = equpmentComponent->GetPrimaryEquipment()->GetComponentByClass<UEquipmentDetailsComponent>();
-
+	auto equipmentComponent = owner->GetComponentByClass<UEquipmentComponent>();
 	auto movementComponent = targetActor->GetComponentByClass<UGridMovementComponent>();
-	if (!movementComponent)
-		return UDebugMessages::LogError(this, "failed to get grid movement of other actor");
+	if (!attackComponent || !equipmentComponent ||
+		!equipmentComponent->GetPrimaryEquipment() ||
+		!equipmentComponent->GetPrimaryEquipment()->GetComponentByClass<UEquipmentDetailsComponent>()
+		|| !movementComponent)
+	{
+		UDebugMessages::LogError(this, "could not get attack, equipment or movement component");
+		return EOverwatchResult::OR_Error;
+	}
+
+	auto equipmentDetails = equipmentComponent->GetPrimaryEquipment()->GetComponentByClass<UEquipmentDetailsComponent>();
 
 	movementComponent->SetMovementForOverwatchResponse();
 
@@ -162,17 +167,24 @@ void UAttackComponent::TryActivateOverwatch(AActor* targetActor, UPrimitiveCompo
 		equipmentDetails->GetAccuracyDecay(), equipmentDetails->GetBaseAccuracy());
 
 	auto targetAction = controller->GetComponentByClass<UTargetAction>();
-	if (!targetAction || !pawnCameraComponent)
-		return UDebugMessages::LogError(this, "no targeting action or pawn camera compoment, failed");
+	if (!targetAction || !pawnCameraComponent) {
+		UDebugMessages::LogError(this, "no targeting action or pawn camera compoment, failed");
+		return EOverwatchResult::OR_Error;
+	}
 
+	auto overwatchManager = USvUtilities::GetGameModeOverwatchManager(GetOwner()->GetWorld());
 
-	attackComponent->TryAttackLocation(targetData->GetShootLocation(), componentWithinOverwatch->GetComponentLocation(),
-		targetAction->SetScaleAndGetTargetingRadius(FVector(accuracy)));
-
-	if (pawnCameraComponent->GetCurrentCameraState() == ECameraState::CS_OverwatchCinematicShoot)
-		return UDebugMessages::LogWarning(this, "Already in Cinematic Overwatch");
-	else
+	if (pawnCameraComponent->GetCurrentCameraState() == ECameraState::CS_OverwatchCinematicShoot ||
+		overwatchManager->GetIsCurrentlyOverwatchAnimating()) {
+		UDebugMessages::LogWarning(this, "Already in Cinematic Overwatch or currently overwatch animating");
+		return EOverwatchResult::OR_Delay;
+	}
+	else {
 		pawnCameraComponent->DoOverwatchCinematicAttackCameraMovement(owner, targetActor);
+		attackComponent->TryAttackLocation(targetData->GetShootLocation(), componentWithinOverwatch->GetComponentLocation(),
+			targetAction->SetScaleAndGetTargetingRadius(FVector(accuracy)));
+		return EOverwatchResult::OR_Started;
+	}
 }
 
 void UAttackComponent::TryAttackLocation(FVector sourceGridLocation, FVector location, float locationRadius, bool bIsRange) {

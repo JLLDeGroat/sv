@@ -18,6 +18,7 @@ class UTexture2D;
 class UTextureRenderTarget2D;
 class UGeometryCache;
 class UGeometryCollection;
+class UOverwatchManager;
 
 struct FCurrentGameData;
 
@@ -37,6 +38,8 @@ public:
 	static ECollisionChannel GetWorldSelectChannel();
 
 	static ECollisionChannel GetTriggerableChannel();
+
+	static ECollisionChannel GetFogCollisionObjectChannel();
 
 	static int FormatLocation(float val);
 
@@ -59,6 +62,7 @@ public:
 	static TScriptInterface<IGameplay> GetGameMode(UWorld* world);
 	static UCharacterManager* GetGameModeCharacterManager(UWorld* world);
 	static UObjectivesManager* GetGameModeObjectiveManager(UWorld* world);
+	static UOverwatchManager* GetGameModeOverwatchManager(UWorld* world);
 
 	static USvGameInstance* GetGameInstance(UWorld* world);
 	static FCurrentGameData* GetCurrentGameData(UWorld* world);
@@ -85,7 +89,18 @@ public:
 	static UGeometryCache* GetRandomBloodSpatterGeoCache();
 	static UGeometryCollection* GetGeometryCollection(FString reference);
 
+	static UMaterial* GetRandomBloodSpatterForWall();
+	static UMaterial* GetRandomBloodSpatterForFloor();
+
+	static float GetNoFogValue();
+	static float GetFogValue();
+	static float GetFullFogValue();
+	static FString GetFogVariableName();
+
+	static void GetAdjacentTilesForFogCalculation(AActor* startActor, TArray<FVector>& validAdjacentTiles);
 private:
 
 	static bool IsInBounds(FVector location);
+
+	UPROPERTY() FRandomStream _random = FRandomStream();
 };

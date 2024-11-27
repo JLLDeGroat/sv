@@ -17,6 +17,7 @@
 #include "../Equipment/Components/EquipmentDetailsComponent.h"
 #include "../Equipment/Equipment.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
+#include "AI/Scripts/SpawnChecker.h"
 
 #include "AI/AiTurnChecker.h"
 #include "AI/AiTurnMoveChecker.h"
@@ -122,11 +123,14 @@ void UAITurnRunnable::ActivateThread() {
 			PostMoveRunnable->EnsureCompletion();
 			PostMoveRunnable = nullptr;
 		}
-
-
-
 		UDebugMessages::LogDisplay(this, "unit completed");
 	}
+
+	// Run Scripts
+	UDebugMessages::LogDisplay(this, "Spawn scripting");
+	auto spawnCheck = NewObject<USpawnChecker>(this);
+	spawnCheck->RunScript();
+	spawnCheck->ClearInternalFlags(EInternalObjectFlags::Async);
 
 	UDebugMessages::LogDisplay(this, "All Complete");
 	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([gamePlay]

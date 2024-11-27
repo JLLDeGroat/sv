@@ -24,6 +24,7 @@ public:
 
 	void DoCinematicAttackCameraMovement(AActor* attacker, AActor* target);
 	void DoOverwatchCinematicAttackCameraMovement(AActor* attacker, AActor* target);
+	void SetOverwatchReturnLocation(FVector loc);
 
 	void SetDefaultCameraOffset(FVector defaultValue);
 

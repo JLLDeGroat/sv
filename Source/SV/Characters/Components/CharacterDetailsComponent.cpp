@@ -11,6 +11,7 @@ UCharacterDetailsComponent::UCharacterDetailsComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 	CharacterId = FGuid::NewGuid();
+	BloodType = EBloodType::BT_RedBlood;
 }
 
 
@@ -153,4 +154,11 @@ ETargetIcon UCharacterDetailsComponent::GetTargetIcon() {
 }
 void UCharacterDetailsComponent::SetTargetIcon(ETargetIcon targetIcon) {
 	TargetIcon = targetIcon;
+}
+
+void UCharacterDetailsComponent::SetBloodType(EBloodType bType) {
+	BloodType = bType;
+}
+EBloodType UCharacterDetailsComponent::GetBloodType() {
+	return BloodType;
 }

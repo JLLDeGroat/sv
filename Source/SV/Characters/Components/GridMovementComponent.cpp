@@ -82,14 +82,15 @@ void UGridMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	}
 }
 
-void UGridMovementComponent::MoveAcrossGrid(TArray<FVector> movementLocs) {
+bool UGridMovementComponent::MoveAcrossGrid(TArray<FVector> movementLocs) {
 	if (movementLocs.Num() == 0) {
 		UDebugMessages::LogError(this, "movementLocs were empty, breaking error");
-		return;
+		return false;
 	}
 	MovementLocations = movementLocs;
 	AnimInstance->SetIsCrouching(false);
 	SetComponentTickEnabled(true);
+	return true;
 }
 
 void UGridMovementComponent::MovementLoop() {
@@ -248,13 +249,13 @@ TArray<FVector> UGridMovementComponent::FindQuickestRouteRecursive(FVector Curre
 		return BestPath;
 	}
 
-	auto world = GetWorld();
+	/*auto world = GetWorld();
 	FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, Current] {
 		auto actor = world->SpawnActor<AWorldGridItemActor>(Current - FVector(50, 50, 0), FRotator::ZeroRotator);
 		actor->SetIsSpawn();
 		actor->SetAutoDestroy();
 		}, TStatId(), nullptr, ENamedThreads::GameThread);
-	FPlatformProcess::Sleep(.25f);
+	FPlatformProcess::Sleep(.25f);*/
 
 	// Mark the current node as visited
 	VisitedNodes.Add(Current);

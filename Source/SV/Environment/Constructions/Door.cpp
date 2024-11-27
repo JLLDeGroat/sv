@@ -5,6 +5,7 @@
 #include "../Components/ToggleMovementComponent.h"
 #include "../Components/ToggleRadiusComponent.h"
 #include "../../Utilities/SvUtilities.h"
+#include "../Components/EnvironmentDetailsComponent.h"
 
 ADoor::ADoor(const FObjectInitializer& ObjectInitializer)
 	: AEnvironmentActor(ObjectInitializer)
@@ -33,6 +34,10 @@ ADoor::ADoor(const FObjectInitializer& ObjectInitializer)
 
 	SetupEnvironmentMeshComponent(DoorComponent);
 	SetupEnvironmentMeshComponent(DoorFrameComponent);
+
+	DetailsComponent = CreateDefaultSubobject<UEnvironmentDetailsComponent>(TEXT("Details"));
+	DetailsComponent->SetThickness(1);
+	DetailsComponent->SetAffectsFog(true);
 }
 
 void ADoor::OnConstruction(const FTransform& Transform) {

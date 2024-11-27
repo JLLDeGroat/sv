@@ -86,6 +86,13 @@ enum class ETargetIcon :uint8 {
 };
 
 UENUM(BlueprintType)
+enum class EBloodType :uint8 {
+	INVALiD = 0,
+	BT_RedBlood = 1,
+	BT_PurpleCrystal = 2
+};
+
+UENUM(BlueprintType)
 enum class EDebuffType : uint8 {
 	INVALID = 0,
 	DBT_Accuracy = 1,

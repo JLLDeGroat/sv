@@ -20,6 +20,7 @@
 #include "../../../Environment/Components/EnvironmentDetailsComponent.h"
 
 #include "../../../Effects/BloodHitEffect.h"
+#include "../../../Effects/BloodSpatterDecal.h"
 
 
 UBulletCollisionComponent::UBulletCollisionComponent(const FObjectInitializer& ObjectInitializer)
@@ -37,6 +38,7 @@ UBulletCollisionComponent::UBulletCollisionComponent(const FObjectInitializer& O
 	OnComponentBeginOverlap.AddDynamic(this, &UBulletCollisionComponent::Overlapped);
 }
 
+#pragma optimize("", off)
 void UBulletCollisionComponent::Overlapped(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
 	if (bIsDisabled)
@@ -47,8 +49,14 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent* OverlappedComp, 
 		return UDebugMessages::LogWarning(this, "collision happened before setup, ignoring");
 
 	UDebugMessages::LogDisplay(this, "overlapped " + OtherActor->GetName() + " comp: " + OtherComp->GetName());
+	//DrawDebugLine(GetWorld(), GetOwner()->GetActorLocation(), OtherComp->GetComponentLocation(), FColor::Red, false, 50, 0, 0);
 
 	if (OtherComp->Implements<UHitComponent>()) {
+		if (FVector::Dist(GetOwner()->GetActorLocation(), OtherComp->GetComponentLocation()) > 50) {
+			GetOwner()->SetActorLocation(OtherComp->GetComponentLocation());
+			UDebugMessages::LogWarning(this, "bullet was to far away, moved to the component");
+		}
+
 		TScriptInterface<IHitComponent> hitComp = OtherComp;
 		auto damageRecieve = OtherActor->GetComponentByClass<UDamageRecieveComponent>();
 		auto otherCharacterDetails = OtherActor->GetComponentByClass<UCharacterDetailsComponent>();
@@ -57,7 +65,7 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent* OverlappedComp, 
 		if (!bulletDetails || !damageRecieve || !otherCharacterDetails || bulletDetails->GetPenetrationAbility() <= 0) {
 			bIsDisabled = true;
 			GetWorld()->GetTimerManager().SetTimer(DestroyTimer, this, &UBulletCollisionComponent::OnDestroyCallback, 5.0f, false);
-			UDebugMessages::LogError(this, "no bullet details, damage recieve or character details, or has 0 penetration ERROR, will do no damage");
+			return UDebugMessages::LogError(this, "no bullet details, damage recieve or character details, or has 0 penetration ERROR, will do no damage");
 		}
 		else {
 			bulletDetails->RemoveFromPenetrationAbility(hitComp->GetThickness());
@@ -78,6 +86,35 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent* OverlappedComp, 
 		}
 		//TODO:
 		//Create Blood spatter
+		if (otherCharacterDetails->GetBloodType() == EBloodType::BT_RedBlood) {
+			FHitResult bloodSpatterResult;
+			GetWorld()->LineTraceSingleByChannel(bloodSpatterResult, GetOwner()->GetActorLocation(),
+				GetOwner()->GetActorLocation() + GetOwner()->GetActorForwardVector() * 100,
+				USvUtilities::GetEnvironmentChannel());
+
+			if (bloodSpatterResult.bBlockingHit) {
+				auto wallSpatterActor = GetWorld()->SpawnActor<ABloodSpatterDecal>(bloodSpatterResult.ImpactPoint, bloodSpatterResult.ImpactNormal.Rotation());
+				if (!wallSpatterActor)
+					UDebugMessages::LogError(this, "failed to create wall spatter");
+				else wallSpatterActor->SetupForWall();
+			}
+			else {
+				GetWorld()->LineTraceSingleByChannel(bloodSpatterResult, GetOwner()->GetActorLocation(),
+					(GetOwner()->GetActorLocation() - FVector(0, 0, 200)) + GetOwner()->GetActorForwardVector() * 250,
+					USvUtilities::GetFloorTargetChannel());
+
+				if (bloodSpatterResult.bBlockingHit) {
+					auto wallSpatterActor = GetWorld()->SpawnActor<ABloodSpatterDecal>(bloodSpatterResult.ImpactPoint, bloodSpatterResult.ImpactNormal.Rotation());
+					if (!wallSpatterActor)
+						UDebugMessages::LogError(this, "failed to create wall spatter");
+					else wallSpatterActor->SetupForFloor(GetOwner()->GetActorForwardVector().Rotation());
+				}
+			}
+
+			//DrawDebugLine(GetWorld(), GetOwner()->GetActorLocation(), GetOwner()->GetActorLocation() + GetOwner()->GetActorForwardVector() * 100, FColor::Green, false, 50, 0, 0);
+			//DrawDebugLine(GetWorld(), GetOwner()->GetActorLocation(), (GetOwner()->GetActorLocation() - FVector(0, 0, 200)) + GetOwner()->GetActorForwardVector() * 100, FColor::Green, false, 50, 0, 0);
+		}
+
 		auto meshComponent = GetOwner()->GetComponentByClass<UStaticMeshComponent>();
 		if (meshComponent)
 			meshComponent->SetVisibility(false);
@@ -90,6 +127,7 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent* OverlappedComp, 
 			UDebugMessages::LogWarning(this, "failed to spawn spatter actor");
 		else {
 			spatterActor->MoveBackSplatter(hitComp->GetSpatterBackDistance());
+			spatterActor->SetBloodSpatterAssetFor(OtherActor);
 		}
 
 		auto sourceGun = bulletDetails->GetGunShotFrom();
@@ -138,7 +176,7 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent* OverlappedComp, 
 		}
 	}
 }
-
+#pragma optimize("", on)
 void UBulletCollisionComponent::AttemptToInitiateBulletSound() {
 	auto hitComponent = GetOwner()->GetComponentByClass<UBulletHitSoundComponent>();
 	if (hitComponent) {

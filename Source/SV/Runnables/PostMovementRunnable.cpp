@@ -11,10 +11,12 @@
 #include "../Characters/Components/AIComponent.h"
 #include "../Characters/Components/ActionsComponent.h"
 #include "../Characters/Components/TargetingComponent.h"
+#include "../Characters/Components/FogHandlerComponent.h"
 #include "../Delegates/HudDelegates.h"
 #include "../Delegates/AIDelegates.h"
 #include "../Delegates/GameplayDelegates.h"
 #include "DrawDebugHelpers.h"
+#include "../Environment/Fog/Components/FogSectionComponent.h"
 
 void UPostMovementRunnable::ActivateThread() {
 
@@ -76,6 +78,34 @@ void UPostMovementRunnable::ActivateThread() {
 		FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([aiDelegates] {
 			aiDelegates->_AICharacterFinishedBehaviour.Broadcast();
 			}, TStatId(), nullptr, ENamedThreads::GameThread);
+	}
+
+
+	auto fogComponent = MovedActor->GetComponentByClass<UFogHandlerComponent>();
+	TArray<FVector> validAdjacentTiles;
+	USvUtilities::GetAdjacentTilesForFogCalculation(MovedActor, validAdjacentTiles);
+	validAdjacentTiles.Emplace(MovedActor->GetActorLocation());
+
+	if (fogComponent) {
+		auto fogSections = fogComponent->GetFogSectionComponents();
+
+		for (int i = 0; i < fogSections.Num(); i++) {
+			auto fogSectionToChange = fogSections[i];
+			TArray<FVector> locationsToCheckFrom;
+
+			for (int x = 0; x < validAdjacentTiles.Num(); x++)
+				if (FVector::Dist(fogSectionToChange->GetComponentLocation(), validAdjacentTiles[x]) <= fogComponent->GetScaledSphereRadius())
+					locationsToCheckFrom.Emplace(validAdjacentTiles[x]);
+
+			for (int j = 0; j < locationsToCheckFrom.Num(); j++) {
+				if (fogComponent->ShouldRemoveFog(fogSectionToChange, locationsToCheckFrom[j])) {
+					FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([fogSectionToChange] {
+						fogSectionToChange->SetAsNoFog();
+						}, TStatId(), nullptr, ENamedThreads::GameThread);
+					break;
+				}
+			}
+		}
 	}
 }
 

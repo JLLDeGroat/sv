@@ -27,6 +27,8 @@ class UHitCapsuleComponent;
 class UHitBoxComponent;
 class UCharacterCaptureComponent;
 class UHealthKitsComponent;
+class UFogHandlerComponent;
+
 UCLASS()
 class SV_API ASolder : public ABaseCharacter, public IMovable
 {
@@ -80,6 +82,8 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UHitCapsuleComponent* HeadHitComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UHealthKitsComponent* HealthKitsComponent;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UFogHandlerComponent* FogHandler;
 
 public:
 	// Called every frame
