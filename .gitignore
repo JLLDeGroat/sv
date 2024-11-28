@@ -14,6 +14,10 @@
 Content/StarterContent
 Content/__ExternalActors__/**
 Content/__ExternalObjects__/**
+Content/Effects/Spatter/Spatter7.uasset
+Content/Effects/Spatter/Spatter8.uasset
+Content/Effects/Spatter/Spatter9.uasset
+Content/Effects/Spatter/Spatter10.uasset
 # Precompiled Headers
 *.gch
 *.pch
