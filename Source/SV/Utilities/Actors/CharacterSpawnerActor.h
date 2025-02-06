@@ -8,6 +8,7 @@
 #include "CharacterSpawnerActor.generated.h"
 
 class ABaseCharacter;
+class UBaseDD;
 class UStaticMeshComponent;
 
 UCLASS()
@@ -28,16 +29,25 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 protected:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawner Debug Options")
+	TSubclassOf<ABaseCharacter> CharacterClass;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawner Debug Options")
+	EGun GunType;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawner Debug Options")
+	EGun SecondaryGunType;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawner Debug Options")
+	FString OverrideCharacterName;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawner Debug Options") TSubclassOf<ABaseCharacter> CharacterClass;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawner Debug Options") EGun GunType;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawner Debug Options") EGun SecondaryGunType;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawner Debug Options") FString OverrideCharacterName;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawner Debug Options")
+	UStaticMeshComponent *RootMesh;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawner Debug Options") UStaticMeshComponent* RootMesh;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawner Debug Options")
+	int GrenadeAmount;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawner Debug Options")
+	int HealthKitAmount;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawner Debug Options")
+	int TakeImmediateDamage;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawner Debug Options") int GrenadeAmount;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawner Debug Options") int HealthKitAmount;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawner Debug Options") int TakeImmediateDamage;
-
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawner Debug Options")
+	TArray<TSubclassOf<UBaseDD>> DirectivesAndDeviations;
 };

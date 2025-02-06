@@ -22,6 +22,7 @@ class ULeftClickAction;
 class URightClickAction;
 class UGrenadeActionComponent;
 class UActivateToggleAction;
+class UCameraShakeComponent;
 /**
  *
  */
@@ -67,6 +68,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) AGrenadeIndicatorActor* GrenadeIndicator;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) UActionManager* ActionManager;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UCameraShakeComponent* CameraShakeComponent;
 
 	void MoveUp_Started(const FInputActionValue& Value);
 	void MoveRight_Started(const FInputActionValue& Value);

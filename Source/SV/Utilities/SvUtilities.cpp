@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "SvUtilities.h"
 #include "../GameModes/GameplayMode.h"
 #include "../GameModes/Managers/CharacterManager.h"
@@ -16,111 +15,137 @@
 #include "GeometryCache.h"
 #include "GeometryCollection/GeometryCollection.h"
 #include "GeometryCollection/GeometryCollectionComponent.h"
+#include "Sound/SoundWave.h"
 
 #include "../Characters/Components/CharacterDetailsComponent.h"
 #include "../Environment/Components/VaultableComponent.h"
 
-ECollisionChannel USvUtilities::GetFloorTargetChannel() {
+ECollisionChannel USvUtilities::GetFloorTargetChannel()
+{
 	return ECollisionChannel::ECC_GameTraceChannel1;
 }
-ECollisionChannel USvUtilities::GetClickableChannel() {
+ECollisionChannel USvUtilities::GetClickableChannel()
+{
 	return ECollisionChannel::ECC_GameTraceChannel2;
 }
-ECollisionChannel USvUtilities::GetClickableEnvironmentChannel() {
+ECollisionChannel USvUtilities::GetClickableEnvironmentChannel()
+{
 	return ECollisionChannel::ECC_GameTraceChannel8;
 }
-ECollisionChannel USvUtilities::GetEnvironmentChannel() {
+ECollisionChannel USvUtilities::GetEnvironmentChannel()
+{
 	return ECollisionChannel::ECC_GameTraceChannel3;
 }
-ECollisionChannel USvUtilities::GetBulletCollisionChannel() {
+ECollisionChannel USvUtilities::GetBulletCollisionChannel()
+{
 	return ECollisionChannel::ECC_GameTraceChannel4;
 }
 
-ECollisionChannel USvUtilities::GetBulletCollisionObjectChannel() {
+ECollisionChannel USvUtilities::GetBulletCollisionObjectChannel()
+{
 	return ECC_GameTraceChannel5;
 }
 
-ECollisionChannel USvUtilities::GetWorldSelectChannel() {
+ECollisionChannel USvUtilities::GetWorldSelectChannel()
+{
 	return ECC_GameTraceChannel6;
 }
 
-ECollisionChannel USvUtilities::GetTriggerableChannel() {
+ECollisionChannel USvUtilities::GetTriggerableChannel()
+{
 	return ECC_GameTraceChannel7;
 }
 
-ECollisionChannel USvUtilities::GetFogCollisionObjectChannel() {
+ECollisionChannel USvUtilities::GetFogCollisionObjectChannel()
+{
 	return ECC_GameTraceChannel9;
 }
+ECollisionChannel USvUtilities::GetTraversalObjectChannel()
+{
+	return ECC_GameTraceChannel10;
+}
 
-int USvUtilities::FormatLocation(float val) {
+int USvUtilities::FormatLocation(float val)
+{
 	int value = val;
 
-	if (value == 0) return 0;
+	if (value == 0)
+		return 0;
 
 	auto left = (int)val % 50;
 
-	auto addition = left > 25 ?
-		-(50 - left) :
-		left;
+	auto addition = left > 25 ? -(50 - left) : left;
 
 	return value - addition;
 }
 
-UStaticMesh* USvUtilities::GetStaticMesh(FString reference) {
+UStaticMesh *USvUtilities::GetStaticMesh(FString reference)
+{
 	return Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), NULL, *reference, NULL, LOAD_None, NULL));
 }
 
-USkeletalMesh* USvUtilities::GetSkeletonMesh(FString reference) {
+USkeletalMesh *USvUtilities::GetSkeletonMesh(FString reference)
+{
 	return Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), NULL, *reference, NULL, LOAD_None, NULL));
 }
 
-UNiagaraSystem* USvUtilities::GetNiagaraSystem(FString reference) {
+UNiagaraSystem *USvUtilities::GetNiagaraSystem(FString reference)
+{
 	return Cast<UNiagaraSystem>(StaticLoadObject(UNiagaraSystem::StaticClass(), NULL, *reference, NULL, LOAD_None, NULL));
 }
 
-UMaterial* USvUtilities::GetMaterial(FString reference) {
+UMaterial *USvUtilities::GetMaterial(FString reference)
+{
 	return Cast<UMaterial>(StaticLoadObject(UMaterial::StaticClass(), NULL, *reference, NULL, LOAD_None, NULL));
 }
 
-UClass* USvUtilities::GetClass(FString reference) {
+UClass *USvUtilities::GetClass(FString reference)
+{
 	return Cast<UClass>(StaticLoadObject(UClass::StaticClass(), NULL, *reference, NULL, LOAD_None, NULL));
 }
 
-UTexture2D* USvUtilities::GetTexture(FString reference) {
+UTexture2D *USvUtilities::GetTexture(FString reference)
+{
 	return Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), NULL, *reference, NULL, LOAD_None, NULL));
 }
 
-UTextureRenderTarget2D* USvUtilities::GetRenderTarget2D(int targetNumber) {
+UTextureRenderTarget2D *USvUtilities::GetRenderTarget2D(int targetNumber)
+{
 	FString targetNumberAsString = FString::SanitizeFloat(targetNumber, 0);
 	FString reference = "/Script/Engine.TextureRenderTarget2D'/Game/RenderTargets/RenderTarget" + targetNumberAsString + "_RT.RenderTarget" + targetNumberAsString + "_RT'";
-	//FString reference = "/Script/Engine.TextureRenderTarget2D'/Game/RenderTargets/RenderTarget1_RT.RenderTarget1_RT'";
+	// FString reference = "/Script/Engine.TextureRenderTarget2D'/Game/RenderTargets/RenderTarget1_RT.RenderTarget1_RT'";
 
 	FSoftObjectPath RenderTargetPath(reference);
-	UTextureRenderTarget2D* LoadedRenderTarget = Cast<UTextureRenderTarget2D>(RenderTargetPath.TryLoad());
+	UTextureRenderTarget2D *LoadedRenderTarget = Cast<UTextureRenderTarget2D>(RenderTargetPath.TryLoad());
 	return LoadedRenderTarget;
-	//return Cast<UTextureRenderTarget2D>(StaticLoadObject(UTextureRenderTarget2D::StaticClass(), NULL, *reference, NULL, LOAD_None, NULL));
+	// return Cast<UTextureRenderTarget2D>(StaticLoadObject(UTextureRenderTarget2D::StaticClass(), NULL, *reference, NULL, LOAD_None, NULL));
 }
 
 float USvUtilities::GetGridGape() { return 100.0f; }
 
-TScriptInterface<IGameplay> USvUtilities::GetGameMode(UWorld* world) {
+TScriptInterface<IGameplay> USvUtilities::GetGameMode(UWorld *world)
+{
 	return Cast<AGameplayMode>(world->GetAuthGameMode());
 }
 
-UCharacterManager* USvUtilities::GetGameModeCharacterManager(UWorld* world) {
+UCharacterManager *USvUtilities::GetGameModeCharacterManager(UWorld *world)
+{
 	auto gameMode = GetGameMode(world);
 	return gameMode->GetCharacterManager();
 }
-UObjectivesManager* USvUtilities::GetGameModeObjectiveManager(UWorld* world) {
+UObjectivesManager *USvUtilities::GetGameModeObjectiveManager(UWorld *world)
+{
 	auto gameMode = GetGameMode(world);
 	return gameMode->GetObjectivesManager();
 }
-UOverwatchManager* USvUtilities::GetGameModeOverwatchManager(UWorld* world) {
+UOverwatchManager *USvUtilities::GetGameModeOverwatchManager(UWorld *world)
+{
 	auto gameMode = GetGameMode(world);
 	return gameMode->GetOverwatchManager();
 }
 
-void USvUtilities::GetAdjacentGridTiles(FVector location, TArray<FVector>& adjacentTiles) {
+void USvUtilities::GetAdjacentGridTiles(FVector location, TArray<FVector> &adjacentTiles)
+{
 	auto gridGape = GetGridGape();
 
 	if (IsInBounds(location + FVector(gridGape, 0, 0)))
@@ -136,7 +161,8 @@ void USvUtilities::GetAdjacentGridTiles(FVector location, TArray<FVector>& adjac
 		adjacentTiles.Emplace(location + FVector(0, -gridGape, 0));
 }
 
-bool USvUtilities::IsInBounds(FVector location) {
+bool USvUtilities::IsInBounds(FVector location)
+{
 	if (location.X > 10000 || location.X < -1000 ||
 		location.Y > 10000 || location.Y < -1000)
 		return false;
@@ -144,14 +170,17 @@ bool USvUtilities::IsInBounds(FVector location) {
 	return true;
 }
 
-bool USvUtilities::AreGridLocationsAdjacent(FVector loc1, FVector loc2) {
+bool USvUtilities::AreGridLocationsAdjacent(FVector loc1, FVector loc2)
+{
 
-	if (GetTileElevation(loc1) == GetTileElevation(loc2)) {
+	if (GetTileElevation(loc1) == GetTileElevation(loc2))
+	{
 
 		TArray<FVector> adjacentTiles;
 		GetAdjacentGridTiles(loc1, adjacentTiles);
 
-		for (int i = 0; i < adjacentTiles.Num(); i++) {
+		for (int i = 0; i < adjacentTiles.Num(); i++)
+		{
 			if (adjacentTiles[i].X == loc2.X &&
 				adjacentTiles[i].Y == loc2.Y)
 				return true;
@@ -160,19 +189,24 @@ bool USvUtilities::AreGridLocationsAdjacent(FVector loc1, FVector loc2) {
 	return false;
 }
 
-TArray<FVector> USvUtilities::OrderByClosestTo(FVector location, TArray<FVector> unorderedLocations) {
+TArray<FVector> USvUtilities::OrderByClosestTo(FVector location, TArray<FVector> unorderedLocations)
+{
 	TArray<FVector> adjacentTiles;
 
-	if (location != FVector::ZeroVector) {
+	if (location != FVector::ZeroVector)
+	{
 		adjacentTiles.Empty();
-		while (unorderedLocations.Num() > 0) {
+		while (unorderedLocations.Num() > 0)
+		{
 			float minDistance = -1;
 			FVector loc = FVector::ZeroVector;
 			auto index = -1;
-			for (int i = 0; i < unorderedLocations.Num(); i++) {
+			for (int i = 0; i < unorderedLocations.Num(); i++)
+			{
 				auto distance = FVector::Dist(unorderedLocations[i], location);
-				//UDebugMessages::LogDisplay(this, "distance between " + location.ToString() + " and " + unorderedLocations[i].ToString() + " was " + FString::SanitizeFloat(distance, 2));
-				if (loc == FVector::ZeroVector || distance < minDistance) {
+				// UDebugMessages::LogDisplay(this, "distance between " + location.ToString() + " and " + unorderedLocations[i].ToString() + " was " + FString::SanitizeFloat(distance, 2));
+				if (loc == FVector::ZeroVector || distance < minDistance)
+				{
 					minDistance = distance;
 					loc = unorderedLocations[i];
 					index = i;
@@ -187,20 +221,27 @@ TArray<FVector> USvUtilities::OrderByClosestTo(FVector location, TArray<FVector>
 	return adjacentTiles;
 }
 
-int USvUtilities::GetTileElevation(FVector loc) {
+int USvUtilities::GetTileElevation(FVector loc)
+{
 	int val = 1;
-	if (loc.Z > 200) val = 2;
-	else if (loc.Z > 400) val = 3;
-	else if (loc.Z > 600) val = 4;
-	else if (loc.Z > 800) val = 5;
+	if (loc.Z > 200)
+		val = 2;
+	else if (loc.Z > 400)
+		val = 3;
+	else if (loc.Z > 600)
+		val = 4;
+	else if (loc.Z > 800)
+		val = 5;
 
 	return val;
 }
 
-USvGameInstance* USvUtilities::GetGameInstance(UWorld* world) {
+USvGameInstance *USvUtilities::GetGameInstance(UWorld *world)
+{
 	return world->GetGameInstance<USvGameInstance>();
 }
-FCurrentGameData* USvUtilities::GetCurrentGameData(UWorld* world) {
+FCurrentGameData *USvUtilities::GetCurrentGameData(UWorld *world)
+{
 	auto instance = GetGameInstance(world);
 	if (!instance || !instance->GetCurrentGameDataManager() || !instance->GetCurrentGameDataManager()->GetCurrentGameData())
 		return nullptr;
@@ -208,7 +249,8 @@ FCurrentGameData* USvUtilities::GetCurrentGameData(UWorld* world) {
 	return instance->GetCurrentGameDataManager()->GetCurrentGameData();
 }
 
-TArray<FVector> USvUtilities::RandomizeList(TArray<FVector> list, FRandomStream stream) {
+TArray<FVector> USvUtilities::RandomizeList(TArray<FVector> list, FRandomStream stream)
+{
 	TArray<FVector> result = list;
 	if (result.Num() > 0)
 	{
@@ -223,7 +265,8 @@ TArray<FVector> USvUtilities::RandomizeList(TArray<FVector> list, FRandomStream 
 	return result;
 }
 
-TArray<FVector> USvUtilities::RandomizeList(TArray<FVector> list) {
+TArray<FVector> USvUtilities::RandomizeList(TArray<FVector> list)
+{
 	TArray<FVector> result = list;
 	if (result.Num() > 0)
 	{
@@ -238,41 +281,48 @@ TArray<FVector> USvUtilities::RandomizeList(TArray<FVector> list) {
 	return result;
 }
 
-int USvUtilities::GetWorldMapGridMultiplier() {
+int USvUtilities::GetWorldMapGridMultiplier()
+{
 	return 100;
 }
 
-FVector USvUtilities::DetermineAccuracyInidicatorScale(FVector source, FVector target, float accuracy, float accuracyDecay, float baseAccuracy, float distanceModifier) {
+FVector USvUtilities::DetermineAccuracyInidicatorScale(FVector source, FVector target, float accuracy, float accuracyDecay, float baseAccuracy, float distanceModifier)
+{
 	auto gunAccuracy = (FVector::Dist(source, target) * distanceModifier) - accuracy;
-	if (gunAccuracy < 1) gunAccuracy = 1;
+	if (gunAccuracy < 1)
+		gunAccuracy = 1;
 	gunAccuracy = gunAccuracy * accuracyDecay;
 	return FVector(gunAccuracy / 100) + FVector(baseAccuracy);
 }
 
-void USvUtilities::AttemptToStartWinLossChecker(UWorld* world) {
+void USvUtilities::AttemptToStartWinLossChecker(UWorld *world)
+{
 	auto gameMode = GetGameMode(world);
 	gameMode->AttemptToStartWinLossChecker();
 }
 
-AActor* USvUtilities::AttemptToGetCurrentSelectedActor(UWorld* world) {
+AActor *USvUtilities::AttemptToGetCurrentSelectedActor(UWorld *world)
+{
 	auto controller = world->GetFirstPlayerController();
 	auto selectionManager = controller->GetComponentByClass<USelectionManager>();
 
 	if (selectionManager && selectionManager->GetSelected())
 		return selectionManager->GetSelected()->GetAsActor();
 
-
 	return nullptr;
 }
 
-void USvUtilities::AttemptToStartStatUpdater(AActor* statOwner, EStatisticType statType, float value) {
+void USvUtilities::AttemptToStartStatUpdater(AActor *statOwner, EStatisticType statType, float value)
+{
 	auto gameMode = GetGameMode(statOwner->GetWorld());
 	gameMode->StartStatRunnable(statOwner, statType, value);
 }
 
-FString USvUtilities::GetSocketNameFromAttachment(EAttachType attachmentType) {
+FString USvUtilities::GetSocketNameFromAttachment(EAttachType attachmentType)
+{
 	FString result = "invalid";
-	switch (attachmentType) {
+	switch (attachmentType)
+	{
 	case EAttachType::AT_RightHolster:
 		result = "SecondaryHolsterSocket";
 		break;
@@ -297,20 +347,24 @@ FString USvUtilities::GetSocketNameFromAttachment(EAttachType attachmentType) {
 	return result;
 }
 
-UMaterial* USvUtilities::GetBulletHoleMaterial() {
+UMaterial *USvUtilities::GetBulletHoleMaterial()
+{
 	return GetMaterial("/Script/Engine.Material'/Game/Decals/BulletHoles/BulletHole1_M.BulletHole1_M'");
 }
 
-UGeometryCache* USvUtilities::GetGeometryCache(FString reference) {
+UGeometryCache *USvUtilities::GetGeometryCache(FString reference)
+{
 	return Cast<UGeometryCache>(StaticLoadObject(UGeometryCache::StaticClass(), NULL, *reference, NULL, LOAD_None, NULL));
 }
 
-UGeometryCache* USvUtilities::GetRandomBloodSpatterGeoCache() {
+UGeometryCache *USvUtilities::GetRandomBloodSpatterGeoCache()
+{
 
 	int random = FMath::RandRange(1, 5);
 	FString reference = "/Script/GeometryCache.GeometryCache'/Game/Effects/Spatter/Spatter7.Spatter7'";
 
-	switch (random) {
+	switch (random)
+	{
 	case 1:
 	case 2:
 		reference = "/Script/GeometryCache.GeometryCache'/Game/Effects/Spatter/Spatter8.Spatter8'";
@@ -322,15 +376,18 @@ UGeometryCache* USvUtilities::GetRandomBloodSpatterGeoCache() {
 	return GetGeometryCache(reference);
 }
 
-UGeometryCollection* USvUtilities::GetGeometryCollection(FString reference) {
+UGeometryCollection *USvUtilities::GetGeometryCollection(FString reference)
+{
 	return Cast<UGeometryCollection>(StaticLoadObject(UGeometryCollection::StaticClass(), NULL, *reference, NULL, LOAD_None, NULL));
 }
 
-UMaterial* USvUtilities::GetRandomBloodSpatterForWall() {
+UMaterial *USvUtilities::GetRandomBloodSpatterForWall()
+{
 	auto reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter10_M.WallSpatter10_M'";
 
 	auto random = FMath::RandRange(0, 9);
-	switch (random) {
+	switch (random)
+	{
 	case 1:
 		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter1_M.WallSpatter1_M'";
 		break;
@@ -362,10 +419,12 @@ UMaterial* USvUtilities::GetRandomBloodSpatterForWall() {
 
 	return GetMaterial(reference);
 }
-UMaterial* USvUtilities::GetRandomBloodSpatterForFloor() {
+UMaterial *USvUtilities::GetRandomBloodSpatterForFloor()
+{
 	auto reference = "/Script/Engine.Material'/Game/Decals/Spatters/Floor/FloorSpatter1_M.FloorSpatter1_M'";
 	auto random = FMath::RandRange(0, 7);
-	switch (random) {
+	switch (random)
+	{
 	case 1:
 		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Floor/FloorSpatter2_M.FloorSpatter2_M'";
 		break;
@@ -391,27 +450,32 @@ UMaterial* USvUtilities::GetRandomBloodSpatterForFloor() {
 	return GetMaterial(reference);
 }
 
-
-float USvUtilities::GetNoFogValue() {
+float USvUtilities::GetNoFogValue()
+{
 	return 0.01f;
 }
-float USvUtilities::GetFogValue() {
+float USvUtilities::GetFogValue()
+{
 	return 1;
 }
-float USvUtilities::GetFullFogValue() {
+float USvUtilities::GetFullFogValue()
+{
 	return 5;
 }
-FString USvUtilities::GetFogVariableName() {
+FString USvUtilities::GetFogVariableName()
+{
 	return "FogAmount";
 }
 
-void USvUtilities::GetAdjacentTilesForFogCalculation(AActor* startActor, TArray<FVector>& validAdjacentTiles) {
+void USvUtilities::GetAdjacentTilesForFogCalculation(AActor *startActor, TArray<FVector> &validAdjacentTiles)
+{
 	TArray<FVector> adjacentTiles;
 	GetAdjacentGridTiles(startActor->GetActorLocation(), adjacentTiles);
 
 	bool bIgnoreVaultables = true; // fog calc does not care about vaultables
 
-	for (int i = 0; i < adjacentTiles.Num(); i++) {
+	for (int i = 0; i < adjacentTiles.Num(); i++)
+	{
 		FHitResult EnvironmentHit;
 		startActor->GetWorld()->LineTraceSingleByChannel(EnvironmentHit, startActor->GetActorLocation(), adjacentTiles[i], USvUtilities::GetEnvironmentChannel());
 
@@ -420,16 +484,19 @@ void USvUtilities::GetAdjacentTilesForFogCalculation(AActor* startActor, TArray<
 		EntityHitParams.AddIgnoredActor(startActor);
 		startActor->GetWorld()->LineTraceSingleByChannel(EntityHit, startActor->GetActorLocation(), adjacentTiles[i], USvUtilities::GetClickableChannel(), EntityHitParams);
 
-
 		auto detailsComponent = startActor->GetComponentByClass<UCharacterDetailsComponent>();
-		auto hasVaultComponentAndCanVault = EnvironmentHit.GetActor() && EnvironmentHit.GetActor()->GetComponentByClass<UVaultableComponent>()
-			&& detailsComponent && detailsComponent->GetCanVault();
+		auto hasVaultComponentAndCanVault = EnvironmentHit.GetActor() && EnvironmentHit.GetActor()->GetComponentByClass<UVaultableComponent>() && detailsComponent && detailsComponent->GetCanVault();
 
 		if ((!EnvironmentHit.bBlockingHit && !EntityHit.bBlockingHit) ||
 			(EnvironmentHit.bBlockingHit && hasVaultComponentAndCanVault && !bIgnoreVaultables))
 		{
 			validAdjacentTiles.Emplace(adjacentTiles[i]);
 		}
-		//else UDebugMessages::LogError(this, "Invalid spot " + adjacentTiles[i].ToString());
+		// else UDebugMessages::LogError(this, "Invalid spot " + adjacentTiles[i].ToString());
 	}
+}
+
+USoundWave *USvUtilities::GetSoundWave(FString reference)
+{
+	return Cast<USoundWave>(StaticLoadObject(USoundWave::StaticClass(), nullptr, *reference));
 }

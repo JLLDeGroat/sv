@@ -9,6 +9,8 @@
 #include "../Components/AiMovementComponent.h"
 #include "../../../../Utilities/SvUtilities.h"
 #include "../../../../Utilities/GridUtilities.h"
+#include "../../../../Characters/Components/CharacterDetailsComponent.h"
+#include "../../../../Environment/Fog/Components/FogSectionComponent.h"
 
 UBaseAIBehaviour::UBaseAIBehaviour(const FObjectInitializer& ObjectInitializer)
 	: UObject(ObjectInitializer) {
@@ -156,7 +158,13 @@ TScriptInterface<ISvChar> UBaseAIBehaviour::GetClosestCharacter() {
 	auto all = GetAllCharacters();
 	for (int i = 0; i < all.Num(); i++) {
 		if (all[i]) {
-			auto thisLocation = all[i]->GetAsActor()->GetActorLocation();
+			auto actor = all[i]->GetAsActor();
+			auto details = actor->GetComponentByClass <UCharacterDetailsComponent>();
+
+			if (details->GetIsDead())
+				continue;
+
+			auto thisLocation = actor->GetActorLocation();
 			auto distance = FVector::Dist(thisLocation, thisLoc);
 
 			if (distance < closestDistance) {
@@ -168,6 +176,47 @@ TScriptInterface<ISvChar> UBaseAIBehaviour::GetClosestCharacter() {
 
 	return svChar;
 }
+#pragma optimize("", off)
+bool UBaseAIBehaviour::GetIsInFog() {
+	if (!GetThisEnemy())
+	{
+		UDebugMessages::LogError(this, "enemy is null");
+		return true;
+	}
+
+	auto enemyLocation = GetThisEnemy()->GetActorLocation();
+
+	TArray<FHitResult>hits;
+	//GetThisEnemy()->GetWorld()->LineTraceSingleByChannel(hit, enemyLocation, enemyLocation + FVector(0, 0, 200), USvUtilities::GetFogCollisionObjectChannel());
+	//DrawDebugLine(GetThisEnemy()->GetWorld(), enemyLocation, enemyLocation + FVector(0, 0, 200), FColor::Red, false, 50, 0, 0);
+	FCollisionObjectQueryParams params;
+	params.AddObjectTypesToQuery(USvUtilities::GetFogCollisionObjectChannel());
+
+	GetThisEnemy()->GetWorld()->LineTraceMultiByObjectType(hits, enemyLocation + FVector(0, 0, 1000), enemyLocation, params);
+	//GetThisEnemy()->GetWorld()->LineTraceSingleByChannel(hit, enemyLocation + FVector(0, 0, 1000), enemyLocation, USvUtilities::GetFogCollisionObjectChannel());
+	DrawDebugLine(GetThisEnemy()->GetWorld(), enemyLocation + FVector(0, 0, 1000), enemyLocation, FColor::Red, false, 50, 0, 0);
+
+	for (int i = 0; i < hits.Num(); i++) {
+		if (hits[i].GetComponent()) {
+			UDebugMessages::LogWarning(this, "multi object trace hit " + hits[i].GetComponent()->GetName());
+			auto component = Cast<UFogSectionComponent>(hits[i].GetComponent());
+
+			if (component) {
+				return component->GetIsInFog();
+			}
+		}
+	}
+
+	/*if (!hit.GetComponent())
+	{
+		UDebugMessages::LogError(this, "failed to hit a fog component");
+		return true;
+	}*/
+
+
+	return true;
+}
+#pragma optimize("", on)
 
 bool UBaseAIBehaviour::CanMeleeAnyone() {
 
@@ -186,4 +235,9 @@ bool UBaseAIBehaviour::CanMeleeAnyone() {
 	}
 
 	return false;
+}
+
+void UBaseAIBehaviour::BeginDestroy() {
+	Super::BeginDestroy();
+	ClearInternalFlags(EInternalObjectFlags::Async);
 }

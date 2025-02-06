@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "EquipmentComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "AttackComponent.h"
@@ -22,7 +21,7 @@
 #include "StatusEffectsComponent.h"
 
 // Sets default values for this component's properties
-UEquipmentComponent::UEquipmentComponent(const FObjectInitializer& ObjectInitializer)
+UEquipmentComponent::UEquipmentComponent(const FObjectInitializer &ObjectInitializer)
 	: UAnimAccessComponent(ObjectInitializer)
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
@@ -32,19 +31,20 @@ UEquipmentComponent::UEquipmentComponent(const FObjectInitializer& ObjectInitial
 	// ...
 }
 
-
 // Called when the game starts
 void UEquipmentComponent::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-void UEquipmentComponent::EquipPrimary(EGun gunType) {
+void UEquipmentComponent::EquipPrimary(EGun gunType)
+{
 	if (gunType == EGun::INVALID)
 		return UDebugMessages::LogError(this, "Attempted to equip a invalid guntype");
 
-	UClass* cls = nullptr;
-	switch (gunType) {
+	UClass *cls = nullptr;
+	switch (gunType)
+	{
 	case EGun::G_PeaRifle:
 		cls = APeaRifle::StaticClass();
 		break;
@@ -53,17 +53,22 @@ void UEquipmentComponent::EquipPrimary(EGun gunType) {
 		break;
 	}
 
-	if (!cls) return UDebugMessages::LogError(this, "Invalid primary set, will not attach primary");
+	if (!cls)
+		return UDebugMessages::LogError(this, "Invalid primary set, will not attach primary");
 
-	auto gun = GetOwner()->GetWorld()->SpawnActor<AEquipment>(cls);
+	FActorSpawnParameters spawnParams;
+	spawnParams.Owner = GetOwner();
+
+	auto gun = GetOwner()->GetWorld()->SpawnActor<AEquipment>(cls, spawnParams);
 	auto skeleMesh = GetOwner()->GetComponentByClass<USkeletalMeshComponent>();
 
 	auto gunDetailsComponent = gun->GetComponentByClass<UEquipmentDetailsComponent>();
 
-	if (skeleMesh) {
+	if (skeleMesh)
+	{
 		/*gun->AttachToComponent(skeleMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("RightHandSocket"));*/
 		gun->AttachToComponent(skeleMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale,
-			FName(USvUtilities::GetSocketNameFromAttachment(gunDetailsComponent->GetEquipSocket())));
+							   FName(USvUtilities::GetSocketNameFromAttachment(gunDetailsComponent->GetEquipSocket())));
 
 		if (gunDetailsComponent->GetRelativeScaleOnEquip() != FVector::ZeroVector)
 			gun->SetActorRelativeScale3D(gunDetailsComponent->GetRelativeScaleOnEquip());
@@ -80,22 +85,26 @@ void UEquipmentComponent::EquipPrimary(EGun gunType) {
 	}
 }
 
-void UEquipmentComponent::EquipSecondary(EGun gunType) {
+void UEquipmentComponent::EquipSecondary(EGun gunType)
+{
 	if (gunType == EGun::INVALID)
 		return UDebugMessages::LogError(this, "Attmpted to equip a secondary invalid gun type");
 
-	UClass* cls = nullptr;
-	switch (gunType) {
+	UClass *cls = nullptr;
+	switch (gunType)
+	{
 	case EGun::G_UrfGun:
 		cls = AUrfGun::StaticClass();
 		break;
 	}
 
-	if (!cls) return UDebugMessages::LogError(this, "Invalid primary set, will not attach secondary");
+	if (!cls)
+		return UDebugMessages::LogError(this, "Invalid primary set, will not attach secondary");
 
 	auto gun = GetOwner()->GetWorld()->SpawnActor<AUrfGun>(cls);
 	auto skeleMesh = GetOwner()->GetComponentByClass<USkeletalMeshComponent>();
-	if (skeleMesh) {
+	if (skeleMesh)
+	{
 		gun->AttachToComponent(skeleMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("SecondaryHolsterSocket"));
 		Equipment.Emplace(gun);
 
@@ -107,37 +116,41 @@ void UEquipmentComponent::EquipSecondary(EGun gunType) {
 		details->SetIsSecondaryEquipment(true);
 
 		auto lightComponent = gun->GetComponentByClass<ULightAttachmentComponent>();
-		if (lightComponent) {
+		if (lightComponent)
+		{
 			lightComponent->SwitchOff();
 		}
 	}
 }
 
-
 // Called every frame
-void UEquipmentComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UEquipmentComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
 }
 
-void UEquipmentComponent::UpdateActorVisibility(bool value) {
-	for (int i = 0; i < Equipment.Num(); i++) {
+void UEquipmentComponent::UpdateActorVisibility(bool value)
+{
+	for (int i = 0; i < Equipment.Num(); i++)
+	{
 		Equipment[i]->SetActorHiddenInGame(!value);
 	}
 }
 
-void UEquipmentComponent::FireEquippedGun() {
+void UEquipmentComponent::FireEquippedGun()
+{
 	auto attackComponent = GetOwner()->GetComponentByClass<UAttackComponent>();
-	if (attackComponent) {
+	if (attackComponent)
+	{
 
 		if (!CurrentMainEquipment)
 			return UDebugMessages::LogError(this, "cannot fire gun, there is no current main equipment");
 
-		//TODO:
-		//assuming equipped gun is an AR
-		//assuming AR uses basic bullets
+		// TODO:
+		// assuming equipped gun is an AR
+		// assuming AR uses basic bullets
 		/*auto equipment = Equipment[0];*/
 		auto gunFire = CurrentMainEquipment->GetComponentByClass<UGunFireComponent>();
 		if (!gunFire)
@@ -147,7 +160,8 @@ void UEquipmentComponent::FireEquippedGun() {
 		auto statusEffectComponent = GetOwner()->GetComponentByClass<UStatusEffectsComponent>();
 		if (!statusEffectComponent)
 			UDebugMessages::LogWarning(this, "firer has no status effect component");
-		else {
+		else
+		{
 			statusEffectComponent->TryGetDebuffValue(EDebuffType::DBT_Accuracy, debuff);
 			UDebugMessages::LogDisplay(this, "found debuff value of " + FString::SanitizeFloat(debuff, 2));
 		}
@@ -155,19 +169,24 @@ void UEquipmentComponent::FireEquippedGun() {
 	}
 }
 
-int UEquipmentComponent::GetActionPointsNeededToUseEquipment() {
-	//TODO: 
-	// set it so that we get the amount from the equipment component
+int UEquipmentComponent::GetActionPointsNeededToUseEquipment()
+{
+	// TODO:
+	//  set it so that we get the amount from the equipment component
 	return 2;
 }
 
-TArray<AEquipment*> UEquipmentComponent::GetAllMeleeEquipment() {
-	TArray<AEquipment*> foundEquipment;
-	for (int i = 0; i < Equipment.Num(); i++) {
-		if (!Equipment[i]) continue;
+TArray<AEquipment *> UEquipmentComponent::GetAllMeleeEquipment()
+{
+	TArray<AEquipment *> foundEquipment;
+	for (int i = 0; i < Equipment.Num(); i++)
+	{
+		if (!Equipment[i])
+			continue;
 
 		auto equipmentDetailsComponent = Equipment[i]->GetComponentByClass<UEquipmentDetailsComponent>();
-		if (!equipmentDetailsComponent) {
+		if (!equipmentDetailsComponent)
+		{
 			UDebugMessages::LogError(this, "This equipment has no details component");
 			continue;
 		}
@@ -178,9 +197,12 @@ TArray<AEquipment*> UEquipmentComponent::GetAllMeleeEquipment() {
 	return foundEquipment;
 }
 
-AEquipment* UEquipmentComponent::GetPrimaryEquipment() {
-	for (int i = 0; i < Equipment.Num(); i++) {
-		if (Equipment[i]) {
+AEquipment *UEquipmentComponent::GetPrimaryEquipment()
+{
+	for (int i = 0; i < Equipment.Num(); i++)
+	{
+		if (Equipment[i])
+		{
 			auto detailsComponent = Equipment[i]->GetComponentByClass<UEquipmentDetailsComponent>();
 			if (detailsComponent && detailsComponent->GetIsPrimaryEquipment())
 				return Equipment[i];
@@ -190,9 +212,12 @@ AEquipment* UEquipmentComponent::GetPrimaryEquipment() {
 	return nullptr;
 }
 
-AEquipment* UEquipmentComponent::GetSecondaryEquipment() {
-	for (int i = 0; i < Equipment.Num(); i++) {
-		if (Equipment[i]) {
+AEquipment *UEquipmentComponent::GetSecondaryEquipment()
+{
+	for (int i = 0; i < Equipment.Num(); i++)
+	{
+		if (Equipment[i])
+		{
 			auto detailsComponent = Equipment[i]->GetComponentByClass<UEquipmentDetailsComponent>();
 			if (detailsComponent && detailsComponent->GetIsSecondaryEquipment())
 				return Equipment[i];
@@ -202,11 +227,13 @@ AEquipment* UEquipmentComponent::GetSecondaryEquipment() {
 	return nullptr;
 }
 
-bool UEquipmentComponent::GetCanSwapWeapon() {
+bool UEquipmentComponent::GetCanSwapWeapon()
+{
 	return GetSecondaryEquipment() && GetPrimaryEquipment();
 }
 
-void UEquipmentComponent::SwapWeapon() {
+void UEquipmentComponent::SwapWeapon()
+{
 	auto primary = GetPrimaryEquipment();
 	auto secondary = GetSecondaryEquipment();
 
@@ -214,10 +241,12 @@ void UEquipmentComponent::SwapWeapon() {
 	auto primaryDetails = primary->GetComponentByClass<UEquipmentDetailsComponent>();
 
 	EGun gunMovingTo = EGun::INVALID;
-	if (CurrentMainEquipment == primary) {
+	if (CurrentMainEquipment == primary)
+	{
 		gunMovingTo = secondaryDetails->GetGunType();
 	}
-	else if (CurrentMainEquipment == secondary) {
+	else if (CurrentMainEquipment == secondary)
+	{
 		gunMovingTo = primaryDetails->GetGunType();
 	}
 	else
@@ -234,14 +263,16 @@ void UEquipmentComponent::SwapWeapon() {
 	AnimInstance->SetCharacterAnimState(animState);
 }
 
-void UEquipmentComponent::FinishSwapWeapon() {
+void UEquipmentComponent::FinishSwapWeapon()
+{
 	if (CurrentMainEquipment == GetPrimaryEquipment())
 		CurrentMainEquipment = GetSecondaryEquipment();
 	else if (CurrentMainEquipment == GetSecondaryEquipment())
 		CurrentMainEquipment = GetPrimaryEquipment();
 }
 
-void UEquipmentComponent::HolsterCurrentMainEquipment() {
+void UEquipmentComponent::HolsterCurrentMainEquipment()
+{
 	auto mainDetails = CurrentMainEquipment->GetComponentByClass<UEquipmentDetailsComponent>();
 	auto attachType = mainDetails->GetHolsterAttachType();
 
@@ -251,8 +282,9 @@ void UEquipmentComponent::HolsterCurrentMainEquipment() {
 
 	AttachEquipmentToSocket(attachType, CurrentMainEquipment);
 }
-void UEquipmentComponent::UnholsterNewMainEquipment() {
-	AEquipment* equipmentToUnholster = nullptr;
+void UEquipmentComponent::UnholsterNewMainEquipment()
+{
+	AEquipment *equipmentToUnholster = nullptr;
 	if (CurrentMainEquipment == GetPrimaryEquipment())
 		equipmentToUnholster = GetSecondaryEquipment();
 	else if (CurrentMainEquipment == GetSecondaryEquipment())
@@ -269,7 +301,8 @@ void UEquipmentComponent::UnholsterNewMainEquipment() {
 	AttachEquipmentToSocket(equipmentDetails->GetEquipSocket(), equipmentToUnholster);
 }
 
-void UEquipmentComponent::AttachEquipmentToSocket(EAttachType attachmentType, AEquipment* equipment) {
+void UEquipmentComponent::AttachEquipmentToSocket(EAttachType attachmentType, AEquipment *equipment)
+{
 	auto skeleMesh = GetOwner()->GetComponentByClass<USkeletalMeshComponent>();
 	equipment->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 
@@ -281,18 +314,22 @@ void UEquipmentComponent::AttachEquipmentToSocket(EAttachType attachmentType, AE
 
 	FVector loc;
 	FRotator rot;
-	if (vectorComponent->GetAttachmentsForType(attachmentType, loc, rot)) {
+	if (vectorComponent->GetAttachmentsForType(attachmentType, loc, rot))
+	{
 		equipment->SetActorRelativeRotation(rot);
 		equipment->SetActorRelativeLocation(loc);
 	}
 }
 
-void UEquipmentComponent::ReloadEquipment() {
+void UEquipmentComponent::ReloadEquipment()
+{
 	AnimInstance->SetIsReloading(true);
 }
 
-ECharacterAnimState UEquipmentComponent::GetAnimStateFromGunType(EGun gunType) {
-	switch (gunType) {
+ECharacterAnimState UEquipmentComponent::GetAnimStateFromGunType(EGun gunType)
+{
+	switch (gunType)
+	{
 	case EGun::G_UrfGun:
 		return ECharacterAnimState::AS_PISTOL;
 	case EGun::G_PeaRifle:
@@ -302,13 +339,14 @@ ECharacterAnimState UEquipmentComponent::GetAnimStateFromGunType(EGun gunType) {
 	return ECharacterAnimState::INVALID;
 }
 
-void UEquipmentComponent::UnEquip(AEquipment* equipment) {
-	for (int i = 0; i < Equipment.Num(); i++) {
-		if (Equipment[i] == equipment) {
+void UEquipmentComponent::UnEquip(AEquipment *equipment)
+{
+	for (int i = 0; i < Equipment.Num(); i++)
+	{
+		if (Equipment[i] == equipment)
+		{
 			if (Equipment[i] == CurrentMainEquipment)
 				CurrentMainEquipment = nullptr;
-
-
 
 			Equipment.RemoveAt(i);
 			return;
@@ -316,18 +354,24 @@ void UEquipmentComponent::UnEquip(AEquipment* equipment) {
 	}
 }
 
-void UEquipmentComponent::TryActivateMainEquipment() {
-	if (CurrentMainEquipment) {
+void UEquipmentComponent::TryActivateMainEquipment()
+{
+	if (CurrentMainEquipment)
+	{
 		auto activationComp = CurrentMainEquipment->GetComponentByClass<UGunActivationComponent>();
-		if (activationComp) {
+		if (activationComp)
+		{
 			activationComp->ActivateGun();
 		}
 	}
 }
-void UEquipmentComponent::TryDeactivateMainEquipment() {
-	if (CurrentMainEquipment) {
+void UEquipmentComponent::TryDeactivateMainEquipment()
+{
+	if (CurrentMainEquipment)
+	{
 		auto activationComp = CurrentMainEquipment->GetComponentByClass<UGunActivationComponent>();
-		if (activationComp) {
+		if (activationComp)
+		{
 			activationComp->DeactivateGun();
 		}
 	}

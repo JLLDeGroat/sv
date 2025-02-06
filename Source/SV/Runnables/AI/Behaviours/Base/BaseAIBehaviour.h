@@ -58,6 +58,10 @@ protected:
 
 	bool CanMeleeAnyone();
 
+	virtual void BeginDestroy() override;
+
+	bool GetIsInFog();
+
 private:
 
 	UPROPERTY() AActor* ThisEnemy;

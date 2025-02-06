@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
 #include "../../Enums/ECharacterEnums.h"
+#include "../../Enums/EConfigurationEnums.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "CharAnimInstance.generated.h"
 
@@ -40,6 +41,8 @@ public:
 	void SetIsHealingSelf(bool val);
 	void SetIsHealingAlly(bool val);
 	void SetIsSuiciding(bool val);
+
+	void SetIsClimbing(bool val, EClimbType climbType = EClimbType::INVALID);
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnGunPreFireActivate();
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnGunPostFireDeactivate();
@@ -85,6 +88,15 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void SetHealthKitActivation(bool val);
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnSuicideExplosion();
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnClimbGoUp();
+	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnClimbPauseGoUp();
+	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnClimbFinish();
+	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnPostClimbStart();
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnClimbPreFall();
+	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnClimbFallStart();
+	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe)) void OnClimbFallStop();
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) float Speed;
@@ -107,6 +119,9 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bSpawningFromGround;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsSuiciding;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bIsClimbing;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) EClimbType ClimbType;
 
 	UFUNCTION(BlueprintPure, meta = (BlueprintThreadSafe)) bool GetIsHealing();
 

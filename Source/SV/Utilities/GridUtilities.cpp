@@ -9,6 +9,18 @@ FVector UGridUtilities::GetNormalisedGridLocation(FVector location) {
 	return FVector(NormalizeGridValue(location.X), NormalizeGridValue(location.Y), location.Z);
 }
 
+bool UGridUtilities::GetLocationsAtSameGrid(FVector vector1, FVector vector2) {
+	if (vector1.X == vector2.X && vector1.Y == vector2.Y) {
+		auto testZ1 = FVector(0, 0, vector1.Z);
+		auto testZ2 = FVector(0, 0, vector2.Z);
+
+		if (FVector::Dist(testZ1, testZ2) < 150) {
+			return true;
+		}
+	}
+	return false;
+}
+
 TArray<FVector> UGridUtilities::GetGridLocationSteps(FVector start, FVector end) {
 	auto distance = end - start;
 	auto gridGape = USvUtilities::GetGridGape();

@@ -66,20 +66,24 @@ void ABloodSpatterDecal::SetupForWall() {
 		else if (i + 1 == 5) SetupWallComponent(Spatter5Component);
 	}
 }
-void ABloodSpatterDecal::SetupForFloor(FRotator rotation) {
+void ABloodSpatterDecal::SetupForFloor(FVector originLocation, FRotator rotation) {
 	auto current = GetActorRotation();
 	//SetActorRotation(rotation);
 	auto randomAmount = FMath::RandRange(1, 2);
 	TArray<UDecalComponent*> components;
 	for (int i = 0; i < randomAmount; i++) {
-		if (i + 1 == 1) SetupFloorComponent(Spatter1Component);
-		else if (i + 1 == 2) SetupFloorComponent(Spatter2Component);
-		else if (i + 1 == 3) SetupFloorComponent(Spatter3Component);
-		else if (i + 1 == 4) SetupFloorComponent(Spatter4Component);
-		else if (i + 1 == 5) SetupFloorComponent(Spatter5Component);
+		if (i + 1 == 1) SetupFloorComponent(originLocation, Spatter1Component);
+		else if (i + 1 == 2) SetupFloorComponent(originLocation, Spatter2Component);
+		else if (i + 1 == 3) SetupFloorComponent(originLocation, Spatter3Component);
+		else if (i + 1 == 4) SetupFloorComponent(originLocation, Spatter4Component);
+		else if (i + 1 == 5) SetupFloorComponent(originLocation, Spatter5Component);
 	}
 
-	auto newRot = FRotator(0, 0, rotation.Yaw + 180);
+	auto actorLoc = GetActorLocation();
+	auto yaw = actorLoc.X < originLocation.X && actorLoc.Y < originLocation.Y ?
+		0 : 180;
+
+	auto newRot = FRotator(0, 0, rotation.Yaw + yaw);
 	Spatter1Component->SetRelativeRotation(newRot);
 	Spatter2Component->SetRelativeRotation(newRot);
 	Spatter3Component->SetRelativeRotation(newRot);
@@ -98,12 +102,22 @@ UDecalComponent* ABloodSpatterDecal::SetupWallComponent(UDecalComponent* compone
 	component->SetVisibility(true);
 	return component;
 }
-UDecalComponent* ABloodSpatterDecal::SetupFloorComponent(UDecalComponent* component) {
+UDecalComponent* ABloodSpatterDecal::SetupFloorComponent(FVector originLocation, UDecalComponent* component) {
 	auto instance = UMaterialInstanceDynamic::Create(USvUtilities::GetRandomBloodSpatterForFloor(), this);
 
-	auto random = FMath::RandRange(-80, 80);
-	
-	component->SetRelativeLocation(FVector(0, random, random));
+	auto random = FMath::RandRange(0, 80);
+
+	auto randomY = random;
+	auto randomZ = random;
+
+	auto actorLoc = GetActorLocation();
+	if (originLocation.X < actorLoc.X)
+		randomZ = randomZ * -1;
+
+	if (originLocation.Y > actorLoc.Y)
+		randomY = randomY * -1;
+
+	component->SetRelativeLocation(FVector(0, randomY, randomZ));
 
 	component->SetDecalMaterial(instance);
 	component->SetVisibility(true);

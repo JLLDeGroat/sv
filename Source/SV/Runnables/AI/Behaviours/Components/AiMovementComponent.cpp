@@ -87,6 +87,7 @@ void UAiMovementComponent::FindPathPointsToLocation(FVector start, FVector end, 
 	if (NavSys)
 	{
 		UNavigationPath* NavPath = NavSys->FindPathToLocationSynchronously(GetWorld(), start, end);
+		NavPath->ClearInternalFlags(EInternalObjectFlags::Async);
 
 		if (NavPath && NavPath->IsValid())
 		{
@@ -100,7 +101,6 @@ void UAiMovementComponent::FindPathPointsToLocation(FVector start, FVector end, 
 			}
 
 			navPath = NavPath->PathPoints;
-			NavPath->ClearInternalFlags(EInternalObjectFlags::Async);
 		}
 	}
 }
@@ -117,10 +117,15 @@ FVector UAiMovementComponent::GetPointBetweenVectors(FVector StartVector, FVecto
 	DistanceFromStart = FMath::Clamp(DistanceFromStart, 0.0f, TotalDistance);
 
 	FVector DirectionVector = EndVector - StartVector;
-	
+
 	DirectionVector.Normalize();
 	FVector TargetVector = StartVector + DirectionVector * DistanceFromStart;
 
 	return TargetVector;
+}
+
+void UAiMovementComponent::BeginDestroy() {
+	Super::BeginDestroy();
+	ClearInternalFlags(EInternalObjectFlags::Async);
 }
 #pragma optimize("", on)

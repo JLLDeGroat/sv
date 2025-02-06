@@ -20,7 +20,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void SetupForWall();
-	void SetupForFloor(FRotator rotation);
+	void SetupForFloor(FVector originLocation, FRotator rotation);
 
 protected:
 	// Called when the game starts or when spawned
@@ -34,5 +34,5 @@ protected:
 
 private:
 	UDecalComponent* SetupWallComponent(UDecalComponent* comp);
-	UDecalComponent* SetupFloorComponent(UDecalComponent* comp);
+	UDecalComponent* SetupFloorComponent(FVector originLocation, UDecalComponent* comp);
 };

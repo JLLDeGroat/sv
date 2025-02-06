@@ -16,7 +16,7 @@ class SV_API UAiMovementComponent : public UObject
 
 public:
 	bool AttemptToRouteToPossibleLocation(TScriptInterface<ISvChar> character, FVector possibleLocation, TArray<FVector>& finalLocations);
-
+	virtual void BeginDestroy() override;
 private:
 
 	void FindPathPointsToLocation(FVector start, FVector end, TArray<FVector>& navPath);

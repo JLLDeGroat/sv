@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "UrfGun.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/GunFireComponent.h"
@@ -11,9 +10,9 @@
 #include "Components/MuzzleFlashComponent.h"
 #include "../Bullets/Bullet.h"
 
-
-AUrfGun::AUrfGun(const FObjectInitializer& ObjectInitializer)
-	: AEquipment(ObjectInitializer) {
+AUrfGun::AUrfGun(const FObjectInitializer &ObjectInitializer)
+	: ABaseGun(ObjectInitializer)
+{
 
 	MeshComponent1 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent1"));
 	RootComponent = MeshComponent1;
@@ -40,8 +39,8 @@ AUrfGun::AUrfGun(const FObjectInitializer& ObjectInitializer)
 	MeshComponent5->SetCanEverAffectNavigation(false);
 	MeshComponent5->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	GunFireComponent = CreateDefaultSubobject<UGunFireComponent>(TEXT("GunFire"));
 	GunFireComponent->SetMeshAndSocketName(MeshComponent1, "FireSocket");
+	GunFireComponent->SetBulletClass(ABullet::StaticClass());
 
 	EquipmentDetailsComponent->SetIsRange(true);
 	EquipmentDetailsComponent->SetMinBaseDamage(35);
@@ -72,11 +71,10 @@ AUrfGun::AUrfGun(const FObjectInitializer& ObjectInitializer)
 	LightAttachmentComponent->SetRelativeLocation(FVector(-2, 1, 1));
 
 	LightAttachmentComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	GunFireComponent->SetBulletClass(ABullet::StaticClass());
 }
 
-void AUrfGun::OnConstruction(const FTransform& Transform) {
+void AUrfGun::OnConstruction(const FTransform &Transform)
+{
 	Super::OnConstruction(Transform);
 
 	auto mesh1 = USvUtilities::GetStaticMesh("/Script/Engine.StaticMesh'/Game/Equipment/1911_Barrel.1911_Barrel'");
@@ -85,9 +83,14 @@ void AUrfGun::OnConstruction(const FTransform& Transform) {
 	auto mesh4 = USvUtilities::GetStaticMesh("/Script/Engine.StaticMesh'/Game/Equipment/1911_Trigger.1911_Trigger'");
 	auto mesh5 = USvUtilities::GetStaticMesh("/Script/Engine.StaticMesh'/Game/Equipment/1911_Mechanism.1911_Mechanism'");
 
-	if (mesh1) MeshComponent1->SetStaticMesh(mesh1);
-	if (mesh2) MeshComponent2->SetStaticMesh(mesh2);
-	if (mesh3) MeshComponent3->SetStaticMesh(mesh3);
-	if (mesh4) MeshComponent4->SetStaticMesh(mesh4);
-	if (mesh5) MeshComponent5->SetStaticMesh(mesh5);
+	if (mesh1)
+		MeshComponent1->SetStaticMesh(mesh1);
+	if (mesh2)
+		MeshComponent2->SetStaticMesh(mesh2);
+	if (mesh3)
+		MeshComponent3->SetStaticMesh(mesh3);
+	if (mesh4)
+		MeshComponent4->SetStaticMesh(mesh4);
+	if (mesh5)
+		MeshComponent5->SetStaticMesh(mesh5);
 }

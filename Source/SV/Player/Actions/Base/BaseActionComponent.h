@@ -32,6 +32,7 @@ protected:
 	void ResetActionEffects();
 
 	bool IsInValidCameraState(ECameraState currentCameraState);
+	bool IsInValidCameraState();
 
 	void GetTargetLocation(FHitResult& hit, FVector& targetLocation, UCameraComponent* cameraComp);
 

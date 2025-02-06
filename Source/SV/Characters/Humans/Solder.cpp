@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Solder.h"
 #include "../../Utilities/SvUtilities.h"
 #include "Components/StaticMeshComponent.h"
@@ -26,9 +25,11 @@
 #include "../Components/CharacterCaptureComponent.h"
 #include "../Components/HealthKitsComponent.h"
 #include "../Components/FogHandlerComponent.h"
+#include "../Components/ClimbLadderComponent.h"
+#include "../DandD/DeviantDirectiveComponent.h"
 
 // Sets default values
-ASolder::ASolder(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(ObjectInitializer)
+ASolder::ASolder(const FObjectInitializer &ObjectInitializer) : ABaseCharacter(ObjectInitializer)
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -39,18 +40,20 @@ ASolder::ASolder(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(O
 	DetailsComponent->SetHealth(100);
 
 	TargetingComponent = CreateDefaultSubobject<UTargetingComponent>(TEXT("Targeting"));
-	///Script/Engine.SkeletalMesh'/Game/Characters/Soldier/BaseSoldier.BaseSoldier'
+	/// Script/Engine.SkeletalMesh'/Game/Characters/Soldier/BaseSoldier.BaseSoldier'
 	/*static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMesh(TEXT("SkeletalMesh'/Game/Characters/Soldier/ClothedPlayer.ClothedPlayer'"));
 	if (skeletalMesh.Succeeded()) {
 		GetMesh()->SetSkeletalMesh(skeletalMesh.Object);
 	}*/
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMesh(TEXT("Script/Engine.SkeletalMesh'/Game/Characters/Soldier/BaseSoldier.BaseSoldier'"));
-	if (skeletalMesh.Succeeded()) {
+	if (skeletalMesh.Succeeded())
+	{
 		GetMesh()->SetSkeletalMesh(skeletalMesh.Object);
 	}
 
 	static ConstructorHelpers::FObjectFinder<UClass> AnimObj(TEXT("/Script/Engine.AnimBlueprint'/Game/Characters/Soldier/Anims/SolderAnim_Bp.SolderAnim_Bp_C'"));
-	if (AnimObj.Succeeded()) {
+	if (AnimObj.Succeeded())
+	{
 		GetMesh()->SetAnimInstanceClass(AnimObj.Object);
 	}
 
@@ -85,7 +88,7 @@ ASolder::ASolder(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(O
 
 	CharacterTileUIComponent = CreateDefaultSubobject<UCharacterTileUIComponent>(TEXT("UITile"));
 
-	DestroyComponent = CreateDefaultSubobject< UDestroyComponent>(TEXT("DestroyComponent"));
+	DestroyComponent = CreateDefaultSubobject<UDestroyComponent>(TEXT("DestroyComponent"));
 
 	PickupResourceComponent = CreateDefaultSubobject<UPickupResourceComponent>(TEXT("PickupResource"));
 
@@ -103,7 +106,8 @@ ASolder::ASolder(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(O
 	LeftForeArmHitComponent->SetRelativeRotation(FRotator(90, 180, 180));
 	LeftForeArmHitComponent->SetRelativeLocation(FVector(16, 1, 1.6f));
 	LeftForeArmHitComponent->SetCapsuleRadius(5, false);
-	LeftForeArmHitComponent->SetCapsuleHalfHeight(20, false);;
+	LeftForeArmHitComponent->SetCapsuleHalfHeight(20, false);
+	;
 
 	RightArmHitComponent = CreateDefaultSubobject<UHitCapsuleComponent>(TEXT("RightArmHit"));
 	RightArmHitComponent->SetupAttachment(GetMesh(), FName("RightArmSocket"));
@@ -145,14 +149,12 @@ ASolder::ASolder(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(O
 	RightUpperLegHitComponent->SetCapsuleRadius(7, false);
 	RightUpperLegHitComponent->SetCapsuleHalfHeight(30, false);
 
-
 	LeftLegHitComponent = CreateDefaultSubobject<UHitCapsuleComponent>(TEXT("LeftLegHit"));
 	LeftLegHitComponent->SetupAttachment(GetMesh(), FName("LeftLegSocket"));
 	LeftLegHitComponent->SetRelativeRotation(FRotator(85.838082, 166, 167.246881));
 	LeftLegHitComponent->SetRelativeLocation(FVector(26.034162, -8.716644, 0.657409));
 	LeftLegHitComponent->SetCapsuleRadius(7, false);
 	LeftLegHitComponent->SetCapsuleHalfHeight(27, false);
-
 
 	RightLegHitComponent = CreateDefaultSubobject<UHitCapsuleComponent>(TEXT("RightLegHit"));
 	RightLegHitComponent->SetupAttachment(GetMesh(), FName("RightLegSocket"));
@@ -181,6 +183,10 @@ ASolder::ASolder(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(O
 	FogHandler = CreateDefaultSubobject<UFogHandlerComponent>(TEXT("FogHandler"));
 	FogHandler->SetupAttachment(RootComponent);
 	FogHandler->SetSphereRadius(400);
+
+	ClimbLadderComponent = CreateDefaultSubobject<UClimbLadderComponent>(TEXT("ClimbLadder"));
+
+	DDComponent = CreateDefaultSubobject<UDeviantDirectiveComponent>(TEXT("DeviantDirectives"));
 }
 
 // Called when the game starts or when spawned
@@ -196,11 +202,13 @@ void ASolder::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-bool ASolder::TryGetAsMoveable(TScriptInterface<IMovable>& Moveable) {
+bool ASolder::TryGetAsMoveable(TScriptInterface<IMovable> &Moveable)
+{
 	Moveable = this;
 	return true;
 }
 
-UGridMovementComponent* ASolder::GetGridMovementComponent() {
+UGridMovementComponent *ASolder::GetGridMovementComponent()
+{
 	return GridMovementComponent;
 }

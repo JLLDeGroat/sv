@@ -44,7 +44,8 @@ enum class ECameraState : uint8 {
 	CS_ThrowTarget,
 	CS_Throw,
 	CS_Overwatch,
-	CS_ToolUsage
+	CS_ToolUsage,
+	CS_CharacterDeath
 };
 
 

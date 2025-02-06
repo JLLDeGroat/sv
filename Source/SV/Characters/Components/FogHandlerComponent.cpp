@@ -13,13 +13,14 @@
 UFogHandlerComponent::UFogHandlerComponent(const FObjectInitializer& ObjectInitializer)
 	: USphereComponent(ObjectInitializer) {
 
-
+	bIsAi = false;
 	SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	SetCollisionObjectType(USvUtilities::GetFogCollisionObjectChannel());
 	SetCollisionResponseToChannel(USvUtilities::GetFogCollisionObjectChannel(), ECR_Overlap);
 	RecreatePhysicsState();
 	OnComponentBeginOverlap.AddDynamic(this, &UFogHandlerComponent::Overlapped);
-
+	SetGenerateOverlapEvents(false);
 	/*bHiddenInGame = false;
 	SetVisibility(true);*/
 
@@ -49,9 +50,21 @@ TArray<UFogSectionComponent*> UFogHandlerComponent::GetFogSectionComponents() {
 }
 
 void UFogHandlerComponent::OnFogComplete() {
+	if (!bIsAi) {
+		SetGenerateOverlapEvents(true);
+		UpdateOverlaps();
+		//UDebugMessages::LogDisplay(this, "OnFogComplete");
+	}
+}
+void UFogHandlerComponent::EnableQuickForAiRangeAttack() {
 	SetGenerateOverlapEvents(true);
 	UpdateOverlaps();
-	UDebugMessages::LogDisplay(this, "OnFogComplete");
+	//UDebugMessages::LogDisplay(this, "Quick fog overlap");
+	GetWorld()->GetTimerManager().SetTimer(QuickFogOverlap, this, &UFogHandlerComponent::QuickFogOverlapCallback, false, 1.0f);
+}
+
+void UFogHandlerComponent::QuickFogOverlapCallback() {
+	SetGenerateOverlapEvents(false);
 }
 
 bool UFogHandlerComponent::ShouldRemoveFog(UFogSectionComponent* fogComponent) {
@@ -75,15 +88,21 @@ bool UFogHandlerComponent::ShouldRemoveFog(UFogSectionComponent* fogComponent, F
 				auto detailsComponent = hits[i].GetActor()->GetComponentByClass<UEnvironmentDetailsComponent>();
 				if (detailsComponent && detailsComponent->GetAffectsFog()) {
 					isValid = false;
-					UDebugMessages::LogDisplay(this, "failed with hit on " + hits[i].GetActor()->GetName());
+					//UDebugMessages::LogDisplay(this, "failed with hit on " + hits[i].GetActor()->GetName());
 				}
 			}
 		}
-
 
 		if (isValid)
 			return true;
 	}
 
 	return false;
+}
+
+void UFogHandlerComponent::SetIsAi(bool val) {
+	bIsAi = true;
+}
+bool UFogHandlerComponent::GetIsAi() {
+	return bIsAi;
 }

@@ -11,7 +11,6 @@
 #include "../Components/HitCapsuleComponent.h"
 #include "../Components/DamageRecieveComponent.h"
 #include "../Components/EquipmentComponent.h"
-#include "../Components/CharacterDetailsComponent.h"
 #include "../Components/SkillsComponent.h"
 #include "../Components/AttackComponent.h"
 #include "../Components/AnimSpeedComponent.h"
@@ -19,6 +18,7 @@
 #include "../Components/AIComponent.h"
 #include "../Components/SpawnInComponent.h"
 #include "../Components/DropResourceComponent.h"
+#include "../Components/ClimbLadderComponent.h"
 
 AGruntConstruct::AGruntConstruct(const FObjectInitializer& ObjectInitializer) : ABaseConstruct(ObjectInitializer) {
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/Characters/Construct/Construct_Merged.Construct_Merged'"));
@@ -35,6 +35,8 @@ AGruntConstruct::AGruntConstruct(const FObjectInitializer& ObjectInitializer) : 
 	AiComponent->SetAttackRoute(EAIBehaviourAttackRoutes::BAR_Melee);
 
 	DetailsComponent->SetTargetIcon(ETargetIcon::TI_ConstructMelee);
+
+	ClimbLadderComponent = CreateDefaultSubobject<UClimbLadderComponent>(TEXT("ClimbLadder"));
 }
 
 UGridMovementComponent* AGruntConstruct::GetGridMovementComponent() {

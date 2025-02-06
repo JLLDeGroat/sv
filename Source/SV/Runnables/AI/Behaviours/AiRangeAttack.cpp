@@ -8,6 +8,8 @@
 #include "../../../Characters/Components/AttackComponent.h"
 #include "../../../Characters/Components/HitBoxComponent.h"
 #include "../../../Characters/Components/HitCapsuleComponent.h"
+#include "../../../Characters/Components/FogHandlerComponent.h"
+#include "../../../Player/Components/PawnCameraComponent.h"
 
 UAiRangeAttack::UAiRangeAttack(const FObjectInitializer& ObjectInitializer)
 	:UBaseAIBehaviour(ObjectInitializer) {
@@ -33,6 +35,20 @@ void UAiRangeAttack::DoBehaviour() {
 		else {
 			auto targetLocation = GetWhereToShootCharacter(thisTarget->GetCharacter(), thisTarget->GetShootLocation());
 			attackComponent->TryAttackLocation(thisTarget->GetShootLocation(), targetLocation, 25);
+
+			auto pawnCamera = GetWorld()->GetFirstPlayerController()->GetPawn()->GetComponentByClass<UPawnCameraComponent>();
+			pawnCamera->UpdateCameraState(ECameraState::CS_ReTarget, (GetThisEnemy()->GetActorLocation() + targetLocation) / 2);
+
+			auto fogHandler = GetThisEnemy()->GetComponentByClass<UFogHandlerComponent>();
+			if (!fogHandler)
+				UDebugMessages::LogError(this, "no fog handler on this enemy");
+			else {
+				FFunctionGraphTask::CreateAndDispatchWhenReady([fogHandler]
+					{
+						fogHandler->EnableQuickForAiRangeAttack();
+					},
+					TStatId(), nullptr, ENamedThreads::GameThread);
+			}
 		}
 	}
 	else {

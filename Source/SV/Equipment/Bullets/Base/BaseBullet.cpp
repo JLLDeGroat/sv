@@ -11,6 +11,7 @@
 #include "../Components/BulletSoundComponent.h"
 #include "../Components/BulletHitSoundComponent.h"
 #include "../Components/BulletRearComponent.h"
+#include "VgCore/Domain/Debug/DebugMessages.h"
 
 // Sets default values
 ABaseBullet::ABaseBullet(const FObjectInitializer& ObjectInitializer)
@@ -58,4 +59,3 @@ void ABaseBullet::Tick(float DeltaTime)
 void ABaseBullet::OnAutoDestroyCallback() {
 	Destroy();
 }
-

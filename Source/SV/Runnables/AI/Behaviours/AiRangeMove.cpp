@@ -14,6 +14,8 @@
 #include "../../../Characters/Components/TargetingComponent.h"
 #include "../../../Characters/Components/GridMovementComponent.h"
 
+#include "../../../Player/Components/PawnCameraComponent.h"
+
 UAiRangeMove::UAiRangeMove(const FObjectInitializer& ObjectInitializer)
 	:UBaseAIBehaviour(ObjectInitializer) {
 
@@ -57,6 +59,12 @@ void UAiRangeMove::DoBehaviour() {
 			TArray<FVector> movement;
 			if (movementComponent->AttemptToRouteToPossibleLocation(GetThisEnemy(), locationsInRadius[i], movement)) {
 				foundGoodPosition = true;
+
+				if (!GetIsInFog()) {
+					auto pawnCamera = GetWorld()->GetFirstPlayerController()->GetPawn()->GetComponentByClass<UPawnCameraComponent>();
+					pawnCamera->UpdateCameraState(ECameraState::CS_ReTarget, GetThisEnemy()->GetActorLocation());
+				}
+
 				auto gridMovementComponent = GetThisEnemy()->GetComponentByClass<UGridMovementComponent>();
 				FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([movement, gridMovementComponent]
 					{

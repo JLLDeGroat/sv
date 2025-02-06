@@ -50,6 +50,8 @@ protected:
 	UPROPERTY() TArray<FFogComponent> FogComponents;
 	UPROPERTY() TArray<FVector> LocationsToAdd;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) TArray<UFogSectionComponent*> FogSections;
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

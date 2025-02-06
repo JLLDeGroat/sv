@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "CharacterSpawnerActor.h"
 #include "../../Characters/BaseCharacter.h"
 #include "../../Characters/Components/CharacterDetailsComponent.h"
@@ -11,6 +10,8 @@
 #include "../../Equipment/Components/EquipmentDetailsComponent.h"
 #include "../../Characters/Components/DamageRecieveComponent.h"
 #include "../../Characters/Components/HealthKitsComponent.h"
+#include "../../Characters/DAndD/Base/BaseDD.h"
+#include "../../Characters/DandD/DeviantDirectiveComponent.h"
 #include "../../Equipment/Equipment.h"
 #include "../SvUtilities.h"
 #include "Components/StaticMeshComponent.h"
@@ -42,19 +43,24 @@ void ACharacterSpawnerActor::BeginPlay()
 
 	if (!CharacterClass)
 		return UDebugMessages::LogError(this, "no character class set for utility actor " + GetName());
-	else {
+	else
+	{
 		FActorSpawnParameters params;
 		auto actor = GetWorld()->SpawnActor<ABaseCharacter>(CharacterClass, GetActorLocation(), FRotator::ZeroRotator, params);
-		if (!actor) {
+		if (!actor)
+		{
 			UDebugMessages::LogError(this, "failed to spawn actor " + GetName());
 		}
-		else {
+		else
+		{
 			auto equipmentComponent = actor->GetComponentByClass<UEquipmentComponent>();
-			if (GunType != EGun::INVALID && equipmentComponent) {
+			if (GunType != EGun::INVALID && equipmentComponent)
+			{
 				equipmentComponent->EquipPrimary(GunType);
 			}
 
-			if (SecondaryGunType != EGun::INVALID && equipmentComponent) {
+			if (SecondaryGunType != EGun::INVALID && equipmentComponent)
+			{
 				equipmentComponent->EquipSecondary(SecondaryGunType);
 			}
 
@@ -62,33 +68,55 @@ void ACharacterSpawnerActor::BeginPlay()
 			if (!characterDetails)
 				return UDebugMessages::LogError(this, "could not get character details");
 
-			if (OverrideCharacterName.Len() > 0) {
-				if (characterDetails) characterDetails->SetCharacterName(OverrideCharacterName);
+			if (OverrideCharacterName.Len() > 0)
+			{
+				if (characterDetails)
+					characterDetails->SetCharacterName(OverrideCharacterName);
 
 				auto statusWidget = actor->GetComponentByClass<UHealthAndStatusWidgetComponent>();
-				if (statusWidget) statusWidget->SetName(OverrideCharacterName);
+				if (statusWidget)
+					statusWidget->SetName(OverrideCharacterName);
 			}
 
-			if (characterDetails->GetCharacterControl() == ECharacterControl::CC_Player) {
+			if (characterDetails->GetCharacterControl() == ECharacterControl::CC_Player)
+			{
 				auto gameInstance = USvUtilities::GetGameInstance(GetWorld());
 
-				if (gameInstance) {
+				if (gameInstance)
+				{
 					auto currentGameDataManager = gameInstance->GetCurrentGameDataManager();
 					if (!currentGameDataManager)
 						return UDebugMessages::LogError(this, "failed to get currentGame data manager");
 
 					auto currentGameData = currentGameDataManager->GetCurrentGameData();
-					if (currentGameData) {
+					if (currentGameData)
+					{
 						auto memberId = currentGameData->AddCrewMember(characterDetails->GetCharacterName(), "", "", characterDetails->GetHealth(), characterDetails->GetMaxHealth());
 						characterDetails->SetCharacterId(memberId);
+
+						if (DirectivesAndDeviations.Num() > 0)
+						{
+							for (int i = 0; i < DirectivesAndDeviations.Num(); i++)
+							{
+								currentGameData->AddCrewDD(memberId, DirectivesAndDeviations[i]);
+								auto directiveAndDeviationComponent = actor->GetComponentByClass<UDeviantDirectiveComponent>();
+								if (directiveAndDeviationComponent)
+								{
+									directiveAndDeviationComponent->AddDirectiveOrDeviant(DirectivesAndDeviations[i]);
+									directiveAndDeviationComponent->AddDirectiveOrDeviant(DirectivesAndDeviations[i]);
+								}
+							}
+						}
 
 						auto crewAmount = currentGameData->GetCrew().Num();
 						auto captureComponent = actor->GetComponentByClass<UCharacterCaptureComponent>();
 						if (captureComponent)
 							captureComponent->SetToRenderTargetNumber(crewAmount);
 
-						if (GrenadeAmount > 0) {
-							for (int i = 0; i < GrenadeAmount; i++) {
+						if (GrenadeAmount > 0)
+						{
+							for (int i = 0; i < GrenadeAmount; i++)
+							{
 								auto toolId = currentGameData->AddToolToCrew(EToolType::TT_Throwable, (uint8)EThrowable::T_Grenade);
 								currentGameData->AssignToolToCrew(toolId, memberId);
 								auto throwableComponent = actor->GetComponentByClass<UThrowableComponent>();
@@ -96,8 +124,10 @@ void ACharacterSpawnerActor::BeginPlay()
 							}
 						}
 
-						if (HealthKitAmount > 0) {
-							for (int i = 0; i < HealthKitAmount; i++) {
+						if (HealthKitAmount > 0)
+						{
+							for (int i = 0; i < HealthKitAmount; i++)
+							{
 								auto kitId = currentGameData->AddToolToCrew(EToolType::TT_HealthKit, (uint8)EHealthKits::HK_Basic);
 								currentGameData->AssignToolToCrew(kitId, memberId);
 								auto throwableComponent = actor->GetComponentByClass<UHealthKitsComponent>();
@@ -106,14 +136,16 @@ void ACharacterSpawnerActor::BeginPlay()
 						}
 					}
 
-					if (GunType != EGun::INVALID) {
+					if (GunType != EGun::INVALID)
+					{
 						auto gunId = currentGameData->AddPrimaryToCrew(GunType);
 						auto primary = equipmentComponent->GetPrimaryEquipment();
 						auto primaryEquipment = primary->GetComponentByClass<UEquipmentDetailsComponent>();
 						primaryEquipment->SetEquipmentId(gunId);
 					}
 
-					if (SecondaryGunType != EGun::INVALID) {
+					if (SecondaryGunType != EGun::INVALID)
+					{
 						auto gunId = currentGameData->AddSecondaryToCrew(SecondaryGunType);
 						auto secondary = equipmentComponent->GetSecondaryEquipment();
 						auto secondaryEquipment = secondary->GetComponentByClass<UEquipmentDetailsComponent>();
@@ -122,7 +154,8 @@ void ACharacterSpawnerActor::BeginPlay()
 				}
 			}
 
-			if (TakeImmediateDamage > 0) {
+			if (TakeImmediateDamage > 0)
+			{
 				auto damageRecieveComponent = actor->GetComponentByClass<UDamageRecieveComponent>();
 				if (!damageRecieveComponent)
 					UDebugMessages::LogError(this, "cannot take immediate damage, no UDamageRecieveComponent component");
@@ -138,6 +171,4 @@ void ACharacterSpawnerActor::BeginPlay()
 void ACharacterSpawnerActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
-

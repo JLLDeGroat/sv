@@ -14,6 +14,7 @@
 #include "../RightClickAction.h"
 #include "../../../Delegates/GameplayDelegates.h"
 #include "../../../Interfaces/Selectable.h"
+#include "../../Components/PawnCameraComponent.h"
 // Sets default values for this component's properties
 UBaseActionComponent::UBaseActionComponent(const FObjectInitializer& ObjectInitializer) : UActorComponent(ObjectInitializer)
 {
@@ -49,6 +50,12 @@ bool UBaseActionComponent::IsInValidCameraState(ECameraState currentCameraState)
 
 	UDebugMessages::LogWarning(this, "not in valid camera state to do action, current state " + ECharacterEnums::GetCameraStateAsString(currentCameraState));
 	return false;
+}
+
+bool UBaseActionComponent::IsInValidCameraState() {
+	auto pawn = GetOwningController()->GetPawn();
+	auto pawnCamera = pawn->GetComponentByClass<UPawnCameraComponent>();
+	return IsInValidCameraState(pawnCamera->GetCurrentCameraState());
 }
 
 void UBaseActionComponent::GetTargetLocation(FHitResult& hit, FVector& targetLocation, UCameraComponent* cameraComp) {

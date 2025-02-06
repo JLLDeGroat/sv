@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "GamePlayerController.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "InputMappingContext.h"
@@ -37,15 +36,17 @@
 #include "Actions/ReloadAction.h"
 #include "Actions/CycleTargetAction.h"
 #include "Actions/OverwatchAction.h"
+#include "Components/CameraShakeComponent.h"
+#include "Components/CapsuleComponent.h"
 
 #include "DrawDebugHelpers.h"
 
-AGamePlayerController::AGamePlayerController() {
+AGamePlayerController::AGamePlayerController()
+{
 	bShowMouseCursor = true;
 	bEnableClickEvents = true;
 	bEnableTouchEvents = true;
 	DefaultMouseCursor = EMouseCursor::Default;
-
 
 	PlayerInputMappingContext = LoadObject<UInputMappingContext>(this, TEXT("/Script/EnhancedInput.InputMappingContext'/Game/Controls/InputMapping.InputMapping'"));
 	ClickAction = LoadObject<UInputAction>(this, TEXT("/Script/EnhancedInput.InputAction'/Game/Controls/IA_Click.IA_Click'"));
@@ -65,28 +66,34 @@ AGamePlayerController::AGamePlayerController() {
 	SelectionManager = CreateDefaultSubobject<USelectionManager>(TEXT("Selection"));
 	ControlManager = CreateDefaultSubobject<UControlManager>(TEXT("Control"));
 	ActionManager = CreateDefaultSubobject<UActionManager>(TEXT("ActionManager"));
+
+	CameraShakeComponent = CreateDefaultSubobject<UCameraShakeComponent>(TEXT("ShakeComp"));
 }
 
-void AGamePlayerController::BeginPlay() {
+void AGamePlayerController::BeginPlay()
+{
 	Super::BeginPlay();
 
-	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
+	if (UEnhancedInputLocalPlayerSubsystem *Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
 		Subsystem->AddMappingContext(PlayerInputMappingContext, 0);
 	}
 
 	PlayerPawn = Cast<APlayerPawn>(GetPawn());
 
-	if (MovementMultiplier < 10) {
+	if (MovementMultiplier < 10)
+	{
 		UDebugMessages::LogDisplay(this, "MovementMultiplier was too low, so set to 10 as default");
 		MovementMultiplier = 10;
 	}
 
-	if (!GridSelection) {
+	if (!GridSelection)
+	{
 		GridSelection = GetWorld()->SpawnActor<AGridSelectionActor>();
 		ControlManager->SetGridSelectionActor(GridSelection);
 	}
-	if (!GrenadeIndicator) {
+	if (!GrenadeIndicator)
+	{
 		GrenadeIndicator = GetWorld()->SpawnActor<AGrenadeIndicatorActor>();
 		ControlManager->SetGrenadeIndicatorActor(GrenadeIndicator);
 		ActionManager->GetGrenadeAction()->SetGrenadeIndicatorActor(GrenadeIndicator);
@@ -94,44 +101,60 @@ void AGamePlayerController::BeginPlay() {
 	}
 }
 
-void AGamePlayerController::Tick(float DeltaTime) {
+void AGamePlayerController::Tick(float DeltaTime)
+{
 	Super::Tick(DeltaTime);
 
 	FHitResult Hit;
-	GetHitResultUnderCursor(USvUtilities::GetFloorTargetChannel(), false, Hit);
+	FVector WorldLocation, WorldDirection;
+	DeprojectMousePositionToWorld(WorldLocation, WorldDirection);
 
-	if (Hit.GetActor()) {
-		if (ControlManager->GetCanMouseDesignateExplosionRadiusActor())
-			ControlManager->TickShowGrenadeIndicator(Hit.Location);
+	FCollisionQueryParams QueryParams;
+	QueryParams.bReturnPhysicalMaterial = false;
+	FCollisionObjectQueryParams objectQueryParams;
+	objectQueryParams.AddObjectTypesToQuery(USvUtilities::GetFloorTargetChannel());
 
-		if (ControlManager->GetCanMouseDesignateSelectionDecal()) {
-			auto localised = UGridUtilities::GetNormalisedGridLocation(Hit.Location);
+	if (GetWorld()->LineTraceSingleByObjectType(Hit, WorldLocation, WorldLocation + (WorldDirection * 5000.f), objectQueryParams, QueryParams))
+	{
+		if (Hit.GetActor())
+		{
+			if (ControlManager->GetCanMouseDesignateExplosionRadiusActor())
+				ControlManager->TickShowGrenadeIndicator(Hit.Location);
 
-			if (SelectionManager->GetCurrentMousedLocation().X != localised.X ||
-				SelectionManager->GetCurrentMousedLocation().Y != localised.Y)
+			if (ControlManager->GetCanMouseDesignateSelectionDecal())
 			{
-				GridSelection->SetActorLocation(localised);
-				ControlManager->TickFindMovementPath(localised);
+				auto localised = UGridUtilities::GetNormalisedGridLocation(Hit.Location);
+
+				if (SelectionManager->GetCurrentMousedLocation().X != localised.X ||
+					SelectionManager->GetCurrentMousedLocation().Y != localised.Y)
+				{
+					GridSelection->SetActorLocation(localised);
+					ControlManager->TickFindMovementPath(localised);
+				}
 			}
 		}
 	}
 }
 
-USelectionManager* AGamePlayerController::GetSelectionManager() {
+USelectionManager *AGamePlayerController::GetSelectionManager()
+{
 	return SelectionManager;
 }
-UControlManager* AGamePlayerController::GetControlManager() {
+UControlManager *AGamePlayerController::GetControlManager()
+{
 	return ControlManager;
 }
 
-void AGamePlayerController::SetMouseAsUi() {
+void AGamePlayerController::SetMouseAsUi()
+{
 	bShowMouseCursor = true;
 	bEnableClickEvents = true;
 	bEnableTouchEvents = true;
 	SetInputMode(FInputModeGameAndUI());
 	ControlManager->SetCanMouseDesignateSelectionDecal(true);
 }
-void AGamePlayerController::SetMouseAsGame() {
+void AGamePlayerController::SetMouseAsGame()
+{
 	bShowMouseCursor = false;
 	bEnableClickEvents = false;
 	bEnableTouchEvents = false;
@@ -139,10 +162,11 @@ void AGamePlayerController::SetMouseAsGame() {
 	ControlManager->SetCanMouseDesignateSelectionDecal(false);
 }
 
-void AGamePlayerController::SetupInputComponent() {
+void AGamePlayerController::SetupInputComponent()
+{
 	Super::SetupInputComponent();
 
-	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
+	if (UEnhancedInputComponent *EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 	{
 		// Setup touch input events
 		EnhancedInputComponent->BindAction(ClickAction, ETriggerEvent::Started, ActionManager->GetLeftClickAction(), &ULeftClickAction::DoAction);
@@ -164,19 +188,22 @@ void AGamePlayerController::SetupInputComponent() {
 	}
 }
 
-
-void AGamePlayerController::MoveUp_Started(const FInputActionValue& Value) {
+void AGamePlayerController::MoveUp_Started(const FInputActionValue &Value)
+{
 	if (PlayerPawn->GetPawnCameraComponent()->GetCurrentCameraState() != ECameraState::CS_GunTarget)
 		PlayerPawn->SetActorLocation(PlayerPawn->GetActorLocation() + FVector(Value.Get<float>() * MovementMultiplier, 0, 0));
 }
 
-void AGamePlayerController::MoveRight_Started(const FInputActionValue& Value) {
+void AGamePlayerController::MoveRight_Started(const FInputActionValue &Value)
+{
 	if (PlayerPawn->GetPawnCameraComponent()->GetCurrentCameraState() != ECameraState::CS_GunTarget)
 		PlayerPawn->SetActorLocation(PlayerPawn->GetActorLocation() + FVector(0, Value.Get<float>() * MovementMultiplier, 0));
 }
 
-void AGamePlayerController::MouseMove(const FInputActionValue& Value) {
-	if (PlayerPawn->GetPawnCameraComponent()->GetCurrentCameraState() == ECameraState::CS_GunTarget) {
+void AGamePlayerController::MouseMove(const FInputActionValue &Value)
+{
+	if (PlayerPawn->GetPawnCameraComponent()->GetCurrentCameraState() == ECameraState::CS_GunTarget)
+	{
 		auto camera = PlayerPawn->GetCameraComponent();
 
 		auto vectorValue = Value.Get<FVector2D>();
@@ -185,8 +212,10 @@ void AGamePlayerController::MouseMove(const FInputActionValue& Value) {
 		auto current = camera->GetRelativeRotation();
 		auto newRotation = additionalRotation + current;
 
-		if (newRotation.Pitch > 60) newRotation.Pitch = 60;
-		else if (newRotation.Pitch < -60) newRotation.Pitch = -60;
+		if (newRotation.Pitch > 60)
+			newRotation.Pitch = 60;
+		else if (newRotation.Pitch < -60)
+			newRotation.Pitch = -60;
 
 		camera->SetRelativeRotation(newRotation);
 	}

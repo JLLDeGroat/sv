@@ -96,7 +96,7 @@ void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		}
 	}
 }
-#pragma optimize("", on)
+
 void UAttackComponent::UpdateCurrentAttackState(EAttackState attackState) {
 	CurrentAttackState = attackState;
 	CurrentTargetCharacter = nullptr;
@@ -195,7 +195,7 @@ void UAttackComponent::TryAttackLocation(FVector sourceGridLocation, FVector loc
 
 	auto gridLocation = UGridUtilities::GetNormalisedGridLocation(GetOwner()->GetActorLocation());
 
-	if (gridLocation == sourceGridLocation) {
+	if (UGridUtilities::GetLocationsAtSameGrid(gridLocation, sourceGridLocation)) {
 		if (bIsRange) {
 			InitialLocation = GetOwner()->GetActorLocation();
 			InitialRotation = GetOwner()->GetActorRotation();
@@ -286,3 +286,4 @@ TScriptInterface<ISvChar> UAttackComponent::GetCurrentTargetCharacter() {
 float UAttackComponent::GetCurrentAttackRandomRadius() const {
 	return CurrentAttackRandomRadius;
 }
+#pragma optimize("", on)

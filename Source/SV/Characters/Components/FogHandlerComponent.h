@@ -28,6 +28,13 @@ public:
 
 	UFUNCTION() void OnFogComplete();
 
+	void EnableQuickForAiRangeAttack();
+	FTimerHandle QuickFogOverlap;
+	UFUNCTION() void QuickFogOverlapCallback();
+
+	void SetIsAi(bool val);
+	bool GetIsAi();
+
 protected:
 
 	UFUNCTION() void Overlapped(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
@@ -35,4 +42,6 @@ protected:
 
 
 	UPROPERTY() TArray<UFogSectionComponent*>FogSectionComponents;
+
+	UPROPERTY() bool bIsAi;
 };

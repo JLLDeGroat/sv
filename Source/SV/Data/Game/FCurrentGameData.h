@@ -11,15 +11,16 @@
 #include "World/FCurrentWorldData.h"
 #include "Resource/FResourceData.h"
 #include "Tutorials/FTutorialData.h"
+#include "../../Characters/DandD/Base/BaseDD.h"
 #include "FCurrentGameData.generated.h"
-
 
 USTRUCT()
 struct SV_API FCrew
 {
 	GENERATED_BODY()
 public:
-	FCrew() {
+	FCrew()
+	{
 		LastName = "";
 		FirstName = "";
 		NickName = "";
@@ -30,7 +31,8 @@ public:
 		Stats = FCrewMemberStats();
 	}
 
-	FCrew(FString fName, FString lName, FString bio, int health, int maxHealth, FGuid guid = FGuid::NewGuid()) {
+	FCrew(FString fName, FString lName, FString bio, int health, int maxHealth, FGuid guid = FGuid::NewGuid())
+	{
 		LastName = fName;
 		FirstName = lName;
 		NickName = "";
@@ -44,41 +46,58 @@ public:
 
 	FString GetName() const { return FirstName + " " + LastName; }
 	FGuid GetId() const { return Id; }
-	FCrewMemberStats* GetStats() { return &Stats; }
+	FCrewMemberStats *GetStats() { return &Stats; }
 	void SetHealth(int health) { Health = health; }
 
-protected:
-	UPROPERTY() FString FirstName;
-	UPROPERTY() FString LastName;
-	UPROPERTY() FString NickName;
-	UPROPERTY() FString Bio;
-	UPROPERTY() EGun EquippedGun;
-	UPROPERTY() int Health;
-	UPROPERTY() int MaxHealth;
-	UPROPERTY() FGuid Id;
-	UPROPERTY() FCrewMemberStats Stats;
-};
+	TArray<TSubclassOf<UBaseDD>> GetDirectivesAndDeviations() { return DirectivesAndDeviations; }
+	void AddDirectiveAndDeviation(TSubclassOf<UBaseDD> dD) { DirectivesAndDeviations.Emplace(dD); }
 
+protected:
+	UPROPERTY()
+	FString FirstName;
+	UPROPERTY()
+	FString LastName;
+	UPROPERTY()
+	FString NickName;
+	UPROPERTY()
+	FString Bio;
+	UPROPERTY()
+	EGun EquippedGun;
+	UPROPERTY()
+	int Health;
+	UPROPERTY()
+	int MaxHealth;
+	UPROPERTY()
+	FGuid Id;
+	UPROPERTY()
+	FCrewMemberStats Stats;
+	UPROPERTY()
+	TArray<TSubclassOf<UBaseDD>> DirectivesAndDeviations;
+};
 
 USTRUCT()
 struct SV_API FCrewPrimaries
 {
 	GENERATED_BODY()
 public:
-	FCrewPrimaries() {
+	FCrewPrimaries()
+	{
 		GunType = EGun::INVALID;
 		CrewMember = FGuid::FGuid();
 		Id = FGuid::FGuid();
 	}
 
-	FCrewPrimaries(EGun gun, FGuid guid = FGuid::FGuid()) {
+	FCrewPrimaries(EGun gun, FGuid guid = FGuid::FGuid())
+	{
 		GunType = gun;
 		CrewMember = guid;
 		Id = FGuid::NewGuid();
 	}
 
-	bool TryAssignMemberToId(FGuid memberId) {
-		if (CrewMember == FGuid::FGuid()) {
+	bool TryAssignMemberToId(FGuid memberId)
+	{
+		if (CrewMember == FGuid::FGuid())
+		{
 			CrewMember = memberId;
 			return true;
 		}
@@ -92,9 +111,12 @@ public:
 	EGun GetPrimaryGunType() const { return GunType; }
 
 protected:
-	UPROPERTY() EGun GunType;
-	UPROPERTY() FGuid CrewMember;
-	UPROPERTY() FGuid Id;
+	UPROPERTY()
+	EGun GunType;
+	UPROPERTY()
+	FGuid CrewMember;
+	UPROPERTY()
+	FGuid Id;
 };
 
 USTRUCT()
@@ -102,20 +124,24 @@ struct SV_API FCrewSecondaries
 {
 	GENERATED_BODY()
 public:
-	FCrewSecondaries() {
+	FCrewSecondaries()
+	{
 		GunType = EGun::INVALID;
 		CrewMember = FGuid::FGuid();
 		Id = FGuid::FGuid();
 	}
 
-	FCrewSecondaries(EGun gun, FGuid guid = FGuid::FGuid()) {
+	FCrewSecondaries(EGun gun, FGuid guid = FGuid::FGuid())
+	{
 		GunType = gun;
 		CrewMember = guid;
 		Id = FGuid::NewGuid();
 	}
 
-	bool TryAssignMemberToId(FGuid memberId) {
-		if (CrewMember == FGuid::FGuid()) {
+	bool TryAssignMemberToId(FGuid memberId)
+	{
+		if (CrewMember == FGuid::FGuid())
+		{
 			CrewMember = memberId;
 			return true;
 		}
@@ -129,22 +155,25 @@ public:
 	EGun GetSecondaryGunType() const { return GunType; }
 
 protected:
-	UPROPERTY() EGun GunType;
-	UPROPERTY() FGuid CrewMember;
-	UPROPERTY() FGuid Id;
+	UPROPERTY()
+	EGun GunType;
+	UPROPERTY()
+	FGuid CrewMember;
+	UPROPERTY()
+	FGuid Id;
 };
-
 
 USTRUCT()
 struct SV_API FToolItem
 {
 	GENERATED_BODY()
 public:
-	FToolItem() {
-
+	FToolItem()
+	{
 	}
 
-	FToolItem(uint8 tool, EToolType toolType, FGuid id = FGuid::NewGuid()) {
+	FToolItem(uint8 tool, EToolType toolType, FGuid id = FGuid::NewGuid())
+	{
 		Tool = tool;
 		ToolType = toolType;
 		Id = id;
@@ -152,10 +181,14 @@ public:
 
 	uint8 GetTool() const { return Tool; }
 	EToolType GetToolType() const { return ToolType; }
+
 protected:
-	UPROPERTY() FGuid Id;
-	UPROPERTY() uint8 Tool;
-	UPROPERTY() EToolType ToolType;
+	UPROPERTY()
+	FGuid Id;
+	UPROPERTY()
+	uint8 Tool;
+	UPROPERTY()
+	EToolType ToolType;
 };
 
 USTRUCT()
@@ -163,17 +196,20 @@ struct SV_API FCrewTools
 {
 	GENERATED_BODY()
 public:
-	FCrewTools() {
-
+	FCrewTools()
+	{
 	}
 
-	FCrewTools(uint8 tool, EToolType toolType, FGuid id = FGuid::NewGuid()) {
+	FCrewTools(uint8 tool, EToolType toolType, FGuid id = FGuid::NewGuid())
+	{
 		ToolItem = FToolItem(tool, toolType);
 		Id = id;
 	}
 
-	bool TryAssignMemberToId(FGuid memberId) {
-		if (CrewMember == FGuid::FGuid()) {
+	bool TryAssignMemberToId(FGuid memberId)
+	{
+		if (CrewMember == FGuid::FGuid())
+		{
 			CrewMember = memberId;
 			return true;
 		}
@@ -188,13 +224,13 @@ public:
 	FGuid GetToolId() const { return Id; }
 	FGuid GetCrewMemberId() const { return CrewMember; }
 
-
-
 protected:
-
-	UPROPERTY() FToolItem ToolItem;
-	UPROPERTY() FGuid CrewMember;
-	UPROPERTY() FGuid Id;
+	UPROPERTY()
+	FToolItem ToolItem;
+	UPROPERTY()
+	FGuid CrewMember;
+	UPROPERTY()
+	FGuid Id;
 };
 
 USTRUCT()
@@ -202,14 +238,16 @@ struct SV_API FCurrentMission
 {
 	GENERATED_BODY()
 public:
-	FCurrentMission() {
+	FCurrentMission()
+	{
 		Name = "INVALID";
 		Type = EMissionType::INVALID;
 		Id = FGuid::FGuid();
 		CurrentTurn = 1;
 	}
 
-	FCurrentMission(EMissionType missionType, FString missionName, FMissionDetails* missionDetails) {
+	FCurrentMission(EMissionType missionType, FString missionName, FMissionDetails *missionDetails)
+	{
 		Name = missionName;
 		Type = missionType;
 		Id = FGuid::NewGuid();
@@ -222,14 +260,19 @@ public:
 	FGuid GetId() const { return Id; }
 	int GetCurrentTurn() const { return CurrentTurn; }
 
-	FMissionDetails* GetMissionDetails() { return &MissionDetails; }
-protected:
+	FMissionDetails *GetMissionDetails() { return &MissionDetails; }
 
-	UPROPERTY() EMissionType Type;
-	UPROPERTY() FString Name;
-	UPROPERTY() FGuid Id;
-	UPROPERTY() FMissionDetails MissionDetails = FMissionDetails();
-	UPROPERTY() int CurrentTurn;
+protected:
+	UPROPERTY()
+	EMissionType Type;
+	UPROPERTY()
+	FString Name;
+	UPROPERTY()
+	FGuid Id;
+	UPROPERTY()
+	FMissionDetails MissionDetails = FMissionDetails();
+	UPROPERTY()
+	int CurrentTurn;
 };
 
 /**
@@ -240,40 +283,66 @@ struct SV_API FCurrentGameData
 {
 	GENERATED_BODY()
 public:
-	FCurrentGameData() {
-
+	FCurrentGameData()
+	{
 	}
 
 #pragma region Crew members
 
-	FGuid AddCrewMember(FString fName, FString lName, FString bio, int health, int maxHealth) {
+	FGuid AddCrewMember(FString fName, FString lName, FString bio, int health, int maxHealth)
+	{
 		auto crew = FCrew(fName, lName, bio, health, maxHealth);
 		Crew.Emplace(crew);
 		return crew.GetId();
 	}
-	TArray<FCrew> GetCrew() {
+	TArray<FCrew> GetCrew()
+	{
 		return Crew;
 	}
-	FCrew* GetCrewMember(FGuid crewMemberId) {
+	FCrew *GetCrewMember(FGuid crewMemberId)
+	{
 		for (int i = 0; i < Crew.Num(); i++)
 			if (Crew[i].GetId() == crewMemberId)
 				return &Crew[i];
 
 		return nullptr;
 	}
-	void SetCrewAsDead(FGuid crewMemberId) {
+	void SetCrewAsDead(FGuid crewMemberId)
+	{
 		for (int i = 0; i < Crew.Num(); i++)
-			if (Crew[i].GetId() == crewMemberId) {
-				auto deadCrew = FCrew(Crew[i]);
+			if (Crew[i].GetId() == crewMemberId)
+			{
+				// auto deadCrew = FCrew(Crew[i]);
 				Crew.RemoveAt(i);
 				return;
 			}
+	}
+
+	void AddCrewDD(FGuid crewMemberId, TSubclassOf<UBaseDD> dD)
+	{
+		for (int i = 0; i < Crew.Num(); i++)
+			if (Crew[i].GetId() == crewMemberId)
+				Crew[i].AddDirectiveAndDeviation(dD);
+	}
+
+	TArray<TSubclassOf<UBaseDD>> GetCrewDD(FGuid crewMemberId)
+	{
+		TArray<TSubclassOf<UBaseDD>> result;
+		for (int i = 0; i < Crew.Num(); i++)
+			if (Crew[i].GetId() == crewMemberId)
+			{
+				result = Crew[i].GetDirectivesAndDeviations();
+				break;
+			}
+
+		return result;
 	}
 #pragma endregion
 
 #pragma region Primaries
 
-	bool AssignPrimaryToCrew(FGuid primary, FGuid member) {
+	bool AssignPrimaryToCrew(FGuid primary, FGuid member)
+	{
 		for (int i = 0; i < CrewPrimaries.Num(); i++)
 			if (CrewPrimaries[i].GetPrimaryId() == primary)
 				return CrewPrimaries[i].TryAssignMemberToId(member);
@@ -281,21 +350,23 @@ public:
 		return false;
 	}
 
-	void UnnassignPrimaryFromCrew(FGuid primary) {
+	void UnnassignPrimaryFromCrew(FGuid primary)
+	{
 		for (int i = 0; i < CrewPrimaries.Num(); i++)
 			if (CrewPrimaries[i].GetPrimaryId() == primary)
 				CrewPrimaries[i].UnnasignMember();
 	}
 
-	FGuid AddPrimaryToCrew(EGun gunType) {
+	FGuid AddPrimaryToCrew(EGun gunType)
+	{
 		auto primary = FCrewPrimaries(gunType);
 		CrewPrimaries.Emplace(primary);
 		return primary.GetPrimaryId();
 	}
 
-
 	TArray<FCrewPrimaries> GetCrewPrimaries() { return CrewPrimaries; }
-	FCrewPrimaries* GetCrewPrimary(FGuid crewId) {
+	FCrewPrimaries *GetCrewPrimary(FGuid crewId)
+	{
 		for (int i = 0; i < CrewPrimaries.Num(); i++)
 			if (CrewPrimaries[i].GetCrewMemberId() == crewId)
 				return &CrewPrimaries[i];
@@ -306,7 +377,8 @@ public:
 
 #pragma region Secondaries
 
-	bool AssignSecondaryToCrew(FGuid primary, FGuid member) {
+	bool AssignSecondaryToCrew(FGuid primary, FGuid member)
+	{
 		for (int i = 0; i < CrewSecondaries.Num(); i++)
 			if (CrewSecondaries[i].GetPrimaryId() == primary)
 				return CrewSecondaries[i].TryAssignMemberToId(member);
@@ -314,21 +386,23 @@ public:
 		return false;
 	}
 
-	void UnnassignSecondaryFromCrew(FGuid primary) {
+	void UnnassignSecondaryFromCrew(FGuid primary)
+	{
 		for (int i = 0; i < CrewSecondaries.Num(); i++)
 			if (CrewSecondaries[i].GetPrimaryId() == primary)
 				CrewSecondaries[i].UnnasignMember();
 	}
 
-	FGuid AddSecondaryToCrew(EGun gunType) {
+	FGuid AddSecondaryToCrew(EGun gunType)
+	{
 		auto primary = FCrewPrimaries(gunType);
 		CrewSecondaries.Emplace(primary);
 		return primary.GetPrimaryId();
 	}
 
-
 	TArray<FCrewPrimaries> GetCrewSecondaries() { return CrewSecondaries; }
-	FCrewPrimaries* GetCrewSecondary(FGuid crewId) {
+	FCrewPrimaries *GetCrewSecondary(FGuid crewId)
+	{
 		for (int i = 0; i < CrewSecondaries.Num(); i++)
 			if (CrewSecondaries[i].GetCrewMemberId() == crewId)
 				return &CrewSecondaries[i];
@@ -339,13 +413,15 @@ public:
 
 #pragma region Tools
 
-	FGuid AddToolToCrew(EToolType toolType, uint8 tool) {
+	FGuid AddToolToCrew(EToolType toolType, uint8 tool)
+	{
 		auto newTool = FCrewTools(tool, toolType);
 		CrewTools.Emplace(newTool);
 		return newTool.GetToolId();
 	}
 
-	bool AssignToolToCrew(FGuid toolId, FGuid member) {
+	bool AssignToolToCrew(FGuid toolId, FGuid member)
+	{
 		for (int i = 0; i < CrewTools.Num(); i++)
 			if (CrewTools[i].GetToolId() == toolId)
 				return CrewTools[i].TryAssignMemberToId(member);
@@ -353,14 +429,16 @@ public:
 		return false;
 	}
 
-	void UnnassignToolFromCrew(FGuid tool) {
+	void UnnassignToolFromCrew(FGuid tool)
+	{
 		for (int i = 0; i < CrewTools.Num(); i++)
 			if (CrewTools[i].GetToolId() == tool)
 				CrewTools[i].UnnasignMember();
 	}
 
-	TArray<FCrewTools*> GetToolsFromMember(FGuid memberId) {
-		TArray<FCrewTools*> result;
+	TArray<FCrewTools *> GetToolsFromMember(FGuid memberId)
+	{
+		TArray<FCrewTools *> result;
 		for (int i = 0; i < CrewTools.Num(); i++)
 			if (CrewTools[i].GetCrewMemberId() == memberId)
 				result.Emplace(&CrewTools[i]);
@@ -369,8 +447,9 @@ public:
 	}
 
 	TArray<FCrewTools> GetAllTools() { return CrewTools; }
-	TArray<FCrewTools*> GetCrewMemberTools(FGuid crewId) {
-		TArray<FCrewTools*> result;
+	TArray<FCrewTools *> GetCrewMemberTools(FGuid crewId)
+	{
+		TArray<FCrewTools *> result;
 		for (int i = 0; i < CrewTools.Num(); i++)
 			if (CrewTools[i].GetCrewMemberId() == crewId)
 				result.Emplace(&CrewTools[i]);
@@ -378,7 +457,8 @@ public:
 		return result;
 	}
 
-	FCrewTools* GetFirstUnequippedTool(EToolType toolType, uint8 tool) {
+	FCrewTools *GetFirstUnequippedTool(EToolType toolType, uint8 tool)
+	{
 		for (int i = 0; i < CrewTools.Num(); i++)
 			if (CrewTools[i].GetCrewMemberId() == FGuid::FGuid() &&
 				CrewTools[i].GetToolType() == toolType &&
@@ -388,7 +468,8 @@ public:
 		return nullptr;
 	}
 
-	void RemoveTool(FGuid toolId) {
+	void RemoveTool(FGuid toolId)
+	{
 		for (int i = 0; i < CrewTools.Num(); i++)
 			if (CrewTools[i].GetToolId() == toolId)
 				return CrewTools.RemoveAt(i);
@@ -398,14 +479,16 @@ public:
 
 #pragma region CurrentMission
 
-	FCurrentMission* StartNewMission(FString name, EMissionType missionType, FMissionDetails* missionDetails) {
+	FCurrentMission *StartNewMission(FString name, EMissionType missionType, FMissionDetails *missionDetails)
+	{
 		CurrentMission = FCurrentMission(missionType, name, missionDetails);
 		return &CurrentMission;
 	}
 
-	FCurrentMission* GetCurrentMission() { return &CurrentMission; }
+	FCurrentMission *GetCurrentMission() { return &CurrentMission; }
 
-	void SetIsHistoryMission() {
+	void SetIsHistoryMission()
+	{
 		HistoricMissions.Emplace(FCurrentMission(CurrentMission));
 	}
 
@@ -413,32 +496,42 @@ public:
 
 #pragma region WorldData
 
-	FCurrentWorldData* GetWorldData() { return &WorldData; }
+	FCurrentWorldData *GetWorldData() { return &WorldData; }
 
 #pragma endregion
 
 #pragma region ResourceData
 
-	FResourceData* GetResourceData() { return &ResourceData; }
+	FResourceData *GetResourceData() { return &ResourceData; }
 
 #pragma endregion
 
 #pragma region TutorialData
 
-	FTutorialData* GetTutorialData() { return &TutorialData; }
+	FTutorialData *GetTutorialData() { return &TutorialData; }
 
 #pragma endregion
 
 protected:
-	UPROPERTY() TArray<FCrew> Crew;
-	UPROPERTY() TArray<FCrew> DeadCrew;
-	UPROPERTY() TArray<FCrewPrimaries> CrewPrimaries;
-	UPROPERTY() TArray<FCrewPrimaries> CrewSecondaries;
-	UPROPERTY() TArray<FCrewTools> CrewTools;
+	UPROPERTY()
+	TArray<FCrew> Crew;
+	UPROPERTY()
+	TArray<FCrew> DeadCrew;
+	UPROPERTY()
+	TArray<FCrewPrimaries> CrewPrimaries;
+	UPROPERTY()
+	TArray<FCrewPrimaries> CrewSecondaries;
+	UPROPERTY()
+	TArray<FCrewTools> CrewTools;
 
-	UPROPERTY() FCurrentMission CurrentMission;
-	UPROPERTY() TArray<FCurrentMission> HistoricMissions;
-	UPROPERTY() FCurrentWorldData WorldData;
-	UPROPERTY() FResourceData ResourceData;
-	UPROPERTY() FTutorialData TutorialData;
+	UPROPERTY()
+	FCurrentMission CurrentMission;
+	UPROPERTY()
+	TArray<FCurrentMission> HistoricMissions;
+	UPROPERTY()
+	FCurrentWorldData WorldData;
+	UPROPERTY()
+	FResourceData ResourceData;
+	UPROPERTY()
+	FTutorialData TutorialData;
 };

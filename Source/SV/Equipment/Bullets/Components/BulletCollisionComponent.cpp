@@ -13,6 +13,7 @@
 #include "BulletDetailsComponent.h"
 #include "TravelComponent.h"
 #include "BulletRearComponent.h"
+#include "BulletAuraComponent.h"
 #include "../../../Effects/BulletHoleDecal.h"
 #include "DrawDebugHelpers.h"
 
@@ -104,10 +105,10 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent* OverlappedComp, 
 					USvUtilities::GetFloorTargetChannel());
 
 				if (bloodSpatterResult.bBlockingHit) {
-					auto wallSpatterActor = GetWorld()->SpawnActor<ABloodSpatterDecal>(bloodSpatterResult.ImpactPoint, bloodSpatterResult.ImpactNormal.Rotation());
-					if (!wallSpatterActor)
+					auto floorSpatterActor = GetWorld()->SpawnActor<ABloodSpatterDecal>(bloodSpatterResult.ImpactPoint, bloodSpatterResult.ImpactNormal.Rotation());
+					if (!floorSpatterActor)
 						UDebugMessages::LogError(this, "failed to create wall spatter");
-					else wallSpatterActor->SetupForFloor(GetOwner()->GetActorForwardVector().Rotation());
+					else floorSpatterActor->SetupForFloor(bulletDetails->GetGunShotFrom()->GetActorLocation(), GetOwner()->GetActorForwardVector().Rotation());
 				}
 			}
 
@@ -226,4 +227,12 @@ void UBulletCollisionComponent::DisableBullet() {
 		travelComp->EndTravel();
 
 	GetWorld()->GetTimerManager().SetTimer(DestroyTimer, this, &UBulletCollisionComponent::OnDestroyCallback, 5.0f, false);
+
+	auto auraComp = GetOwner()->GetComponentByClass<UBulletAuraComponent>();
+	if (auraComp) {
+		auraComp->SetFloatParameter(FName("MinSize"), 0);
+		auraComp->SetFloatParameter(FName("MaxSize"), 0);
+		auraComp->SetFloatParameter(FName("SpecularScale"), 0);
+		auraComp->SetFloatParameter(FName("RadiusSize"), 0);
+	}
 }

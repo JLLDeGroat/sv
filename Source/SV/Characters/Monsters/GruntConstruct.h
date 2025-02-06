@@ -7,7 +7,7 @@
 #include "../../Interfaces/Movable.h"
 #include "GruntConstruct.generated.h"
 
-
+class UClimbLadderComponent;
 /**
  * 
  */
@@ -22,5 +22,7 @@ public:
 protected:
 
 	virtual UGridMovementComponent* GetGridMovementComponent() override;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UClimbLadderComponent* ClimbLadderComponent;
 
 };

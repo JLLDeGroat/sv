@@ -40,7 +40,7 @@ TScriptInterface<ISvChar> UBaseAITurnManager::GetThisEnemy() {
 	return ThisEnemy;
 }
 bool UBaseAITurnManager::GetThisEnemyIsValidAndAlive() {
-	if (GetThisEnemy()) {
+	if (this && GetThisEnemy()) {
 		auto detailComponent = GetThisEnemy()->GetAsActor()->GetComponentByClass<UCharacterDetailsComponent>();
 		if (!detailComponent)
 			UDebugMessages::LogError(this, "failed to get detailsComponent for this enemy " + GetThisEnemy()->GetAsActor()->GetName());
@@ -57,7 +57,7 @@ bool UBaseAITurnManager::GetCheckerHasCompleted() const {
 	return bCheckerIsComplete;
 }
 bool UBaseAITurnManager::GetCheckerHasCompletedAndWaitIfNot(int seconds) const {
-	if (!bCheckerIsComplete) {
+	if (this && !bCheckerIsComplete) {
 		FPlatformProcess::Sleep(seconds);
 	}
 	return bCheckerIsComplete;
@@ -121,4 +121,9 @@ UBaseAIBehaviour* UBaseAITurnManager::CreateBehaviourClass(EAIBehaviourAttackRou
 		behaviour->SetEnemyAndCharacters(ThisEnemy->GetAsActor(), AllCharacters);
 
 	return behaviour;
+}
+
+void UBaseAITurnManager::BeginDestroy() {
+	Super::BeginDestroy();
+	ClearInternalFlags(EInternalObjectFlags::Async);
 }

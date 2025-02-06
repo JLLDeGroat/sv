@@ -23,8 +23,14 @@ public:
 	void SetAsFog();
 	void SetAsFullFog();
 
+	bool GetIsInFog();
+
+	void InitializeFogSectionProperties(FVector loc);
+
 protected:
 
 	UPROPERTY() UMaterialInstanceDynamic* MaterialInstance;
 	
+	UPROPERTY() bool bIsInFog;
+
 };

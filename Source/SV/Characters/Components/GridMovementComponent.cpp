@@ -12,9 +12,11 @@
 #include "../Anim/CharAnimInstance.h"
 #include "TargetingComponent.h"
 #include "CharacterDetailsComponent.h"
+#include "ClimbLadderComponent.h"
 #include "../../Runnables/PostMovementRunnable.h"
 #include "../../Environment/Components/VaultableComponent.h"
 #include "../../World/WorldGridItemActor.h"
+#include "../../Environment/Traversals/Components/TraversalLocationsComponent.h"
 #include "Algo/Sort.h"
 
 // Sets default values for this component's properties
@@ -48,25 +50,47 @@ void UGridMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	if (MovementLocations.Num() > 0) {
-		auto normalisedMovementLocation = MovementLocations[0];
-		normalisedMovementLocation.Z = GetOwner()->GetActorLocation().Z;
+		CurrentMovementType = EMovementType::MT_Horizontal;
+		auto zDifference = MovementLocations[0].Z - GetOwner()->GetActorLocation().Z;
+		if (zDifference > 200)
+			CurrentMovementType = EMovementType::MT_Vertical_UP;
+		else if (zDifference < -200)
+			CurrentMovementType = EMovementType::MT_Vertical_DOWN;
 
-		auto newLocation = UKismetMathLibrary::VInterpTo_Constant(GetOwner()->GetActorLocation(), normalisedMovementLocation, DeltaTime, MovementSpeed);
+		if (CurrentMovementType != EMovementType::MT_Horizontal) {
+			auto laddClimb = GetOwner()->GetComponentByClass<UClimbLadderComponent>();
+			if (!laddClimb)
+				return UDebugMessages::LogError(this, "failed to get climb");
 
-		GetOwner()->SetActorLocation(newLocation);
+			laddClimb->StartClimbingLadder(CurrentMovementType, MovementLocations[0],
+				CurrentMovementType == EMovementType::MT_Vertical_DOWN ?
+				EClimbType::CT_Down :
+				EClimbType::CT_Up);
 
-		if (AnimInstance)
-			AnimInstance->UpdateSpeed(200);
+			SetComponentTickEnabled(false);
+		}
+		else {
 
-		auto lookAtRot = UGridUtilities::FindLookAtRotation(newLocation, normalisedMovementLocation);
-		lookAtRot.Pitch = GetOwner()->GetActorRotation().Pitch;
-		lookAtRot.Roll = GetOwner()->GetActorRotation().Roll;
-		auto newRotation = UKismetMathLibrary::RInterpTo_Constant(GetOwner()->GetActorRotation(), lookAtRot, DeltaTime, RotationSpeed);
-		GetOwner()->SetActorRotation(newRotation);
+			auto normalisedMovementLocation = MovementLocations[0];
+			normalisedMovementLocation.Z = GetOwner()->GetActorLocation().Z;
 
-		auto dist = FVector::Distance(GetOwner()->GetActorLocation(), normalisedMovementLocation);
-		if (dist < 5) {
-			MovementLocations.RemoveAt(0);
+			auto newLocation = UKismetMathLibrary::VInterpTo_Constant(GetOwner()->GetActorLocation(), normalisedMovementLocation, DeltaTime, MovementSpeed);
+
+			GetOwner()->SetActorLocation(newLocation);
+
+			if (AnimInstance)
+				AnimInstance->UpdateSpeed(200);
+
+			auto lookAtRot = UGridUtilities::FindLookAtRotation(newLocation, normalisedMovementLocation);
+			lookAtRot.Pitch = GetOwner()->GetActorRotation().Pitch;
+			lookAtRot.Roll = GetOwner()->GetActorRotation().Roll;
+			auto newRotation = UKismetMathLibrary::RInterpTo_Constant(GetOwner()->GetActorRotation(), lookAtRot, DeltaTime, RotationSpeed);
+			GetOwner()->SetActorRotation(newRotation);
+
+			auto dist = FVector::Distance(GetOwner()->GetActorLocation(), normalisedMovementLocation);
+			if (dist < 5) {
+				MovementLocations.RemoveAt(0);
+			}
 		}
 	}
 	else {
@@ -96,6 +120,11 @@ bool UGridMovementComponent::MoveAcrossGrid(TArray<FVector> movementLocs) {
 void UGridMovementComponent::MovementLoop() {
 	if (MovementLocations.Num() == 0)
 		return;
+}
+
+void UGridMovementComponent::MoveAcrossGridPostClimb() {
+	MovementLocations.RemoveAt(0);
+	SetComponentTickEnabled(true);
 }
 
 bool UGridMovementComponent::HasFoundEnd() {
@@ -301,7 +330,7 @@ int UGridMovementComponent::GetMovementDataForGridItem(FVector gridItem, TArray<
 	int response = MovementData.Num() - 1;
 	return response;
 }
-
+#pragma optimize("", off)
 bool UGridMovementComponent::GetMovableAdjacentTiles(FVector start, TArray<FVector>& ValidAdjacentTiles, FVector orderByDistanceLoc, bool bIgnoreVaultables) {
 	TArray<FVector> unorderedLocations;
 	USvUtilities::GetAdjacentGridTiles(start, unorderedLocations);
@@ -349,22 +378,47 @@ bool UGridMovementComponent::GetMovableAdjacentTiles(FVector start, TArray<FVect
 		EntityHitParams.AddIgnoredActor(GetOwner());
 		world->LineTraceSingleByChannel(EntityHit, start, adjacentTiles[i], USvUtilities::GetClickableChannel(), EntityHitParams);
 
+		FHitResult TraversalHit;
+		FCollisionObjectQueryParams objectParams;
+		objectParams.AddObjectTypesToQuery(USvUtilities::GetTraversalObjectChannel());
+		world->LineTraceSingleByObjectType(TraversalHit, start, adjacentTiles[i], objectParams);
 
-		auto detailsComponent = GetOwner()->GetComponentByClass<UCharacterDetailsComponent>();
-		auto hasVaultComponentAndCanVault = EnvironmentHit.GetActor() && EnvironmentHit.GetActor()->GetComponentByClass<UVaultableComponent>()
-			&& detailsComponent && detailsComponent->GetCanVault();
+		FHitResult FloorHit;
+		world->LineTraceSingleByChannel(FloorHit, adjacentTiles[i], adjacentTiles[i] - FVector(0, 0, 200), USvUtilities::GetFloorTargetChannel());
 
-		if ((!EnvironmentHit.bBlockingHit && !EntityHit.bBlockingHit) ||
-			(EnvironmentHit.bBlockingHit && hasVaultComponentAndCanVault && !bIgnoreVaultables))
-		{
-			ValidAdjacentTiles.Emplace(adjacentTiles[i]);
+		if (TraversalHit.GetActor()) {
+			auto traversalComp = TraversalHit.GetActor()->GetComponentByClass<UTraversalLocationsComponent>();
+
+			if (!traversalComp)
+				UDebugMessages::LogError(this, "TODO: Hit Traversal actor but has no traversalLocationsComponent");
+
+			auto startLoc = traversalComp->GetStartGridLocation();
+			auto endLoc = traversalComp->GetEndGridLocation();
+
+			if (startLoc.X == start.X && startLoc.Y == start.Y) {
+				ValidAdjacentTiles.Emplace(endLoc);
+			}
+			else if ((endLoc.X == start.X && endLoc.Y == start.Y)) {
+				ValidAdjacentTiles.Emplace(startLoc);
+			}
 		}
-		//else UDebugMessages::LogError(this, "Invalid spot " + adjacentTiles[i].ToString());
-	}
 
+		if (FloorHit.bBlockingHit) {
+			auto detailsComponent = GetOwner()->GetComponentByClass<UCharacterDetailsComponent>();
+			auto hasVaultComponentAndCanVault = EnvironmentHit.GetActor() && EnvironmentHit.GetActor()->GetComponentByClass<UVaultableComponent>()
+				&& detailsComponent && detailsComponent->GetCanVault();
+
+			if ((!EnvironmentHit.bBlockingHit && !EntityHit.bBlockingHit) ||
+				(EnvironmentHit.bBlockingHit && hasVaultComponentAndCanVault && !bIgnoreVaultables))
+			{
+				ValidAdjacentTiles.Emplace(adjacentTiles[i]);
+			}
+			//else UDebugMessages::LogError(this, "Invalid spot " + adjacentTiles[i].ToString());
+		}
+	}
 	return !ValidAdjacentTiles.IsEmpty();
 }
-
+#pragma optimize("", on)
 bool UGridMovementComponent::CanReachDestination(FVector location, FVector end, int steps) {
 	auto stepBuffer = 3;
 

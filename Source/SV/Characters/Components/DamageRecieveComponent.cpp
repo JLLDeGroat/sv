@@ -16,6 +16,7 @@
 #include "../../Runnables/Checkers/WinLossCheckerRunnable.h"
 #include "../../Delegates/HudDelegates.h"
 #include "../Anim/CharAnimInstance.h"
+#include "../../Player/Components/PawnCameraComponent.h"
 #include "DropResourceComponent.h"
 // Sets default values for this component's properties
 UDamageRecieveComponent::UDamageRecieveComponent(const FObjectInitializer& ObjectInitializer)
@@ -86,6 +87,17 @@ float UDamageRecieveComponent::DoDamage(float multiplier, int damage, float impu
 			UDebugMessages::LogError(this, "failed to get skeletalmeshComponent on death");
 			return 0;
 		}
+
+		if (details->GetCharacterControl() == ECharacterControl::CC_Player) {
+			UDebugMessages::LogDisplay(this, "time dilation set to 10%");
+			GetOwner()->GetWorld()->GetTimerManager().SetTimer(DeathPhysicsHandle, this, &UDamageRecieveComponent::OnDeathPhysicsHandleCallback, .6f, false);
+			GetWorld()->GetWorldSettings()->TimeDilation = 0.1f;
+
+			auto pawnCamera = GetWorld()->GetFirstPlayerController()->GetPawn()->GetComponentByClass<UPawnCameraComponent>();
+			if (pawnCamera) {
+				pawnCamera->SetToDeathWatchCamera(GetOwner());
+			}
+		}
 		skeleton->SetSimulatePhysics(true);
 		skeleton->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 		skeleton->SetCollisionResponseToChannel(USvUtilities::GetEnvironmentChannel(), ECR_Block);
@@ -132,4 +144,13 @@ float UDamageRecieveComponent::DoDamage(float multiplier, int damage, float impu
 
 void UDamageRecieveComponent::OnDeathHandleCallback() {
 	GetOwner()->Destroy();
+}
+
+void UDamageRecieveComponent::OnDeathPhysicsHandleCallback() {
+	GetWorld()->GetWorldSettings()->TimeDilation = 1.0f;
+
+	auto pawnCamera = GetWorld()->GetFirstPlayerController()->GetPawn()->GetComponentByClass<UPawnCameraComponent>();
+	if (pawnCamera) {
+		pawnCamera->SetEndDeathWatchCamera();
+	}
 }

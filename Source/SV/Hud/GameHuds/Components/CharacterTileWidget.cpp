@@ -7,6 +7,9 @@
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "Components/HorizontalBox.h"
 #include "SubComponents/CharacterTileItemWidget.h"
+#include "../../../Utilities/SvUtilities.h"
+#include "../../../Player/Managers/SelectionManager.h"
+#include "../../../Interfaces/Selectable.h"
 
 void UCharacterTileWidget::NativeConstruct() {
 	Super::NativeConstruct();
@@ -37,14 +40,38 @@ void UCharacterTileWidget::RecieveCharacter(AActor* actor) {
 void UCharacterTileWidget::AttemptToSelectNextUnitWithAP() {
 	auto horizontalBox = (UHorizontalBox*)GetWidgetFromName("HorizontalBox");
 
+	auto controller = GetWorld()->GetFirstPlayerController();
+	auto selectionManager = controller->GetComponentByClass<USelectionManager>();
+
+	auto selected = selectionManager->GetSelected();
+	bool foundCurrentSelected = false;
+
+	if (!selected) foundCurrentSelected = true;
+
 	if (horizontalBox) {
 		auto children = horizontalBox->GetAllChildren();
+
+		//if the current selected is the last in the list, 
+		//just set as true as to start again and select the first
+		if (selected && children.Num() > 0) {
+			auto last = (UCharacterTileItemWidget*)children[children.Num() - 1];
+			if (last->GetRepresentedActor() == selected->GetAsActor())
+				foundCurrentSelected = true;
+		}
+
 		for (int i = 0; i < children.Num(); i++) {
 			UCharacterTileItemWidget* item = (UCharacterTileItemWidget*)children[i];
 
 			auto actor = item->GetRepresentedActor();
 			if (!actor)
 				continue;
+
+			if (selected && selected->GetAsActor() == actor) {
+				foundCurrentSelected = true;
+				continue;
+			}
+
+			if (!foundCurrentSelected) continue;
 
 			auto details = actor->GetComponentByClass<UCharacterDetailsComponent>();
 			if (details) {

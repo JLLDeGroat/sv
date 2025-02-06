@@ -28,6 +28,9 @@ public:
 
 	void SetDefaultCameraOffset(FVector defaultValue);
 
+	void SetToDeathWatchCamera(AActor* deathActor);
+	void SetEndDeathWatchCamera();
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -60,7 +63,12 @@ private:
 	UPROPERTY() AActor* CinematicActorAttacker;
 	UPROPERTY() AActor* CinematicActorTarget;
 
+	UPROPERTY() AActor* DeathActor;
+	UPROPERTY() UPrimitiveComponent* DeathComponentToWatch;
+	UPROPERTY() FVector DeathWatchFromLocation;
+
 	bool GetValidCinematicLocation(FVector& location);
+	bool GetValidCinematicLocation(AActor* actor, FVector& location);
 
 	UPROPERTY() float DefaultDepthOfFieldFstopValue = 0.0f;
 	UPROPERTY() float DefaultDepthOfFieldSensorWidth = 0.0f;

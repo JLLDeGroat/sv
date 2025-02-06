@@ -75,7 +75,7 @@ void UAITurnRunnable::ActivateThread() {
 		PreMoveRunnable->SetupTurnManager(GetWorld());
 		PreMoveRunnable->Initialise(GetWorld())->Begin();
 
-		while (!PreMoveRunnable->GetCheckerHasCompletedAndWaitIfNot(1) && bIsAlive)
+		while (PreMoveRunnable && !PreMoveRunnable->GetCheckerHasCompletedAndWaitIfNot(1) && bIsAlive)
 			UDebugMessages::LogWarning(this, "waiting on premove");
 
 		if (!PreMoveRunnable->GetHasFinishedTurnEarly()) {
@@ -85,7 +85,7 @@ void UAITurnRunnable::ActivateThread() {
 			MoveRunnable->SetupTurnManager(GetWorld());
 			MoveRunnable->Initialise(GetWorld())->Begin();
 
-			while (!MoveRunnable->GetCheckerHasCompletedAndWaitIfNot(1) && bIsAlive)
+			while (MoveRunnable && !MoveRunnable->GetCheckerHasCompletedAndWaitIfNot(1) && bIsAlive)
 				UDebugMessages::LogWarning(this, "waiting on move checker");
 
 			if (!MoveRunnable->GetThisEnemyIsValidAndAlive()) {
@@ -99,7 +99,7 @@ void UAITurnRunnable::ActivateThread() {
 					PostMoveRunnable->SetupTurnManager(GetWorld());
 					PostMoveRunnable->Initialise(GetWorld())->Begin();
 
-					while (!PostMoveRunnable->GetCheckerHasCompletedAndWaitIfNot(1) && bIsAlive)
+					while (PostMoveRunnable && !PostMoveRunnable->GetCheckerHasCompletedAndWaitIfNot(1) && bIsAlive)
 						UDebugMessages::LogWarning(this, "waiting on post move checker");
 				}
 			}
@@ -143,17 +143,25 @@ void UAITurnRunnable::ActivateThread() {
 
 void UAITurnRunnable::KillThreads() {
 	if (PreMoveRunnable) {
+		PreMoveRunnable->ClearInternalFlags(EInternalObjectFlags::Async);
 		PreMoveRunnable->KillThread();
 		PreMoveRunnable->EnsureCompletion();
 	}
 	if (MoveRunnable) {
+		MoveRunnable->ClearInternalFlags(EInternalObjectFlags::Async);
 		MoveRunnable->KillThread();
 		MoveRunnable->EnsureCompletion();
 	}
 	if (PostMoveRunnable) {
+		PostMoveRunnable->ClearInternalFlags(EInternalObjectFlags::Async);
 		PostMoveRunnable->KillThread();
 		PostMoveRunnable->EnsureCompletion();
 	}
+}
+
+void UAITurnRunnable::BeginDestroy() {
+	Super::BeginDestroy();
+	KillThreads();
 }
 
 //TArray<TScriptInterface<ISvChar>> UAITurnRunnable::ClosestCharactersToThisEnemy(TScriptInterface<ISvChar> enemy, TArray<TScriptInterface<ISvChar>> characters) {

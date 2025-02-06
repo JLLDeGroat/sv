@@ -55,6 +55,7 @@ void ULeftClickAction::BeginPlay()
 	// ...
 }
 
+#include "../Components/CameraShakeComponent.h"
 void ULeftClickAction::DoAction() {
 	if (IsWithinValidControlLimiter()) {
 		ResetActionEffects();

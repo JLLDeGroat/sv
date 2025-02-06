@@ -10,6 +10,7 @@
  */
 class IGameplay;
 class UNiagaraSystem;
+class USoundWave;
 class UCharacterManager;
 class UObjectivesManager;
 class UWinLossManager;
@@ -40,6 +41,8 @@ public:
 	static ECollisionChannel GetTriggerableChannel();
 
 	static ECollisionChannel GetFogCollisionObjectChannel();
+
+	static ECollisionChannel GetTraversalObjectChannel();
 
 	static int FormatLocation(float val);
 
@@ -98,6 +101,8 @@ public:
 	static FString GetFogVariableName();
 
 	static void GetAdjacentTilesForFogCalculation(AActor* startActor, TArray<FVector>& validAdjacentTiles);
+
+	static USoundWave* GetSoundWave(FString reference);
 private:
 
 	static bool IsInBounds(FVector location);

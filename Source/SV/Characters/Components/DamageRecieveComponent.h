@@ -29,10 +29,13 @@ public:
 
 protected:
 	UFUNCTION() void OnDeathHandleCallback();
+	UFUNCTION() void OnDeathPhysicsHandleCallback();
 
 private:
 
 	FTimerHandle DeathHandle;
 	UPROPERTY() UBaseRunnable* WinLossRunnable;
+
+	FTimerHandle DeathPhysicsHandle;
 
 };

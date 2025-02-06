@@ -8,6 +8,7 @@
 #include "Components/CapsuleComponent.h"
 #include "../Anim/CharAnimInstance.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
+#include "../../Utilities/SvUtilities.h"
 
 // Sets default values for this component's properties
 UAIComponent::UAIComponent(const FObjectInitializer& ObjectInitializer)
@@ -20,6 +21,7 @@ UAIComponent::UAIComponent(const FObjectInitializer& ObjectInitializer)
 	AiActivationSphere = CreateDefaultSubobject<USphereComponent>(TEXT("AiActivation"));
 	AiActivationSphere->OnComponentBeginOverlap.AddDynamic(this, &UAIComponent::Overlapped);
 	AiActivationSphere->SetGenerateOverlapEvents(true);
+	AiActivationSphere->SetCollisionResponseToChannel(USvUtilities::GetFogCollisionObjectChannel(), ECR_Ignore);
 
 	if (GetOwner() && GetOwner()->GetRootComponent())
 		AiActivationSphere->SetupAttachment(GetOwner()->GetRootComponent());

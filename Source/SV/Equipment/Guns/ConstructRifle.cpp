@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "ConstructRifle.h"
 #include "../../Utilities/SvUtilities.h"
 #include "../Components/EquipmentDetailsComponent.h"
@@ -10,7 +9,8 @@
 #include "../Bullets/PlasmaBullet.h"
 #include "Components/GunActivationComponent.h"
 
-AConstructRifle::AConstructRifle(const FObjectInitializer& ObjectInitializer) : AEquipment(ObjectInitializer) {
+AConstructRifle::AConstructRifle(const FObjectInitializer &ObjectInitializer) : ABaseGun(ObjectInitializer)
+{
 
 	RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneRoot"));
 
@@ -46,14 +46,16 @@ AConstructRifle::AConstructRifle(const FObjectInitializer& ObjectInitializer) : 
 	if (cannonMesh)
 		CannonSectionComponent->SetStaticMesh(cannonMesh);
 
-	if (midSection) {
+	if (midSection)
+	{
 		MidSectionComponent->SetStaticMesh(midSection);
 		MidSection2Component->SetStaticMesh(midSection);
 		MidSection3Component->SetStaticMesh(midSection);
 		MidSection4Component->SetStaticMesh(midSection);
 	}
 
-	if (connection) {
+	if (connection)
+	{
 		FrontConnectorComponent->SetStaticMesh(connection);
 		BackConnectorComponent->SetStaticMesh(connection);
 	}
@@ -77,7 +79,6 @@ AConstructRifle::AConstructRifle(const FObjectInitializer& ObjectInitializer) : 
 	BackConnectorComponent->SetCanEverAffectNavigation(false);
 	FrontConnectorComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	FrontConnectorComponent->SetCanEverAffectNavigation(false);
-
 
 	BackSectionComponent->SetRelativeLocation(FVector(-157, 0, 0));
 	CannonSectionComponent->SetRelativeLocation(FVector(145, 0, 0));
@@ -108,17 +109,15 @@ AConstructRifle::AConstructRifle(const FObjectInitializer& ObjectInitializer) : 
 	AttachedVectorComponent->SetAttachedVectors(FVector(30, 3, 10), FRotator(-5, 0, 180));
 	AttachedVectorComponent->SetHolsteredVectors(FVector(0, 0, 0), FRotator(0, 0, 0));
 
-	GunFireComponent = CreateDefaultSubobject<UGunFireComponent>(TEXT("GunFire"));
 	GunFireComponent->SetMeshAndSocketName(CannonSectionComponent, "FireSocket");
+	GunFireComponent->SetBulletClass(APlasmaBullet::StaticClass());
 
 	MuzzleFlashComponent = CreateDefaultSubobject<UMuzzleFlashComponent>(TEXT("MuzzleFlash"));
 	MuzzleFlashComponent->SetupAttachment(CannonSectionComponent, FName("FireSocket"));
 
-	GunFireComponent->SetBulletClass(APlasmaBullet::StaticClass());
-
 	ActivationComponent = CreateDefaultSubobject<UGunActivationComponent>(TEXT("Activation"));
 
-	TArray<UStaticMeshComponent*> spinupMeshes;
+	TArray<UStaticMeshComponent *> spinupMeshes;
 	spinupMeshes.Emplace(MidSectionComponent);
 	spinupMeshes.Emplace(MidSection2Component);
 	spinupMeshes.Emplace(MidSection3Component);
@@ -130,10 +129,11 @@ AConstructRifle::AConstructRifle(const FObjectInitializer& ObjectInitializer) : 
 	MuzzleFlashComponent->SetMuzzleFlashSystem("/Script/Niagara.NiagaraSystem'/Game/Effects/Trails/PlasmaFlash_N.PlasmaFlash_N'");
 }
 
-void AConstructRifle::OnConstruction(const FTransform& Transform) {
+void AConstructRifle::OnConstruction(const FTransform &Transform)
+{
 	Super::OnConstruction(Transform);
 
-	//MuzzleFlashComponent->SetVariableVec4(FName("MuzzleFlash"), FVector4(.75f, .11f, .56f, 1));
-	//auto flashComp = MuzzleFlashComponent->GetFlashHeatPelletComponent();
-	//flashComp->SetVariableVec4(FName("FlashColour"), FVector4(.75f, .11f, .56f, 1));
+	// MuzzleFlashComponent->SetVariableVec4(FName("MuzzleFlash"), FVector4(.75f, .11f, .56f, 1));
+	// auto flashComp = MuzzleFlashComponent->GetFlashHeatPelletComponent();
+	// flashComp->SetVariableVec4(FName("FlashColour"), FVector4(.75f, .11f, .56f, 1));
 }

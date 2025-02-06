@@ -14,6 +14,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRemoveUnusedOverwatchActors, EChara
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FChangeControlLimits, EControlLimit, ControllerLimit);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNewLinkAdded, FVector, Start, FVector, End);
+
 /**
  * 
  */
@@ -37,4 +39,5 @@ public:
 	FRemoveUnusedOverwatchActors _RemoveUnusedOverwatchActors;
 
 	FChangeControlLimits _ChangeControlLimits;
+	FOnNewLinkAdded _OnNewLinkAdded;
 };

@@ -52,3 +52,17 @@ enum class EOverwatchResult :uint8 {
 	OR_Error = 3
 };
 
+UENUM(BlueprintType)
+enum class EMovementType :uint8 {
+	INVALID = 0,
+	MT_Horizontal,
+	MT_Vertical_UP,
+	MT_Vertical_DOWN,
+};
+
+UENUM(BlueprintType)
+enum class EClimbType :uint8 {
+	INVALID = 0,
+	CT_Up = 1,
+	CT_Down = 2,
+};

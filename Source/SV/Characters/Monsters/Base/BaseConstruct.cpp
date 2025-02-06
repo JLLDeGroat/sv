@@ -18,6 +18,7 @@
 #include "../../Components/AIComponent.h"
 #include "../../Components/SpawnInComponent.h"
 #include "../../Components/DropResourceComponent.h"
+#include "../../Components/FogHandlerComponent.h"
 
 ABaseConstruct::ABaseConstruct(const FObjectInitializer& ObjectInitializer)
 	:ABaseCharacter(ObjectInitializer) {
@@ -152,6 +153,11 @@ ABaseConstruct::ABaseConstruct(const FObjectInitializer& ObjectInitializer)
 	SpawnInComponent = CreateDefaultSubobject<USpawnInComponent>(TEXT("SpawnIn"));
 
 	DetailsComponent->SetBloodType(EBloodType::BT_PurpleCrystal);
+
+	FogHandler = CreateDefaultSubobject<UFogHandlerComponent>(TEXT("FogHandler"));
+	FogHandler->SetupAttachment(RootComponent);
+	FogHandler->SetSphereRadius(150);
+	FogHandler->SetIsAi(true);
 }
 
 

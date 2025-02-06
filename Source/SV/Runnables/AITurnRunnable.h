@@ -24,6 +24,8 @@ public:
 
 	void KillThreads();
 
+	virtual void BeginDestroy() override;
+
 private:
 
 	//TArray<TScriptInterface<ISvChar>> ClosestCharactersToThisEnemy(TScriptInterface<ISvChar> enemy, TArray<TScriptInterface<ISvChar>> characters);

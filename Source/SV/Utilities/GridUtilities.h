@@ -15,6 +15,7 @@ class SV_API UGridUtilities : public UObject
 	GENERATED_BODY()
 public:
 	static FVector GetNormalisedGridLocation(FVector location);
+	static bool GetLocationsAtSameGrid(FVector vector1, FVector vector2);
 	static TArray<FVector> GetGridLocationSteps(FVector start, FVector end);
 
 	static FRotator FindLookAtRotation(FVector source, FVector target);

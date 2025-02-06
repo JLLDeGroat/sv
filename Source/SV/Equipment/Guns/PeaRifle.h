@@ -3,18 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "../Equipment.h"
+#include "Base/BaseGun.h"
 #include "PeaRifle.generated.h"
 
 class UStaticMeshComponent;
-class UGunFireComponent;
 class UMuzzleFlashComponent;
 class ULightAttachmentComponent;
 /**
  * 
  */
 UCLASS()
-class SV_API APeaRifle : public AEquipment
+class SV_API APeaRifle : public ABaseGun
 {
 	GENERATED_BODY()
 
@@ -26,7 +25,6 @@ public:
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* GunMesh;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) UGunFireComponent* GunFireComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UMuzzleFlashComponent* MuzzleFlashComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) ULightAttachmentComponent* LightAttachmentComponent;
 

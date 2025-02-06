@@ -33,7 +33,7 @@ UModularSkeletonComponent::UModularSkeletonComponent(const FObjectInitializer& O
 	RadialVector = CreateDefaultSubobject<URadialVector>(TEXT("RadialVector"));
 	RadialFallOff = CreateDefaultSubobject<URadialFalloff>(TEXT("RadialFalloff"));
 
-	//DestructibleMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
+	DestructibleMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 	DestructibleMesh->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 	DestructibleMesh->SetCollisionResponseToChannel(USvUtilities::GetEnvironmentChannel(), ECR_Block);
 	DestructibleMesh->SetCollisionResponseToChannel(USvUtilities::GetFloorTargetChannel(), ECR_Block);
@@ -147,7 +147,7 @@ void UModularSkeletonComponent::DestroyModularComponent(FVector direction) {
 	//DrawDebugSphere(GetWorld(), DestructibleMesh->GetComponentLocation(), RadialFallOff->Radius, 32, FColor::Red, false, 5.0f);
 
 	// Apply the radial force to the geometry collection component (destructible mesh)
-	RadialVector->SetRadialVector(75, CenterOfExplosion - (direction * 10));
+	RadialVector->SetRadialVector(25, CenterOfExplosion - (direction * 10));
 
 	DestructibleMesh->ApplyPhysicsField(
 		true,                                  // Enable field

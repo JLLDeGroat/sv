@@ -38,6 +38,7 @@ public:
 
 
 	bool GetThisEnemyIsValidAndAlive();
+	virtual void BeginDestroy() override;
 protected:
 
 	UWorld* GetWorld() const;

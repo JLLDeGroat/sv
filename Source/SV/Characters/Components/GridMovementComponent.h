@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "../../Enums/EConfigurationEnums.h"
 #include "Base/AnimAccessComponent.h"
 #include "GridMovementComponent.generated.h"
 
@@ -76,6 +77,7 @@ public:
 
 	bool MoveAcrossGrid(TArray<FVector> movementLocs);
 	void MovementLoop();
+	void MoveAcrossGridPostClimb();
 
 	TArray<FVector> FindRoute(FVector start, FVector end, bool bisAI = false);
 	TArray<FVector> FindQuickestRoute(FVector start, FVector end, bool bisAI = false);
@@ -115,4 +117,6 @@ private:
 
 	UPROPERTY() int AIRouteIterations;
 	UPROPERTY() bool bAIRouteDecided;
+
+	UPROPERTY() EMovementType CurrentMovementType;
 };

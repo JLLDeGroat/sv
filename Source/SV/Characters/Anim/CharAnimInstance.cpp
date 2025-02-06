@@ -17,6 +17,7 @@
 #include "../Components/HealthKitsComponent.h"
 #include "../Components/AIComponent.h"
 #include "../Components/SuicideComponent.h"
+#include "../Components/ClimbLadderComponent.h"
 #include "../../Player/Components/PawnCameraComponent.h"
 #include "../../Player/Components/CameraOverlapComponent.h"
 #include "../../Player/GamePlayerController.h"
@@ -36,6 +37,7 @@ UCharAnimInstance::UCharAnimInstance(const FObjectInitializer& ObjectInitializer
 	bUseMultiThreadedAnimationUpdate = true;
 	Speed = 0;
 	bIsAttacking = false;
+	bIsClimbing = false;
 	AnimPlayRate = 1.0f;
 	CharacterAnimState = ECharacterAnimState::AS_AR;
 }
@@ -96,6 +98,10 @@ void UCharAnimInstance::SetIsHealingAlly(bool val) {
 }
 void UCharAnimInstance::SetIsSuiciding(bool val) {
 	bIsSuiciding = val;
+}
+void UCharAnimInstance::SetIsClimbing(bool val, EClimbType climbType) {
+	ClimbType = climbType;
+	bIsClimbing = val;
 }
 
 void UCharAnimInstance::OnGunPreFireActivate() {
@@ -486,6 +492,103 @@ void UCharAnimInstance::OnSuicideExplosion() {
 			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([suicideComponent]
 				{
 					suicideComponent->ActivateSuicide();
+				},
+				TStatId(), nullptr, ENamedThreads::GameThread);
+		}
+	}
+}
+
+
+void UCharAnimInstance::OnClimbGoUp() {
+	auto owningActor = GetOwningActor();
+	if (owningActor) {
+		auto ladderComponent = owningActor->GetComponentByClass<UClimbLadderComponent>();
+		if (ladderComponent) {
+			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([ladderComponent]
+				{
+					ladderComponent->SetMoveUp(true);
+				},
+				TStatId(), nullptr, ENamedThreads::GameThread);
+		}
+	}
+}
+void UCharAnimInstance::OnClimbPauseGoUp() {
+	auto owningActor = GetOwningActor();
+	if (owningActor) {
+		auto ladderComponent = owningActor->GetComponentByClass<UClimbLadderComponent>();
+		if (ladderComponent) {
+			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([ladderComponent]
+				{
+					ladderComponent->SetMoveUp(false);
+				},
+				TStatId(), nullptr, ENamedThreads::GameThread);
+		}
+	}
+}
+
+void UCharAnimInstance::OnClimbFinish() {
+	auto owningActor = GetOwningActor();
+	if (owningActor) {
+		auto ladderComponent = owningActor->GetComponentByClass<UClimbLadderComponent>();
+		if (ladderComponent) {
+			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([ladderComponent]
+				{
+					ladderComponent->SetMoveUp(false);
+				},
+				TStatId(), nullptr, ENamedThreads::GameThread);
+		}
+	}
+}
+
+void UCharAnimInstance::OnPostClimbStart() {
+	auto owningActor = GetOwningActor();
+	if (owningActor) {
+		auto ladderComponent = owningActor->GetComponentByClass<UClimbLadderComponent>();
+		if (ladderComponent) {
+			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([ladderComponent]
+				{
+					ladderComponent->SetPostClimb(true);
+				},
+				TStatId(), nullptr, ENamedThreads::GameThread);
+		}
+	}
+}
+
+void UCharAnimInstance::OnClimbPreFall() {
+	auto owningActor = GetOwningActor();
+	if (owningActor) {
+		auto ladderComponent = owningActor->GetComponentByClass<UClimbLadderComponent>();
+		if (ladderComponent) {
+			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([ladderComponent]
+				{
+					ladderComponent->SetPreFallMove(true);
+				},
+				TStatId(), nullptr, ENamedThreads::GameThread);
+		}
+	}
+}
+void UCharAnimInstance::OnClimbFallStart() {
+	auto owningActor = GetOwningActor();
+	if (owningActor) {
+		auto ladderComponent = owningActor->GetComponentByClass<UClimbLadderComponent>();
+		if (ladderComponent) {
+			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([ladderComponent]
+				{
+					ladderComponent->SetPreFallMove(false);
+					ladderComponent->SetFallMove(true);
+				},
+				TStatId(), nullptr, ENamedThreads::GameThread);
+		}
+	}
+}
+void UCharAnimInstance::OnClimbFallStop() {
+	auto owningActor = GetOwningActor();
+	if (owningActor) {
+		auto ladderComponent = owningActor->GetComponentByClass<UClimbLadderComponent>();
+		if (ladderComponent) {
+			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([ladderComponent]
+				{
+					ladderComponent->SetFallMove(false);
 				},
 				TStatId(), nullptr, ENamedThreads::GameThread);
 		}

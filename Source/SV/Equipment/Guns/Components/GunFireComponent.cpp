@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "GunFireComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
@@ -10,7 +9,13 @@
 #include "../../Bullets/Components/BulletDetailsComponent.h"
 #include "../../../Utilities/GridUtilities.h"
 #include "../../Components/EquipmentDetailsComponent.h"
+#include "../../../Player/Components/CameraShakeComponent.h"
+#include "../../../Characters/DandD/DeviantDirectiveComponent.h"
+#include "../../../Characters/DandD/OnGunFire/Base/OnGunFireBase.h"
+#include "../../../Characters/DandD/OnGunFire/Models/FOnGunFireInput.h"
+#include "../../../Characters/DandD/OnGunFire/Models/FOnGunFireOutput.h"
 #include "MuzzleFlashComponent.h"
+#include "GunFireSoundComponent.h"
 #include "DrawDebugHelpers.h"
 
 // Sets default values for this component's properties
@@ -21,13 +26,15 @@ UGunFireComponent::UGunFireComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-
-void UGunFireComponent::SetBulletClass(TSubclassOf<ABaseBullet> clss) {
+void UGunFireComponent::SetBulletClass(TSubclassOf<ABaseBullet> clss)
+{
 	BulletClass = clss;
 }
 
-FVector UGunFireComponent::GetGunFireStartLocation() {
-	if (!GunFireStartMesh || GunFireStartSocketName == "") {
+FVector UGunFireComponent::GetGunFireStartLocation()
+{
+	if (!GunFireStartMesh || GunFireStartSocketName == "")
+	{
 		UDebugMessages::LogError(this, "no gun fire start location set");
 		return FVector::ZeroVector;
 	}
@@ -35,12 +42,14 @@ FVector UGunFireComponent::GetGunFireStartLocation() {
 	return GunFireStartMesh->GetSocketLocation(FName(GunFireStartSocketName));
 }
 
-void UGunFireComponent::SetMeshAndSocketName(UStaticMeshComponent* meshComponent, FString socketName) {
+void UGunFireComponent::SetMeshAndSocketName(UStaticMeshComponent *meshComponent, FString socketName)
+{
 	GunFireStartMesh = meshComponent;
 	GunFireStartSocketName = socketName;
 }
 
-void UGunFireComponent::FireAtLocation(FVector location, float accuracyRadius) {
+void UGunFireComponent::FireAtLocation(FVector location, float accuracyRadius)
+{
 	auto owner = GetOwner();
 
 	auto bulletStart = GetGunFireStartLocation();
@@ -51,7 +60,7 @@ void UGunFireComponent::FireAtLocation(FVector location, float accuracyRadius) {
 	auto offsetLoc = randomUnitVector * randomFloatInRange;
 	auto finalLoc = location + offsetLoc;
 
-	//DrawDebugLine(GetOwner()->GetWorld(), bulletStart, finalLoc, FColor::Green, true, 60, 0, 1);
+	// DrawDebugLine(GetOwner()->GetWorld(), bulletStart, finalLoc, FColor::Green, true, 60, 0, 1);
 
 	auto bulletRotation = UGridUtilities::FindLookAtRotation(bulletStart, finalLoc);
 
@@ -62,12 +71,28 @@ void UGunFireComponent::FireAtLocation(FVector location, float accuracyRadius) {
 
 	auto newBullet = owner->GetWorld()->SpawnActor<ABaseBullet>(BulletClass, bulletStart, bulletRotation);
 	auto muzzleFlash = owner->GetComponentByClass<UMuzzleFlashComponent>();
+	auto gunFireSound = owner->GetComponentByClass<UGunFireSoundComponent>();
 
-	if (newBullet) {
+	if (newBullet)
+	{
 		auto bulletDetails = newBullet->GetComponentByClass<UBulletDetailsComponent>();
-		if (bulletDetails && equipmentDetails) {
+		if (bulletDetails && equipmentDetails)
+		{
 			bulletDetails->SetBaseDamage(Random.RandRange(equipmentDetails->GetMinBaseDamage(), equipmentDetails->GetMaxBaseDamage()));
 			bulletDetails->SetGunShotFrom(owner);
+
+			// on gun fure component
+			auto owningCharacter = owner->GetOwner();
+			if (owningCharacter && owningCharacter->GetComponentByClass<UDeviantDirectiveComponent>())
+			{
+				auto directivesAndDeviations = owningCharacter->GetComponentByClass<UDeviantDirectiveComponent>();
+				auto ddComponents = directivesAndDeviations->GetGunFireDDs();
+				FOnGunFireInput input = FOnGunFireInput::Create(owner, nullptr, bulletStart, finalLoc, newBullet);
+
+				for (int i = 0; i < ddComponents.Num(); i++)
+					ddComponents[i]->ActivateDD(input);
+			}
+
 			bulletDetails->CompleteSetup();
 		}
 		auto bulletTravel = newBullet->GetComponentByClass<UTravelComponent>();
@@ -76,5 +101,12 @@ void UGunFireComponent::FireAtLocation(FVector location, float accuracyRadius) {
 
 		if (muzzleFlash)
 			muzzleFlash->ActivateMuzzleFlash();
+
+		if (gunFireSound)
+			gunFireSound->MakeGunFireSound(equipmentDetails->GetGunType(), owner->GetActorLocation());
+
+		auto shakeComp = GetWorld()->GetFirstPlayerController()->GetComponentByClass<UCameraShakeComponent>();
+		if (shakeComp)
+			shakeComp->StartGunFireShake();
 	}
 }

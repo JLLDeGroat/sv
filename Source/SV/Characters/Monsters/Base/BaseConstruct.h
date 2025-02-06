@@ -20,6 +20,7 @@ class UHealthAndStatusWidgetComponent;
 class UAIComponent;
 class UDropResourceComponent;
 class USpawnInComponent;
+class UFogHandlerComponent;
 
 /**
  * 
@@ -62,6 +63,8 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UAIComponent* AiComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UDropResourceComponent* DropResourceComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) USpawnInComponent* SpawnInComponent;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UFogHandlerComponent* FogHandler;
 
 protected:
 

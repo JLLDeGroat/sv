@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "../Equipment.h"
+#include "Base/BaseGun.h"
 #include "ConstructRifle.generated.h"
 
 class UStaticMeshComponent;
@@ -13,7 +13,7 @@ class UMuzzleFlashComponent;
 class UGunActivationComponent;
 
 UCLASS()
-class SV_API AConstructRifle : public AEquipment
+class SV_API AConstructRifle : public ABaseGun
 {
 	GENERATED_BODY()
 
@@ -37,7 +37,6 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* BackConnectorComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* FrontConnectorComponent;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) UGunFireComponent* GunFireComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UMuzzleFlashComponent* MuzzleFlashComponent;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UGunActivationComponent* ActivationComponent;

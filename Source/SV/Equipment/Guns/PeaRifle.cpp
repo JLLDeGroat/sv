@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "PeaRifle.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/GunFireComponent.h"
@@ -11,20 +10,22 @@
 #include "Components/MuzzleFlashComponent.h"
 #include "../Bullets/Bullet.h"
 
-APeaRifle::APeaRifle(const FObjectInitializer& ObjectInitializer) : AEquipment(ObjectInitializer) {
+APeaRifle::APeaRifle(const FObjectInitializer &ObjectInitializer) : ABaseGun(ObjectInitializer)
+{
 
 	GunMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Gun"));
 	RootComponent = GunMesh;
 
 	auto mesh = USvUtilities::GetStaticMesh("/Script/Engine.StaticMesh'/Game/Equipment/PeaRifle.PeaRifle'");
-	if (mesh) {
+	if (mesh)
+	{
 		GunMesh->SetStaticMesh(mesh);
 		GunMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		GunMesh->SetCanEverAffectNavigation(false);
 	}
 
-	GunFireComponent = CreateDefaultSubobject<UGunFireComponent>(TEXT("GunFire"));
 	GunFireComponent->SetMeshAndSocketName(GunMesh, "FireSocket");
+	GunFireComponent->SetBulletClass(ABullet::StaticClass());
 
 	EquipmentDetailsComponent->SetIsRange(true);
 	EquipmentDetailsComponent->SetMinBaseDamage(13);
@@ -55,13 +56,12 @@ APeaRifle::APeaRifle(const FObjectInitializer& ObjectInitializer) : AEquipment(O
 	LightAttachmentComponent->SetRelativeLocation(FVector(-2, 9, -2));
 	LightAttachmentComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	GunFireComponent->SetBulletClass(ABullet::StaticClass());
-
 	MuzzleFlashComponent->SetFlashPelletColour(FLinearColor(FVector4(.76f, .69f, .29f, 1)));
 	MuzzleFlashComponent->SetMuzzleFlashColour(FLinearColor(FVector4(.76f, .64f, .63f, 1)));
 }
 
-void APeaRifle::SetupAttachVector() {
+void APeaRifle::SetupAttachVector()
+{
 	SetActorRelativeLocation(AttachedVectorComponent->GetAttachedLocation());
 	SetActorRelativeRotation(AttachedVectorComponent->GetAttachedRotation());
 }

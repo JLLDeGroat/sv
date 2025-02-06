@@ -7,6 +7,7 @@
 #include "../../Utilities/GridUtilities.h"
 #include "Runtime/Engine/Classes/Kismet/KismetMathLibrary.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "../../Characters/Components/HealthAndStatusWidgetComponent.h"
 
 // Sets default values for this component's properties
@@ -70,6 +71,10 @@ void UPawnCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 			}
 			else UDebugMessages::LogError(this, "failed to get valid cinematic location");
 		}
+		else if (CurrentCameraState == ECameraState::CS_CharacterDeath) {
+			newLocation = DeathWatchFromLocation;
+			newRotation = UGridUtilities::FindLookAtRotation(newLocation, DeathComponentToWatch->GetComponentLocation());
+		}
 		else {
 			newLocation = UKismetMathLibrary::VInterpTo_Constant(currentLocation, CurrentMoveTo, DeltaTime, 1500);
 
@@ -86,6 +91,9 @@ void UPawnCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 		CameraComponent->SetWorldLocation(newLocation);
 		CameraComponent->SetWorldRotation(newRotation);
+
+		if (CurrentCameraState == ECameraState::CS_CharacterDeath)
+			return;
 
 		if (FVector::Dist(CameraComponent->GetComponentLocation(), CurrentMoveTo) < 5 &&
 			CameraComponent->GetComponentRotation().Equals(requiredRotation)) {
@@ -180,7 +188,11 @@ bool UPawnCameraComponent::ShoudUseSetRotation() const {
 }
 
 bool UPawnCameraComponent::GetValidCinematicLocation(FVector& location) {
-	auto skeletalComponent = CinematicActorAttacker->GetComponentByClass<USkeletalMeshComponent>();
+	return GetValidCinematicLocation(CinematicActorAttacker, location);
+}
+
+bool UPawnCameraComponent::GetValidCinematicLocation(AActor* actor, FVector& location) {
+	auto skeletalComponent = actor->GetComponentByClass<USkeletalMeshComponent>();
 	if (!skeletalComponent) {
 		return false;
 	}
@@ -199,4 +211,32 @@ void UPawnCameraComponent::AttemptToAlterAttackerStatusWidgetVisibility(bool val
 		if (healthAndStatusComponent)
 			healthAndStatusComponent->SetVisibility(val);
 	}
+}
+
+void UPawnCameraComponent::SetToDeathWatchCamera(AActor* deathActor) {
+	DeathActor = deathActor;
+	DeathComponentToWatch = deathActor->GetComponentByClass<USkeletalMeshComponent>();
+
+	FVector validLoc;
+	if (GetValidCinematicLocation(DeathActor, validLoc)) {
+		DeathWatchFromLocation = validLoc;
+		CurrentCameraState = ECameraState::CS_CharacterDeath;
+
+		ReturnLocation = CameraComponent->GetComponentLocation();
+
+		CurrentlyMoving = true;
+		SetComponentTickEnabled(true);
+	}
+}
+
+void UPawnCameraComponent::SetEndDeathWatchCamera() {
+	CurrentlyMoving = false;
+	SetComponentTickEnabled(false);
+
+	DeathActor = nullptr;
+
+	CameraComponent->SetWorldLocation(ReturnLocation);
+	CameraComponent->SetRelativeRotation(FRotator(-70, 0, 0));
+	
+	CurrentCameraState = ECameraState::CS_Control;
 }

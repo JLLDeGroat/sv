@@ -20,6 +20,14 @@ ACementFloor::ACementFloor(const FObjectInitializer& ObjectInitializer)
 		FloorMeshComponent->SetStaticMesh(wallMesh);
 	}
 
+	FloorMeshComponent->SetCollisionObjectType(USvUtilities::GetFloorTargetChannel());
+	FloorMeshComponent->SetCollisionResponseToChannel(USvUtilities::GetEnvironmentChannel(), ECR_Block);
+	FloorMeshComponent->SetCollisionResponseToChannel(USvUtilities::GetBulletCollisionChannel(), ECR_Overlap);
+	FloorMeshComponent->SetCollisionResponseToChannel(USvUtilities::GetBulletCollisionObjectChannel(), ECR_Overlap);
+	FloorMeshComponent->SetCollisionResponseToChannel(USvUtilities::GetFloorTargetChannel(), ECR_Block);
+	FloorMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	FloorMeshComponent->RecreatePhysicsState();
+
 	DetailsComponent = CreateDefaultSubobject<UEnvironmentDetailsComponent>(TEXT("Details"));
 	DetailsComponent->SetThickness(1);
 	DetailsComponent->SetAffectsFog(false);
