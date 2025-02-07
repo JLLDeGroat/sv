@@ -68,7 +68,7 @@ void UCrewDetailsGridWidget::InitialiseGridForCrewMember(FGuid crewMember)
 		auto requiredGunType = EGun::INVALID;
 		if (primary)
 			requiredGunType = primary->GetPrimaryGunType();
-		PrimaryImage->SetBrushFromTexture(UUserWidgetHelpers::GetTextureForGun(primary->GetPrimaryGunType()));
+		PrimaryImage->SetBrushFromTexture(UUserWidgetHelpers::GetTextureForGun(requiredGunType));
 	}
 	else
 		return UDebugMessages::LogError(this, "failed to get primary image btn");
