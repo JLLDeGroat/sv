@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "AITurnRunnable.h"
 #include "../GameModes/GameplayMode.h"
 #include "../Interfaces/Gameplay.h"
@@ -24,9 +23,8 @@
 #include "AI/PreMoveChecker.h"
 #include "AI/PostMoveChecker.h"
 
-
-
-void UAITurnRunnable::ActivateThread() {
+void UAITurnRunnable::ActivateThread()
+{
 	UDebugMessages::LogDisplay(this, "Starting AI turns");
 	TScriptInterface<IGameplay> gamePlay = GetWorld()->GetAuthGameMode<AGameplayMode>();
 
@@ -38,33 +36,36 @@ void UAITurnRunnable::ActivateThread() {
 	TArray<TScriptInterface<ISvChar>> playerCharacters;
 	characterManager->GetCharacterListOfCharacterType(ECharacterControl::CC_Player, playerCharacters);
 
-
-	//for each enemy
-		//find closest character
-		//find the route to that character
-		//find movement to that character based on movement points
+	// for each enemy
+	// find closest character
+	// find the route to that character
+	// find movement to that character based on movement points
 
 	// test to see any enemies that are in the same location
-		//if so, get the list of same location enemies
-		//steadily regress them to use the step before
+	// if so, get the list of same location enemies
+	// steadily regress them to use the step before
 
-	//auto aiTurnChecker = NewObject<UAiTurnChecker>(this);
-	//aiTurnChecker->SetupTurnManager(GetWorld());
+	// auto aiTurnChecker = NewObject<UAiTurnChecker>(this);
+	// aiTurnChecker->SetupTurnManager(GetWorld());
 
-	for (int i = 0; i < aiEnemies.Num(); i++) {
+	for (int i = 0; i < aiEnemies.Num(); i++)
+	{
 		if (aiEnemies[i]->GetAsActor())
 			if (!aiEnemies[i]->GetAsActor()->GetComponentByClass<UAIComponent>())
 				UDebugMessages::LogError(this, aiEnemies[i]->GetAsActor()->GetName() + " DOES NOT HAVE AI COMPONENT");
 	}
 
-	for (int i = 0; i < aiEnemies.Num(); i++) {
+	for (int i = 0; i < aiEnemies.Num(); i++)
+	{
 		auto aiComponent = aiEnemies[i]->GetAsActor()->GetComponentByClass<UAIComponent>();
-		if (!aiComponent) {
+		if (!aiComponent)
+		{
 			UDebugMessages::LogError(this, "No Ai component, skipping this enemy");
 			continue;
 		}
 
-		if (!aiComponent->GetIsActiveAi()) {
+		if (!aiComponent->GetIsActiveAi())
+		{
 			UDebugMessages::LogError(this, "This Ai does not have an actiive ai component, will skip this enemy");
 			continue;
 		}
@@ -78,7 +79,8 @@ void UAITurnRunnable::ActivateThread() {
 		while (PreMoveRunnable && !PreMoveRunnable->GetCheckerHasCompletedAndWaitIfNot(1) && bIsAlive)
 			UDebugMessages::LogWarning(this, "waiting on premove");
 
-		if (!PreMoveRunnable->GetHasFinishedTurnEarly()) {
+		if (!PreMoveRunnable->GetHasFinishedTurnEarly())
+		{
 			MoveRunnable = NewObject<UAiTurnMoveChecker>(this);
 			MoveRunnable->SetThisEnemy(aiEnemies[i]);
 			MoveRunnable->SetAllCharacters(playerCharacters);
@@ -88,11 +90,14 @@ void UAITurnRunnable::ActivateThread() {
 			while (MoveRunnable && !MoveRunnable->GetCheckerHasCompletedAndWaitIfNot(1) && bIsAlive)
 				UDebugMessages::LogWarning(this, "waiting on move checker");
 
-			if (!MoveRunnable->GetThisEnemyIsValidAndAlive()) {
+			if (!MoveRunnable->GetThisEnemyIsValidAndAlive())
+			{
 				UDebugMessages::LogDisplay(this, "wont go to post move checker, has died");
 			}
-			else {
-				if (!MoveRunnable->GetHasFinishedTurnEarly()) {
+			else
+			{
+				if (!MoveRunnable->GetHasFinishedTurnEarly())
+				{
 					PostMoveRunnable = NewObject<UPostMoveChecker>(this);
 					PostMoveRunnable->SetThisEnemy(aiEnemies[i]);
 					PostMoveRunnable->SetAllCharacters(playerCharacters);
@@ -105,19 +110,22 @@ void UAITurnRunnable::ActivateThread() {
 			}
 		}
 
-		if (PreMoveRunnable) {
+		if (PreMoveRunnable)
+		{
 			PreMoveRunnable->ClearInternalFlags(EInternalObjectFlags::Async);
 			PreMoveRunnable->KillThread();
 			PreMoveRunnable->EnsureCompletion();
 			PreMoveRunnable = nullptr;
 		}
-		if (MoveRunnable) {
+		if (MoveRunnable)
+		{
 			MoveRunnable->ClearInternalFlags(EInternalObjectFlags::Async);
 			MoveRunnable->KillThread();
 			MoveRunnable->EnsureCompletion();
 			MoveRunnable = nullptr;
 		}
-		if (PostMoveRunnable) {
+		if (PostMoveRunnable)
+		{
 			PostMoveRunnable->ClearInternalFlags(EInternalObjectFlags::Async);
 			PostMoveRunnable->KillThread();
 			PostMoveRunnable->EnsureCompletion();
@@ -134,37 +142,43 @@ void UAITurnRunnable::ActivateThread() {
 
 	UDebugMessages::LogDisplay(this, "All Complete");
 	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([gamePlay]
+																		 { gamePlay->BeginPlayerTurn(); },
+																		 TStatId(), nullptr, ENamedThreads::GameThread);
+}
+
+void UAITurnRunnable::KillThreads()
+{
+	if (this)
+	{
+		ClearInternalFlags(EInternalObjectFlags::Async);
+		if (PreMoveRunnable)
 		{
-			gamePlay->BeginPlayerTurn();
-		},
-		TStatId(), nullptr, ENamedThreads::GameThread);
-}
-
-
-void UAITurnRunnable::KillThreads() {
-	if (PreMoveRunnable) {
-		PreMoveRunnable->ClearInternalFlags(EInternalObjectFlags::Async);
-		PreMoveRunnable->KillThread();
-		PreMoveRunnable->EnsureCompletion();
-	}
-	if (MoveRunnable) {
-		MoveRunnable->ClearInternalFlags(EInternalObjectFlags::Async);
-		MoveRunnable->KillThread();
-		MoveRunnable->EnsureCompletion();
-	}
-	if (PostMoveRunnable) {
-		PostMoveRunnable->ClearInternalFlags(EInternalObjectFlags::Async);
-		PostMoveRunnable->KillThread();
-		PostMoveRunnable->EnsureCompletion();
+			PreMoveRunnable->ClearInternalFlags(EInternalObjectFlags::Async);
+			PreMoveRunnable->KillThread();
+			PreMoveRunnable->EnsureCompletion();
+		}
+		if (MoveRunnable)
+		{
+			MoveRunnable->ClearInternalFlags(EInternalObjectFlags::Async);
+			MoveRunnable->KillThread();
+			MoveRunnable->EnsureCompletion();
+		}
+		if (PostMoveRunnable)
+		{
+			PostMoveRunnable->ClearInternalFlags(EInternalObjectFlags::Async);
+			PostMoveRunnable->KillThread();
+			PostMoveRunnable->EnsureCompletion();
+		}
 	}
 }
 
-void UAITurnRunnable::BeginDestroy() {
+void UAITurnRunnable::BeginDestroy()
+{
 	Super::BeginDestroy();
 	KillThreads();
 }
 
-//TArray<TScriptInterface<ISvChar>> UAITurnRunnable::ClosestCharactersToThisEnemy(TScriptInterface<ISvChar> enemy, TArray<TScriptInterface<ISvChar>> characters) {
+// TArray<TScriptInterface<ISvChar>> UAITurnRunnable::ClosestCharactersToThisEnemy(TScriptInterface<ISvChar> enemy, TArray<TScriptInterface<ISvChar>> characters) {
 //	auto sourceLocation = UGridUtilities::GetNormalisedGridLocation(enemy->GetAsActor()->GetActorLocation());
 //
 //	auto currentCharacters = characters;
@@ -201,26 +215,30 @@ void UAITurnRunnable::BeginDestroy() {
 //	}
 //
 //	return sortedCharacters;
-//}
+// }
 
-bool UAITurnRunnable::IsAlreadyAdjacentCharacter(FVector source, FVector characterLoc) {
+bool UAITurnRunnable::IsAlreadyAdjacentCharacter(FVector source, FVector characterLoc)
+{
 	auto griddedSource = UGridUtilities::GetNormalisedGridLocation(source);
 	auto griddedCharacter = UGridUtilities::GetNormalisedGridLocation(characterLoc);
 
 	TArray<FVector> sourceAdjacents;
 	USvUtilities::GetAdjacentGridTiles(griddedSource, sourceAdjacents);
 
-
-	for (int i = 0; i < sourceAdjacents.Num(); i++) {
-		if (griddedCharacter == sourceAdjacents[i]) return true;
+	for (int i = 0; i < sourceAdjacents.Num(); i++)
+	{
+		if (griddedCharacter == sourceAdjacents[i])
+			return true;
 	}
 	return false;
 }
 
-bool UAITurnRunnable::AttemptToRouteToPossibleLocation(TScriptInterface<ISvChar> character, FVector possibleLocation) {
+bool UAITurnRunnable::AttemptToRouteToPossibleLocation(TScriptInterface<ISvChar> character, FVector possibleLocation)
+{
 
 	auto gridMovementComponent = character->GetAsActor()->GetComponentByClass<UGridMovementComponent>();
-	if (!gridMovementComponent) {
+	if (!gridMovementComponent)
+	{
 		UDebugMessages::LogError(this, "Failed to get movement component, AI cannot move");
 		return false;
 	}
@@ -229,31 +247,33 @@ bool UAITurnRunnable::AttemptToRouteToPossibleLocation(TScriptInterface<ISvChar>
 	auto movementDetails = gridMovementComponent->FindRoute(sourceLoc, possibleLocation, true);
 
 	TArray<FVector> finalMovement;
-	if (!movementDetails.IsEmpty()) {
+	if (!movementDetails.IsEmpty())
+	{
 		auto thisEnemyDetails = character->GetAsActor()->GetComponentByClass<UCharacterDetailsComponent>();
 
-		if (movementDetails.Num() < thisEnemyDetails->GetMovementPoints()) {
+		if (movementDetails.Num() < thisEnemyDetails->GetMovementPoints())
+		{
 			finalMovement = movementDetails;
 		}
-		else {
+		else
+		{
 			for (int j = 0; j < thisEnemyDetails->GetMovementPoints(); j++)
 				finalMovement.Emplace(movementDetails[j]);
 		}
 	}
 
-	if (!finalMovement.IsEmpty()) {
+	if (!finalMovement.IsEmpty())
+	{
 		FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([finalMovement, gridMovementComponent]
-			{
-				gridMovementComponent->MoveAcrossGrid(finalMovement);
-			},
-			TStatId(), nullptr, ENamedThreads::GameThread);
+																			 { gridMovementComponent->MoveAcrossGrid(finalMovement); },
+																			 TStatId(), nullptr, ENamedThreads::GameThread);
 		return true;
 	}
 
 	return false;
 }
 
-//void UAITurnRunnable::TryMeleeAttack(TScriptInterface<ISvChar> meleeAttacker, TScriptInterface<ISvChar> character) {
+// void UAITurnRunnable::TryMeleeAttack(TScriptInterface<ISvChar> meleeAttacker, TScriptInterface<ISvChar> character) {
 //	auto equipmentComponent = meleeAttacker->GetAsActor()->GetComponentByClass<UEquipmentComponent>();
 //	auto currentAttackerDetails = meleeAttacker->GetAsActor()->GetComponentByClass<UCharacterDetailsComponent>();
 //
@@ -349,4 +369,4 @@ bool UAITurnRunnable::AttemptToRouteToPossibleLocation(TScriptInterface<ISvChar>
 //			attackComponent->TryAttackTarget(sourceLoc, character, false);
 //		},
 //		TStatId(), nullptr, ENamedThreads::GameThread);
-//}
+// }

@@ -41,6 +41,8 @@ protected:
 	UPROPERTY(meta = (BindWidget))	UTextBlock* DescriptionText;
 	UPROPERTY(meta = (BindWidget))	UTextBlock* TitleText;
 
+	UPROPERTY(meta=(BindWidget)) UTextBlock* GameModeTitle;
+
 private:
 
 	void SetStartButtonVisibility(bool val);

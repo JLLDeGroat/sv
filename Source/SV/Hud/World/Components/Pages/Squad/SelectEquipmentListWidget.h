@@ -8,6 +8,7 @@
 #include "SelectEquipmentListWidget.generated.h"
 
 class USelectEquipmentListItemWidget;
+class UScrollBox;
 
 /**
  *
@@ -26,6 +27,10 @@ public:
 	void OpenListForPrimaries(FGuid memberId);
 	void PrimaryButtonClicked(EGun gunType, FGuid primaryId);
 	void ToolButtonClicked(EToolType toolType, uint8 tool);
+
+	protected:
+
+	UPROPERTY(meta = (BindWidget)) UScrollBox* ScrollBox; 
 
 private:
 

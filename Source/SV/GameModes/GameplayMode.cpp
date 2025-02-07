@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "GameplayMode.h"
 #include "../Hud/GameHud.h"
 #include "../Player/GamePlayerController.h"
@@ -15,7 +14,8 @@
 #include "../Runnables/Checkers/WinLossCheckerRunnable.h"
 #include "../Runnables/Stats/StatUpdateRunnable.h"
 
-AGameplayMode::AGameplayMode() {
+AGameplayMode::AGameplayMode()
+{
 	PlayerControllerClass = AGamePlayerController::StaticClass();
 	DefaultPawnClass = APlayerPawn::StaticClass();
 	HUDClass = AGameHud::StaticClass();
@@ -27,46 +27,61 @@ AGameplayMode::AGameplayMode() {
 	OverwatchManager = CreateDefaultSubobject<UOverwatchManager>(TEXT("OverwatchManager"));
 }
 
-void AGameplayMode::BeginPlay() {
+void AGameplayMode::BeginPlay()
+{
 	Super::BeginPlay();
 
 	LevelGenThread = NewObject<ULevelGenerationRunnable>()
-		->InsertVariables(ELevelGenType::TwoBuilding)
-		->Initialise(GetWorld())
-		->Begin();
+						 ->InsertVariables(ELevelGenType::TwoBuilding)
+						 ->Initialise(GetWorld())
+						 ->Begin();
 }
 
-UObjectivesManager* AGameplayMode::GetObjectivesManager() {
+UObjectivesManager *AGameplayMode::GetObjectivesManager()
+{
 	return ObjectivesManager;
 }
 
-UCharacterManager* AGameplayMode::GetCharacterManager() {
+UCharacterManager *AGameplayMode::GetCharacterManager()
+{
 	return CharacterManager;
 }
 
-void AGameplayMode::EndTurn() {
+void AGameplayMode::EndTurn()
+{
 	TurnManager->BeginAITurn();
 }
 
-void AGameplayMode::BeginPlayerTurn() {
+void AGameplayMode::BeginPlayerTurn()
+{
 	UDebugMessages::LogDisplay(this, "Beginning Player Turn");
 	TurnManager->BeginPlayerTurn();
 }
 
-ULevelSpawnerManager* AGameplayMode::GetLevelSpawnerManager() {
+ULevelSpawnerManager *AGameplayMode::GetLevelSpawnerManager()
+{
 	return LevelSpawnerManager;
 }
 
-void AGameplayMode::BeginDestroy() {
-	TurnManager->KillRunnable();
+void AGameplayMode::BeginDestroy()
+{
 	Super::BeginDestroy();
+	TurnManager->KillRunnable();
 }
 
-bool AGameplayMode::AttemptToStartWinLossChecker() {
-	if (!WinLossCheckerThread || WinLossCheckerThread->GetIsComplete()) {
-		WinLossCheckerThread = (UWinLossCheckerRunnable*)NewObject<UWinLossCheckerRunnable>()
-			->Initialise(GetWorld())
-			->Begin();
+void AGameplayMode::CleanupThreads()
+{
+	if (TurnManager)
+		TurnManager->KillRunnable();
+}
+
+bool AGameplayMode::AttemptToStartWinLossChecker()
+{
+	if (!WinLossCheckerThread || WinLossCheckerThread->GetIsComplete())
+	{
+		WinLossCheckerThread = (UWinLossCheckerRunnable *)NewObject<UWinLossCheckerRunnable>()
+								   ->Initialise(GetWorld())
+								   ->Begin();
 		return true;
 	}
 	else
@@ -76,18 +91,22 @@ bool AGameplayMode::AttemptToStartWinLossChecker() {
 	}
 }
 
-void AGameplayMode::StartStatRunnable(AActor* statOwner, EStatisticType statType, float damage) {
+void AGameplayMode::StartStatRunnable(AActor *statOwner, EStatisticType statType, float damage)
+{
 	UDebugMessages::LogDisplay(this, "StartStatRunnable");
-	auto newStatRunnable = (UStatUpdateRunnable*)NewObject<UStatUpdateRunnable>(this)
-		->InsertVariables(statOwner, statType, damage)
-		->Initialise(GetWorld())
-		->Begin();
+	auto newStatRunnable = (UStatUpdateRunnable *)NewObject<UStatUpdateRunnable>(this)
+							   ->InsertVariables(statOwner, statType, damage)
+							   ->Initialise(GetWorld())
+							   ->Begin();
 
 	bool noChange = false;
-	while (!noChange) {
+	while (!noChange)
+	{
 		noChange = true;
-		for (int i = 0; i < StatRunnables.Num(); i++) {
-			if (!StatRunnables[i] || StatRunnables[i]->GetIsCompleteStatItem()) {
+		for (int i = 0; i < StatRunnables.Num(); i++)
+		{
+			if (!StatRunnables[i] || StatRunnables[i]->GetIsCompleteStatItem())
+			{
 				StatRunnables.RemoveAt(i);
 				noChange = false;
 				break;
@@ -98,6 +117,7 @@ void AGameplayMode::StartStatRunnable(AActor* statOwner, EStatisticType statType
 	StatRunnables.Emplace(newStatRunnable);
 }
 
-UOverwatchManager* AGameplayMode::GetOverwatchManager() {
+UOverwatchManager *AGameplayMode::GetOverwatchManager()
+{
 	return OverwatchManager;
 }

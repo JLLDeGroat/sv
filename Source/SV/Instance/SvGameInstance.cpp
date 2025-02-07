@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "SvGameInstance.h"
 #include "../Data/SkillData.h"
 #include "Misc/Paths.h"
@@ -16,8 +15,10 @@
 #include "Managers/WeaponDataManager.h"
 #include "Managers/ThrowableDataManager.h"
 #include "Managers/HealthKitDataManager.h"
+#include "../GameModes/GameplayMode.h"
 
-USvGameInstance::USvGameInstance() {
+USvGameInstance::USvGameInstance()
+{
 
 	FString skillStringData;
 
@@ -35,11 +36,13 @@ USvGameInstance::USvGameInstance() {
 	HealthKitDataManager = NewObject<UHealthKitDataManager>();
 }
 
-void USvGameInstance::ReadModData(FString modName, FString& fileText) {
+void USvGameInstance::ReadModData(FString modName, FString &fileText)
+{
 	FString file = FPaths::ProjectModsDir() + modName + ".json";
 	UDebugMessages::LogDisplay(this, file);
 	FString returnString;
-	if (!FFileHelper::LoadFileToString(returnString, *file)) {
+	if (!FFileHelper::LoadFileToString(returnString, *file))
+	{
 		UDebugMessages::LogError(this, "failed to load mod data " + modName);
 		return;
 	}
@@ -47,49 +50,74 @@ void USvGameInstance::ReadModData(FString modName, FString& fileText) {
 	fileText = returnString;
 }
 
-void USvGameInstance::GetSkillDataItem(FString name, FSkillDataItem& dataItem) {
+void USvGameInstance::GetSkillDataItem(FString name, FSkillDataItem &dataItem)
+{
 	auto foundDataItem = SkillData.GetItemByName(name);
 	dataItem = *foundDataItem;
 }
 
-void USvGameInstance::GetGameTypeDescription(EGameModeType gameMode, FGameTypeDescriptionItem& item) {
+void USvGameInstance::GetGameTypeDescription(EGameModeType gameMode, FGameTypeDescriptionItem &item)
+{
 	auto foundDescriptionItem = GameTypeDescriptions.GetDescriptionItem(gameMode);
 	item = *foundDescriptionItem;
 }
 
-template<typename OutStructType>
-bool USvGameInstance::ReadFile(FString file, OutStructType* OutStruct)
+template <typename OutStructType>
+bool USvGameInstance::ReadFile(FString file, OutStructType *OutStruct)
 {
 	FString fileText;
 	ReadModData(file, fileText);
 	return UFileManagementUtilities::JsonToStruct(fileText, OutStruct);
 }
 
-URouteDataManager* USvGameInstance::GetRouteDataManager() {
+URouteDataManager *USvGameInstance::GetRouteDataManager()
+{
 	return RouteManager;
 }
 
-FCrewMemberData* USvGameInstance::GetPossibleCrewData() {
+FCrewMemberData *USvGameInstance::GetPossibleCrewData()
+{
 	return &CrewMemberData;
 }
 
-UMissionDetailsManager* USvGameInstance::GetMissionDetailsManager() {
+UMissionDetailsManager *USvGameInstance::GetMissionDetailsManager()
+{
 	return MissionManager;
 }
 
-UCurrentGameDataManager* USvGameInstance::GetCurrentGameDataManager() {
+UCurrentGameDataManager *USvGameInstance::GetCurrentGameDataManager()
+{
 	return CurrentGameDataManager;
 }
 
-USupplyDataManager* USvGameInstance::GetSupplyDataManager() {
+USupplyDataManager *USvGameInstance::GetSupplyDataManager()
+{
 	return SupplyDataManager;
 }
-UWeaponDataManager* USvGameInstance::GetWeaponDataManager() {
+UWeaponDataManager *USvGameInstance::GetWeaponDataManager()
+{
 	return WeaponDataManager;
 }
-UThrowableDataManager* USvGameInstance::GetThrowableDataManager() {
+UThrowableDataManager *USvGameInstance::GetThrowableDataManager()
+{
 	return ThrowableDataManager;
 }
-UHealthKitDataManager* USvGameInstance::GetHealthKitDataManager() {
+UHealthKitDataManager *USvGameInstance::GetHealthKitDataManager()
+{
 	return HealthKitDataManager;
+}
+
+void USvGameInstance::Shutdown()
+{
+	Super::Shutdown();
+	//const TArray<FWorldContext> &WorldContexts = GEngine->GetWorldContexts();
+	for (const FWorldContext &Context : GEngine->GetWorldContexts())
+	{
+		if (Context.WorldType == EWorldType::Game)
+		{
+			auto World = Context.World();
+			World->GetAuthGameMode()->BeginDestroy();
+			break;
+		}
+	}
 }

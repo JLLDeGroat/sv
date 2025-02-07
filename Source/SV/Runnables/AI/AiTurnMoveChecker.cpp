@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "AiTurnMoveChecker.h"
 
 #include "../../Interfaces/SvChar.h"
@@ -13,12 +12,13 @@
 
 #include "Behaviours/AIMeleeRangeMove.h"
 
-void UAiTurnMoveChecker::ActivateThread() {
+void UAiTurnMoveChecker::ActivateThread()
+{
 	Super::ActivateThread();
 
 	UDebugMessages::LogDisplay(this, "beginning move checker");
-	//TODO create behaviour aroud movement
-	//currently assuming all is melee and will move into melee range
+	// TODO create behaviour aroud movement
+	// currently assuming all is melee and will move into melee range
 
 	auto aiComponent = GetThisEnemy()->GetAsActor()->GetComponentByClass<UAIComponent>();
 
@@ -28,11 +28,14 @@ void UAiTurnMoveChecker::ActivateThread() {
 
 	MovementBehaviour->DoBehaviour();
 
-	while (!MovementBehaviour->GetCompletedBehaviourAndWaitIfNot(.1f) && bIsAlive) {
-		if (GetThisEnemyIsValidAndAlive()) {
+	while (!MovementBehaviour->GetCompletedBehaviourAndWaitIfNot(.1f) && bIsAlive)
+	{
+		if (GetThisEnemyIsValidAndAlive())
+		{
 			UDebugMessages::LogDisplay(this, "waiting on melee range movement behaviour");
 		}
-		else {
+		else
+		{
 			SetCheckerHasCompleted();
 			return;
 		}
@@ -41,4 +44,3 @@ void UAiTurnMoveChecker::ActivateThread() {
 	UDebugMessages::LogDisplay(this, "ending move checker");
 	SetCheckerHasCompleted();
 }
-

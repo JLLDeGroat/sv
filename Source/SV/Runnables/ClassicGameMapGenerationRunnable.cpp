@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "ClassicGameMapGenerationRunnable.h"
 #include "../Hud/MenuHuds/Components/NewGameOptionsWidget.h"
 #include "../Instance/SvGameInstance.h"
@@ -10,8 +9,8 @@
 #include "../Utilities/SvUtilities.h"
 #include "../Utilities/RunnableUtilities.h"
 
-
-void UClassicGameMapGenerationRunnable::ActivateThread() {
+void UClassicGameMapGenerationRunnable::ActivateThread()
+{
 	Super::ActivateThread();
 
 	Start = FVector2D(RandomStream.RandRange(1, 2), RandomStream.RandRange(1, 8));
@@ -29,13 +28,13 @@ void UClassicGameMapGenerationRunnable::ActivateThread() {
 
 	auto instance = USvUtilities::GetGameInstance(GetWorld());
 
-	if (!instance) return UDebugMessages::LogError(this, "failed to get svUtilities");
+	if (!instance)
+		return UDebugMessages::LogError(this, "failed to get svUtilities");
 
 	auto routeManager = instance->GetRouteDataManager();
 
 	if (!routeManager)
 		return UDebugMessages::LogError(this, "failed to get route data manager");
-
 
 	routeManager->SetCurrentRoute(ChosenPrimaryRoute);
 	routeManager->SetCurrentOffshoots(Offshoots);
@@ -50,19 +49,20 @@ void UClassicGameMapGenerationRunnable::ActivateThread() {
 	UDebugMessages::LogDisplay(this, "GenerateBaseResourceAmounts");
 	GenerateBaseResourceAmounts();
 
-	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([widget] {
-		widget->OnGenCompleted();
-		}, TStatId(), nullptr, ENamedThreads::GameThread);
+	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([widget]
+																		 { widget->OnGenCompleted(); }, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-UClassicGameMapGenerationRunnable* UClassicGameMapGenerationRunnable::InsertVariables(UNewGameOptionsWidget* widget, FMapGridData* mapGrid) {
+UClassicGameMapGenerationRunnable *UClassicGameMapGenerationRunnable::InsertVariables(UNewGameOptionsWidget *widget, FMapGridData *mapGrid)
+{
 	GameModeWidget = widget;
 	CurrentMapGrid = *mapGrid;
 	ChosenPrimaryRoute.Empty();
 	return this;
 }
 
-void UClassicGameMapGenerationRunnable::FindValidRoutes() {
+void UClassicGameMapGenerationRunnable::FindValidRoutes()
+{
 	TArray<FVector2D> route;
 	route.Emplace(Start);
 	FindValidRoutesRecursive(route);
@@ -70,7 +70,8 @@ void UClassicGameMapGenerationRunnable::FindValidRoutes() {
 	auto widget = GameModeWidget;
 	auto finalRoute = ChosenPrimaryRoute;
 }
-void UClassicGameMapGenerationRunnable::FindValidRoutesRecursive(TArray<FVector2D> currentRoute) {
+void UClassicGameMapGenerationRunnable::FindValidRoutesRecursive(TArray<FVector2D> currentRoute)
+{
 
 	if (currentRoute.Num() > 26 ||
 		!ChosenPrimaryRoute.IsEmpty())
@@ -79,9 +80,12 @@ void UClassicGameMapGenerationRunnable::FindValidRoutesRecursive(TArray<FVector2
 	auto latestRouteItem = currentRoute[currentRoute.Num() - 1];
 	auto validAdjacents = URunnableUtilities::GetPassableAdjacentGridItems(&CurrentMapGrid, latestRouteItem);
 
-	for (int i = 0; i < validAdjacents.Num(); i++) {
-		if (!ChosenPrimaryRoute.IsEmpty()) return;
-		if (AlreadyInRoute(currentRoute, validAdjacents[i])) {
+	for (int i = 0; i < validAdjacents.Num(); i++)
+	{
+		if (!ChosenPrimaryRoute.IsEmpty())
+			return;
+		if (AlreadyInRoute(currentRoute, validAdjacents[i]))
+		{
 			continue;
 		}
 
@@ -91,40 +95,52 @@ void UClassicGameMapGenerationRunnable::FindValidRoutesRecursive(TArray<FVector2
 		if (IsAdjacentToNonPreviousLocations(currentRoute, validAdjacents[i]) || !IsPossibleToReachEnd(newRoute))
 			continue;
 
-		if (End == validAdjacents[i]) {
+		if (End == validAdjacents[i])
+		{
 			if (ChosenPrimaryRoute.IsEmpty())
 				ChosenPrimaryRoute = newRoute;
 		}
-		else {
+		else
+		{
 			FindValidRoutesRecursive(newRoute);
 		}
 	}
 }
-bool UClassicGameMapGenerationRunnable::AlreadyInRoute(TArray<FVector2D> route, FVector2D loc) {
+bool UClassicGameMapGenerationRunnable::AlreadyInRoute(TArray<FVector2D> route, FVector2D loc)
+{
 	for (int i = 0; i < route.Num(); i++)
-		if (route[i] == loc) return true;
+		if (route[i] == loc)
+			return true;
 
 	return false;
 }
-bool UClassicGameMapGenerationRunnable::IsPossibleToReachEnd(TArray<FVector2D> current) {
+bool UClassicGameMapGenerationRunnable::IsPossibleToReachEnd(TArray<FVector2D> current)
+{
 	auto last = current[current.Num() - 1];
 	auto movementLeft = 25 - current.Num();
 
 	auto xmovement = last.X - End.X;
-	if (xmovement < 0) xmovement *= -1;
+	if (xmovement < 0)
+		xmovement *= -1;
 
 	auto ymovement = last.Y - End.Y;
-	if (ymovement < 0) ymovement *= -1;
+	if (ymovement < 0)
+		ymovement *= -1;
 
-	if (ymovement + xmovement <= movementLeft) {
+	if (ymovement + xmovement <= movementLeft)
+	{
 		return true;
 	}
-	else return false;
+	else
+		return false;
 }
-bool UClassicGameMapGenerationRunnable::IsAdjacentToNonPreviousLocations(TArray<FVector2D> previousRoute, FVector2D newLoc) {
-	if (previousRoute.Num() == 1) return false;
+bool UClassicGameMapGenerationRunnable::IsAdjacentToNonPreviousLocations(TArray<FVector2D> previousRoute, FVector2D newLoc)
+{
+	if (previousRoute.Num() == 1)
+		return false;
 
-	for (int i = 0; i < previousRoute.Num() - 1; i++) {
+	for (int i = 0; i < previousRoute.Num() - 1; i++)
+	{
 		auto left = FVector2D(previousRoute[i].X - 1, previousRoute[i].Y);
 		auto right = FVector2D(previousRoute[i].X + 1, previousRoute[i].Y);
 		auto up = FVector2D(previousRoute[i].X, previousRoute[i].Y - 1);
@@ -137,11 +153,13 @@ bool UClassicGameMapGenerationRunnable::IsAdjacentToNonPreviousLocations(TArray<
 	return false;
 }
 
-
-void UClassicGameMapGenerationRunnable::FindValidOffshoots() {
+void UClassicGameMapGenerationRunnable::FindValidOffshoots()
+{
 	auto iterations = 0;
-	while (Offshoots.Num() < MaxOffshoots && iterations < 5) {
-		for (int i = 1; i < ChosenPrimaryRoute.Num() - 1; i++) {
+	while (Offshoots.Num() < MaxOffshoots && iterations < 5)
+	{
+		for (int i = 1; i < ChosenPrimaryRoute.Num() - 1; i++)
+		{
 			auto newArr = TArray<FVector2D>();
 			newArr.Emplace(ChosenPrimaryRoute[i]);
 			FindValidOffshootsRecursive(newArr, true);
@@ -154,15 +172,16 @@ void UClassicGameMapGenerationRunnable::FindValidOffshoots() {
 	auto finalOffshoots = Offshoots;
 	UDebugMessages::LogDisplay(this, "Finished Offshoots");
 	UDebugMessages::LogDisplay(this, "found numbers " + FString::SanitizeFloat(finalOffshoots.Num()));
-	for (int i = 0; i < finalOffshoots.Num(); i++) {
+	for (int i = 0; i < finalOffshoots.Num(); i++)
+	{
 		UDebugMessages::LogDisplay(this, finalOffshoots[i].ToString());
 	}
 }
 
-void UClassicGameMapGenerationRunnable::FindValidOffshootsRecursive(TArray<FVector2D> currentOffshoot, bool isInitial) {
+void UClassicGameMapGenerationRunnable::FindValidOffshootsRecursive(TArray<FVector2D> currentOffshoot, bool isInitial)
+{
 	if (Offshoots.Num() == MaxOffshoots)
 		return;
-
 
 	auto lastRoute = currentOffshoot[currentOffshoot.Num() - 1];
 	auto adjacentGridItems = URunnableUtilities::GetPassableAdjacentGridItems(&CurrentMapGrid, lastRoute);
@@ -170,25 +189,31 @@ void UClassicGameMapGenerationRunnable::FindValidOffshootsRecursive(TArray<FVect
 	if (isInitial)
 		currentOffshoot.RemoveAt(0);
 
-	for (int i = 0; i < adjacentGridItems.Num(); i++) {
+	for (int i = 0; i < adjacentGridItems.Num(); i++)
+	{
 
-		if (isInitial && IsAdjacentToOtherOffshoots(adjacentGridItems[i])) {
+		if (isInitial && IsAdjacentToOtherOffshoots(adjacentGridItems[i]))
+		{
 			continue;
 		}
 
-		if (IsPartOfMainRoute(adjacentGridItems[i])) {
+		if (IsPartOfMainRoute(adjacentGridItems[i]))
+		{
 			continue;
 		}
 
-		if (!ShouldGenerateOffShoot()) {
+		if (!ShouldGenerateOffShoot())
+		{
 			continue;
 		}
 
-		if (HasReachedMaxOffshoots()) {
+		if (HasReachedMaxOffshoots())
+		{
 			continue;
 		}
 
-		if (AlreadyAnOffshoot(adjacentGridItems[i])) {
+		if (AlreadyAnOffshoot(adjacentGridItems[i]))
+		{
 			continue;
 		}
 
@@ -199,8 +224,10 @@ void UClassicGameMapGenerationRunnable::FindValidOffshootsRecursive(TArray<FVect
 	}
 }
 
-bool UClassicGameMapGenerationRunnable::ShouldGenerateOffShoot(int degradation, int incrememtation) {
-	if (BaseChance > RandomStream.RandRange(1, 100)) {
+bool UClassicGameMapGenerationRunnable::ShouldGenerateOffShoot(int degradation, int incrememtation)
+{
+	if (BaseChance > RandomStream.RandRange(1, 100))
+	{
 		BaseChance -= degradation;
 		return true;
 	}
@@ -208,7 +235,8 @@ bool UClassicGameMapGenerationRunnable::ShouldGenerateOffShoot(int degradation, 
 	return false;
 }
 
-bool UClassicGameMapGenerationRunnable::IsPartOfMainRoute(FVector2D arr) {
+bool UClassicGameMapGenerationRunnable::IsPartOfMainRoute(FVector2D arr)
+{
 	for (int i = 0; i < ChosenPrimaryRoute.Num(); i++)
 		if (arr == ChosenPrimaryRoute[i])
 			return true;
@@ -216,18 +244,22 @@ bool UClassicGameMapGenerationRunnable::IsPartOfMainRoute(FVector2D arr) {
 	return false;
 }
 
-bool UClassicGameMapGenerationRunnable::HasReachedMaxOffshoots() {
-	return  Offshoots.Num() >= MaxOffshoots;
+bool UClassicGameMapGenerationRunnable::HasReachedMaxOffshoots()
+{
+	return Offshoots.Num() >= MaxOffshoots;
 }
 
-bool UClassicGameMapGenerationRunnable::AlreadyAnOffshoot(FVector2D vector) {
+bool UClassicGameMapGenerationRunnable::AlreadyAnOffshoot(FVector2D vector)
+{
 	for (int i = 0; i < Offshoots.Num(); i++)
-		if (Offshoots[i] == vector) return true;
+		if (Offshoots[i] == vector)
+			return true;
 
 	return false;
 }
 
-bool UClassicGameMapGenerationRunnable::IsAdjacentToOtherOffshoots(FVector2D vector) {
+bool UClassicGameMapGenerationRunnable::IsAdjacentToOtherOffshoots(FVector2D vector)
+{
 	auto left = FVector2D(vector.X - 1, vector.Y);
 	auto right = FVector2D(vector.X + 1, vector.Y);
 	auto up = FVector2D(vector.X, vector.Y - 1);
@@ -237,12 +269,14 @@ bool UClassicGameMapGenerationRunnable::IsAdjacentToOtherOffshoots(FVector2D vec
 		if (Offshoots[i] == left ||
 			Offshoots[i] == right ||
 			Offshoots[i] == up ||
-			Offshoots[i] == down) return true;
+			Offshoots[i] == down)
+			return true;
 
 	return false;
 }
 
-void UClassicGameMapGenerationRunnable::GenerateCrewMembers(int amount) {
+void UClassicGameMapGenerationRunnable::GenerateCrewMembers(int amount)
+{
 	auto instance = USvUtilities::GetGameInstance(GetWorld());
 	auto crewData = instance->GetPossibleCrewData();
 	auto currentGameManager = instance->GetCurrentGameDataManager();
@@ -253,18 +287,19 @@ void UClassicGameMapGenerationRunnable::GenerateCrewMembers(int amount) {
 	auto allLastNames = crewData->GetLastNames();
 	auto allBios = crewData->GetBios();
 
-	for (int i = 0; i < amount; i++) {
+	for (int i = 0; i < amount; i++)
+	{
 		auto crewMemberId = gameData->AddCrewMember(
 			allFirstNames[RandomStream.RandRange(1, allFirstNames.Num() - 1)],
 			allLastNames[RandomStream.RandRange(1, allLastNames.Num() - 1)],
 			allBios[RandomStream.RandRange(1, allBios.Num() - 1)],
 			100,
-			100
-		);
+			100);
 		auto primaryId = gameData->AddPrimaryToCrew(EGun::G_PeaRifle);
 		gameData->AssignPrimaryToCrew(primaryId, crewMemberId);
 
-		if (i == 0) {
+		if (i == 0)
+		{
 			auto toolAdded = gameData->AddToolToCrew(EToolType::TT_Throwable, (uint8)EThrowable::T_Grenade);
 			gameData->AssignToolToCrew(toolAdded, crewMemberId);
 		}
@@ -281,7 +316,8 @@ void UClassicGameMapGenerationRunnable::GenerateCrewMembers(int amount) {
 	gameData->AddToolToCrew(EToolType::TT_Throwable, (uint8)EThrowable::T_Grenade);
 }
 
-void UClassicGameMapGenerationRunnable::GenerateWorldLocationData() {
+void UClassicGameMapGenerationRunnable::GenerateWorldLocationData()
+{
 	auto instance = USvUtilities::GetGameInstance(GetWorld());
 
 	auto currentgameDataManager = instance->GetCurrentGameDataManager();
@@ -291,21 +327,25 @@ void UClassicGameMapGenerationRunnable::GenerateWorldLocationData() {
 	auto currentGameData = currentgameDataManager->GetCurrentGameData();
 
 	auto worldManager = currentGameData->GetWorldData();
-	for (int i = 0; i < ChosenPrimaryRoute.Num(); i++) {
+	for (int i = 0; i < ChosenPrimaryRoute.Num(); i++)
+	{
 		auto locationId = worldManager->AddWorldLocationData(ChosenPrimaryRoute[i]);
-		if (i == 0) {
+		if (i == 0)
+		{
 			auto thisLocation = worldManager->GetWorldLocationData(locationId);
 			thisLocation->SetIsCurrent(true);
 		}
 	}
 
-	for (int i = 0; i < Offshoots.Num(); i++) {
+	for (int i = 0; i < Offshoots.Num(); i++)
+	{
 		auto locationId = worldManager->AddWorldLocationData(Offshoots[i]);
 		auto thisLocation = worldManager->GetWorldLocationData(locationId);
 		thisLocation->SetIsOffshoot(true);
 	}
 }
-void UClassicGameMapGenerationRunnable::GenerateWorldLocationMissionsData() {
+void UClassicGameMapGenerationRunnable::GenerateWorldLocationMissionsData()
+{
 	auto instance = USvUtilities::GetGameInstance(GetWorld());
 
 	auto currentgameDataManager = instance->GetCurrentGameDataManager();
@@ -322,10 +362,11 @@ void UClassicGameMapGenerationRunnable::GenerateWorldLocationMissionsData() {
 	auto worldData = currentGameData->GetWorldData();
 	auto worldDataLocations = worldData->GetWorldLocationData();
 
-
-	for (int i = 0; i < worldDataLocations.Num(); i++) {
+	for (int i = 0; i < worldDataLocations.Num(); i++)
+	{
 		/*auto item = worldDataLocations[i]; */
-		if (!worldDataLocations[i]->GetIsCurrent()) {
+		if (!worldDataLocations[i]->GetIsCurrent())
+		{
 			EMissionType missionType = (EMissionType)FMath::RandRange(1, 4);
 			auto thisMissionName = missionDetailsManager->GenerateMissionName();
 			auto thisMissionDesc = missionDetailsManager->GetMissionTypeDescription(missionType);
@@ -339,11 +380,16 @@ void UClassicGameMapGenerationRunnable::GenerateWorldLocationMissionsData() {
 			mDetails->SetFluffText(missionDetailsManager->GenerateFluffText(missionType));
 			mDetails->SetFluffText(missionDetailsManager->GenerateFluffText(missionType));
 			mDetails->SetMainObjective(missionDetailsManager->GenerateMainObjective(missionType));
+			mDetails->SetTurnLimit(999);
+
+			if (missionType == EMissionType::MT_Survive)
+				mDetails->SetTurnLimit(12);
 		}
 	}
 }
 
-void UClassicGameMapGenerationRunnable::GenerateBaseResourceAmounts() {
+void UClassicGameMapGenerationRunnable::GenerateBaseResourceAmounts()
+{
 	auto currentGameData = USvUtilities::GetCurrentGameData(GetWorld());
 	auto scrap = currentGameData->GetResourceData()->GetResource(EResourceType::RT_Currency);
 	scrap->AddToAmount(200);

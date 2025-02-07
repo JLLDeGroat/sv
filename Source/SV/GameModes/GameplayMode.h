@@ -38,6 +38,8 @@ public:
 	virtual void BeginPlayerTurn() override;
 
 	ULevelSpawnerManager* GetLevelSpawnerManager();
+
+	void CleanupThreads();
 	virtual void BeginDestroy() override;
 
 	virtual bool AttemptToStartWinLossChecker() override;

@@ -38,6 +38,7 @@
 #include "Actions/OverwatchAction.h"
 #include "Components/CameraShakeComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "../GameModes/GameplayMode.h"
 
 #include "DrawDebugHelpers.h"
 

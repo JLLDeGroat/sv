@@ -50,6 +50,8 @@ protected:
 	template<typename OutStructType>
 	bool ReadFile(FString file, OutStructType* OutStruct);
 
+	virtual void Shutdown() override;
+
 private:
 
 	void ReadModData(FString modName, FString& responseString);

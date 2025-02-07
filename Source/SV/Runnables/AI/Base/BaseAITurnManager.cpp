@@ -57,7 +57,7 @@ bool UBaseAITurnManager::GetCheckerHasCompleted() const {
 	return bCheckerIsComplete;
 }
 bool UBaseAITurnManager::GetCheckerHasCompletedAndWaitIfNot(int seconds) const {
-	if (this && !bCheckerIsComplete) {
+	if (this && !bCheckerIsComplete && !HasFinishedTurnEarly) {
 		FPlatformProcess::Sleep(seconds);
 	}
 	return bCheckerIsComplete;
