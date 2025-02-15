@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "TargetDetailsWidget.h"
 #include "../../../Delegates/HudDelegates.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
@@ -19,7 +18,8 @@
 #include "Components/Button.h"
 #include "../../Helpers/UserWidgetHelpers.h"
 
-void UTargetDetailsWidget::NativeConstruct() {
+void UTargetDetailsWidget::NativeConstruct()
+{
 	auto hudDelegates = UHudDelegates::GetInstance();
 
 	if (!hudDelegates)
@@ -33,13 +33,15 @@ void UTargetDetailsWidget::NativeConstruct() {
 	hudDelegates->_CycleToNextTarget.AddDynamic(this, &UTargetDetailsWidget::CycleTarget);
 }
 
-void UTargetDetailsWidget::OnAddTargetData(FGuid Id, FVector SourceLocation, FVector TargetLocation, ETargetIcon TargetIcon) {
+void UTargetDetailsWidget::OnAddTargetData(FGuid Id, FVector SourceLocation, FVector TargetLocation, ETargetIcon TargetIcon)
+{
 	UDebugMessages::LogDisplay(this, "adding target data to hud " + Id.ToString());
 
 	auto verticalDetailsBox = GetDetailsBox();
-	if (!verticalDetailsBox) return UDebugMessages::LogError(this, "failed to get vertical details box");
+	if (!verticalDetailsBox)
+		return UDebugMessages::LogError(this, "failed to get vertical details box");
 
-	UHorizontalBox* lastHorizontalBox = GetLatestHorizontalBox(verticalDetailsBox);
+	UHorizontalBox *lastHorizontalBox = GetLatestHorizontalBox(verticalDetailsBox);
 
 	auto newHorizontalRowItem = CreateTargetDetailsRowItemWidget();
 	newHorizontalRowItem->SetSourceLocation(SourceLocation);
@@ -49,50 +51,66 @@ void UTargetDetailsWidget::OnAddTargetData(FGuid Id, FVector SourceLocation, FVe
 	auto imageTexture = UUserWidgetHelpers::GetTargetIcon(TargetIcon);
 	newHorizontalRowItem->SetImage(imageTexture);
 
-	if (!lastHorizontalBox) { //|| lastHorizontalBox->GetChildrenCount() >= 3) {
+	if (!lastHorizontalBox)
+	{ //|| lastHorizontalBox->GetChildrenCount() >= 3) {
 		auto newHorizontalWidget = CreateTargetDetailsRowWidget();
 
 		if (!newHorizontalWidget)
 			return UDebugMessages::LogError(this, "failed to create new horizontal box");
 
-		if (!lastHorizontalBox) {
+		if (!lastHorizontalBox)
+		{
 			auto itemWidgetButton = newHorizontalRowItem->GetItemButton();
-			itemWidgetButton->WidgetStyle.Normal.TintColor = FSlateColor(FLinearColor(0, 175, 175, .4f));
-			//itemWidgetButton->WidgetStyle.Normal.OutlineSettings.Color = FSlateColor(FLinearColor(0, 55, 255, 1));
+			// itemWidgetButton->WidgetStyle.Normal.TintColor = FSlateColor(FLinearColor(0, 175, 175, .4f));
+			FButtonStyle ButtonStyle = itemWidgetButton->GetStyle();
+			ButtonStyle.Normal.TintColor = FSlateColor(FLinearColor(0, 175, 175, .4f));
+			itemWidgetButton->SetStyle(ButtonStyle);
 		}
 
 		verticalDetailsBox->AddChildToVerticalBox(newHorizontalWidget);
-		lastHorizontalBox = GetHorizontalBoxFromWidget(newHorizontalWidget);// ->AddChildToHorizontalBox(newHorizontalRowItem);
+		lastHorizontalBox = GetHorizontalBoxFromWidget(newHorizontalWidget); // ->AddChildToHorizontalBox(newHorizontalRowItem);
 	}
 
 	lastHorizontalBox->AddChildToHorizontalBox(newHorizontalRowItem);
 }
 
-void UTargetDetailsWidget::OnClearTargetData() {
+void UTargetDetailsWidget::OnClearTargetData()
+{
 	UDebugMessages::LogDisplay(this, "clearing target data hud");
 	auto targetDataBox = GetDetailsBox();
 	if (targetDataBox)
 		targetDataBox->ClearChildren();
 }
 
-void UTargetDetailsWidget::OnTargetIconClicked(FGuid Id, FVector Location) {
+void UTargetDetailsWidget::OnTargetIconClicked(FGuid Id, FVector Location)
+{
 	auto detailBox = GetDetailsBox();
 	auto detailBoxChildren = detailBox->GetAllChildren();
-	for (int i = 0; i < detailBoxChildren.Num(); i++) {
+	for (int i = 0; i < detailBoxChildren.Num(); i++)
+	{
 
-		auto horizontalBox = GetHorizontalBoxFromWidget((UUserWidget*)detailBoxChildren[i]);
+		auto horizontalBox = GetHorizontalBoxFromWidget((UUserWidget *)detailBoxChildren[i]);
 		auto allHorizontalChildren = horizontalBox->GetAllChildren();
-		for (int x = 0; x < allHorizontalChildren.Num(); x++) {
-			auto itemWidget = (UTargetDetailsRowItemWidget*)allHorizontalChildren[x];
+		for (int x = 0; x < allHorizontalChildren.Num(); x++)
+		{
+			auto itemWidget = (UTargetDetailsRowItemWidget *)allHorizontalChildren[x];
 			auto itemWidgetButton = itemWidget->GetItemButton();
 
-			if (itemWidget->GetId() == Id) {
-				itemWidgetButton->WidgetStyle.Normal.TintColor = FSlateColor(FLinearColor(0, 175, 175, .4f));
-				//itemWidgetButton->WidgetStyle.Normal.OutlineSettings.Color = FSlateColor(FLinearColor(0, 55, 255, 1));
+			if (itemWidget->GetId() == Id)
+			{
+				FButtonStyle ButtonStyle = itemWidgetButton->GetStyle();
+				ButtonStyle.Normal.TintColor = FSlateColor(FLinearColor(0, 175, 175, .4f));
+				itemWidgetButton->SetStyle(ButtonStyle);
+				// itemWidgetButton->WidgetStyle.Normal.TintColor = FSlateColor(FLinearColor(0, 175, 175, .4f));
+				// itemWidgetButton->WidgetStyle.Normal.OutlineSettings.Color = FSlateColor(FLinearColor(0, 55, 255, 1));
 			}
-			else {
-				itemWidgetButton->WidgetStyle.Normal.TintColor = FSlateColor(FLinearColor(0, 175, 175, 0));
-				//itemWidgetButton->WidgetStyle.Normal.OutlineSettings.Color = FSlateColor(FLinearColor(0, 55, 255, 0));
+			else
+			{
+				FButtonStyle ButtonStyle = itemWidgetButton->GetStyle();
+				ButtonStyle.Normal.TintColor = FSlateColor(FLinearColor(0, 175, 175, 0));
+				itemWidgetButton->SetStyle(ButtonStyle);
+				// itemWidgetButton->WidgetStyle.Normal.TintColor = FSlateColor(FLinearColor(0, 175, 175, 0));
+				// itemWidgetButton->WidgetStyle.Normal.OutlineSettings.Color = FSlateColor(FLinearColor(0, 55, 255, 0));
 			}
 		}
 	}
@@ -103,7 +121,8 @@ void UTargetDetailsWidget::OnTargetIconClicked(FGuid Id, FVector Location) {
 
 	auto selectionManager = playerController->GetSelectionManager();
 	auto selectedActor = selectionManager->GetSelected()->GetAsActor();
-	if (selectedActor && selectedActor->GetComponentByClass<UTargetingComponent>()) {
+	if (selectedActor && selectedActor->GetComponentByClass<UTargetingComponent>())
+	{
 		auto targetComponent = selectedActor->GetComponentByClass<UTargetingComponent>();
 		targetComponent->SetCurrentMainTargetId(Id);
 
@@ -113,11 +132,13 @@ void UTargetDetailsWidget::OnTargetIconClicked(FGuid Id, FVector Location) {
 	}
 }
 
-void UTargetDetailsWidget::HideOrReset() {
+void UTargetDetailsWidget::HideOrReset()
+{
 	OnClearTargetData();
 }
 
-void UTargetDetailsWidget::CycleTarget() {
+void UTargetDetailsWidget::CycleTarget()
+{
 	auto playerController = GetWorld()->GetFirstPlayerController<AGamePlayerController>();
 	if (!playerController)
 		return UDebugMessages::LogError(this, "failed to get player controller, will not set targetdata");
@@ -147,9 +168,10 @@ void UTargetDetailsWidget::CycleTarget() {
 	auto detailsBox = GetDetailsBox();
 	auto detailChildren = detailsBox->GetAllChildren();
 
-	TArray<UTargetDetailsRowItemWidget*> items;
-	for (int i = 0; i < detailChildren.Num(); i++) {
-		auto horizontalBox = GetHorizontalBoxFromWidget((UUserWidget*)detailChildren[i]);
+	TArray<UTargetDetailsRowItemWidget *> items;
+	for (int i = 0; i < detailChildren.Num(); i++)
+	{
+		auto horizontalBox = GetHorizontalBoxFromWidget((UUserWidget *)detailChildren[i]);
 		auto res = GetItemsFromHorizontalBox(horizontalBox);
 		for (int x = 0; x < res.Num(); x++)
 			items.Emplace(res[x]);
@@ -157,8 +179,10 @@ void UTargetDetailsWidget::CycleTarget() {
 
 	bool foundCurrent = false;
 	bool foundNew = false;
-	for (int i = 0; i < items.Num(); i++) {
-		if (foundCurrent) {
+	for (int i = 0; i < items.Num(); i++)
+	{
+		if (foundCurrent)
+		{
 			targetingComponent->SetCurrentMainTargetId(items[i]->GetId());
 			auto mainTargetingComponent = targetingComponent->GetCurrentMainTarget();
 
@@ -166,16 +190,21 @@ void UTargetDetailsWidget::CycleTarget() {
 			playerController->SetMouseAsGame();
 
 			auto itemWidgetButton = items[i]->GetItemButton();
-			itemWidgetButton->WidgetStyle.Normal.TintColor = FSlateColor(FLinearColor(0, 175, 175, 1));
-			itemWidgetButton->WidgetStyle.Normal.OutlineSettings.Color = FSlateColor(FLinearColor(0, 55, 255, 1));
+			FButtonStyle ButtonStyle = itemWidgetButton->GetStyle();
+			ButtonStyle.Normal.TintColor = FSlateColor(FLinearColor(0, 175, 175, 1));
+			ButtonStyle.Normal.OutlineSettings.Color = FSlateColor(FLinearColor(0, 55, 255, 1));
+			itemWidgetButton->SetStyle(ButtonStyle);
+			// itemWidgetButton->WidgetStyle.Normal.TintColor = FSlateColor(FLinearColor(0, 175, 175, 1));
+			// itemWidgetButton->WidgetStyle.Normal.OutlineSettings.Color = FSlateColor(FLinearColor(0, 55, 255, 1));
 
 			auto pawn = playerController->GetPawn<APlayerPawn>();
 
-			if (pawn && pawn->GetComponentByClass<UPawnCameraComponent>()) {
+			if (pawn && pawn->GetComponentByClass<UPawnCameraComponent>())
+			{
 				auto pawnCameraComponent = pawn->GetComponentByClass<UPawnCameraComponent>();
 				if (pawnCameraComponent->GetCurrentCameraState() == ECameraState::CS_GunTarget)
 					pawnCameraComponent->UpdateCameraState(ECameraState::CS_GunTarget, mainTargetingComponent->GetShootCameraLocation(),
-						mainTargetingComponent->GetCharacter()->GetSelectableGridLocation(), false, true);
+														   mainTargetingComponent->GetCharacter()->GetSelectableGridLocation(), false, true);
 				else
 					pawnCameraComponent->UpdateCameraState(ECameraState::CS_ReTarget, items[i]->GetTargetLocation());
 			}
@@ -183,15 +212,21 @@ void UTargetDetailsWidget::CycleTarget() {
 			break;
 		}
 
-		if (items[i]->GetId() == currentId) {
+		if (items[i]->GetId() == currentId)
+		{
 			foundCurrent = true;
 			auto itemWidgetButton = items[i]->GetItemButton();
-			itemWidgetButton->WidgetStyle.Normal.TintColor = FSlateColor(FLinearColor(0, 175, 175, 0));
-			itemWidgetButton->WidgetStyle.Normal.OutlineSettings.Color = FSlateColor(FLinearColor(0, 55, 255, 0));
+			FButtonStyle ButtonStyle = itemWidgetButton->GetStyle();
+			ButtonStyle.Normal.TintColor = FSlateColor(FLinearColor(0, 175, 175, 0));
+			ButtonStyle.Normal.OutlineSettings.Color = FSlateColor(FLinearColor(0, 55, 255, 0));
+			itemWidgetButton->SetStyle(ButtonStyle);
+			// itemWidgetButton->WidgetStyle.Normal.TintColor = FSlateColor(FLinearColor(0, 175, 175, 0));
+			// itemWidgetButton->WidgetStyle.Normal.OutlineSettings.Color = FSlateColor(FLinearColor(0, 55, 255, 0));
 		}
 	}
 
-	if (!foundNew && items.Num() > 0) {
+	if (!foundNew && items.Num() > 0)
+	{
 		targetingComponent->SetCurrentMainTargetId(items[0]->GetId());
 		auto mainTargetingComponent = targetingComponent->GetCurrentMainTarget();
 
@@ -199,51 +234,66 @@ void UTargetDetailsWidget::CycleTarget() {
 		playerController->SetMouseAsGame();
 
 		auto itemWidgetButton = items[0]->GetItemButton();
-		itemWidgetButton->WidgetStyle.Normal.TintColor = FSlateColor(FLinearColor(0, 175, 175, 1));
-		itemWidgetButton->WidgetStyle.Normal.OutlineSettings.Color = FSlateColor(FLinearColor(0, 55, 255, 1));
+		FButtonStyle ButtonStyle = itemWidgetButton->GetStyle();
+		ButtonStyle.Normal.TintColor = FSlateColor(FLinearColor(0, 175, 175, 1));
+		ButtonStyle.Normal.OutlineSettings.Color = FSlateColor(FLinearColor(0, 55, 255, 1));
+		itemWidgetButton->SetStyle(ButtonStyle);
+		// itemWidgetButton->WidgetStyle.Normal.TintColor = FSlateColor(FLinearColor(0, 175, 175, 1));
+		// itemWidgetButton->WidgetStyle.Normal.OutlineSettings.Color = FSlateColor(FLinearColor(0, 55, 255, 1));
 
 		auto pawn = playerController->GetPawn<APlayerPawn>();
-		if (pawn && pawn->GetComponentByClass<UPawnCameraComponent>()) {
+		if (pawn && pawn->GetComponentByClass<UPawnCameraComponent>())
+		{
 			auto pawnCameraComponent = pawn->GetComponentByClass<UPawnCameraComponent>();
 			if (pawnCameraComponent->GetCurrentCameraState() == ECameraState::CS_GunTarget)
 				pawnCameraComponent->UpdateCameraState(ECameraState::CS_GunTarget, mainTargetingComponent->GetShootCameraLocation(),
-					mainTargetingComponent->GetCharacter()->GetSelectableGridLocation(), false, true);
+													   mainTargetingComponent->GetCharacter()->GetSelectableGridLocation(), false, true);
 			else
 				pawnCameraComponent->UpdateCameraState(ECameraState::CS_ReTarget, items[0]->GetTargetLocation());
 		}
 	}
 }
 
-UVerticalBox* UTargetDetailsWidget::GetDetailsBox() const {
+UVerticalBox *UTargetDetailsWidget::GetDetailsBox() const
+{
 	auto verticalBoxWidget = GetWidgetFromName("TargetDataBox");
 	if (verticalBoxWidget->IsA<UVerticalBox>())
-		return (UVerticalBox*)verticalBoxWidget;
+		return (UVerticalBox *)verticalBoxWidget;
 	else
 		return nullptr;
 }
-UHorizontalBox* UTargetDetailsWidget::GetLatestHorizontalBox(UVerticalBox* box) {
+UHorizontalBox *UTargetDetailsWidget::GetLatestHorizontalBox(UVerticalBox *box)
+{
 	auto childrenCount = box->GetChildrenCount();
-	UWidget* lastBoxWidget = nullptr;
+	UWidget *lastBoxWidget = nullptr;
 	if (childrenCount > 0)
 		lastBoxWidget = box->GetChildAt(childrenCount - 1);
 
-	if (lastBoxWidget) return GetHorizontalBoxFromWidget((UUserWidget*)lastBoxWidget);
-	else return nullptr;
+	if (lastBoxWidget)
+		return GetHorizontalBoxFromWidget((UUserWidget *)lastBoxWidget);
+	else
+		return nullptr;
 }
 
-UHorizontalBox* UTargetDetailsWidget::GetHorizontalBoxFromWidget(UUserWidget* targetDetailsRowWidget) {
+UHorizontalBox *UTargetDetailsWidget::GetHorizontalBoxFromWidget(UUserWidget *targetDetailsRowWidget)
+{
 	auto widget = targetDetailsRowWidget->GetWidgetFromName("HorizontalBox");
-	if (widget) return (UHorizontalBox*)widget;
-	else return nullptr;
+	if (widget)
+		return (UHorizontalBox *)widget;
+	else
+		return nullptr;
 }
 
-TArray<UTargetDetailsRowItemWidget*> UTargetDetailsWidget::GetItemsFromHorizontalBox(UHorizontalBox* box) {
-	TArray<UTargetDetailsRowItemWidget*> result;
-	if (!box) return result;
+TArray<UTargetDetailsRowItemWidget *> UTargetDetailsWidget::GetItemsFromHorizontalBox(UHorizontalBox *box)
+{
+	TArray<UTargetDetailsRowItemWidget *> result;
+	if (!box)
+		return result;
 
 	auto children = box->GetAllChildren();
-	for (int i = 0; i < children.Num(); i++) {
-		auto thisChildAsRowItem = (UTargetDetailsRowItemWidget*)children[i];
+	for (int i = 0; i < children.Num(); i++)
+	{
+		auto thisChildAsRowItem = (UTargetDetailsRowItemWidget *)children[i];
 		if (thisChildAsRowItem)
 			result.Emplace(thisChildAsRowItem);
 	}
@@ -251,9 +301,10 @@ TArray<UTargetDetailsRowItemWidget*> UTargetDetailsWidget::GetItemsFromHorizonta
 	return result;
 }
 
-UTargetDetailsRowWidget* UTargetDetailsWidget::CreateTargetDetailsRowWidget() const {
+UTargetDetailsRowWidget *UTargetDetailsWidget::CreateTargetDetailsRowWidget() const
+{
 	FSoftClassPath hudUIRef(TEXT("Script/UMGEditor.WidgetBlueprint'/Game/Widgets/Components/SubComponents/TargetDetailsRowComponent_Bp.TargetDetailsRowComponent_Bp_C'"));
-	if (UClass* hudUIWidgetClass = hudUIRef.TryLoadClass<UTargetDetailsRowWidget>())
+	if (UClass *hudUIWidgetClass = hudUIRef.TryLoadClass<UTargetDetailsRowWidget>())
 	{
 		return CreateWidget<UTargetDetailsRowWidget>(GetWorld(), hudUIWidgetClass);
 	}
@@ -261,9 +312,10 @@ UTargetDetailsRowWidget* UTargetDetailsWidget::CreateTargetDetailsRowWidget() co
 	return nullptr;
 }
 
-UTargetDetailsRowItemWidget* UTargetDetailsWidget::CreateTargetDetailsRowItemWidget() const {
+UTargetDetailsRowItemWidget *UTargetDetailsWidget::CreateTargetDetailsRowItemWidget() const
+{
 	FSoftClassPath hudUIRef(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Widgets/Components/SubComponents/TargetDetailsRowItemWidget_Bp.TargetDetailsRowItemWidget_Bp_C'"));
-	if (UClass* hudUIWidgetClass = hudUIRef.TryLoadClass<UTargetDetailsRowItemWidget>())
+	if (UClass *hudUIWidgetClass = hudUIRef.TryLoadClass<UTargetDetailsRowItemWidget>())
 	{
 		return CreateWidget<UTargetDetailsRowItemWidget>(GetWorld(), hudUIWidgetClass);
 	}

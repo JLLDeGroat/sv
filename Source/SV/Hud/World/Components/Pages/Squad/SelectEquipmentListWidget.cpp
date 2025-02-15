@@ -130,8 +130,9 @@ void USelectEquipmentListWidget::PrimaryButtonClicked(EGun gunType, FGuid primar
 	auto gameData = gameDataManager->GetCurrentGameData();
 
 	auto currentPrimary = gameData->GetCrewPrimary(CurrentMemberId);
+	if (currentPrimary)
+		gameData->UnnassignPrimaryFromCrew(currentPrimary->GetPrimaryId());
 
-	gameData->UnnassignPrimaryFromCrew(currentPrimary->GetPrimaryId());
 	if (gunType != EGun::INVALID)
 		gameData->AssignPrimaryToCrew(primaryId, CurrentMemberId);
 

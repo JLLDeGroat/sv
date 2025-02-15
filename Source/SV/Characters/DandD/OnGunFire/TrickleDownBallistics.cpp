@@ -6,8 +6,12 @@
 UTrickleDownBallistics::UTrickleDownBallistics(const FObjectInitializer &ObjectInitializer)
     : UOnGunFireBase(ObjectInitializer)
 {
+    Title = "Trickle Down Ballistics";
+    Description = "Bullets will do more damage if shot from a higher elevation than the target, easier head shots.";
+    DeviationOrDirective = EDDType::DD_Directive;
+    bCanStartOutWith = true;
 }
-#pragma optimize("", off)
+
 FOnGunFireOutput UTrickleDownBallistics::ActivateDD(FOnGunFireInput &input)
 {
     auto initialZ = input.GetStartLocation().Z;
@@ -26,4 +30,3 @@ FOnGunFireOutput UTrickleDownBallistics::ActivateDD(FOnGunFireInput &input)
 
     return FOnGunFireOutput();
 }
-#pragma optimize("", on)

@@ -8,6 +8,7 @@
 #include "../Instance/Managers/MissionDetailsManager.h"
 #include "../Utilities/SvUtilities.h"
 #include "../Utilities/RunnableUtilities.h"
+#include "GameMapGenerations/CrewMemberGen.h"
 
 void UClassicGameMapGenerationRunnable::ActivateThread()
 {
@@ -45,7 +46,10 @@ void UClassicGameMapGenerationRunnable::ActivateThread()
 	UDebugMessages::LogDisplay(this, "GenerateWorldLocationMissionsData");
 	GenerateWorldLocationMissionsData();
 	UDebugMessages::LogDisplay(this, "GenerateCrewMembers");
-	GenerateCrewMembers();
+	auto crewMemberGen = NewObject<UCrewMemberGen>(this);
+	crewMemberGen->GenerateCrewMembers(2);
+	crewMemberGen->ClearInternalFlags(EInternalObjectFlags::Async);
+	// GenerateCrewMembers(2);
 	UDebugMessages::LogDisplay(this, "GenerateBaseResourceAmounts");
 	GenerateBaseResourceAmounts();
 
@@ -273,47 +277,6 @@ bool UClassicGameMapGenerationRunnable::IsAdjacentToOtherOffshoots(FVector2D vec
 			return true;
 
 	return false;
-}
-
-void UClassicGameMapGenerationRunnable::GenerateCrewMembers(int amount)
-{
-	auto instance = USvUtilities::GetGameInstance(GetWorld());
-	auto crewData = instance->GetPossibleCrewData();
-	auto currentGameManager = instance->GetCurrentGameDataManager();
-
-	auto gameData = currentGameManager->GetCurrentGameData();
-
-	auto allFirstNames = crewData->GetFirstNames();
-	auto allLastNames = crewData->GetLastNames();
-	auto allBios = crewData->GetBios();
-
-	for (int i = 0; i < amount; i++)
-	{
-		auto crewMemberId = gameData->AddCrewMember(
-			allFirstNames[RandomStream.RandRange(1, allFirstNames.Num() - 1)],
-			allLastNames[RandomStream.RandRange(1, allLastNames.Num() - 1)],
-			allBios[RandomStream.RandRange(1, allBios.Num() - 1)],
-			100,
-			100);
-		auto primaryId = gameData->AddPrimaryToCrew(EGun::G_PeaRifle);
-		gameData->AssignPrimaryToCrew(primaryId, crewMemberId);
-
-		if (i == 0)
-		{
-			auto toolAdded = gameData->AddToolToCrew(EToolType::TT_Throwable, (uint8)EThrowable::T_Grenade);
-			gameData->AssignToolToCrew(toolAdded, crewMemberId);
-		}
-	}
-
-	gameData->AddPrimaryToCrew(EGun::G_PeaRifle);
-	gameData->AddPrimaryToCrew(EGun::G_PeaRifle);
-	gameData->AddPrimaryToCrew(EGun::G_PeaRifle);
-
-	gameData->AddToolToCrew(EToolType::TT_Throwable, (uint8)EThrowable::T_Grenade);
-	gameData->AddToolToCrew(EToolType::TT_Throwable, (uint8)EThrowable::T_Grenade);
-	gameData->AddToolToCrew(EToolType::TT_Throwable, (uint8)EThrowable::T_Grenade);
-	gameData->AddToolToCrew(EToolType::TT_Throwable, (uint8)EThrowable::T_Grenade);
-	gameData->AddToolToCrew(EToolType::TT_Throwable, (uint8)EThrowable::T_Grenade);
 }
 
 void UClassicGameMapGenerationRunnable::GenerateWorldLocationData()

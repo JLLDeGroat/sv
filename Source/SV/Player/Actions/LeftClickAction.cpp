@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "LeftClickAction.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "../../Enums/ECharacterEnums.h"
@@ -26,13 +25,14 @@
 #include "../../GameModes/WorldGameMode.h"
 #include "../../GameModes/WorldManagers/WorldDirectionManager.h"
 #include "../../Delegates/HudDelegates.h"
+#include "../../Delegates/WorldDelegates.h"
 #include "../../Delegates/TutorialDelegates.h"
 #include "TargetAction.h"
 #include "OverwatchAction.h"
 #include "HealthKitUseComponent.h"
 
 // Sets default values for this component's properties
-ULeftClickAction::ULeftClickAction(const FObjectInitializer& ObjectInitializer) : UBaseActionComponent(ObjectInitializer)
+ULeftClickAction::ULeftClickAction(const FObjectInitializer &ObjectInitializer) : UBaseActionComponent(ObjectInitializer)
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -44,8 +44,13 @@ ULeftClickAction::ULeftClickAction(const FObjectInitializer& ObjectInitializer) 
 	ValidCameraStates.Emplace(ECameraState::CS_Overwatch);
 	ValidCameraStates.Emplace(ECameraState::CS_ToolUsage);
 	// ...
-}
 
+	bCanWorldNavigate = true;
+
+	auto worldDelegates = UWorldDelegates::GetInstance();
+	if (worldDelegates)
+		worldDelegates->_OnWorldPageChange.AddDynamic(this, &ULeftClickAction::SetCanWorldNavigate);
+}
 
 // Called when the game starts
 void ULeftClickAction::BeginPlay()
@@ -56,8 +61,10 @@ void ULeftClickAction::BeginPlay()
 }
 
 #include "../Components/CameraShakeComponent.h"
-void ULeftClickAction::DoAction() {
-	if (IsWithinValidControlLimiter()) {
+void ULeftClickAction::DoAction()
+{
+	if (IsWithinValidControlLimiter())
+	{
 		ResetActionEffects();
 
 		auto controller = GetOwner<APlayerController>();
@@ -79,21 +86,22 @@ void ULeftClickAction::DoAction() {
 		if (!hudDelegates)
 			return UDebugMessages::LogError(this, "failed to get hud delegates, cannot do left click action");
 
-		if (pawnCameraComponent->GetCurrentCameraState() == ECameraState::CS_GunTarget) {
+		if (pawnCameraComponent->GetCurrentCameraState() == ECameraState::CS_GunTarget)
+		{
 			WhileGunTargetActive(pawnCameraComponent, pawnCamera, pawnOverlapCameraComponent, controller, hudDelegates);
-			//auto targetLocation = FVector::ZeroVector;
-			//FHitResult TestHit;
-			//GetTargetLocation(TestHit, targetLocation, pawnCamera);
+			// auto targetLocation = FVector::ZeroVector;
+			// FHitResult TestHit;
+			// GetTargetLocation(TestHit, targetLocation, pawnCamera);
 
-			//pawnOverlapCameraComponent->ShrinkOverlapComponent();
+			// pawnOverlapCameraComponent->ShrinkOverlapComponent();
 			////DrawDebugLine(GetWorld(), pawnCamera->GetComponentLocation(), targetLocation, FColor::Cyan, false, 60.0f, 0, 5);
 
-			//hudDelegates->_AimTargetVisibility.Broadcast(false);
+			// hudDelegates->_AimTargetVisibility.Broadcast(false);
 
-			//auto selected = SelectionManager->GetSelected();
-			//auto actor = selected->GetAsActor();
-			//auto targetingComponent = actor->GetComponentByClass<UTargetingComponent>();
-			//if (selected && targetingComponent) {
+			// auto selected = SelectionManager->GetSelected();
+			// auto actor = selected->GetAsActor();
+			// auto targetingComponent = actor->GetComponentByClass<UTargetingComponent>();
+			// if (selected && targetingComponent) {
 			//	auto currentTargetData = targetingComponent->GetCurrentMainTarget();
 
 			//	auto equipmentComponent = actor->GetComponentByClass<UEquipmentComponent>();
@@ -154,20 +162,32 @@ void ULeftClickAction::DoAction() {
 
 		//	ControlManager->SetCanMouseDesignateSelectionDecal(true);
 		//}
-		else {
+		else
+		{
 			WhileGeneric(&Hit, hudDelegates);
 		}
 	}
 }
+void ULeftClickAction::SetCanWorldNavigate(bool canNavigate)
+{
+	bCanWorldNavigate = canNavigate;
+}
+void ULeftClickAction::DoWorldAction()
+{
+	if (!bCanWorldNavigate)
+	{
+		UDebugMessages::LogDisplay(this, "cannot do world action, bCanWorldNavigate is false");
+		return;
+	}
 
-void ULeftClickAction::DoWorldAction() {
 	auto controller = GetOwner<APlayerController>();
 	auto pawn = controller->GetPawn();
 
 	FHitResult Hit;
 	controller->GetHitResultUnderCursor(USvUtilities::GetWorldSelectChannel(), false, Hit);
 
-	if (Hit.GetActor()) {
+	if (Hit.GetActor())
+	{
 		auto movementComp = pawn->GetComponentByClass<UWorldPawnMovementComponent>();
 		auto getClickedLocation = Hit.GetActor()->GetActorLocation();
 		getClickedLocation.Z = pawn->GetActorLocation().Z;
@@ -180,28 +200,30 @@ void ULeftClickAction::DoWorldAction() {
 		tutorialDelegates->_OnCompleteTutorial.Broadcast(ETutorials::T_WorldNavigation);
 
 		auto gameMode = GetWorld()->GetAuthGameMode<AWorldGameMode>();
-		if (gameMode && gameMode->GetComponentByClass<UWorldDirectionManager>()) {
+		if (gameMode && gameMode->GetComponentByClass<UWorldDirectionManager>())
+		{
 			auto worldDirectionManager = gameMode->GetComponentByClass<UWorldDirectionManager>();
 			worldDirectionManager->ClearDirections();
 		}
 	}
 }
 
-
-void ULeftClickAction::WhileGunTargetActive(UPawnCameraComponent* cameraComponent, UCameraComponent* camera, UCameraOverlapComponent* cameraOverlap, APlayerController* controller, UHudDelegates* hudDelegates) {
+void ULeftClickAction::WhileGunTargetActive(UPawnCameraComponent *cameraComponent, UCameraComponent *camera, UCameraOverlapComponent *cameraOverlap, APlayerController *controller, UHudDelegates *hudDelegates)
+{
 	auto targetLocation = FVector::ZeroVector;
 	FHitResult TestHit;
 	GetTargetLocation(TestHit, targetLocation, camera);
 
 	cameraOverlap->ShrinkOverlapComponent();
-	//DrawDebugLine(GetWorld(), pawnCamera->GetComponentLocation(), targetLocation, FColor::Cyan, false, 60.0f, 0, 5);
+	// DrawDebugLine(GetWorld(), pawnCamera->GetComponentLocation(), targetLocation, FColor::Cyan, false, 60.0f, 0, 5);
 
 	hudDelegates->_AimTargetVisibility.Broadcast(false);
 
 	auto selected = SelectionManager->GetSelected();
 	auto actor = selected->GetAsActor();
 	auto targetingComponent = actor->GetComponentByClass<UTargetingComponent>();
-	if (selected && targetingComponent) {
+	if (selected && targetingComponent)
+	{
 		auto currentTargetData = targetingComponent->GetCurrentMainTarget();
 
 		auto equipmentComponent = actor->GetComponentByClass<UEquipmentComponent>();
@@ -232,7 +254,8 @@ void ULeftClickAction::WhileGunTargetActive(UPawnCameraComponent* cameraComponen
 		UpdateControlLimit(EControlLimit::CL_NoClick);
 	}
 }
-void ULeftClickAction::WhileThrowTargetActive(UPawnCameraComponent* cameraComponent) {
+void ULeftClickAction::WhileThrowTargetActive(UPawnCameraComponent *cameraComponent)
+{
 	auto selected = SelectionManager->GetSelected();
 	auto actor = selected->GetAsActor();
 
@@ -246,7 +269,8 @@ void ULeftClickAction::WhileThrowTargetActive(UPawnCameraComponent* cameraCompon
 
 	cameraComponent->UpdateCameraState(ECameraState::CS_Throw, FVector::ZeroVector, FVector::ZeroVector, true);
 }
-void ULeftClickAction::WhileOverwatchActive(UPawnCameraComponent* cameraComponent, APlayerController* controller) {
+void ULeftClickAction::WhileOverwatchActive(UPawnCameraComponent *cameraComponent, APlayerController *controller)
+{
 	auto overwatchAction = controller->GetComponentByClass<UOverwatchAction>();
 	if (!overwatchAction)
 		return UDebugMessages::LogError(this, "failed to get overwatch action");
@@ -256,7 +280,8 @@ void ULeftClickAction::WhileOverwatchActive(UPawnCameraComponent* cameraComponen
 
 	ControlManager->SetCanMouseDesignateSelectionDecal(true);
 }
-void ULeftClickAction::WhileToolUseActive(APlayerController* controller) {
+void ULeftClickAction::WhileToolUseActive(APlayerController *controller)
+{
 	FHitResult Hit;
 	controller->GetHitResultUnderCursor(USvUtilities::GetClickableEnvironmentChannel(), false, Hit);
 
@@ -270,9 +295,11 @@ void ULeftClickAction::WhileToolUseActive(APlayerController* controller) {
 	if (!healthKitComponent)
 		return UDebugMessages::LogError(this, "failed to get health kit component");
 
-	if (Hit.GetActor()) {
+	if (Hit.GetActor())
+	{
 		auto indicatingComp = Hit.GetActor()->GetComponentByClass<UIndicatorLinkComponent>();
-		if (indicatingComp && indicatingComp->GetToolIndicatingTo()) {
+		if (indicatingComp && indicatingComp->GetToolIndicatingTo())
+		{
 			auto indicatingActor = indicatingComp->GetToolIndicatingTo();
 			healthKitComponent->BeginUseActiveHealthKitOnActor(indicatingActor);
 
@@ -283,8 +310,10 @@ void ULeftClickAction::WhileToolUseActive(APlayerController* controller) {
 	}
 }
 
-void ULeftClickAction::WhileGeneric(FHitResult* hit, UHudDelegates* hudDelegates) {
-	if (hit->GetActor() && SelectionManager->TrySetSelected(hit->GetActor())) {
+void ULeftClickAction::WhileGeneric(FHitResult *hit, UHudDelegates *hudDelegates)
+{
+	if (hit->GetActor() && SelectionManager->TrySetSelected(hit->GetActor()))
+	{
 		SelectionManager->GetSelected()->TryVisualiseTargets();
 
 		auto actionsComponent = hit->GetActor()->GetComponentByClass<UActionsComponent>();
@@ -295,7 +324,8 @@ void ULeftClickAction::WhileGeneric(FHitResult* hit, UHudDelegates* hudDelegates
 		actionsComponent->SendActionsToUI();
 		hudDelegates->_CheckCharacterTileIsActive.Broadcast(hit->GetActor());
 	}
-	else {
+	else
+	{
 		hudDelegates->_HideOrResetUIWidget.Broadcast();
 		hudDelegates->_ResetCharacterTileWidget.Broadcast();
 	}

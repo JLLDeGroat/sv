@@ -6,29 +6,26 @@
 /**
  *
  */
-class SV_API EConfigurationEnums
-{
-public:
-	template< typename T >
-	static FORCEINLINE FString ToString(T EnumValue)
-	{
-		static_assert(TIsUEnumClass< T >::Value, "'T' template parameter to EnumToString must be a valid UEnum");
-		return StaticEnum< T >()->GetNameStringByIndex((int32)EnumValue);
-	}
-};
-
+class SV_API EConfigurationEnums{
+	public :
+		template <typename T>
+		static FORCEINLINE FString ToString(T EnumValue){
+			static_assert(TIsUEnumClass<T>::Value, "'T' template parameter to EnumToString must be a valid UEnum");
+return StaticEnum<T>()->GetNameStringByIndex((int32)EnumValue);
+}
+}
+;
 
 UENUM(BlueprintType)
-enum class EGameModeType : uint8 {
+enum class EGameModeType : uint8
+{
 	INVALID = 0,
 	EMT_Classic = 1,
 };
 
-
-
-
 UENUM(BlueprintType)
-enum class EStockCategory : uint8 {
+enum class EStockCategory : uint8
+{
 	INVALID = 0,
 	SC_Primary,
 	SC_Secondary,
@@ -37,7 +34,8 @@ enum class EStockCategory : uint8 {
 };
 
 UENUM(BlueprintType)
-enum class ETutorials : uint8 {
+enum class ETutorials : uint8
+{
 	INVALID = 0,
 	T_WorldNavigation = 1,
 	T_EquipmentSelect = 2,
@@ -45,7 +43,8 @@ enum class ETutorials : uint8 {
 };
 
 UENUM(BlueprintType)
-enum class EOverwatchResult :uint8 {
+enum class EOverwatchResult : uint8
+{
 	INVALID = 0,
 	OR_Started = 1,
 	OR_Delay = 2,
@@ -53,7 +52,8 @@ enum class EOverwatchResult :uint8 {
 };
 
 UENUM(BlueprintType)
-enum class EMovementType :uint8 {
+enum class EMovementType : uint8
+{
 	INVALID = 0,
 	MT_Horizontal,
 	MT_Vertical_UP,
@@ -61,8 +61,17 @@ enum class EMovementType :uint8 {
 };
 
 UENUM(BlueprintType)
-enum class EClimbType :uint8 {
+enum class EClimbType : uint8
+{
 	INVALID = 0,
 	CT_Up = 1,
 	CT_Down = 2,
+};
+
+UENUM(BlueprintType)
+enum class EDDType : uint8
+{
+	INVALID = 0,
+	DD_Deviation = 1,
+	DD_Directive = 2
 };

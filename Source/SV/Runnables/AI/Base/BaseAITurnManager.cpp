@@ -67,6 +67,7 @@ void UBaseAITurnManager::SetCheckerHasCompleted() {
 }
 
 void UBaseAITurnManager::SetHasFinishedTurnEarly() {
+	SetCheckerHasCompleted();
 	HasFinishedTurnEarly = true;
 }
 bool UBaseAITurnManager::GetHasFinishedTurnEarly() {

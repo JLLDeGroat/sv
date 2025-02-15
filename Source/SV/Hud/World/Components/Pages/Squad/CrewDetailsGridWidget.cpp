@@ -5,6 +5,7 @@
 #include "../../../../../Instance/SvGameInstance.h"
 #include "../../../../../Instance/Managers/CurrentGameDataManager.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
+#include "SubComponents/CrewDetailsGridStatWidget.h"
 #include "Components/Image.h"
 #include "Components/Button.h"
 #include "../../../../Helpers/UserWidgetHelpers.h"
@@ -46,7 +47,7 @@ void UCrewDetailsGridWidget::NativeConstruct()
 
 	CurrentCrewId = FGuid::FGuid();
 }
-#pragma optimize("", off)
+
 void UCrewDetailsGridWidget::InitialiseGridForCrewMember(FGuid crewMember)
 {
 	auto instance = USvUtilities::GetGameInstance(GetWorld());
@@ -88,8 +89,15 @@ void UCrewDetailsGridWidget::InitialiseGridForCrewMember(FGuid crewMember)
 		else
 			return UDebugMessages::LogError(this, "failed to get equpment image" + FString::SanitizeFloat(toolSlot, 0));
 	}
+
+	auto map = TMap<FString, int>();
+	auto stats = crewMemberData->GetStats();
+	map.Emplace("Missions:", stats->GetMissionsCompleted());
+	map.Emplace("Kills:", stats->GetKills());
+	map.Emplace("Damage:", stats->GetTotalDamage());
+
+	CrewStatWidget->SetDetailsForCrew(crewMemberData->GetDirectivesAndDeviations(), map);
 }
-#pragma optimize("", on)
 
 void UCrewDetailsGridWidget::PrimaryClicked()
 {

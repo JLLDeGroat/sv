@@ -12,6 +12,7 @@
 #include "../../Characters/Components/EquipmentComponent.h"
 #include "../../Characters/Components/ThrowableComponent.h"
 #include "../../Characters/Components/CharacterCaptureComponent.h"
+#include "../../Characters/Components/HealthAndStatusWidgetComponent.h"
 #include "../../Equipment/Equipment.h"
 #include "../../Equipment/Components/EquipmentDetailsComponent.h"
 
@@ -110,8 +111,15 @@ UBaseGenerations *UPlayerGeneration::Generate()
 						return;
 					}
 
+					UDebugMessages::LogDisplay(self, "Gen CrewName " + crewName);
+
 					characterDetailsComponent->SetCharacterId(creMemberId);
 					characterDetailsComponent->SetCharacterName(crewName);
+
+					auto healthAndStatusComponent = actor->GetComponentByClass<UHealthAndStatusWidgetComponent>();
+					if (healthAndStatusComponent)
+						healthAndStatusComponent->UpdateStatusWidgetData();
+
 					// updating camera state to look at this one
 					cameraComponent->UpdateCameraState(ECameraState::CS_ReTarget, loc);
 

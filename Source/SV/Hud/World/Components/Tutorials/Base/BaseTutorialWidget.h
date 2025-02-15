@@ -8,6 +8,7 @@
 #include "BaseTutorialWidget.generated.h"
 
 class UTextBlock;
+class UBorder;
 class UButton;
 
 UCLASS()
@@ -16,19 +17,26 @@ class SV_API UBaseTutorialWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-
 	virtual void NativeConstruct() override;
 
 protected:
+	UPROPERTY(meta = (BindWidget))
+	UButton *ConfirmBtn;
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock *TutDetails;
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock *TutTitle;
+	UPROPERTY(meta = (BindWidget))
+	UBorder *TutorialBorder;
 
-	UPROPERTY(meta = (BindWidget)) UButton* ConfirmBtn;
-	UPROPERTY(meta = (BindWidget)) UTextBlock* TutDetails;
-	UPROPERTY(meta = (BindWidget)) UTextBlock* TutTitle;
+	UFUNCTION()
+	void TryShowWidget(ETutorials tutorial);
+	UFUNCTION()
+	void TryCompleteTutorial(ETutorials tutorial);
 
-	UFUNCTION() void TryShowWidget(ETutorials tutorial);
-	UFUNCTION() void TryCompleteTutorial(ETutorials tutorial);
+	UPROPERTY()
+	ETutorials TutorialEnum;
 
-	UPROPERTY() ETutorials TutorialEnum;
-
-	UFUNCTION() void OnConfirmClick();
+	UFUNCTION()
+	void OnConfirmClick();
 };

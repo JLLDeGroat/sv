@@ -8,7 +8,8 @@
  * 
  */
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWorldMovementComplete, FVector2D, MovedToLocationo);
+ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWorldMovementComplete, FVector2D, MovedToLocationo);
+ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWorldPageChange, bool, CanWorldNavigate);
 
 UCLASS()
 class SV_API UWorldDelegates : public UObject
@@ -25,4 +26,5 @@ public:
 	}
 
 	FOnWorldMovementComplete _OnWorldMovementComplete;
+	FOnWorldPageChange _OnWorldPageChange;
 };

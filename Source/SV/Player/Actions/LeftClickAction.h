@@ -20,20 +20,23 @@ class SV_API ULeftClickAction : public UBaseActionComponent
 
 public:
 	// Sets default values for this component's properties
-	ULeftClickAction(const FObjectInitializer& ObjectInitializer);
+	ULeftClickAction(const FObjectInitializer &ObjectInitializer);
 
 	virtual void BeginPlay() override;
 	void DoAction();
 	void DoWorldAction();
 
+protected:
+	UPROPERTY()
+	bool bCanWorldNavigate;
+
+	UFUNCTION() void SetCanWorldNavigate(bool canNavigate);
 
 private:
+	void WhileGunTargetActive(UPawnCameraComponent *cameraComponent, UCameraComponent *camera, UCameraOverlapComponent *cameraOverlap, APlayerController *controller, UHudDelegates *hudDelegates);
+	void WhileThrowTargetActive(UPawnCameraComponent *cameraComponent);
+	void WhileOverwatchActive(UPawnCameraComponent *cameraComponent, APlayerController *controller);
+	void WhileToolUseActive(APlayerController *controller);
 
-	void WhileGunTargetActive(UPawnCameraComponent* cameraComponent, UCameraComponent* camera, UCameraOverlapComponent* cameraOverlap, APlayerController* controller, UHudDelegates* hudDelegates);
-	void WhileThrowTargetActive(UPawnCameraComponent* cameraComponent);
-	void WhileOverwatchActive(UPawnCameraComponent* cameraComponent, APlayerController* controller);
-	void WhileToolUseActive(APlayerController* controller);
-
-	void WhileGeneric(FHitResult* hit, UHudDelegates* hudDelegates);
-
+	void WhileGeneric(FHitResult *hit, UHudDelegates *hudDelegates);
 };

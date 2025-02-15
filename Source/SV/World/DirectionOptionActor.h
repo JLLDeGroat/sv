@@ -23,14 +23,18 @@ public:
 	void ActivateArrowEmission();
 	void DeactivateArrowEmission();
 
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) UDecalComponent* ArrowDecalComponent;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) UBoxComponent* ClickBoxComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UDecalComponent *ArrowDecalComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UBoxComponent *ClickBoxComponent;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) UMaterialInstanceDynamic* DynamicInstance;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UMaterialInstanceDynamic *DynamicInstance;
 
+	UFUNCTION()
+	void OnCanWorldNavigateChange(bool CanNavigate);
 };

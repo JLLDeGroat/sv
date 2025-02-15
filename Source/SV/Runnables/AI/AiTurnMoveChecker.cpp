@@ -24,8 +24,11 @@ void UAiTurnMoveChecker::ActivateThread()
 
 	MovementBehaviour = CreateBehaviourClass(aiComponent->GetMovementRoute());
 	if (!MovementBehaviour)
-		return UDebugMessages::LogError(this, "found no melee movement behaviour");
-
+	{
+		UDebugMessages::LogError(this, "found no melee movement behaviour");
+		SetHasFinishedTurnEarly();
+		return;
+	}
 	MovementBehaviour->DoBehaviour();
 
 	while (!MovementBehaviour->GetCompletedBehaviourAndWaitIfNot(.1f) && bIsAlive)

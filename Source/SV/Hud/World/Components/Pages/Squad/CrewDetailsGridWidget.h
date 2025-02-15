@@ -8,7 +8,7 @@
 
 class UImage;
 class UButton;
-
+class UCrewDetailsGridStatWidget; 
 
 UCLASS()
 class SV_API UCrewDetailsGridWidget : public UUserWidget
@@ -27,6 +27,8 @@ protected:
 	UPROPERTY(meta = (BindWidget)) UUserWidget* EquipmentSlot1;
 	UPROPERTY(meta = (BindWidget)) UUserWidget* EquipmentSlot2;
 	UPROPERTY(meta = (BindWidget)) UUserWidget* EquipmentSlot3;
+
+	UPROPERTY(meta = (BindWidget)) UCrewDetailsGridStatWidget* CrewStatWidget;
 
 	UPROPERTY(meta = (BindWidget)) UImage* PrimaryImage;
 	UPROPERTY(meta = (BindWidget)) UImage* SecondaryImage;

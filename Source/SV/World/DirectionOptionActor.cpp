@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "DirectionOptionActor.h"
 #include "Components/BoxComponent.h"
 #include "Components/DecalComponent.h"
 #include "../Utilities/SvUtilities.h"
+#include "../Delegates/WorldDelegates.h"
 
 // Sets default values
 ADirectionOptionActor::ADirectionOptionActor()
@@ -30,26 +30,37 @@ ADirectionOptionActor::ADirectionOptionActor()
 	DynamicInstance->SetVectorParameterValue("DecalColour", FVector(0, 0.771772f, .8333333f));
 	if (material)
 		ArrowDecalComponent->SetMaterial(0, DynamicInstance);
+
+	auto worldInstance = UWorldDelegates::GetInstance();
+	if (worldInstance)
+		worldInstance->_OnWorldPageChange.AddDynamic(this, &ADirectionOptionActor::OnCanWorldNavigateChange);
 }
 
 // Called when the game starts or when spawned
 void ADirectionOptionActor::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 // Called every frame
 void ADirectionOptionActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
-void ADirectionOptionActor::ActivateArrowEmission() {
-	DynamicInstance->SetScalarParameterValue("Emission", 5);
+void ADirectionOptionActor::ActivateArrowEmission()
+{
+	DynamicInstance->SetScalarParameterValue("Emission", 2.5);
 }
-void ADirectionOptionActor::DeactivateArrowEmission() {
-	DynamicInstance->SetScalarParameterValue("Emission", 1.5f);
+void ADirectionOptionActor::DeactivateArrowEmission()
+{
+	DynamicInstance->SetScalarParameterValue("Emission", .5f);
 }
 
+void ADirectionOptionActor::OnCanWorldNavigateChange(bool CanNavigate)
+{
+	if (CanNavigate)
+		DeactivateArrowEmission();
+	else
+		DynamicInstance->SetScalarParameterValue("Emission", 0);
+}

@@ -33,6 +33,8 @@ public:
 	void TakenDamage(int amount);
 	void TakenStatusEffect(FString status);
 
+	void UpdateStatusWidgetData();
+
 protected:
 
 	UFUNCTION() void InternalHealthChangeCallback();
