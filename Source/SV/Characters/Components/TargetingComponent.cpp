@@ -198,7 +198,7 @@ TArray<FVector> UTargetingComponent::GetPotentialShootingLocations(bool includeC
 
 	auto gridMovementComponent = GetOwner()->GetComponentByClass<UGridMovementComponent>();
 	if (gridMovementComponent)
-		gridMovementComponent->GetMovableAdjacentTiles(startingLocation, locations, FVector::ZeroVector, true);
+		gridMovementComponent->GetMovableAdjacentTiles(startingLocation, locations, FVector::ZeroVector, true, true, true);
 
 	TArray<FVector> finalLocations;
 	if (includeCurrentLocation)

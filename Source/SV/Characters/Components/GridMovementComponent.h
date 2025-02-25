@@ -77,12 +77,13 @@ public:
 
 	bool MoveAcrossGrid(TArray<FVector> movementLocs);
 	void MovementLoop();
+	
 	void MoveAcrossGridPostClimb();
 
 	TArray<FVector> FindRoute(FVector start, FVector end, bool bisAI = false);
 	TArray<FVector> FindQuickestRoute(FVector start, FVector end, bool bisAI = false);
 
-	bool GetMovableAdjacentTiles(FVector start, TArray<FVector>& ValidAdjacentTiles, FVector orderByDistanceLoc = FVector::ZeroVector, bool bIgnoreVaultables = false);
+	bool GetMovableAdjacentTiles(FVector start, TArray<FVector>& ValidAdjacentTiles, FVector orderByDistanceLoc = FVector::ZeroVector, bool bIgnoreVaultables = false, bool bIgnoreTraversals = false, bool bIgnoreSkippables = false);
 
 	void ResetMovementSpeed();
 	void UpdateMovementSpeed(float speed);

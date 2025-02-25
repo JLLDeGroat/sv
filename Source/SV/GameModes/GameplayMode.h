@@ -52,7 +52,6 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) ULevelSpawnerManager* LevelSpawnerManager;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UObjectivesManager* ObjectivesManager;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UOverwatchManager* OverwatchManager;
-	UPROPERTY() UBaseRunnable* LevelGenThread;
 	UPROPERTY() UWinLossCheckerRunnable* WinLossCheckerThread;
 	UPROPERTY() TArray<UStatUpdateRunnable*> StatRunnables;
 };

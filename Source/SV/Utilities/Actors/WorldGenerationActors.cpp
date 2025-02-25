@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "WorldGenerationActors.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "../SvUtilities.h"
@@ -8,6 +7,9 @@
 #include "../../Runnables/Checkers/WinLossCheckerRunnable.h"
 #include "../../Environment/EnvironmentActor.h"
 #include "../../World/WorldGridItemActor.h"
+#include "../../Environment/Ceiling/CeilingAmbiantLight.h"
+#include "../../Environment/Ceiling/CeilingStalagtite.h"
+#include "../../Environment/Flooring/MudFloor.h"
 #include "GameFramework/Character.h"
 // Sets default values
 AWorldGenerationActors::AWorldGenerationActors()
@@ -22,49 +24,93 @@ AWorldGenerationActors::AWorldGenerationActors()
 	auto mesh = USvUtilities::GetStaticMesh("/Script/Engine.StaticMesh'/Engine/BasicShapes/Sphere.Sphere'");
 	if (mesh)
 		RootMesh->SetStaticMesh(mesh);
+
+	bShouldGenerate = true;
 }
 
-
-void AWorldGenerationActors::GenericLevel() {
+void AWorldGenerationActors::BeginPlay()
+{
+	Super::BeginPlay();
+	if (!bShouldGenerate)
+	{
+		UDebugMessages::LogWarning(this, "Should Generate is set to false");
+		return;
+	}
 	TearDownCurrentGen();
-
 	auto newLevel = NewObject<ULevelGenerationRunnable>()
-		->InsertVariables(ELevelGenType::Generic)
-		->Initialise(GetWorld(), FMath::RandRange(0, 999999))
-		->Begin();
+						->InsertVariables(ELevelGenType::TwoBuilding)
+						->Initialise(GetWorld())
+						->Begin();
 }
 
-void AWorldGenerationActors::TwoBuildingLevel() {
+void AWorldGenerationActors::GenericLevel()
+{
+	if (!bShouldGenerate)
+	{
+		UDebugMessages::LogWarning(this, "Should Generate is set to false");
+		return;
+	}
 	TearDownCurrentGen();
 
-	if (BaseRunnable) {
+	if (BaseRunnable)
+	{
 		BaseRunnable->KillThread();
 		BaseRunnable->EnsureCompletion();
 	}
 
 	BaseRunnable = NewObject<ULevelGenerationRunnable>()
-		->InsertVariables(ELevelGenType::TwoBuilding)
-		->Initialise(GetWorld(), FMath::RandRange(0, 999999))
-		->Begin();
+					   ->InsertVariables(ELevelGenType::Generic)
+					   ->Initialise(GetWorld(), FMath::RandRange(0, 999999))
+					   ->Begin();
 }
 
+void AWorldGenerationActors::TwoBuildingLevel()
+{
+	if (!bShouldGenerate)
+	{
+		UDebugMessages::LogWarning(this, "Should Generate is set to false");
+		return;
+	}
+	TearDownCurrentGen();
 
+	if (BaseRunnable)
+	{
+		BaseRunnable->KillThread();
+		BaseRunnable->EnsureCompletion();
+	}
 
-void AWorldGenerationActors::TearDownCurrentGen() {
+	BaseRunnable = NewObject<ULevelGenerationRunnable>()
+					   ->InsertVariables(ELevelGenType::TwoBuilding)
+					   ->Initialise(GetWorld(), FMath::RandRange(0, 999999))
+					   ->Begin();
+}
+
+void AWorldGenerationActors::TearDownCurrentGen()
+{
 	auto actors = GetWorld()->GetCurrentLevel()->Actors;
 
 	auto totalActors = actors.Num() - 1;
-	for (int i = totalActors; i > 0; i--) {
-		if (actors[i]) {
-			if (actors[i]->IsA<AEnvironmentActor>()) {
+	for (int i = totalActors; i > 0; i--)
+	{
+		if (actors[i])
+		{
+			if (actors[i]->IsA<AEnvironmentActor>())
+			{
+				if (actors[i]->IsA<ACeilingAmbiantLight>() ||
+					actors[i]->IsA<ACeilingStalagtite>() ||
+					actors[i]->IsA<AMudFloor>())
+					continue;
+
 				actors[i]->Destroy();
 				continue;
 			}
-			if (actors[i]->IsA<ACharacter>()) {
+			if (actors[i]->IsA<ACharacter>())
+			{
 				actors[i]->Destroy();
 				continue;
 			}
-			if (actors[i]->IsA<AWorldGridItemActor>()) {
+			if (actors[i]->IsA<AWorldGridItemActor>())
+			{
 				actors[i]->Destroy();
 				continue;
 			}
@@ -72,9 +118,10 @@ void AWorldGenerationActors::TearDownCurrentGen() {
 	}
 }
 
-
-void AWorldGenerationActors::BeginDestroy() {
-	if (BaseRunnable) {
+void AWorldGenerationActors::BeginDestroy()
+{
+	if (BaseRunnable)
+	{
 		BaseRunnable->KillThread();
 		BaseRunnable->EnsureCompletion();
 	}
@@ -82,16 +129,21 @@ void AWorldGenerationActors::BeginDestroy() {
 	Super::BeginDestroy();
 }
 
-void AWorldGenerationActors::RunWinLossRunnable() {
+void AWorldGenerationActors::RunWinLossRunnable()
+{
 	USvUtilities::AttemptToStartWinLossChecker(GetWorld());
 }
 
-void AWorldGenerationActors::DestroyAllDebugActors() {
+void AWorldGenerationActors::DestroyAllDebugActors()
+{
 	auto actors = GetWorld()->GetCurrentLevel()->Actors;
 	auto totalActors = actors.Num() - 1;
-	for (int i = totalActors; i > 0; i--) {
-		if (actors[i]) {
-			if (actors[i]->IsA<AWorldGridItemActor>()) {
+	for (int i = totalActors; i > 0; i--)
+	{
+		if (actors[i])
+		{
+			if (actors[i]->IsA<AWorldGridItemActor>())
+			{
 				actors[i]->Destroy();
 				continue;
 			}

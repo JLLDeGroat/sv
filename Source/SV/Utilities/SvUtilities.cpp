@@ -120,6 +120,10 @@ UTextureRenderTarget2D *USvUtilities::GetRenderTarget2D(int targetNumber)
 	return LoadedRenderTarget;
 	// return Cast<UTextureRenderTarget2D>(StaticLoadObject(UTextureRenderTarget2D::StaticClass(), NULL, *reference, NULL, LOAD_None, NULL));
 }
+UObject *USvUtilities::GetBlueprintActor(FString reference)
+{
+	return StaticLoadClass(UObject::StaticClass(), nullptr, *reference);
+}
 
 float USvUtilities::GetGridGape() { return 100.0f; }
 

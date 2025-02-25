@@ -47,6 +47,8 @@ protected:
 	int HealthKitAmount;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawner Debug Options")
 	int TakeImmediateDamage;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawner Debug Options")
+	bool StartActivated;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawner Debug Options")
 	TArray<TSubclassOf<UBaseDD>> DirectivesAndDeviations;

@@ -22,6 +22,8 @@ public:
 	void SetIsOffshoot();
 	void SetIsSpawn();
 	void SetIsObstacle();
+	void SetIsWall();
+	void SetIsDebris();
 
 	void SetAutoDestroy(float timer = 1.0f);
 protected:

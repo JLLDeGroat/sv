@@ -9,6 +9,7 @@
 #include "../../Characters/Components/CharacterCaptureComponent.h"
 #include "../../Equipment/Components/EquipmentDetailsComponent.h"
 #include "../../Characters/Components/DamageRecieveComponent.h"
+#include "../../Characters/Components/AIComponent.h"
 #include "../../Characters/Components/HealthKitsComponent.h"
 #include "../../Characters/DAndD/Base/BaseDD.h"
 #include "../../Characters/DandD/DeviantDirectiveComponent.h"
@@ -62,6 +63,13 @@ void ACharacterSpawnerActor::BeginPlay()
 			if (SecondaryGunType != EGun::INVALID && equipmentComponent)
 			{
 				equipmentComponent->EquipSecondary(SecondaryGunType);
+			}
+
+			if (StartActivated)
+			{
+				auto aiComp = actor->GetComponentByClass<UAIComponent>();
+				if (aiComp)
+					aiComp->SetIsAiActive(true);
 			}
 
 			auto characterDetails = actor->GetComponentByClass<UCharacterDetailsComponent>();

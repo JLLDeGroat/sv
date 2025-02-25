@@ -82,7 +82,7 @@ void UModularSkeletonComponent::AddDebuffOnDestroy(EDebuffType debuff, float amo
 TMap<EDebuffType, float> UModularSkeletonComponent::GetDebuffsOnDestruction() {
 	return DebuffsOnDestroy;
 }
-#pragma optimize("", off)
+
 void UModularSkeletonComponent::SetupStaticMeshComp(USkeletalMeshComponent* skeleMeshComp, FString meshref, FVector loc, FRotator rot) {
 	auto geoCollection = USvUtilities::GetGeometryCollection(meshref);
 	if (geoCollection) {
@@ -102,7 +102,7 @@ void UModularSkeletonComponent::SetupStaticMeshComp(USkeletalMeshComponent* skel
 		DestructibleMesh->SetRelativeRotation(rot);
 	}
 }
-#pragma optimize("", on)
+
 void UModularSkeletonComponent::DestroyModularComponent(FVector direction) {
 	SetVisibility(false);
 	DestructibleMesh->SetVisibility(true);

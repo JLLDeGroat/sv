@@ -58,6 +58,9 @@ public:
 	void SetCanVault(bool value);
 	bool GetCanVault();
 
+	void SetCanSkip(bool value);
+	bool GetCanSkip();
+
 	void SetCharacterName(FString name);
 	FString GetCharacterName();
 
@@ -83,6 +86,7 @@ private:
 	UPROPERTY() int ActionPoints;
 	UPROPERTY() int MaxActionPoints;
 	UPROPERTY() bool bCanVault;
+	UPROPERTY() bool bCanSkip;
 	UPROPERTY() FString CharacterName;
 	UPROPERTY() FGuid CharacterId;
 	UPROPERTY() ETargetIcon TargetIcon;

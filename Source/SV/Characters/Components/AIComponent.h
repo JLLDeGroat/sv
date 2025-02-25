@@ -22,6 +22,9 @@ public:
 
 	void SetActivationRadius(float radius);
 
+	UFUNCTION(CallInEditor, category = "editor")
+	void SetIsAiActive_Editor();
+
 	void SetIsAiActive(bool val);
 	bool GetIsActiveAi();
 

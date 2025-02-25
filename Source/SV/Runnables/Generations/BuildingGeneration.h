@@ -6,43 +6,31 @@
 #include "Base/BaseGenerations.h"
 #include "BuildingGeneration.generated.h"
 
-/**
- *
- */
 UCLASS()
 class SV_API UBuildingGeneration : public UBaseGenerations
 {
 	GENERATED_BODY()
 
 public:
-
 	UBuildingGeneration();
 
-	virtual UBaseGenerations* Generate() override;
+	virtual UBaseGenerations *Generate() override;
 
-	UBuildingGeneration* SetXandYWidth(int x, int y);
-	UBuildingGeneration* SetAmountToGenerate(int amount);
+	UBuildingGeneration *SetAmountToGenerate(int amount);
 
 	TArray<FVector> GetDoorLocations();
-
 private:
+	FString GeneratePrefabTemplateLocations();
 
-	TArray<FVector> GetBuildingRequiredLocations();
-	void BuildWall(FVector loc, FRotator rot = FRotator::ZeroRotator);
-	void BuildDoor(FVector loc, FVector offset, FRotator rot = FRotator::ZeroRotator);
-	void BuildWindow(FVector loc, FRotator rot = FRotator::ZeroRotator);
-	void BuildFloor(FVector loc);
+	UPROPERTY()
+	TArray<FVector> DoorLocations;
+	UPROPERTY()
+	TArray<FVector> ThisBuildingsDoors;
 
-	bool ShouldBuildWindow();
-
-	UPROPERTY() TArray<FVector> DoorLocations;
-	UPROPERTY() TArray<FVector> ThisBuildingsDoors;
-
-	UPROPERTY() int XWidth = 0;
-	UPROPERTY() int YWidth = 0;
-	UPROPERTY() int AmountToGenerate;
-	UPROPERTY() int AmountGenerated;
-
-	void GenerateBuildingPoint(FVector loc, bool& bgeneratedLeftWindows, bool& bgeneratedRighttWindows, bool& bgeneratedUpWindows, bool& bgeneratedDownWindows, bool& generatedDoor);
+	
+	UPROPERTY()
+	int AmountToGenerate;
+	UPROPERTY()
+	int AmountGenerated;
 
 };

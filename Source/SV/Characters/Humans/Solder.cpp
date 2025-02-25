@@ -26,6 +26,7 @@
 #include "../Components/HealthKitsComponent.h"
 #include "../Components/FogHandlerComponent.h"
 #include "../Components/ClimbLadderComponent.h"
+#include "../Components/SkipObstacleComponent.h"
 #include "../DandD/DeviantDirectiveComponent.h"
 
 // Sets default values
@@ -72,6 +73,7 @@ ASolder::ASolder(const FObjectInitializer &ObjectInitializer) : ABaseCharacter(O
 	DetailsComponent->AddActionPoints(2);
 
 	DetailsComponent->SetCanVault(true);
+	DetailsComponent->SetCanSkip(true);
 
 	AnimSpeedComponent = CreateDefaultSubobject<UAnimSpeedComponent>(TEXT("AnimSpeed"));
 	ThrowableComponent = CreateDefaultSubobject<UThrowableComponent>(TEXT("Throwable"));
@@ -107,7 +109,6 @@ ASolder::ASolder(const FObjectInitializer &ObjectInitializer) : ABaseCharacter(O
 	LeftForeArmHitComponent->SetRelativeLocation(FVector(16, 1, 1.6f));
 	LeftForeArmHitComponent->SetCapsuleRadius(5, false);
 	LeftForeArmHitComponent->SetCapsuleHalfHeight(20, false);
-	;
 
 	RightArmHitComponent = CreateDefaultSubobject<UHitCapsuleComponent>(TEXT("RightArmHit"));
 	RightArmHitComponent->SetupAttachment(GetMesh(), FName("RightArmSocket"));
@@ -187,6 +188,8 @@ ASolder::ASolder(const FObjectInitializer &ObjectInitializer) : ABaseCharacter(O
 	ClimbLadderComponent = CreateDefaultSubobject<UClimbLadderComponent>(TEXT("ClimbLadder"));
 
 	DDComponent = CreateDefaultSubobject<UDeviantDirectiveComponent>(TEXT("DeviantDirectives"));
+
+	SkipObstacleComponent = CreateDefaultSubobject<USkipObstacleComponent>(TEXT("SkipObstacleComponent"));
 }
 
 // Called when the game starts or when spawned

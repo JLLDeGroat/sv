@@ -30,11 +30,6 @@ AGameplayMode::AGameplayMode()
 void AGameplayMode::BeginPlay()
 {
 	Super::BeginPlay();
-
-	LevelGenThread = NewObject<ULevelGenerationRunnable>()
-						 ->InsertVariables(ELevelGenType::TwoBuilding)
-						 ->Initialise(GetWorld())
-						 ->Begin();
 }
 
 UObjectivesManager *AGameplayMode::GetObjectivesManager()

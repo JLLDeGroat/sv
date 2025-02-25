@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "BulletCollisionComponent.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "../../../Utilities/SvUtilities.h"
@@ -20,12 +19,15 @@
 #include "../../../Environment/EnvironmentActor.h"
 #include "../../../Environment/Components/EnvironmentDetailsComponent.h"
 
+#include "../../../Environment/Destructibles/Components/DestructibleDetails.h"
+#include "../../../Environment/Destructibles/Components/DestructibleHitComponent.h"
+
 #include "../../../Effects/BloodHitEffect.h"
 #include "../../../Effects/BloodSpatterDecal.h"
 
-
-UBulletCollisionComponent::UBulletCollisionComponent(const FObjectInitializer& ObjectInitializer)
-	: UCapsuleComponent(ObjectInitializer) {
+UBulletCollisionComponent::UBulletCollisionComponent(const FObjectInitializer &ObjectInitializer)
+	: UCapsuleComponent(ObjectInitializer)
+{
 	SetCanEverAffectNavigation(false);
 	SetGenerateOverlapEvents(true);
 
@@ -39,9 +41,9 @@ UBulletCollisionComponent::UBulletCollisionComponent(const FObjectInitializer& O
 	OnComponentBeginOverlap.AddDynamic(this, &UBulletCollisionComponent::Overlapped);
 }
 
-#pragma optimize("", off)
-void UBulletCollisionComponent::Overlapped(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
+void UBulletCollisionComponent::Overlapped(UPrimitiveComponent *OverlappedComp, AActor *OtherActor, UPrimitiveComponent *OtherComp,
+										   int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult)
+{
 	if (bIsDisabled)
 		return;
 
@@ -50,70 +52,82 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent* OverlappedComp, 
 		return UDebugMessages::LogWarning(this, "collision happened before setup, ignoring");
 
 	UDebugMessages::LogDisplay(this, "overlapped " + OtherActor->GetName() + " comp: " + OtherComp->GetName());
-	//DrawDebugLine(GetWorld(), GetOwner()->GetActorLocation(), OtherComp->GetComponentLocation(), FColor::Red, false, 50, 0, 0);
+	// DrawDebugLine(GetWorld(), GetOwner()->GetActorLocation(), OtherComp->GetComponentLocation(), FColor::Red, false, 50, 0, 0);
 
-	if (OtherComp->Implements<UHitComponent>()) {
-		if (FVector::Dist(GetOwner()->GetActorLocation(), OtherComp->GetComponentLocation()) > 50) {
+	if (OtherComp->Implements<UHitComponent>())
+	{
+		if (FVector::Dist(GetOwner()->GetActorLocation(), OtherComp->GetComponentLocation()) > 50)
+		{
 			GetOwner()->SetActorLocation(OtherComp->GetComponentLocation());
 			UDebugMessages::LogWarning(this, "bullet was to far away, moved to the component");
 		}
 
 		TScriptInterface<IHitComponent> hitComp = OtherComp;
+		auto damageDone = 0;
 		auto damageRecieve = OtherActor->GetComponentByClass<UDamageRecieveComponent>();
 		auto otherCharacterDetails = OtherActor->GetComponentByClass<UCharacterDetailsComponent>();
-		auto damageDone = 0;
 
-		if (!bulletDetails || !damageRecieve || !otherCharacterDetails || bulletDetails->GetPenetrationAbility() <= 0) {
+		if (!bulletDetails || !damageRecieve || !otherCharacterDetails || bulletDetails->GetPenetrationAbility() <= 0)
+		{
 			bIsDisabled = true;
 			GetWorld()->GetTimerManager().SetTimer(DestroyTimer, this, &UBulletCollisionComponent::OnDestroyCallback, 5.0f, false);
 			return UDebugMessages::LogError(this, "no bullet details, damage recieve or character details, or has 0 penetration ERROR, will do no damage");
 		}
-		else {
+		else
+		{
 			bulletDetails->RemoveFromPenetrationAbility(hitComp->GetThickness());
 
 			auto damageMultiplier = hitComp->GetHitDamageMultiplier();
 			auto baseDamage = bulletDetails->GetBaseDamage();
 
-			if (!otherCharacterDetails->GetIsDead()) {
+			if (!otherCharacterDetails->GetIsDead())
+			{
 				damageDone = damageRecieve->DoDamage(damageMultiplier, baseDamage,
-					bulletDetails->GetBaseImpulse(), GetOwner()->GetActorRotation());
+													 bulletDetails->GetBaseImpulse(), GetOwner()->GetActorRotation());
 				UDebugMessages::LogDisplay(this, "bullet did " + FString::SanitizeFloat(damageDone, 0) + " damage");
 				AttemptToInitiateBulletSound();
 
-				if (hitComp->GetModularComponent()) {
+				if (hitComp->GetModularComponent())
+				{
 					hitComp->DamageModularComponent(damageMultiplier * baseDamage, GetOwner()->GetActorRotation().Vector());
 				}
 			}
 		}
-		//TODO:
-		//Create Blood spatter
-		if (otherCharacterDetails->GetBloodType() == EBloodType::BT_RedBlood) {
+		// TODO:
+		// Create Blood spatter
+		if (otherCharacterDetails->GetBloodType() == EBloodType::BT_RedBlood)
+		{
 			FHitResult bloodSpatterResult;
 			GetWorld()->LineTraceSingleByChannel(bloodSpatterResult, GetOwner()->GetActorLocation(),
-				GetOwner()->GetActorLocation() + GetOwner()->GetActorForwardVector() * 100,
-				USvUtilities::GetEnvironmentChannel());
+												 GetOwner()->GetActorLocation() + GetOwner()->GetActorForwardVector() * 100,
+												 USvUtilities::GetEnvironmentChannel());
 
-			if (bloodSpatterResult.bBlockingHit) {
+			if (bloodSpatterResult.bBlockingHit)
+			{
 				auto wallSpatterActor = GetWorld()->SpawnActor<ABloodSpatterDecal>(bloodSpatterResult.ImpactPoint, bloodSpatterResult.ImpactNormal.Rotation());
 				if (!wallSpatterActor)
 					UDebugMessages::LogError(this, "failed to create wall spatter");
-				else wallSpatterActor->SetupForWall();
+				else
+					wallSpatterActor->SetupForWall();
 			}
-			else {
+			else
+			{
 				GetWorld()->LineTraceSingleByChannel(bloodSpatterResult, GetOwner()->GetActorLocation(),
-					(GetOwner()->GetActorLocation() - FVector(0, 0, 200)) + GetOwner()->GetActorForwardVector() * 250,
-					USvUtilities::GetFloorTargetChannel());
+													 (GetOwner()->GetActorLocation() - FVector(0, 0, 200)) + GetOwner()->GetActorForwardVector() * 250,
+													 USvUtilities::GetFloorTargetChannel());
 
-				if (bloodSpatterResult.bBlockingHit) {
+				if (bloodSpatterResult.bBlockingHit)
+				{
 					auto floorSpatterActor = GetWorld()->SpawnActor<ABloodSpatterDecal>(bloodSpatterResult.ImpactPoint, bloodSpatterResult.ImpactNormal.Rotation());
 					if (!floorSpatterActor)
 						UDebugMessages::LogError(this, "failed to create wall spatter");
-					else floorSpatterActor->SetupForFloor(bulletDetails->GetGunShotFrom()->GetActorLocation(), GetOwner()->GetActorForwardVector().Rotation());
+					else
+						floorSpatterActor->SetupForFloor(bulletDetails->GetGunShotFrom()->GetActorLocation(), GetOwner()->GetActorForwardVector().Rotation());
 				}
 			}
 
-			//DrawDebugLine(GetWorld(), GetOwner()->GetActorLocation(), GetOwner()->GetActorLocation() + GetOwner()->GetActorForwardVector() * 100, FColor::Green, false, 50, 0, 0);
-			//DrawDebugLine(GetWorld(), GetOwner()->GetActorLocation(), (GetOwner()->GetActorLocation() - FVector(0, 0, 200)) + GetOwner()->GetActorForwardVector() * 100, FColor::Green, false, 50, 0, 0);
+			// DrawDebugLine(GetWorld(), GetOwner()->GetActorLocation(), GetOwner()->GetActorLocation() + GetOwner()->GetActorForwardVector() * 100, FColor::Green, false, 50, 0, 0);
+			// DrawDebugLine(GetWorld(), GetOwner()->GetActorLocation(), (GetOwner()->GetActorLocation() - FVector(0, 0, 200)) + GetOwner()->GetActorForwardVector() * 100, FColor::Green, false, 50, 0, 0);
 		}
 
 		auto meshComponent = GetOwner()->GetComponentByClass<UStaticMeshComponent>();
@@ -126,7 +140,8 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent* OverlappedComp, 
 		auto spatterActor = GetWorld()->SpawnActor<ABloodHitEffect>(meshComponent->GetComponentLocation(), reverseRotation);
 		if (!spatterActor)
 			UDebugMessages::LogWarning(this, "failed to spawn spatter actor");
-		else {
+		else
+		{
 			spatterActor->MoveBackSplatter(hitComp->GetSpatterBackDistance());
 			spatterActor->SetBloodSpatterAssetFor(OtherActor);
 		}
@@ -136,7 +151,8 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent* OverlappedComp, 
 			UDebugMessages::LogError(this, "could not determine where bullet came from");
 		else if (damageDone == 0)
 			UDebugMessages::LogError(this, "Did 0 damage, not running stat task");
-		else {
+		else
+		{
 			auto firer = sourceGun->GetAttachParentActor();
 
 			USvUtilities::AttemptToStartStatUpdater(firer, EStatisticType::ST_DAMAGE, damageDone);
@@ -144,16 +160,18 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent* OverlappedComp, 
 				USvUtilities::AttemptToStartStatUpdater(firer, EStatisticType::ST_Kill);
 		}
 
-		if (bulletDetails->GetPenetrationAbility() <= 0) {
+		if (bulletDetails->GetPenetrationAbility() <= 0)
+		{
 			bIsDisabled = true;
 			UDebugMessages::LogDisplay(this, "bullet can no longer penetrate");
 			DisableBullet();
 		}
 	}
 
-	//TODO: change environment tests
-	else if (auto environment = Cast<AEnvironmentActor>(OtherActor)) {
-		//TODO: Create environment spatter
+	// TODO: change environment tests
+	else if (auto environment = Cast<AEnvironmentActor>(OtherActor))
+	{
+		// TODO: Create environment spatter
 		auto meshComponent = GetOwner()->GetComponentByClass<UStaticMeshComponent>();
 		if (meshComponent)
 			meshComponent->SetVisibility(false);
@@ -163,48 +181,60 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent* OverlappedComp, 
 		GetWorld()->SpawnActor<ABulletHoleDecal>(GetLocationToSpawnBulletHole(meshComponent), reverseRotation);
 
 		auto environmentDetails = environment->GetComponentByClass<UEnvironmentDetailsComponent>();
-		if (bulletDetails) {
+		if (bulletDetails)
+		{
 
 			if (environmentDetails)
 				bulletDetails->RemoveFromPenetrationAbility(environmentDetails->GetThickness());
 			else
 				bulletDetails->RemoveFromPenetrationAbility(INT32_MAX);
 
-			if (bulletDetails->GetPenetrationAbility() <= 0) {
+			if (bulletDetails->GetPenetrationAbility() <= 0)
+			{
 				UDebugMessages::LogDisplay(this, "bullet can no longer penetrate");
 				DisableBullet();
 			}
 		}
+
+		auto destructibleHit = environment->GetComponentByClass<UDestructibleHitComponent>();
+		if (destructibleHit)
+		{
+			destructibleHit->ComponentWasHit(bulletDetails->GetBaseDamage(), GetOwner()->GetActorForwardVector(), GetOwner()->GetActorLocation(), 2500, 25, 10);
+		}
 	}
 }
-#pragma optimize("", on)
-void UBulletCollisionComponent::AttemptToInitiateBulletSound() {
+
+void UBulletCollisionComponent::AttemptToInitiateBulletSound()
+{
 	auto hitComponent = GetOwner()->GetComponentByClass<UBulletHitSoundComponent>();
-	if (hitComponent) {
+	if (hitComponent)
+	{
 		hitComponent->SetWorldLocation(GetOwner()->GetActorLocation());
 		hitComponent->SetSphereRadius(800);
 	}
 }
 
-void UBulletCollisionComponent::OnDestroyCallback() {
+void UBulletCollisionComponent::OnDestroyCallback()
+{
 	UDebugMessages::LogDisplay(this, "Destroying bullet");
 	GetOwner()->Destroy();
 }
 
-FVector UBulletCollisionComponent::GetLocationToSpawnBulletHole(UStaticMeshComponent* hitMesh) {
+FVector UBulletCollisionComponent::GetLocationToSpawnBulletHole(UStaticMeshComponent *hitMesh)
+{
 	FVector closestPoint;
 	float Distance;
 
 	auto rearComp = GetOwner()->GetComponentByClass<UBulletRearComponent>();
-	auto queryLocation = rearComp ?
-		rearComp->GetComponentLocation() :
-		GetOwner()->GetActorLocation();
+	auto queryLocation = rearComp ? rearComp->GetComponentLocation() : GetOwner()->GetActorLocation();
 
-	if (!hitMesh) return GetOwner()->GetActorLocation();
+	if (!hitMesh)
+		return GetOwner()->GetActorLocation();
 
 	Distance = hitMesh->GetClosestPointOnCollision(queryLocation, closestPoint);
 
-	if (Distance > 0) return closestPoint;
+	if (Distance > 0)
+		return closestPoint;
 
 	FBoxSphereBounds MeshBounds = hitMesh->Bounds;
 	if (MeshBounds.GetBox().IsValid)
@@ -219,7 +249,8 @@ FVector UBulletCollisionComponent::GetLocationToSpawnBulletHole(UStaticMeshCompo
 	return MeshOrigin + Direction * SphereRadius;
 }
 
-void UBulletCollisionComponent::DisableBullet() {
+void UBulletCollisionComponent::DisableBullet()
+{
 	bIsDisabled = true;
 
 	auto travelComp = GetOwner()->GetComponentByClass<UTravelComponent>();
@@ -229,7 +260,8 @@ void UBulletCollisionComponent::DisableBullet() {
 	GetWorld()->GetTimerManager().SetTimer(DestroyTimer, this, &UBulletCollisionComponent::OnDestroyCallback, 5.0f, false);
 
 	auto auraComp = GetOwner()->GetComponentByClass<UBulletAuraComponent>();
-	if (auraComp) {
+	if (auraComp)
+	{
 		auraComp->SetFloatParameter(FName("MinSize"), 0);
 		auraComp->SetFloatParameter(FName("MaxSize"), 0);
 		auraComp->SetFloatParameter(FName("SpecularScale"), 0);

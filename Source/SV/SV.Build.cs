@@ -8,10 +8,10 @@ public class SV : ModuleRules
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "NavigationSystem", "AIModule",
+        PublicDependencyModuleNames.AddRange([ "Core", "CoreUObject", "Engine", "InputCore", "NavigationSystem", "AIModule",
                 "Niagara", "EnhancedInput", "Json", "JsonUtilities", "Slate", "SlateCore", "GeometryCache", "Chaos", "ChaosSolverEngine", 
-                "GeometryCollectionEngine", "PhysicsCore", "FieldSystemEngine" });
+                "GeometryCollectionEngine", "PhysicsCore", "FieldSystemEngine" ]);
 
-        PrivateDependencyModuleNames.AddRange(new string[] { "VgCore", "VgFlMngmnt" });
+        PrivateDependencyModuleNames.AddRange(["VgCore", "VgFlMngmnt"]);
     }
 }

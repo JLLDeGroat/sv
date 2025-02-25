@@ -19,14 +19,6 @@ UBaseGenerations* UFenceGenerations::Generate() {
 				auto thisRequiredLocation = CreateRequiredLocations(UsableLocations[i]);
 				RequiredLocations = CombineList(thisRequiredLocation, RequiredLocations);
 				TotalUsedLocations = CombineList(TotalUsedLocations, RequiredLocations);
-				//AddToUsedSpots(requiredLocs);
-
-				/*auto world = World;
-				FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, requiredLocs] {
-					for (int i = 00; i < requiredLocs.Num(); i++) {
-						auto actor = world->SpawnActor<AWorldGridItemActor>(requiredLocs[i], FRotator::ZeroRotator);
-						actor->SetIsObstacle();
-					}}, TStatId(), nullptr, ENamedThreads::GameThread);*/
 
 				for (int x = 0; x < thisRequiredLocation.Num(); x++) {
 					if (IsRequiredSpotBottomRight(thisRequiredLocation[x])) {
@@ -123,4 +115,3 @@ void UFenceGenerations::BuildPlot(FVector loc) {
 		auto actor = world->SpawnActor<ASoilPlot>(loc + FVector(50, 50, 0), FRotator::ZeroRotator);
 		}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
-

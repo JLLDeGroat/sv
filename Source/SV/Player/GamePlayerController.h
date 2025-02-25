@@ -76,7 +76,7 @@ protected:
 
 	void MouseMove(const FInputActionValue& Value);
 
-	UPROPERTY() float MovementMultiplier;;
+	UPROPERTY() float MovementMultiplier;
 
 private:
 

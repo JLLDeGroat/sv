@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "GridMovementComponent.h"
 #include "../BaseCharacter.h"
 #include "../Controllers/CharacterAIController.h"
@@ -15,12 +14,13 @@
 #include "ClimbLadderComponent.h"
 #include "../../Runnables/PostMovementRunnable.h"
 #include "../../Environment/Components/VaultableComponent.h"
+#include "../../Environment/Components/SkippableComponent.h"
 #include "../../World/WorldGridItemActor.h"
 #include "../../Environment/Traversals/Components/TraversalLocationsComponent.h"
 #include "Algo/Sort.h"
 
 // Sets default values for this component's properties
-UGridMovementComponent::UGridMovementComponent(const FObjectInitializer& ObjectInitializer) : UAnimAccessComponent(ObjectInitializer)
+UGridMovementComponent::UGridMovementComponent(const FObjectInitializer &ObjectInitializer) : UAnimAccessComponent(ObjectInitializer)
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -31,9 +31,7 @@ UGridMovementComponent::UGridMovementComponent(const FObjectInitializer& ObjectI
 	DefaultRotationSpeed = 200;
 	RotationSpeed = DefaultRotationSpeed;
 	MovementSpeed = DefaultMovementSpeed;
-
 }
-
 
 // Called when the game starts
 void UGridMovementComponent::BeginPlay()
@@ -43,13 +41,13 @@ void UGridMovementComponent::BeginPlay()
 	SetComponentTickEnabled(false);
 }
 
-
 // Called every frame
-void UGridMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UGridMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (MovementLocations.Num() > 0) {
+	if (MovementLocations.Num() > 0)
+	{
 		CurrentMovementType = EMovementType::MT_Horizontal;
 		auto zDifference = MovementLocations[0].Z - GetOwner()->GetActorLocation().Z;
 		if (zDifference > 200)
@@ -57,19 +55,19 @@ void UGridMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		else if (zDifference < -200)
 			CurrentMovementType = EMovementType::MT_Vertical_DOWN;
 
-		if (CurrentMovementType != EMovementType::MT_Horizontal) {
+		if (CurrentMovementType != EMovementType::MT_Horizontal)
+		{
 			auto laddClimb = GetOwner()->GetComponentByClass<UClimbLadderComponent>();
 			if (!laddClimb)
 				return UDebugMessages::LogError(this, "failed to get climb");
 
 			laddClimb->StartClimbingLadder(CurrentMovementType, MovementLocations[0],
-				CurrentMovementType == EMovementType::MT_Vertical_DOWN ?
-				EClimbType::CT_Down :
-				EClimbType::CT_Up);
+										   CurrentMovementType == EMovementType::MT_Vertical_DOWN ? EClimbType::CT_Down : EClimbType::CT_Up);
 
 			SetComponentTickEnabled(false);
 		}
-		else {
+		else
+		{
 
 			auto normalisedMovementLocation = MovementLocations[0];
 			normalisedMovementLocation.Z = GetOwner()->GetActorLocation().Z;
@@ -88,26 +86,30 @@ void UGridMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 			GetOwner()->SetActorRotation(newRotation);
 
 			auto dist = FVector::Distance(GetOwner()->GetActorLocation(), normalisedMovementLocation);
-			if (dist < 5) {
+			if (dist < 5)
+			{
 				MovementLocations.RemoveAt(0);
 			}
 		}
 	}
-	else {
+	else
+	{
 		SetComponentTickEnabled(false);
 
 		if (AnimInstance)
 			AnimInstance->UpdateSpeed(0);
 
 		PostMovementRunnable = NewObject<UPostMovementRunnable>()
-			->InsertVariables(GetOwner())
-			->Initialise(GetWorld())
-			->Begin();
+								   ->InsertVariables(GetOwner())
+								   ->Initialise(GetWorld())
+								   ->Begin();
 	}
 }
 
-bool UGridMovementComponent::MoveAcrossGrid(TArray<FVector> movementLocs) {
-	if (movementLocs.Num() == 0) {
+bool UGridMovementComponent::MoveAcrossGrid(TArray<FVector> movementLocs)
+{
+	if (movementLocs.Num() == 0)
+	{
 		UDebugMessages::LogError(this, "movementLocs were empty, breaking error");
 		return false;
 	}
@@ -117,25 +119,30 @@ bool UGridMovementComponent::MoveAcrossGrid(TArray<FVector> movementLocs) {
 	return true;
 }
 
-void UGridMovementComponent::MovementLoop() {
+void UGridMovementComponent::MovementLoop()
+{
 	if (MovementLocations.Num() == 0)
 		return;
 }
 
-void UGridMovementComponent::MoveAcrossGridPostClimb() {
+void UGridMovementComponent::MoveAcrossGridPostClimb()
+{
 	MovementLocations.RemoveAt(0);
 	SetComponentTickEnabled(true);
 }
 
-bool UGridMovementComponent::HasFoundEnd() {
-	for (int i = 0; i < MovementData.Num(); i++) {
-		if (MovementData[i].GetIsEnd()) return true;
+bool UGridMovementComponent::HasFoundEnd()
+{
+	for (int i = 0; i < MovementData.Num(); i++)
+	{
+		if (MovementData[i].GetIsEnd())
+			return true;
 	}
 	return false;
 }
 
-
-FMovementData* UGridMovementComponent::HasAnalysedGridItem(FVector startLocation) {
+FMovementData *UGridMovementComponent::HasAnalysedGridItem(FVector startLocation)
+{
 	for (int i = 0; i < MovementData.Num(); i++)
 		if (MovementData[i].GetStart() == startLocation)
 			return &MovementData[i];
@@ -143,7 +150,8 @@ FMovementData* UGridMovementComponent::HasAnalysedGridItem(FVector startLocation
 	return nullptr;
 }
 
-bool UGridMovementComponent::AlreadyInPrevious(FVector gridLocation, TArray<FVector> previous) {
+bool UGridMovementComponent::AlreadyInPrevious(FVector gridLocation, TArray<FVector> previous)
+{
 	for (int i = 0; i < previous.Num(); i++)
 		if (previous[i] == gridLocation)
 			return true;
@@ -151,36 +159,42 @@ bool UGridMovementComponent::AlreadyInPrevious(FVector gridLocation, TArray<FVec
 	return false;
 }
 
-TArray<FVector> UGridMovementComponent::FindRoute(FVector start, FVector end, bool bisAI) {
+TArray<FVector> UGridMovementComponent::FindRoute(FVector start, FVector end, bool bisAI)
+{
 	MovementData.Empty();
 
 	auto detailsComponent = GetOwner()->GetComponentByClass<UCharacterDetailsComponent>();
 
-	if (detailsComponent->GetMovementPoints() > 0) {
+	if (detailsComponent->GetMovementPoints() > 0)
+	{
 		TArray<FVector> emptyPrevious;
 		auto thisMovementDataIndex = GetMovementDataForGridItem(start, emptyPrevious, end);
 		auto thisMovementData = &MovementData[thisMovementDataIndex];
 
 		FindRouteRecursive(thisMovementData, end, bisAI);
 
-		if (HasFoundEnd()) {
-			//UDebugMessages::LogDisplay(this, "found end");
-			for (int i = 0; i < MovementData.Num(); i++) {
-				if (MovementData[i].GetIsEnd()) {
+		if (HasFoundEnd())
+		{
+			// UDebugMessages::LogDisplay(this, "found end");
+			for (int i = 0; i < MovementData.Num(); i++)
+			{
+				if (MovementData[i].GetIsEnd())
+				{
 					TArray<FVector> FinalMovement = MovementData[i].GetPrevious();
 					FinalMovement.Emplace(MovementData[i].GetStart());
 					return FinalMovement;
 				}
 			}
 		}
-		//else UDebugMessages::LogError(this, "could not find end");
+		// else UDebugMessages::LogError(this, "could not find end");
 	}
 
 	TArray<FVector> response;
 	return response;
 }
 
-TArray<FVector> UGridMovementComponent::FindQuickestRoute(FVector start, FVector end, bool bisAI) {
+TArray<FVector> UGridMovementComponent::FindQuickestRoute(FVector start, FVector end, bool bisAI)
+{
 	TArray<FVector> VisitedNodes;
 	TArray<FVector> BestPath;
 	TArray<FVector> CostGrid;
@@ -192,22 +206,26 @@ TArray<FVector> UGridMovementComponent::FindQuickestRoute(FVector start, FVector
 	return BestPath;
 }
 
-void UGridMovementComponent::FindRouteRecursive(FMovementData* movementData, FVector desiredLocation, bool bisAI) {
+void UGridMovementComponent::FindRouteRecursive(FMovementData *movementData, FVector desiredLocation, bool bisAI)
+{
 
-	if (!HasFoundEnd()) {
+	if (!HasFoundEnd())
+	{
 		TArray<FVector> newPrevious = movementData->GetPrevious();
 		newPrevious.Emplace(movementData->GetStart());
 
 		auto detailsComponent = GetOwner()->GetComponentByClass<UCharacterDetailsComponent>();
 
 		/*if (!detailsComponent || (newPrevious.Num() > detailsComponent->GetMovementPoints() + 1 && !bisAI)) {*/
-		if (!detailsComponent || (newPrevious.Num() > detailsComponent->GetMovementPoints() && !bisAI)) {
+		if (!detailsComponent || (newPrevious.Num() > detailsComponent->GetMovementPoints() && !bisAI))
+		{
 			return;
 		}
 
 		TArray<int> newConnectionIds;
 
-		for (int i = 0; i < movementData->GetConnections().Num(); i++) {
+		for (int i = 0; i < movementData->GetConnections().Num(); i++)
+		{
 			auto movementDataForGridIndex = GetMovementDataForGridItem(movementData->GetConnections()[i], newPrevious, desiredLocation);
 
 			if (movementDataForGridIndex == -1)
@@ -224,7 +242,8 @@ void UGridMovementComponent::FindRouteRecursive(FMovementData* movementData, FVe
 			}, TStatId(), nullptr, ENamedThreads::GameThread);
 		FPlatformProcess::Sleep(.25f);*/
 
-		for (int i = 0; i < newConnectionIds.Num(); i++) {
+		for (int i = 0; i < newConnectionIds.Num(); i++)
+		{
 			if (MovementData[newConnectionIds[i]].GetStart().X == desiredLocation.X &&
 				MovementData[newConnectionIds[i]].GetStart().Y == desiredLocation.Y)
 			{
@@ -238,12 +257,12 @@ void UGridMovementComponent::FindRouteRecursive(FMovementData* movementData, FVe
 	}
 }
 
-TArray<FVector> UGridMovementComponent::FindQuickestRouteRecursive(FVector Current, FVector End, TArray<FVector>& VisitedNodes, float& BestCost, TArray<FVector>& BestPath)
+TArray<FVector> UGridMovementComponent::FindQuickestRouteRecursive(FVector Current, FVector End, TArray<FVector> &VisitedNodes, float &BestCost, TArray<FVector> &BestPath)
 {
 	if (bAIRouteDecided)
 		return BestPath;
 
-	//if (Current == End)
+	// if (Current == End)
 	if (Current.Equals(End))
 	{
 		// If we reached the end, calculate the cost
@@ -265,13 +284,15 @@ TArray<FVector> UGridMovementComponent::FindQuickestRouteRecursive(FVector Curre
 			BestCost = CurrentCost;
 			BestPath = VisitedNodes;
 
-			//only use one for testing
+			// only use one for testing
 			bAIRouteDecided = true;
 		}
-		else {
+		else
+		{
 			AIRouteIterations += 1;
 			UDebugMessages::LogDisplay(this, "adding to ai iterations " + FString::SanitizeFloat(AIRouteIterations));
-			if (AIRouteIterations > 5) {
+			if (AIRouteIterations > 5)
+			{
 				bAIRouteDecided = true;
 			}
 		}
@@ -293,7 +314,7 @@ TArray<FVector> UGridMovementComponent::FindQuickestRouteRecursive(FVector Curre
 	TArray<FVector> locs;
 	GetMovableAdjacentTiles(Current, locs, End);
 
-	for (const FVector& Neighbor : locs)
+	for (const FVector &Neighbor : locs)
 	{
 		if (!VisitedNodes.Contains(Neighbor) &&
 			VisitedNodes.Num() < 50 &&
@@ -308,7 +329,8 @@ TArray<FVector> UGridMovementComponent::FindQuickestRouteRecursive(FVector Curre
 	return BestPath;
 }
 
-int UGridMovementComponent::GetMovementDataForGridItem(FVector gridItem, TArray<FVector> previous, FVector end) {
+int UGridMovementComponent::GetMovementDataForGridItem(FVector gridItem, TArray<FVector> previous, FVector end)
+{
 	if (AlreadyInPrevious(gridItem, previous))
 		return -1;
 
@@ -331,45 +353,28 @@ int UGridMovementComponent::GetMovementDataForGridItem(FVector gridItem, TArray<
 	return response;
 }
 #pragma optimize("", off)
-bool UGridMovementComponent::GetMovableAdjacentTiles(FVector start, TArray<FVector>& ValidAdjacentTiles, FVector orderByDistanceLoc, bool bIgnoreVaultables) {
+bool UGridMovementComponent::GetMovableAdjacentTiles(FVector start, TArray<FVector> &ValidAdjacentTiles, FVector orderByDistanceLoc, bool bIgnoreVaultables, bool bIgnoreTraversals, bool bIgnoreSkippables)
+{
 	TArray<FVector> unorderedLocations;
 	USvUtilities::GetAdjacentGridTiles(start, unorderedLocations);
 
 	TArray<FVector> adjacentTiles = unorderedLocations;
-	if (orderByDistanceLoc != FVector::ZeroVector) {
-		Algo::Sort(adjacentTiles, [&orderByDistanceLoc](const FVector& A, const FVector& B)
-			{
+	if (orderByDistanceLoc != FVector::ZeroVector)
+	{
+		Algo::Sort(adjacentTiles, [&orderByDistanceLoc](const FVector &A, const FVector &B)
+				   {
 				// Calculate squared distance to avoid unnecessary square root operations
 				float DistanceA = FVector::DistSquared(A, orderByDistanceLoc);
 				float DistanceB = FVector::DistSquared(B, orderByDistanceLoc);
 
 				// Return true if A is closer to the ReferencePoint than B
-				return DistanceA < DistanceB;
-			});
+				return DistanceA < DistanceB; });
 	}
-	/*if (orderByDistanceLoc != FVector::ZeroVector) {
-		adjacentTiles.Empty();
-		while (unorderedLocations.Num() > 0) {
-			float minDistance = -1;
-			FVector loc = FVector::ZeroVector;
-			auto index = -1;
-			for (int i = 0; i < unorderedLocations.Num(); i++) {
-				auto distance = FVector::Dist(unorderedLocations[i], orderByDistanceLoc);
-				if (loc == FVector::ZeroVector || distance < minDistance) {
-					minDistance = distance;
-					loc = unorderedLocations[i];
-					index = i;
-				}
-			}
-
-			adjacentTiles.Emplace(unorderedLocations[index]);
-			unorderedLocations.RemoveAt(index);
-		}
-	}*/
-
+	
 	auto world = GetOwner()->GetWorld();
 
-	for (int i = 0; i < adjacentTiles.Num(); i++) {
+	for (int i = 0; i < adjacentTiles.Num(); i++)
+	{
 		FHitResult EnvironmentHit;
 		world->LineTraceSingleByChannel(EnvironmentHit, start, adjacentTiles[i], USvUtilities::GetEnvironmentChannel());
 
@@ -386,7 +391,8 @@ bool UGridMovementComponent::GetMovableAdjacentTiles(FVector start, TArray<FVect
 		FHitResult FloorHit;
 		world->LineTraceSingleByChannel(FloorHit, adjacentTiles[i], adjacentTiles[i] - FVector(0, 0, 200), USvUtilities::GetFloorTargetChannel());
 
-		if (TraversalHit.GetActor()) {
+		if (TraversalHit.GetActor() && !bIgnoreTraversals)
+		{
 			auto traversalComp = TraversalHit.GetActor()->GetComponentByClass<UTraversalLocationsComponent>();
 
 			if (!traversalComp)
@@ -395,65 +401,86 @@ bool UGridMovementComponent::GetMovableAdjacentTiles(FVector start, TArray<FVect
 			auto startLoc = traversalComp->GetStartGridLocation();
 			auto endLoc = traversalComp->GetEndGridLocation();
 
-			if (startLoc.X == start.X && startLoc.Y == start.Y) {
+			if (startLoc.X == start.X && startLoc.Y == start.Y)
+			{
 				ValidAdjacentTiles.Emplace(endLoc);
 			}
-			else if ((endLoc.X == start.X && endLoc.Y == start.Y)) {
+			else if ((endLoc.X == start.X && endLoc.Y == start.Y))
+			{
 				ValidAdjacentTiles.Emplace(startLoc);
 			}
 		}
 
-		if (FloorHit.bBlockingHit) {
+		if (FloorHit.bBlockingHit)
+		{
 			auto detailsComponent = GetOwner()->GetComponentByClass<UCharacterDetailsComponent>();
-			auto hasVaultComponentAndCanVault = EnvironmentHit.GetActor() && EnvironmentHit.GetActor()->GetComponentByClass<UVaultableComponent>()
-				&& detailsComponent && detailsComponent->GetCanVault();
+			auto hasVaultComponentAndCanVault = EnvironmentHit.GetActor() &&
+												EnvironmentHit.GetActor()->GetComponentByClass<UVaultableComponent>() &&
+												detailsComponent &&
+												detailsComponent->GetCanVault();
+
+			auto hasSkippableComponentAndCanSkip = EnvironmentHit.GetActor() &&
+												   EnvironmentHit.GetActor()->GetComponentByClass<USkippableComponent>() &&
+												   detailsComponent &&
+												   detailsComponent->GetCanSkip();
 
 			if ((!EnvironmentHit.bBlockingHit && !EntityHit.bBlockingHit) ||
-				(EnvironmentHit.bBlockingHit && hasVaultComponentAndCanVault && !bIgnoreVaultables))
+				(EnvironmentHit.bBlockingHit && hasVaultComponentAndCanVault && !bIgnoreVaultables) ||
+				(EnvironmentHit.bBlockingHit && hasSkippableComponentAndCanSkip && !bIgnoreSkippables))
 			{
 				ValidAdjacentTiles.Emplace(adjacentTiles[i]);
 			}
-			//else UDebugMessages::LogError(this, "Invalid spot " + adjacentTiles[i].ToString());
+			// else UDebugMessages::LogError(this, "Invalid spot " + adjacentTiles[i].ToString());
 		}
 	}
 	return !ValidAdjacentTiles.IsEmpty();
 }
 #pragma optimize("", on)
-bool UGridMovementComponent::CanReachDestination(FVector location, FVector end, int steps) {
+bool UGridMovementComponent::CanReachDestination(FVector location, FVector end, int steps)
+{
 	auto stepBuffer = 3;
 
 	auto xmovement = location.X - end.X;
-	if (xmovement < 0) xmovement *= -1;
+	if (xmovement < 0)
+		xmovement *= -1;
 
 	auto ymovement = location.Y - end.Y;
-	if (ymovement < 0) ymovement *= -1;
+	if (ymovement < 0)
+		ymovement *= -1;
 
-	if ((ymovement + xmovement) / 100 <= (steps - stepBuffer)) {
+	if ((ymovement + xmovement) / 100 <= (steps - stepBuffer))
+	{
 		return true;
 	}
-	else return false;
+	else
+		return false;
 }
 
-void UGridMovementComponent::ResetMovementSpeed() {
+void UGridMovementComponent::ResetMovementSpeed()
+{
 	MovementSpeed = DefaultMovementSpeed;
 	RotationSpeed = DefaultRotationSpeed;
 }
-void UGridMovementComponent::UpdateMovementSpeed(float speed) {
+void UGridMovementComponent::UpdateMovementSpeed(float speed)
+{
 	MovementSpeed = speed;
 	RotationSpeed = speed / 2;
 }
 
-void UGridMovementComponent::SetMovementForOverwatchResponse() {
+void UGridMovementComponent::SetMovementForOverwatchResponse()
+{
 	MovementSpeed = MovementSpeed / 100;
 	RotationSpeed = RotationSpeed / 100;
 	AnimInstance->UpdateAnimPlayRate(.05);
 }
-void UGridMovementComponent::ResetMovementAndAnimPlayBack() {
+void UGridMovementComponent::ResetMovementAndAnimPlayBack()
+{
 	MovementSpeed = DefaultMovementSpeed;
 	RotationSpeed = DefaultRotationSpeed;
 	AnimInstance->UpdateAnimPlayRate(1);
 }
 
-void UGridMovementComponent::PostMovementCrouch() {
+void UGridMovementComponent::PostMovementCrouch()
+{
 	AnimInstance->SetIsCrouching(true);
 }

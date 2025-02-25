@@ -53,6 +53,7 @@ public:
 	static UClass* GetClass(FString reference);
 	static UTexture2D* GetTexture(FString reference);
 	static UTextureRenderTarget2D* GetRenderTarget2D(int targetNumber);
+	static UObject* GetBlueprintActor(FString reference);
 
 	static float GetGridGape();
 

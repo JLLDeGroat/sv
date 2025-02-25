@@ -7,7 +7,7 @@
 #include "TwoBuildingsLevel.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class SV_API UTwoBuildingsLevel : public UBaseLevelIndex
@@ -15,7 +15,11 @@ class SV_API UTwoBuildingsLevel : public UBaseLevelIndex
 	GENERATED_BODY()
 
 public:
-
 	virtual void GenerateLevel() override;
-	
+
+private:
+	void GenerateBuildings();
+	void GenerateExteriors();
+
+	void GenerateRoads();
 };

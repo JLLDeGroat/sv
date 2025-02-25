@@ -129,6 +129,13 @@ bool UCharacterDetailsComponent::GetCanVault() {
 	return bCanVault;
 }
 
+void UCharacterDetailsComponent::SetCanSkip(bool value) {
+	bCanSkip = value;
+}
+bool UCharacterDetailsComponent::GetCanSkip() {
+	return bCanSkip;
+}
+
 void UCharacterDetailsComponent::SetCharacterName(FString name) {
 	CharacterName = name;
 }

@@ -69,6 +69,9 @@ void UCharAnimInstance::SetIsThrowing(bool value, EAttackType attackType) {
 void UCharAnimInstance::SetIsVaulting(bool val) {
 	bIsVaulting = val;
 }
+void UCharAnimInstance::SetIsSkipping(bool val) {
+	bIsSkipping = val;
+}
 void UCharAnimInstance::SetIsCrouching(bool val) {
 	bIsCrouching = val;
 }
@@ -244,6 +247,18 @@ void UCharAnimInstance::OnFinishMelee() {
 
 void UCharAnimInstance::OnFinishVault() {
 	bIsVaulting = false;
+
+	auto owningActor = GetOwningActor();
+	auto movementComponent = owningActor->GetComponentByClass<UGridMovementComponent>();
+	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([movementComponent]
+		{
+			movementComponent->ResetMovementSpeed();
+		},
+		TStatId(), nullptr, ENamedThreads::GameThread);
+}
+
+void UCharAnimInstance::OnFinishSkippable() {
+	bIsSkipping = false;
 
 	auto owningActor = GetOwningActor();
 	auto movementComponent = owningActor->GetComponentByClass<UGridMovementComponent>();

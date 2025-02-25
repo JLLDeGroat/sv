@@ -15,12 +15,11 @@ class SV_API UBaseGenerations : public UObject
 	GENERATED_BODY()
 
 public:
-
 	UBaseGenerations();
 
-	UBaseGenerations* SetupGeneration(UWorld* world, FRandomStream random, TArray<FVector> allowedSpots);
+	UBaseGenerations *SetupGeneration(UWorld *world, FRandomStream random, TArray<FVector> allowedSpots);
 
-	virtual UBaseGenerations* Generate();
+	virtual UBaseGenerations *Generate();
 
 	void IncrementChance();
 	void DecrementChance();
@@ -36,10 +35,9 @@ public:
 	/*void AddToUsedSpots(TArray<FVector> locs); */
 
 	TArray<FVector> GetUnusedSpotsLeft();
-	//TArray<FVector> GetUsedSpots();
+	// TArray<FVector> GetUsedSpots();
 
-	UBaseGenerations* SetRoadGenStartAndEndLocation(FVector start, FVector end);
-	UBaseGenerations* SetStartAndEndZones(TArray<FVector> startZones, TArray<FVector> endZones);
+	UBaseGenerations *SetStartAndEndZones(TArray<FVector> startZones, TArray<FVector> endZones);
 
 	void SetRequiredLocations(TArray<FVector> locations);
 	void SetRequiredBufferLocations(TArray<FVector> locations);
@@ -47,40 +45,59 @@ public:
 	TArray<FVector> GetRequiredLocations();
 	TArray<FVector> GetUsableLocations();
 	TArray<FVector> GetRequiredBufferLocations();
-protected:
+	TArray<FVector> GetTotalUsedLocations();
 
-	UPROPERTY() UWorld* World;
+protected:
+	UPROPERTY()
+	UWorld *World;
 	/*UPROPERTY() TArray<FVector> AllowedSpots;
 	UPROPERTY() TArray<FVector> RequiredSpots;
 	UPROPERTY() TArray<FVector> RequiredCalculatedSpots;
 	UPROPERTY() TArray<FVector> RequiredBufferSpots;
 	UPROPERTY() TArray<FVector> RequiredCalculatedBufferSpots;
 	UPROPERTY() TArray<FVector> AllUsedSpots;*/
-	UPROPERTY() FRandomStream RandomStream;
+	UPROPERTY()
+	FRandomStream RandomStream;
 
-	UPROPERTY() TArray<FVector> StartZones;
-	UPROPERTY() TArray<FVector> EndZones;
+	UPROPERTY()
+	TArray<FVector> StartZones;
+	UPROPERTY()
+	TArray<FVector> EndZones;
 
-	UPROPERTY() TArray<FVector> UsableLocations;
-	UPROPERTY() TArray<FVector> TotalUsedLocations;
+	UPROPERTY()
+	TArray<FVector> UsableLocations;
+	UPROPERTY()
+	TArray<FVector> TotalUsedLocations;
 
-	//Locations that need to be added to offset, for multi block constructions
-	UPROPERTY() TArray<FVector> TemplatedRequiredLocations;
-	UPROPERTY() TArray<FVector> RequiredLocations;
-	UPROPERTY() TArray<FVector> RequiredBufferLocations;
+	// Locations that need to be added to offset, for multi block constructions
+	UPROPERTY()
+	TArray<FVector> TemplatedRequiredLocations;
+	// locations used (not buffers) for each iteration
+	UPROPERTY()
+	TArray<FVector> IterationRequiredLocations;
+	// locations used (not buffers) in total
+	UPROPERTY()
+	TArray<FVector> RequiredLocations;
+	UPROPERTY()
+	TArray<FVector> RequiredBufferLocations;
 
-	//for road generators
-	UPROPERTY() FVector StartLocation;
-	UPROPERTY() FVector EndLocation;
+	// for road generators
+	UPROPERTY()
+	FVector StartLocation;
+	UPROPERTY()
+	FVector EndLocation;
 
-	UPROPERTY() int MaxChange = 1000;
-	UPROPERTY() int CurrentChance;
-	UPROPERTY() int ChanceIncrement = 5;
-	UPROPERTY() int ChanceDecrement = 500;
+	UPROPERTY()
+	int MaxChange = 1000;
+	UPROPERTY()
+	int CurrentChance;
+	UPROPERTY()
+	int ChanceIncrement = 5;
+	UPROPERTY()
+	int ChanceDecrement = 500;
 
 	void SetChanceDecrement(int amount);
 	void SetChanceIncrement(int amount);
-
 
 	bool IsRequiredSpotBottomLeft(FVector loc);
 	bool IsRequiredSpotBottomRight(FVector loc);
@@ -111,8 +128,10 @@ protected:
 	TArray<FVector> CombineList(TArray<FVector> locs1, TArray<FVector> locs2);
 	FVector GetRandomLocationInList(TArray<FVector> locs);
 	TArray<FVector> RemoveListFromList(TArray<FVector> bigList, TArray<FVector> removesThisListFromItemsFromBigList);
-private:
 
+	UObject *LoadBlueprintActorInThread(FString reference, UObject *&obj, int secondsToWaitUntilGiveup = 5);
+
+private:
 	/*bool IsWithinAllowedList(FVector location);
 	bool IsWithinCurrentUsedList(FVector location);*/
 	bool IsWithinRequiredSpots(FVector location);

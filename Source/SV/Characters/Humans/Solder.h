@@ -30,6 +30,7 @@ class UHealthKitsComponent;
 class UFogHandlerComponent;
 class UClimbLadderComponent;
 class UDeviantDirectiveComponent;
+class USkipObstacleComponent;
 
 UCLASS()
 class SV_API ASolder : public ABaseCharacter, public IMovable
@@ -120,6 +121,9 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UDeviantDirectiveComponent *DDComponent;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USkipObstacleComponent* SkipObstacleComponent;
 
 public:
 	// Called every frame

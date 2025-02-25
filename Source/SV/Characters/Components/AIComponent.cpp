@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "AIComponent.h"
 #include "../../Delegates/AIDelegates.h"
 #include "Components/SphereComponent.h"
@@ -11,7 +10,7 @@
 #include "../../Utilities/SvUtilities.h"
 
 // Sets default values for this component's properties
-UAIComponent::UAIComponent(const FObjectInitializer& ObjectInitializer)
+UAIComponent::UAIComponent(const FObjectInitializer &ObjectInitializer)
 	: UAnimAccessComponent(ObjectInitializer)
 {
 	bIsActiveAI = false;
@@ -27,16 +26,19 @@ UAIComponent::UAIComponent(const FObjectInitializer& ObjectInitializer)
 		AiActivationSphere->SetupAttachment(GetOwner()->GetRootComponent());
 }
 
-void UAIComponent::SetActivationRadius(float radius) {
+void UAIComponent::SetActivationRadius(float radius)
+{
 	Radius = radius;
 }
 
-void UAIComponent::BeginPlay() {
+void UAIComponent::BeginPlay()
+{
 	Super::BeginPlay();
 	GetWorld()->GetTimerManager().SetTimer(DelayFinish, this, &UAIComponent::OnDelayFinished, 1.0f, false);
 }
 
-void UAIComponent::BroadcastAiCompletedTask() {
+void UAIComponent::BroadcastAiCompletedTask()
+{
 	auto aiDelegates = UAIDelegates::GetInstance();
 
 	if (!aiDelegates)
@@ -44,17 +46,23 @@ void UAIComponent::BroadcastAiCompletedTask() {
 
 	aiDelegates->_AICharacterFinishedBehaviour.Broadcast();
 }
-
-void UAIComponent::SetIsAiActive(bool val) {
+void UAIComponent::SetIsAiActive_Editor()
+{
+	SetIsAiActive(true);
+}
+void UAIComponent::SetIsAiActive(bool val)
+{
 	bIsActiveAI = val;
 	AnimInstance->SetIsAiActive(val);
 }
-bool UAIComponent::GetIsActiveAi() {
+bool UAIComponent::GetIsActiveAi()
+{
 	return bIsActiveAI;
 }
 
-void UAIComponent::Overlapped(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
+void UAIComponent::Overlapped(UPrimitiveComponent *OverlappedComp, AActor *OtherActor, UPrimitiveComponent *OtherComp,
+							  int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult)
+{
 
 	auto characterDetails = OtherActor->GetComponentByClass<UCharacterDetailsComponent>();
 	if (characterDetails && OtherComp->IsA<UCapsuleComponent>() &&
@@ -64,20 +72,25 @@ void UAIComponent::Overlapped(UPrimitiveComponent* OverlappedComp, AActor* Other
 	}
 }
 
-void UAIComponent::OnDelayFinished() {
+void UAIComponent::OnDelayFinished()
+{
 	AiActivationSphere->SetSphereRadius(Radius);
 }
 
-void UAIComponent::SetAttackRoute(EAIBehaviourAttackRoutes aRoute) {
+void UAIComponent::SetAttackRoute(EAIBehaviourAttackRoutes aRoute)
+{
 	AIAttackRoute = aRoute;
 }
-void UAIComponent::SetMovementRoute(EAIBehaviourMoveRoutes mRoute) {
+void UAIComponent::SetMovementRoute(EAIBehaviourMoveRoutes mRoute)
+{
 	AIMoveRoute = mRoute;
 }
 
-EAIBehaviourAttackRoutes UAIComponent::GetAttackRoute() {
+EAIBehaviourAttackRoutes UAIComponent::GetAttackRoute()
+{
 	return AIAttackRoute;
 }
-EAIBehaviourMoveRoutes UAIComponent::GetMovementRoute() {
+EAIBehaviourMoveRoutes UAIComponent::GetMovementRoute()
+{
 	return AIMoveRoute;
 }
