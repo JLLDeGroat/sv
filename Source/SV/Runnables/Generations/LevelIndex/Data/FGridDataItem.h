@@ -36,6 +36,8 @@ public:
 		bIsBuffer = false;
 		bIsWall = false;
 		bIsDebris = false;
+		bIsEndZone = false;
+		bIsStartZone = false;
 	}
 
 	FVector GetLocation() { return Location; }
@@ -59,7 +61,14 @@ public:
 	bool GetIsDebris() { return bIsDebris; }
 	void SetIsDebris() { bIsDebris = true; }
 
-	bool GetIsPotentialWallSpace() { return !bIsPrefab && !bIsBuffer && !bIsRoad; }
+	bool GetIsEndZone() { return bIsEndZone; }
+	void SetIsEndZone() { bIsEndZone = true; }
+
+	bool GetIsStartZone() { return bIsStartZone; }
+	void SetIsStartZone() { bIsStartZone = true; }
+
+	bool GetIsPotentialWallSpace() { return !bIsPrefab && !bIsBuffer && !bIsRoad && !bIsEndZone && !bIsStartZone; }
+	bool GetIsPotentialMiscItemSpace() { return !bIsPrefab && !bIsBuffer && !bIsRoad && !bIsEndZone && !bIsStartZone && !bIsWall && !bIsVoidSpace; }
 
 protected:
 	UPROPERTY()
@@ -92,4 +101,10 @@ protected:
 
 	UPROPERTY()
 	bool bIsDebris;
+
+	UPROPERTY()
+	bool bIsEndZone;
+
+	UPROPERTY()
+	bool bIsStartZone;
 };

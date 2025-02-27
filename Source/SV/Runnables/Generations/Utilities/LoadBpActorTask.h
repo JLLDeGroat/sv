@@ -1,3 +1,5 @@
+#pragma once
+
 #include "CoreMinimal.h"
 #include "Async/TaskGraphInterfaces.h"
 #include "Misc/ScopeLock.h"
@@ -14,7 +16,10 @@ public:
     {
     }
 
-    void DoWork();
+    void DoWork()
+    {
+        *OutLoadedClass = StaticLoadClass(UObject::StaticClass(), nullptr, *Reference);
+    }
 
     // Optional: Providing a stat ID for this task
     FORCEINLINE TStatId GetStatId() const

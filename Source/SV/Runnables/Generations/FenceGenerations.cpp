@@ -1,57 +1,71 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "FenceGenerations.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "../../Environment/Constructions/Fence.h"
 #include "../../Environment/Natural/SoilPlot.h"
 #include "../../World/WorldGridItemActor.h"
 
-
-UBaseGenerations* UFenceGenerations::Generate() {
+UBaseGenerations *UFenceGenerations::Generate()
+{
+	LogGenerationStart();
 	TemplatedRequiredLocations = GenerateRequiredLocations();
 
-	for (int i = 0; i < UsableLocations.Num(); i++) {
-		if (CanFitInLocation(UsableLocations[i])) {
-			if (ShouldGenerate()) {
+	for (int i = 0; i < UsableLocations.Num(); i++)
+	{
+		if (CanFitInLocation(UsableLocations[i]))
+		{
+			if (ShouldGenerate())
+			{
 				DecrementChance();
 
 				auto thisRequiredLocation = CreateRequiredLocations(UsableLocations[i]);
 				RequiredLocations = CombineList(thisRequiredLocation, RequiredLocations);
 				TotalUsedLocations = CombineList(TotalUsedLocations, RequiredLocations);
 
-				for (int x = 0; x < thisRequiredLocation.Num(); x++) {
-					if (IsRequiredSpotBottomRight(thisRequiredLocation[x])) {
+				for (int x = 0; x < thisRequiredLocation.Num(); x++)
+				{
+					if (IsRequiredSpotBottomRight(thisRequiredLocation[x]))
+					{
 						BuildFence(thisRequiredLocation[x] + FVector(50, 50, 0), FRotator(0, 180, 0));
 						BuildFence(thisRequiredLocation[x] + FVector(50, 150, 0), FRotator(0, 90, 0));
 					}
-					else if (IsRequiredSpotBottomLeft(thisRequiredLocation[x])) {
+					else if (IsRequiredSpotBottomLeft(thisRequiredLocation[x]))
+					{
 						BuildFence(thisRequiredLocation[x] + FVector(50, 50, 0), FRotator(0, 180, 0));
 						BuildFence(thisRequiredLocation[x] + FVector(50, 50, 0), FRotator(0, 90, 0));
 					}
-					else if (IsRequiredSpotTopRight(thisRequiredLocation[x])) {
+					else if (IsRequiredSpotTopRight(thisRequiredLocation[x]))
+					{
 						BuildFence(thisRequiredLocation[x] + FVector(50, 150, 0), FRotator(0, 90, 0));
 						BuildFence(thisRequiredLocation[x] + FVector(150, 150, 0));
 					}
-					else if (IsRequiredSpotTopLeft(thisRequiredLocation[x])) {
+					else if (IsRequiredSpotTopLeft(thisRequiredLocation[x]))
+					{
 						BuildFence(thisRequiredLocation[x] + FVector(150, 50, 0), FRotator(0, 180, 0));
 						BuildFence(thisRequiredLocation[x] + FVector(50, 50, 0), FRotator(0, 90, 0));
 					}
-					else {
+					else
+					{
 
-						if (IsRequiredSpotLeftWall(thisRequiredLocation[x])) {
+						if (IsRequiredSpotLeftWall(thisRequiredLocation[x]))
+						{
 							BuildFence(thisRequiredLocation[x] + FVector(50, 50, 0), FRotator(0, 90, 0));
 						}
-						else if (IsRequiredSpotRightWall(thisRequiredLocation[x])) {
+						else if (IsRequiredSpotRightWall(thisRequiredLocation[x]))
+						{
 							BuildFence(thisRequiredLocation[x] + FVector(50, 150, 0), FRotator(0, 90, 0));
 						}
-						else if (IsRequiredSpotBottomWall(thisRequiredLocation[x])) {
+						else if (IsRequiredSpotBottomWall(thisRequiredLocation[x]))
+						{
 							BuildFence(thisRequiredLocation[x] + FVector(50, 50, 0), FRotator(0, 180, 0));
 						}
-						else if (IsRequiredSpotTopWall(thisRequiredLocation[x])) {
+						else if (IsRequiredSpotTopWall(thisRequiredLocation[x]))
+						{
 							BuildFence(thisRequiredLocation[x] + FVector(150, 50, 0), FRotator(0, 180, 0));
 						}
-						else {
+						else
+						{
 							auto num = RandomStream.RandRange(1, 1001);
 							if (num > 500)
 								BuildPlot(thisRequiredLocation[x]);
@@ -59,13 +73,16 @@ UBaseGenerations* UFenceGenerations::Generate() {
 					}
 				}
 			}
-			else IncrementChance();
+			else
+				IncrementChance();
 		}
 	}
+	LogGenerationEnd();
 	return this;
 }
 
-TArray<FVector> UFenceGenerations::GenerateRequiredLocations() {
+TArray<FVector> UFenceGenerations::GenerateRequiredLocations()
+{
 	TArray<FVector> requiredLocations;
 
 	requiredLocations.Emplace(FVector(0, 0, 0));
@@ -102,16 +119,16 @@ TArray<FVector> UFenceGenerations::GenerateRequiredLocations() {
 	return requiredLocations;
 }
 
-void UFenceGenerations::BuildFence(FVector loc, FRotator rot) {
+void UFenceGenerations::BuildFence(FVector loc, FRotator rot)
+{
 	auto world = GetWorld();
-	FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, loc, rot] {
-		auto actor = world->SpawnActor<AFence>(loc, rot);
-		}, TStatId(), nullptr, ENamedThreads::GameThread);
+	FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, loc, rot]
+																			  { auto actor = world->SpawnActor<AFence>(loc, rot); }, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void UFenceGenerations::BuildPlot(FVector loc) {
+void UFenceGenerations::BuildPlot(FVector loc)
+{
 	auto world = GetWorld();
-	FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, loc] {
-		auto actor = world->SpawnActor<ASoilPlot>(loc + FVector(50, 50, 0), FRotator::ZeroRotator);
-		}, TStatId(), nullptr, ENamedThreads::GameThread);
+	FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([world, loc]
+																			  { auto actor = world->SpawnActor<ASoilPlot>(loc + FVector(50, 50, 0), FRotator::ZeroRotator); }, TStatId(), nullptr, ENamedThreads::GameThread);
 }

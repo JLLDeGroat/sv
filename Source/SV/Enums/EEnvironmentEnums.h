@@ -22,7 +22,8 @@ UENUM(BlueprintType)
 enum class EIndicatorType : uint8 {
 	IT_NONE = 0,
 	IT_Interact = 1,
-	IT_Extract = 2
+	IT_Extract = 2,
+	IT_Spawn = 3
 };
 
 UENUM(BlueprintType)

@@ -46,7 +46,7 @@ void ABaseChestHigh::BeginPlay()
         StaticBoxFallOff->Magnitude = 1;
         StaticBoxFallOff->Transform = DisableBoxComponent->GetComponentTransform();
 
-        DrawDebugBox(GetWorld(), DisableBoxComponent->GetComponentLocation(), DisableBoxComponent->GetUnscaledBoxExtent(), FColor::Red, false, 100, 0, 1);
+        // DrawDebugBox(GetWorld(), DisableBoxComponent->GetComponentLocation(), DisableBoxComponent->GetUnscaledBoxExtent(), FColor::Red, false, 100, 0, 1);
 
         UniformInt = NewObject<UUniformInteger>(this)->SetUniformInteger((int32)EObjectStateTypeEnum::Chaos_Object_Static);
         CullingField = NewObject<UCullingField>(this)->SetCullingField(StaticBoxFallOff, UniformInt, EFieldCullingOperationType::Field_Culling_Outside);

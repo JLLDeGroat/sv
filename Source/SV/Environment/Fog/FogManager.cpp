@@ -72,6 +72,9 @@ void AFogManager::Tick(float DeltaTime)
 
       newMeshComp->RegisterComponent();
       newMeshComp->InitializeFogSectionProperties(loc);
+
+      if (!bActivateOnStartup)
+        newMeshComp->SetAsNoFog();
     }
     iterations += 1;
   }

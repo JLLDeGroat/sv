@@ -8,6 +8,7 @@
 #pragma optimize("", off)
 UBaseGenerations *UMiscellaneousGenerations::Generate()
 {
+    LogGenerationStart();
     ChanceIncrement = 5;
     ChanceDecrement = 15;
 
@@ -40,7 +41,7 @@ UBaseGenerations *UMiscellaneousGenerations::Generate()
             },
             TStatId(), nullptr, ENamedThreads::GameThread);
     }
-
+    LogGenerationEnd();
     return this;
 }
 #pragma optimize("", on)

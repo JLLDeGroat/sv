@@ -18,7 +18,7 @@
 
 UBaseGenerations *UPlayerGeneration::Generate()
 {
-
+	LogGenerationStart();
 	auto spawnZoneRandomized = USvUtilities::RandomizeList(StartZones);
 	auto world = GetWorld();
 
@@ -132,6 +132,6 @@ UBaseGenerations *UPlayerGeneration::Generate()
 		else
 			break;
 	}
-
+	LogGenerationEnd();
 	return this;
 }

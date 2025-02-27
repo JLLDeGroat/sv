@@ -419,4 +419,13 @@ UObject *UBaseGenerations::LoadBlueprintActorInThread(FString reference, UObject
 
 	return obj;
 }
+
+void UBaseGenerations::LogGenerationStart()
+{
+	UDebugMessages::LogDisplay(this, this->GetName() + "GenScrpt started generation");
+}
+void UBaseGenerations::LogGenerationEnd()
+{
+	UDebugMessages::LogDisplay(this, this->GetName() + "GenScrpt ended generation");
+}
 #pragma optimize("", on)

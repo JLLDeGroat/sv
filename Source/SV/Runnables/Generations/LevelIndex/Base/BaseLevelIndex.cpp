@@ -102,8 +102,8 @@ void UBaseLevelIndex::SetSpawnAndEndZone()
 
 	auto spawnPosStartX = (MaxX / 2) - 3;
 	auto spawnPosEndX = (MaxX / 2) + 3;
-	auto spawnPosStartY = 0;
-	auto spawnPosEndY = 1;
+	auto spawnPosStartY = 1;
+	auto spawnPosEndY = 2;
 
 	auto endPosStartX = (MaxX / 2) - 3;
 	auto endPosEndX = (MaxX / 2) + 3;
@@ -115,13 +115,13 @@ void UBaseLevelIndex::SetSpawnAndEndZone()
 		spawnPosStartY = MaxY - 1;
 		spawnPosEndY = MaxY;
 
-		endPosStartY = 0;
-		endPosEndY = 1;
+		endPosStartY = 1;
+		endPosEndY = 2;
 	}
 	else if (random < 750)
 	{
-		spawnPosStartX = 0;
-		spawnPosEndX = 1;
+		spawnPosStartX = 1;
+		spawnPosEndX = 2;
 
 		spawnPosStartY = (MaxY / 2) - 3;
 		spawnPosEndY = (MaxY / 2) + 3;
@@ -142,8 +142,8 @@ void UBaseLevelIndex::SetSpawnAndEndZone()
 		endPosStartY = (MaxY / 2) - 3;
 		endPosEndY = (MaxY / 2) + 3;
 
-		endPosEndX = 1;
-		endPosStartX = 0;
+		endPosEndX = 2;
+		endPosStartX = 1;
 	}
 
 	for (int x = spawnPosStartX; x <= spawnPosEndX; x++)
@@ -161,6 +161,9 @@ void UBaseLevelIndex::SetSpawnAndEndZone()
 			EndZone.Emplace(FVector(x * 100, y * 100, 0));
 		}
 	}
+
+	SetLocationsAsSpawnZone(SpawnZone);
+	SetLocationsAsEndZone(EndZone);
 }
 void UBaseLevelIndex::GenerateBoundaryWalls()
 {
@@ -444,6 +447,7 @@ TArray<FVector> UBaseLevelIndex::GetRandomLocationAlongPrimaryRoute()
 TArray<FVector> UBaseLevelIndex::GetTotalRoutesList()
 {
 	TArray<FVector> total;
+
 	for (int i = 0; i < SpawnZone.Num(); i++)
 	{
 		total.Emplace(SpawnZone[i]);
@@ -519,7 +523,9 @@ void UBaseLevelIndex::GenerateCaveWalls()
 		for (FVector cardinal : cardinals)
 		{
 			auto foundGridItem = GridData.GetDataItem(cardinal);
-			if (foundGridItem && (foundGridItem->GetIsBuffer() || foundGridItem->GetIsPrefab() || foundGridItem->GetIsRoad()))
+			if (foundGridItem && (foundGridItem->GetIsBuffer() || foundGridItem->GetIsPrefab() ||
+								  foundGridItem->GetIsRoad() || foundGridItem->GetIsStartZone() ||
+								  foundGridItem->GetIsEndZone()))
 			{
 				UDebugMessages::LogDisplay(this, "grid item is invalid");
 				allCardinalSpotsAreGood = false;
@@ -917,6 +923,29 @@ void UBaseLevelIndex::SetLocationsAsDebris(TArray<FVector> locs)
 		auto item = GridData.GetDataItem(locs[i]);
 		if (item)
 			item->SetIsDebris();
+		else
+			UDebugMessages::LogError(this, "SetIsBuffer but could not find in grid data");
+	}
+}
+
+void UBaseLevelIndex::SetLocationsAsSpawnZone(TArray<FVector> locs)
+{
+	for (int i = 0; i < locs.Num(); i++)
+	{
+		auto item = GridData.GetDataItem(locs[i]);
+		if (item)
+			item->SetIsStartZone();
+		else
+			UDebugMessages::LogError(this, "SetIsBuffer but could not find in grid data");
+	}
+}
+void UBaseLevelIndex::SetLocationsAsEndZone(TArray<FVector> locs)
+{
+	for (int i = 0; i < locs.Num(); i++)
+	{
+		auto item = GridData.GetDataItem(locs[i]);
+		if (item)
+			item->SetIsEndZone();
 		else
 			UDebugMessages::LogError(this, "SetIsBuffer but could not find in grid data");
 	}

@@ -126,6 +126,8 @@ protected:
 	void SetLocationsAsRoad(TArray<FVector> locs);
 	void SetLocationsAsVoid(TArray<FVector> locs);
 	void SetLocationsAsDebris(TArray<FVector> locs);
+	void SetLocationsAsSpawnZone(TArray<FVector> locs);
+	void SetLocationsAsEndZone(TArray<FVector> locs);
 
 private:
 	UPROPERTY()

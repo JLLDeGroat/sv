@@ -50,13 +50,12 @@ void AChestHighRock::OnConstruction(const FTransform &Transform)
 void AChestHighRock::BeginPlay()
 {
 	Super::BeginPlay();
+	DestructibleMesh->SetRelativeRotation(FRotator(0, FMath::RandRange(0, 180), 0));
 }
 
 FString AChestHighRock::GetRandomCollection()
 {
 	auto randomNum = FMath::RandRange(1, 5);
-	UDebugMessages::LogError(this, "DEBUG ONLY USING ROCK 1");
-	randomNum = 1;
 	auto meshRef = "/Script/GeometryCollectionEngine.GeometryCollection'/Game/Environment/ChestHigh/CH_Rocks/GC_CH_Rock" +
 				   FString::SanitizeFloat(randomNum, 0) + ".GC_CH_Rock" + FString::SanitizeFloat(randomNum, 0) + "'";
 

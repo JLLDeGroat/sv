@@ -17,6 +17,7 @@ UExteriorGenerations *UExteriorGenerations::SetAmountToGenerate(int amount)
 }
 UBaseGenerations *UExteriorGenerations::Generate()
 {
+	LogGenerationStart();
 	FString blueprintLocation = GeneratePrefabTemplateLocations();
 	for (int i = 0; i < UsableLocations.Num(); i++)
 	{
@@ -64,6 +65,8 @@ UBaseGenerations *UExteriorGenerations::Generate()
 				break;
 		}
 	}
+
+	LogGenerationEnd();
 	return this;
 }
 

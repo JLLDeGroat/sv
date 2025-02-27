@@ -10,6 +10,7 @@
 #include "../../Environment/Ceiling/CeilingAmbiantLight.h"
 #include "../../Environment/Ceiling/CeilingStalagtite.h"
 #include "../../Environment/Flooring/MudFloor.h"
+#include "../../Environment/Prefabs/Base/BasePrefab.h"
 #include "GameFramework/Character.h"
 // Sets default values
 AWorldGenerationActors::AWorldGenerationActors()
@@ -84,7 +85,7 @@ void AWorldGenerationActors::TwoBuildingLevel()
 					   ->Initialise(GetWorld(), FMath::RandRange(0, 999999))
 					   ->Begin();
 }
-
+#pragma optimize("", off)
 void AWorldGenerationActors::TearDownCurrentGen()
 {
 	auto actors = GetWorld()->GetCurrentLevel()->Actors;
@@ -94,6 +95,21 @@ void AWorldGenerationActors::TearDownCurrentGen()
 	{
 		if (actors[i])
 		{
+			if (actors[i]->IsA<ABasePrefab>())
+			{
+				auto thisActor = actors[i];
+				for (UActorComponent *comp : actors[i]->GetComponents())
+				{
+					comp->DestroyComponent();
+				}
+				TArray<AActor *> childActors;
+				actors[i]->GetAllChildActors(childActors);
+				for (AActor *childActor : childActors)
+				{
+					childActor->Destroy();
+				}
+			}
+
 			if (actors[i]->IsA<AEnvironmentActor>())
 			{
 				if (actors[i]->IsA<ACeilingAmbiantLight>() ||
@@ -117,7 +133,7 @@ void AWorldGenerationActors::TearDownCurrentGen()
 		}
 	}
 }
-
+#pragma optimize("", on)
 void AWorldGenerationActors::BeginDestroy()
 {
 	if (BaseRunnable)

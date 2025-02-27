@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "IndicatorActivatorComponent.h"
 #include "../../../Utilities/SvUtilities.h"
 #include "Runtime/Engine/Classes/Kismet/KismetMathLibrary.h"
@@ -13,24 +12,27 @@
 #include "../PickupIndicator.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 // Sets default values
-UIndicatorActivatorComponent::UIndicatorActivatorComponent(const FObjectInitializer& ObjectInitializer)
+UIndicatorActivatorComponent::UIndicatorActivatorComponent(const FObjectInitializer &ObjectInitializer)
 	: UBoxComponent(ObjectInitializer)
 {
 	BottomRingMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BottomRightMesh"));
 	TopRingMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TopRingMesh"));
 
-	if (GetOwner() && GetOwner()->GetRootComponent()) {
+	if (GetOwner() && GetOwner()->GetRootComponent())
+	{
 		TopRingMeshComponent->SetupAttachment(GetOwner()->GetRootComponent());
 		BottomRingMeshComponent->SetupAttachment(GetOwner()->GetRootComponent());
 	}
 
 	auto topRingMesh = USvUtilities::GetStaticMesh("/Script/Engine.StaticMesh'/Game/Environment/ExtractionItems/ExtractionLocationItem_TopRing.ExtractionLocationItem_TopRing'");
-	if (topRingMesh) {
+	if (topRingMesh)
+	{
 		TopRingMeshComponent->SetStaticMesh(topRingMesh);
 	}
 
 	auto bottomRingMesh = USvUtilities::GetStaticMesh("/Script/Engine.StaticMesh'/Game/Environment/ExtractionItems/ExtractionLocationItem_BottomRing.ExtractionLocationItem_BottomRing'");
-	if (bottomRingMesh) {
+	if (bottomRingMesh)
+	{
 		BottomRingMeshComponent->SetStaticMesh(bottomRingMesh);
 	}
 
@@ -52,21 +54,24 @@ UIndicatorActivatorComponent::UIndicatorActivatorComponent(const FObjectInitiali
 	BottomRingMeshComponent->SetMaterial(0, IndicatorMaterial);
 }
 
-void UIndicatorActivatorComponent::SetMaterialColour(FLinearColor color) {
+void UIndicatorActivatorComponent::SetMaterialColour(FLinearColor color)
+{
 	IndicatorMaterial->SetVectorParameterValue("IndicatorColour", color);
 }
 
-
-void UIndicatorActivatorComponent::BeginPlay() {
+void UIndicatorActivatorComponent::BeginPlay()
+{
 	Super::BeginPlay();
 	DeactivateIndicator(nullptr);
 }
 
-void UIndicatorActivatorComponent::SetIndicatorType(EIndicatorType indicatorType) {
+void UIndicatorActivatorComponent::SetIndicatorType(EIndicatorType indicatorType)
+{
 	IndicatorType = indicatorType;
 }
 
-void UIndicatorActivatorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
+void UIndicatorActivatorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
+{
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	auto currentRelativeLocation = TopRingMeshComponent->GetRelativeLocation();
@@ -84,7 +89,8 @@ void UIndicatorActivatorComponent::TickComponent(float DeltaTime, ELevelTick Tic
 
 	Speed += Speed * .05f;
 
-	if (currentRelativeLocation.Z >= 50) {
+	if (currentRelativeLocation.Z >= 50)
+	{
 		SetComponentTickEnabled(false);
 		TopRingMeshComponent->SetRelativeLocation(FVector(0));
 		BottomRingMeshComponent->SetRelativeLocation(FVector(0));
@@ -98,27 +104,33 @@ void UIndicatorActivatorComponent::TickComponent(float DeltaTime, ELevelTick Tic
 	}
 }
 
-void UIndicatorActivatorComponent::Overlapped(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
+void UIndicatorActivatorComponent::Overlapped(UPrimitiveComponent *OverlappedComp, AActor *OtherActor, UPrimitiveComponent *OtherComp,
+											  int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult)
+{
 	auto characterDetails = OtherActor->GetComponentByClass<UCharacterDetailsComponent>();
 	if (characterDetails && characterDetails->GetCharacterControl() == ECharacterControl::CC_Player &&
-		OtherComp->IsA<UCapsuleComponent>()) {
+		OtherComp->IsA<UCapsuleComponent>())
+	{
 		ActivateIndicator(OtherActor);
 	}
 }
 
-void UIndicatorActivatorComponent::OverlapEnded(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) {
+void UIndicatorActivatorComponent::OverlapEnded(UPrimitiveComponent *OverlappedComp, AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex)
+{
 	auto characterDetails = OtherActor->GetComponentByClass<UCharacterDetailsComponent>();
 	auto actionComponent = OtherActor->GetComponentByClass<UActionsComponent>();
 	if (characterDetails && characterDetails->GetCharacterControl() == ECharacterControl::CC_Player &&
-		OtherComp->IsA<UCapsuleComponent>()) {
+		OtherComp->IsA<UCapsuleComponent>())
+	{
 		DeactivateIndicator(OtherActor);
 		UDebugMessages::LogDisplay(this, "stop indicating");
 	}
 }
 
-void UIndicatorActivatorComponent::StartTickAgain() {
-	if (bIsActivated) {
+void UIndicatorActivatorComponent::StartTickAgain()
+{
+	if (bIsActivated)
+	{
 		SetComponentTickEnabled(true);
 
 		TopRingMeshComponent->SetVisibility(true);
@@ -126,16 +138,18 @@ void UIndicatorActivatorComponent::StartTickAgain() {
 	}
 }
 
-
-void UIndicatorActivatorComponent::ActivateIndicator(AActor* activateOn) {
+void UIndicatorActivatorComponent::ActivateIndicator(AActor *activateOn)
+{
 	TopRingMeshComponent->SetVisibility(true);
 	BottomRingMeshComponent->SetVisibility(true);
 	TopRingMeshComponent->SetRelativeLocation(FVector(0));
 	BottomRingMeshComponent->SetRelativeLocation(FVector(0));
 	SetComponentTickEnabled(true);
 	bIsActivated = true;
-	if (activateOn) {
-		switch (IndicatorType) {
+	if (activateOn)
+	{
+		switch (IndicatorType)
+		{
 		case EIndicatorType::IT_Extract:
 		{
 			auto actionComponent = activateOn->GetComponentByClass<UActionsComponent>();
@@ -144,9 +158,10 @@ void UIndicatorActivatorComponent::ActivateIndicator(AActor* activateOn) {
 		break;
 		case EIndicatorType::IT_Interact:
 		{
-			UDebugMessages::LogError(this, "INTERACTING WITH IT_INTERACT");
+			UDebugMessages::LogDisplay(this, "Interacting with IT_Interact");
 			auto pickupComponent = activateOn->GetComponentByClass<UPickupResourceComponent>();
-			if (pickupComponent) {
+			if (pickupComponent)
+			{
 				auto linkComponent = GetOwner()->GetComponentByClass<UIndicatorLinkComponent>();
 				pickupComponent->AddToPickupActors(linkComponent->GetPickupIndicatingTo());
 			}
@@ -154,12 +169,14 @@ void UIndicatorActivatorComponent::ActivateIndicator(AActor* activateOn) {
 		break;
 		default:
 		{
-			UDebugMessages::LogError(this, "Failed to get any indicator type");
-		}break;
+			UDebugMessages::LogWarning(this, "Failed to get any specific indicator type");
+		}
+		break;
 		}
 	}
 }
-void UIndicatorActivatorComponent::DeactivateIndicator(AActor* activateOn) {
+void UIndicatorActivatorComponent::DeactivateIndicator(AActor *activateOn)
+{
 	TopRingMeshComponent->SetVisibility(false);
 	BottomRingMeshComponent->SetVisibility(false);
 	TopRingMeshComponent->SetRelativeLocation(FVector(0));
@@ -167,8 +184,10 @@ void UIndicatorActivatorComponent::DeactivateIndicator(AActor* activateOn) {
 	SetComponentTickEnabled(false);
 	bIsActivated = false;
 
-	if (activateOn) {
-		switch (IndicatorType) {
+	if (activateOn)
+	{
+		switch (IndicatorType)
+		{
 		case EIndicatorType::IT_Extract:
 		{
 			auto actionComponent = activateOn->GetComponentByClass<UActionsComponent>();
@@ -183,7 +202,8 @@ void UIndicatorActivatorComponent::DeactivateIndicator(AActor* activateOn) {
 		default:
 		{
 			UDebugMessages::LogError(this, "Failed to get any indicator type");
-		}break;
+		}
+		break;
 		}
 	}
 }

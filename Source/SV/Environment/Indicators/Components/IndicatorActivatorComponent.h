@@ -21,6 +21,9 @@ public:
 	void SetIndicatorType(EIndicatorType indicatorType);
 	void SetMaterialColour(FLinearColor color);
 
+	void ActivateIndicator(AActor* activateOn);
+	void DeactivateIndicator(AActor* activateOn);
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -29,9 +32,6 @@ protected:
 		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION() void OverlapEnded(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
-	void ActivateIndicator(AActor* activateOn);
-	void DeactivateIndicator(AActor* activateOn);
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* BottomRingMeshComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* TopRingMeshComponent;

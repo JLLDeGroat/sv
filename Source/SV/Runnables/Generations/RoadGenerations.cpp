@@ -11,6 +11,7 @@ URoadGenerations::URoadGenerations()
 
 UBaseGenerations *URoadGenerations::Generate()
 {
+	LogGenerationStart();
 	TotalIterations = 0;
 	if (!Route.IsEmpty())
 	{
@@ -18,6 +19,8 @@ UBaseGenerations *URoadGenerations::Generate()
 		// simple route place
 		for (int i = 0; i < Route.Num(); i++)
 			PlaceRoad(Route[i]);
+
+		LogGenerationEnd();
 		return this;
 	}
 
@@ -44,7 +47,7 @@ UBaseGenerations *URoadGenerations::Generate()
 	{
 		PlaceRoad(Route[i]);
 	}
-
+	LogGenerationEnd();
 	return this;
 }
 
@@ -121,7 +124,6 @@ void URoadGenerations::FindPrimaryRouteBetweenRecursive(TArray<FVector> currentR
 
 		auto newRoute = currentRoute;
 		newRoute.Emplace(adjacentGridItems[i]);
-
 
 		FindPrimaryRouteBetweenRecursive(newRoute, end, maxRoute);
 	}

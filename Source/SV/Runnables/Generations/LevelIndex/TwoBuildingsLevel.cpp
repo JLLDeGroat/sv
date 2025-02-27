@@ -12,6 +12,8 @@
 #include "../../Generations/PlayerGeneration.h"
 #include "../../Generations/StaticSpawnerGeneration.h"
 #include "../../Generations/MiscellaneousGenerations.h"
+#include "../SpawnZoneGeneration.h"
+#include "../EndZoneGeneration.h"
 // #include "Algo/Filter.h"
 #include "Algo/Transform.h"
 
@@ -49,12 +51,23 @@ void UTwoBuildingsLevel::GenerateLevel()
 	int maxBuildingY = MaxY - 3;
 
 	for (int i = 3; i < maxBuildingX; i++)
-	{
 		for (int j = 3; j < maxBuildingY; j++)
-		{
 			ObstacleAllowedLocations.Emplace(FVector(i * 100, j * 100, 0));
-		}
-	}
+
+	ObstacleAllowedLocations = RemoveListFromList(ObstacleAllowedLocations, SpawnZone);
+	ObstacleAllowedLocations = RemoveListFromList(ObstacleAllowedLocations, EndZone);
+
+	auto spawnZoneGen = NewObject<USpawnZoneGeneration>(this)
+							->SetSpawnLocations(SpawnZone)
+							->SetupGeneration(GetWorld(), RandomStream, ObstacleAllowedLocations)
+							->SetStartAndEndZones(SpawnZone, EndZone)
+							->Generate();
+
+	auto endZoneGen = NewObject<UEndZoneGeneration>(this)
+						  ->SetSpawnLocations(EndZone)
+						  ->SetupGeneration(GetWorld(), RandomStream, ObstacleAllowedLocations)
+						  ->SetStartAndEndZones(SpawnZone, EndZone)
+						  ->Generate();
 
 	GenerateBuildings();
 
@@ -67,11 +80,7 @@ void UTwoBuildingsLevel::GenerateLevel()
 	TArray<FGridDataItem *> onlyRoads;
 	for (FGridDataItem &dataItem : GridData.GetGridItems())
 	{
-		if (!dataItem.GetIsRoad() &&
-			!dataItem.GetIsBuffer() &&
-			!dataItem.GetIsPrefab() &&
-			!dataItem.GetIsWall() &&
-			!dataItem.GetIsVoid())
+		if (dataItem.GetIsPotentialMiscItemSpace())
 			onlyRoads.Emplace(&dataItem);
 	}
 
@@ -104,7 +113,7 @@ void UTwoBuildingsLevel::GenerateLevel()
 								->SetStartAndEndZones(SpawnZone, EndZone)
 								->Generate();
 
-	DebugGenerations();
+	// DebugGenerations();
 }
 
 void UTwoBuildingsLevel::GenerateBuildings()

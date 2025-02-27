@@ -131,6 +131,9 @@ protected:
 
 	UObject *LoadBlueprintActorInThread(FString reference, UObject *&obj, int secondsToWaitUntilGiveup = 5);
 
+	void LogGenerationStart();
+	void LogGenerationEnd();
+
 private:
 	/*bool IsWithinAllowedList(FVector location);
 	bool IsWithinCurrentUsedList(FVector location);*/

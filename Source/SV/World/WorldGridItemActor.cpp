@@ -80,6 +80,17 @@ void AWorldGridItemActor::SetIsDebris()
 	MeshComponent->SetMaterial(0, mat);
 }
 
+void AWorldGridItemActor::SetIsEndZone()
+{
+	auto mat = USvUtilities::GetMaterial("/Script/Engine.Material'/Game/Materials/World/IsEndZone_M.IsEndZone_M'");
+	MeshComponent->SetMaterial(0, mat);
+}
+void AWorldGridItemActor::SetIsSpawnZone()
+{
+	auto mat = USvUtilities::GetMaterial("/Script/Engine.Material'/Game/Materials/World/IsStartZone_M.IsStartZone_M'");
+	MeshComponent->SetMaterial(0, mat);
+}
+
 void AWorldGridItemActor::OnAutoDestroy()
 {
 	Destroy();

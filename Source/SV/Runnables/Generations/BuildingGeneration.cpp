@@ -29,6 +29,7 @@ TArray<FVector> UBuildingGeneration::GetDoorLocations()
 #pragma optimize("", off)
 UBaseGenerations *UBuildingGeneration::Generate()
 {
+	LogGenerationStart();
 	FString blueprintLocation = GeneratePrefabTemplateLocations();
 
 	UDebugMessages::LogDisplay(this, "Generating Building: allowed spots " + FString::SanitizeFloat(UsableLocations.Num()));
@@ -77,6 +78,7 @@ UBaseGenerations *UBuildingGeneration::Generate()
 				break;
 		}
 	}
+	LogGenerationEnd();
 	return this;
 }
 

@@ -24,6 +24,8 @@ public:
 	void SetIsObstacle();
 	void SetIsWall();
 	void SetIsDebris();
+	void SetIsEndZone();
+	void SetIsSpawnZone();
 
 	void SetAutoDestroy(float timer = 1.0f);
 protected:
