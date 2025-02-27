@@ -14,8 +14,10 @@
 
 ABaseChestHigh::ABaseChestHigh(const FObjectInitializer &ObjectInitializer) : AEnvironmentActor(ObjectInitializer)
 {
+    RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootScene"));
+    RootComponent = RootSceneComponent;
     DestructibleMesh = CreateDefaultSubobject<UGeometryCollectionComponent>(TEXT("GeometryCollection"));
-    RootComponent = DestructibleMesh;
+    DestructibleMesh->SetupAttachment(RootComponent);
 
     StaticBoxFallOff = CreateDefaultSubobject<UBoxFalloff>(TEXT("StaticBox"));
     StaticBoxFallOff->Magnitude = 500;
@@ -25,7 +27,7 @@ ABaseChestHigh::ABaseChestHigh(const FObjectInitializer &ObjectInitializer) : AE
     StaticBoxFallOff->Falloff = EFieldFalloffType::Field_FallOff_None;
 
     DisableBoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("DisbleBoxComponent"));
-    DisableBoxComponent->SetupAttachment(DestructibleMesh);
+    DisableBoxComponent->SetupAttachment(RootComponent);
 
     DestructibleDetails = CreateDefaultSubobject<UDestructibleDetails>(TEXT("Details"));
     DestructibleHitComponent = CreateDefaultSubobject<UDestructibleHitComponent>(TEXT("HitComponent"));

@@ -62,4 +62,7 @@ protected:
     UCullingField *CullingField;
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
     UUniformInteger *UniformInt;
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    USceneComponent* RootSceneComponent;
 };

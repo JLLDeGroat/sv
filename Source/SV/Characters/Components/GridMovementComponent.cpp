@@ -370,7 +370,7 @@ bool UGridMovementComponent::GetMovableAdjacentTiles(FVector start, TArray<FVect
 				// Return true if A is closer to the ReferencePoint than B
 				return DistanceA < DistanceB; });
 	}
-	
+
 	auto world = GetOwner()->GetWorld();
 
 	for (int i = 0; i < adjacentTiles.Num(); i++)
@@ -428,7 +428,29 @@ bool UGridMovementComponent::GetMovableAdjacentTiles(FVector start, TArray<FVect
 				(EnvironmentHit.bBlockingHit && hasVaultComponentAndCanVault && !bIgnoreVaultables) ||
 				(EnvironmentHit.bBlockingHit && hasSkippableComponentAndCanSkip && !bIgnoreSkippables))
 			{
-				ValidAdjacentTiles.Emplace(adjacentTiles[i]);
+				if (hasSkippableComponentAndCanSkip)
+				{
+					// check that the next one over is also available, if not ignore if it is..
+					// add the adjacent tile thats on the other side of the skipped tile
+					EntityHitParams.AddIgnoredActor(EnvironmentHit.GetActor());
+					auto lookat = UGridUtilities::FindLookAtRotation(start, adjacentTiles[i]);
+					auto lookatVector = lookat.Vector() * 100;
+					auto extraStep = adjacentTiles[i] + lookatVector;
+					world->LineTraceSingleByChannel(EnvironmentHit, adjacentTiles[i], extraStep, USvUtilities::GetEnvironmentChannel(), EntityHitParams);
+
+					if (EnvironmentHit.bBlockingHit)
+					{
+						if (EnvironmentHit.GetActor() &&
+							EnvironmentHit.GetActor()->GetComponentByClass<USkippableComponent>())
+							continue;
+						else
+							ValidAdjacentTiles.Emplace(extraStep);
+					}
+					else
+						ValidAdjacentTiles.Emplace(extraStep);
+				}
+				else
+					ValidAdjacentTiles.Emplace(adjacentTiles[i]);
 			}
 			// else UDebugMessages::LogError(this, "Invalid spot " + adjacentTiles[i].ToString());
 		}

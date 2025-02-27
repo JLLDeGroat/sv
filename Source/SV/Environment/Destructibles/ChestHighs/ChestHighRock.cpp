@@ -32,11 +32,6 @@ AChestHighRock::AChestHighRock(const FObjectInitializer &ObjectInitializer) : AB
 
 	Skippable = CreateDefaultSubobject<USkippableComponent>(TEXT("Skippable"));
 	Skippable->SetupAttachment(RootComponent);
-}
-
-void AChestHighRock::OnConstruction(const FTransform &Transform)
-{
-	Super::OnConstruction(Transform);
 
 	DisableBoxComponent->SetBoxExtent(FVector(50, 50, 50));
 	DisableBoxComponent->SetRelativeLocation(FVector(50, -50, -50));
@@ -44,6 +39,14 @@ void AChestHighRock::OnConstruction(const FTransform &Transform)
 	DestructibleDetails->SetHealth(300);
 	Skippable->SetRelativeLocation(FVector(50, -50, 50));
 	Skippable->SetBoxExtent(FVector(40, 40, 32));
+
+	DisableBoxComponent->bHiddenInGame = false;
+	Skippable->bHiddenInGame = false;
+}
+
+void AChestHighRock::OnConstruction(const FTransform &Transform)
+{
+	Super::OnConstruction(Transform);
 }
 
 // Called when the game starts or when spawned
