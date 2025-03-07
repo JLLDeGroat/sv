@@ -30,12 +30,16 @@ public:
 	virtual void SetModularComponent(UModularSkeletonComponent* comp) override;
 	virtual UModularSkeletonComponent* GetModularComponent() override;
 	virtual void DamageModularComponent(int amount, FVector direction) override;
-
+	virtual bool GetIsPreferredHitLocation() override;
+	virtual void SetIsPreferredHitLocation(bool val) override;
 	virtual void AddEquipmentAsModularChild(AEquipment* equipment) override;
+	virtual FVector GetHitLocation() override;
+	virtual AActor *GetOwner() override;
 private:
 
 	UPROPERTY() float DamageMultiplier;
 	UPROPERTY() int Thickness;
+	UPROPERTY() bool bIsPreferredTarget;
 
 	UPROPERTY() UModularSkeletonComponent* ModularComponent;
 };

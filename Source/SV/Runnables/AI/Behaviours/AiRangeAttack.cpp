@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "AiRangeAttack.h"
 #include "../../../Characters/Components/TargetingComponent.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
@@ -10,100 +9,122 @@
 #include "../../../Characters/Components/HitCapsuleComponent.h"
 #include "../../../Characters/Components/FogHandlerComponent.h"
 #include "../../../Player/Components/PawnCameraComponent.h"
+#include "../../../Environment/Destructibles/Components/DestructibleHitComponent.h"
+#include "../../../Interfaces/HitComponent.h"
+#include "Algo/Transform.h"
+#include "Algo/Copy.h"
 
-UAiRangeAttack::UAiRangeAttack(const FObjectInitializer& ObjectInitializer)
-	:UBaseAIBehaviour(ObjectInitializer) {
-
+UAiRangeAttack::UAiRangeAttack(const FObjectInitializer &ObjectInitializer)
+	: UBaseAIBehaviour(ObjectInitializer)
+{
 }
 #pragma optimize("", off)
-void UAiRangeAttack::DoBehaviour() {
-
+void UAiRangeAttack::DoBehaviour()
+{
 	auto target = GetThisEnemy()->GetComponentByClass<UTargetingComponent>();
-	if (!target) {
+	if (!target)
+	{
 		UDebugMessages::LogError(this, "failed to get targeting component");
 	}
 
 	target->DetermineTargetData();
 
 	auto targetData = target->GetCurrentTargetData();
-	if (targetData.Num() > 0) {
+	if (targetData.Num() > 0)
+	{
 		UDebugMessages::LogDisplay(this, "found taget data");
 		auto thisTarget = &targetData[0];
 		auto attackComponent = GetThisEnemy()->GetComponentByClass<UAttackComponent>();
 		if (!attackComponent)
 			UDebugMessages::LogError(this, "could not find attack component");
-		else {
+		else
+		{
 			auto targetLocation = GetWhereToShootCharacter(thisTarget->GetCharacter(), thisTarget->GetShootLocation());
-			attackComponent->TryAttackLocation(thisTarget->GetShootLocation(), targetLocation, 25);
+
+			attackComponent->TryAttackLocation(
+				thisTarget->GetShootLocation(),
+				targetLocation.GetLocation(),
+				targetLocation.GetPassesThroughDestructionMesh() ? 35 : 25);
 
 			auto pawnCamera = GetWorld()->GetFirstPlayerController()->GetPawn()->GetComponentByClass<UPawnCameraComponent>();
-			pawnCamera->UpdateCameraState(ECameraState::CS_ReTarget, (GetThisEnemy()->GetActorLocation() + targetLocation) / 2);
+			pawnCamera->UpdateCameraState(ECameraState::CS_ReTarget, (GetThisEnemy()->GetActorLocation() + targetLocation.GetLocation()) / 2);
 
 			auto fogHandler = GetThisEnemy()->GetComponentByClass<UFogHandlerComponent>();
 			if (!fogHandler)
 				UDebugMessages::LogError(this, "no fog handler on this enemy");
-			else {
-				FFunctionGraphTask::CreateAndDispatchWhenReady([fogHandler]
-					{
-						fogHandler->EnableQuickForAiRangeAttack();
-					},
+			else
+			{
+				FFunctionGraphTask::CreateAndDispatchWhenReady(
+					[fogHandler]
+					{ fogHandler->EnableQuickForAiRangeAttack(); },
 					TStatId(), nullptr, ENamedThreads::GameThread);
 			}
 		}
 	}
-	else {
+	else
+	{
 		UDebugMessages::LogError(this, "failed to get a target");
 		UDebugMessages::LogError(this, "TODO: need to check on overwatch");
 		SetCompletedBehaviour();
 	}
 }
 
-FVector UAiRangeAttack::GetWhereToShootCharacter(TScriptInterface<ISvChar> character, FVector startLocation) {
-
+FWhereToShoot UAiRangeAttack::GetWhereToShootCharacter(TScriptInterface<ISvChar> character, FVector startLocation)
+{
+	TArray<FWhereToShoot> locationsToShoot;
 	TArray<FVector> locationsToTry;
 	FVector bodyLocation1 = FVector::ZeroVector;
 	FVector bodyLocation2 = FVector::ZeroVector;
 
 	auto allComps = character->GetAsActor()->GetComponents();
-	for (UActorComponent* comp : allComps) {
-		if (comp->IsA<UHitBoxComponent>())
+	for (UActorComponent *comp : allComps)
+	{
+		if (comp->Implements<UHitComponent>())
 		{
-			auto  hitBoxComp = (UHitBoxComponent*)comp;
-
-			FHitResult hitResult;
-			GetWorld()->LineTraceSingleByChannel(hitResult, startLocation, hitBoxComp->GetComponentLocation(), ECC_Visibility);
-
-			if (hitResult.bBlockingHit) {
-				if (hitResult.GetActor() == hitBoxComp->GetOwner() || hitResult.GetActor() == GetThisEnemy()) {
-					locationsToTry.Emplace(hitBoxComp->GetComponentLocation());
-
-					if (bodyLocation1 == FVector::ZeroVector) bodyLocation1 = hitBoxComp->GetComponentLocation();
-					else if (bodyLocation2 == FVector::ZeroVector) bodyLocation2 = hitBoxComp->GetComponentLocation();
-				}
-			}
-			else
-				locationsToTry.Emplace(hitBoxComp->GetComponentLocation());
-		}
-		else if (comp->IsA<UHitCapsuleComponent>())
-		{
-			auto hitCapComp = (UHitCapsuleComponent*)comp;
-
-			FHitResult hitResult;
-			GetWorld()->LineTraceSingleByChannel(hitResult, startLocation, hitCapComp->GetComponentLocation(), ECC_Visibility);
-
-			if (hitResult.bBlockingHit) {
-				if (hitResult.GetActor() == hitCapComp->GetOwner() || hitResult.GetActor() == GetThisEnemy()) {
-					locationsToTry.Emplace(hitCapComp->GetComponentLocation());
-				}
-			}
-			else
-				locationsToTry.Emplace(hitCapComp->GetComponentLocation());
-
-			locationsToTry.Emplace(hitCapComp->GetComponentLocation());
+			auto newItem = DeterminePossibleShootLocation(startLocation, comp);
+			if (newItem.GetIsValid())
+				locationsToShoot.Emplace(newItem);
 		}
 	}
 
-	if (bodyLocation1 != FVector::ZeroVector) return bodyLocation1;
-	else return locationsToTry[GetRandomStream().RandRange(0, locationsToTry.Num() - 1)];
+	TArray<FWhereToShoot> preferredLocations = locationsToShoot.FilterByPredicate(
+		[](const FWhereToShoot &thisThing)
+		{ return thisThing.GetIsPreferredLocation(); });
+
+	if (preferredLocations.Num() > 0)
+		return preferredLocations[GetRandomStream().RandRange(0, preferredLocations.Num() - 1)];
+	else
+		return locationsToShoot[GetRandomStream().RandRange(0, locationsToShoot.Num() - 1)];
 }
+
+FWhereToShoot UAiRangeAttack::DeterminePossibleShootLocation(FVector startLocation, TScriptInterface<IHitComponent> destinationHitComponent)
+{
+	TArray<FHitResult> hitResults;
+	FWhereToShoot whereToShoot;
+	whereToShoot.SetLocation(destinationHitComponent->GetHitLocation());
+	whereToShoot.SetIsPreferredLocation(destinationHitComponent->GetIsPreferredHitLocation());
+	whereToShoot.SetIsValid();
+
+	GetWorld()->LineTraceMultiByChannel(hitResults, startLocation, destinationHitComponent->GetHitLocation(), ECC_Visibility);
+
+	UDebugMessages::LogDisplay(this, "started possible shoot locations.");
+	for (FHitResult hit : hitResults)
+	{
+		if (hit.bBlockingHit)
+		{
+			if (hit.GetActor() && !hit.GetActor()->GetComponentByClass<UDestructibleHitComponent>())
+			{
+				whereToShoot.SetIsInvalid();
+			}
+			else if (hit.GetActor() && hit.GetActor()->GetComponentByClass<UDestructibleHitComponent>())
+			{
+				whereToShoot.SetPassesThroughDestructionMesh(true);
+			}
+		}
+	}
+	UDebugMessages::LogDisplay(this, "ended possible shoot locations.");
+
+	return whereToShoot;
+}
+
 #pragma optimize("", on)

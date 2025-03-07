@@ -129,12 +129,14 @@ ASolder::ASolder(const FObjectInitializer &ObjectInitializer) : ABaseCharacter(O
 	UpperTorsoHitComponent->SetBoxExtent(FVector(13, 10, 16));
 	UpperTorsoHitComponent->SetRelativeRotation(FRotator(0, 5, 0));
 	UpperTorsoHitComponent->SetRelativeLocation(FVector(15, 7, -2));
+	UpperTorsoHitComponent->SetIsPreferredHitLocation(true);
 
 	LowerTorsoHitComponent = CreateDefaultSubobject<UHitBoxComponent>(TEXT("BodySocketOneHit"));
 	LowerTorsoHitComponent->SetupAttachment(GetMesh(), FName("BodySocketOne"));
 	LowerTorsoHitComponent->SetBoxExtent(FVector(21, 10, 18));
 	LowerTorsoHitComponent->SetRelativeRotation(FRotator(0, -21, 0));
 	LowerTorsoHitComponent->SetRelativeLocation(FVector(23, 8, 0));
+	LowerTorsoHitComponent->SetIsPreferredHitLocation(true); 
 
 	LeftUpperLegHitComponent = CreateDefaultSubobject<UHitCapsuleComponent>(TEXT("LeftUpperLegHit"));
 	LeftUpperLegHitComponent->SetupAttachment(GetMesh(), FName("LeftUpLegSocket"));
