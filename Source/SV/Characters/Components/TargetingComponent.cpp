@@ -10,6 +10,7 @@
 #include "../../GameModes/Managers/CharacterManager.h"
 #include "GridMovementComponent.h"
 #include "../../Environment/Destructibles/Components/DestructibleHitComponent.h"
+#include "../../Environment/Fog/Components/FogSectionComponent.h"
 #include "../../Delegates/HudDelegates.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 
@@ -227,12 +228,24 @@ bool UTargetingComponent::GetCanTarget(FVector possibleLocation, TScriptInterfac
 	auto svChar = GetOwner<ISvChar>();
 	auto headLocation = svChar->GetHeadZHeight();
 	auto hitComponents = character->GetHitComponents();
+	FCollisionQueryParams queryParams;
+	queryParams.AddIgnoredActor(GetOwner());
 	for (int x = 0; x < hitComponents.Num(); x++)
 	{
+		bool isValid = true;
+		// DrawDebugLine(GetWorld(), possibleLocation, hitComponents[x]->GetWorldLocation(), FColor::Blue, false, 20, 0, 2);
+		//  check is in fog
+		TArray<FHitResult> fogHits;
+		GetOwner()->GetWorld()->LineTraceMultiByChannel(fogHits, possibleLocation, hitComponents[x]->GetWorldLocation(), USvUtilities::GetFogCollisionObjectChannel(), queryParams);
+		for (FHitResult fogHit : fogHits)
+			if (fogHit.GetComponent()->IsA<UFogSectionComponent>())
+			{
+				UDebugMessages::LogError(this, "found fog " + fogHit.GetActor()->GetName() + " " + fogHit.GetComponent()->GetName());
+				return false;
+			}
+
 		TArray<FHitResult> Hits;
 		GetOwner()->GetWorld()->LineTraceMultiByChannel(Hits, possibleLocation, hitComponents[x]->GetWorldLocation(), USvUtilities::GetEnvironmentChannel());
-
-		bool isValid = true;
 		for (FHitResult hit : Hits)
 		{
 			if (hit.bBlockingHit && !hit.GetActor()->GetComponentByClass<UDestructibleHitComponent>())

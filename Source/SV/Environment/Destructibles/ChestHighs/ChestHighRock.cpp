@@ -28,10 +28,9 @@ AChestHighRock::AChestHighRock(const FObjectInitializer &ObjectInitializer) : AB
 	Skippable->SetupAttachment(RootComponent);
 
 	DisableBoxComponent->SetBoxExtent(FVector(50, 50, 50));
-	DisableBoxComponent->SetRelativeLocation(FVector(50, -50, -50));
-
 	DestructibleDetails->SetHealth(300);
-	Skippable->SetRelativeLocation(FVector(50, -50, 50));
+
+	DestructibleMesh->SetRelativeLocation(FVector(-50, 50, 0));
 	Skippable->SetBoxExtent(FVector(40, 40, 32));
 
 	DisableBoxComponent->bHiddenInGame = false;
@@ -41,13 +40,13 @@ AChestHighRock::AChestHighRock(const FObjectInitializer &ObjectInitializer) : AB
 void AChestHighRock::OnConstruction(const FTransform &Transform)
 {
 	Super::OnConstruction(Transform);
+	// DestructibleMesh->SetRelativeRotation(FRotator(0, FMath::RandRange(0, 180), 0));
 }
 
 // Called when the game starts or when spawned
 void AChestHighRock::BeginPlay()
 {
 	Super::BeginPlay();
-	DestructibleMesh->SetRelativeRotation(FRotator(0, FMath::RandRange(0, 180), 0));
 }
 
 FString AChestHighRock::GetRandomCollection()
