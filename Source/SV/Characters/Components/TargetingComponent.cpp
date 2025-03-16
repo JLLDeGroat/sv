@@ -240,8 +240,12 @@ bool UTargetingComponent::GetCanTarget(FVector possibleLocation, TScriptInterfac
 		for (FHitResult fogHit : fogHits)
 			if (fogHit.GetComponent()->IsA<UFogSectionComponent>())
 			{
-				UDebugMessages::LogError(this, "found fog " + fogHit.GetActor()->GetName() + " " + fogHit.GetComponent()->GetName());
-				return false;
+				auto fogSection = Cast<UFogSectionComponent>(fogHit.GetComponent());
+				if (fogSection->GetIsInFog())
+				{
+					UDebugMessages::LogError(this, "found fog " + fogHit.GetActor()->GetName() + " " + fogHit.GetComponent()->GetName());
+					return false;
+				}
 			}
 
 		TArray<FHitResult> Hits;
