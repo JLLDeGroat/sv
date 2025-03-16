@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "BaseConstruct.h"
 #include "../../../Utilities/SvUtilities.h"
 #include "Components/StaticMeshComponent.h"
@@ -19,9 +18,11 @@
 #include "../../Components/SpawnInComponent.h"
 #include "../../Components/DropResourceComponent.h"
 #include "../../Components/FogHandlerComponent.h"
+#include "../../Components/FogGenReceiveComponent.h"
 
-ABaseConstruct::ABaseConstruct(const FObjectInitializer& ObjectInitializer)
-	:ABaseCharacter(ObjectInitializer) {
+ABaseConstruct::ABaseConstruct(const FObjectInitializer &ObjectInitializer)
+	: ABaseCharacter(ObjectInitializer)
+{
 
 	GridMovementComponent = CreateDefaultSubobject<UGridMovementComponent>(TEXT("GridMovement"));
 
@@ -109,14 +110,12 @@ ABaseConstruct::ABaseConstruct(const FObjectInitializer& ObjectInitializer)
 	RightUpperLegHitComponent->SetCapsuleRadius(9, false);
 	RightUpperLegHitComponent->SetCapsuleHalfHeight(31, false);
 
-
 	LeftLegHitComponent = CreateDefaultSubobject<UHitCapsuleComponent>(TEXT("LeftLegHit"));
 	LeftLegHitComponent->SetupAttachment(GetMesh(), FName("LeftLegSocket"));
 	LeftLegHitComponent->SetRelativeRotation(FRotator(85.838082, -191.71701, -192.246881));
 	LeftLegHitComponent->SetRelativeLocation(FVector(26.439232, 2.781889, 0));
 	LeftLegHitComponent->SetCapsuleRadius(7, false);
 	LeftLegHitComponent->SetCapsuleHalfHeight(27, false);
-
 
 	RightLegHitComponent = CreateDefaultSubobject<UHitCapsuleComponent>(TEXT("RightLegHit"));
 	RightLegHitComponent->SetupAttachment(GetMesh(), FName("RightLegSocket"));
@@ -133,12 +132,12 @@ ABaseConstruct::ABaseConstruct(const FObjectInitializer& ObjectInitializer)
 	HeadHitComponent->SetCapsuleHalfHeight(16.0f, false);
 	HeadHitComponent->SetHitDimageMultiplier(2.0f);
 
-	//LeftForeArmSocket
-	//RightUpLegSocket
-	//RightLegSocket
+	// LeftForeArmSocket
+	// RightUpLegSocket
+	// RightLegSocket
 
-	//BodySocketTwo
-	//BodySocketOne
+	// BodySocketTwo
+	// BodySocketOne
 	AnimSpeedComponent = CreateDefaultSubobject<UAnimSpeedComponent>(TEXT("AnimSpeed"));
 
 	HealthAndStatusComponent = CreateDefaultSubobject<UHealthAndStatusWidgetComponent>(TEXT("StatusComponent"));
@@ -158,17 +157,21 @@ ABaseConstruct::ABaseConstruct(const FObjectInitializer& ObjectInitializer)
 	FogHandler->SetupAttachment(RootComponent);
 	FogHandler->SetSphereRadius(150);
 	FogHandler->SetIsAi(true);
+
+	FogGenRecComponent = CreateDefaultSubobject<UFogGenReceiveComponent>(TEXT("FogGenRec"));
 }
 
-
-void ABaseConstruct::SetSkeletalMeshAndAnim(FString skele, FString anim) {
+void ABaseConstruct::SetSkeletalMeshAndAnim(FString skele, FString anim)
+{
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMesh(*skele);
-	if (skeletalMesh.Succeeded()) {
+	if (skeletalMesh.Succeeded())
+	{
 		GetMesh()->SetSkeletalMesh(skeletalMesh.Object);
 	}
 
 	static ConstructorHelpers::FObjectFinder<UClass> AnimObj(*anim);
-	if (AnimObj.Succeeded()) {
+	if (AnimObj.Succeeded())
+	{
 		GetMesh()->SetAnimInstanceClass(AnimObj.Object);
 	}
 }

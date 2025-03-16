@@ -216,3 +216,12 @@ void UHealthAndStatusWidgetComponent::OnStatusEffectTimerCallback()
 
 	statusWidget->PlayAnimationForward(statusWidget->GetAnimateStatusOut());
 }
+
+void UHealthAndStatusWidgetComponent::HideComponent()
+{
+	GetHealthWidget()->SetVisibility(ESlateVisibility::Hidden);
+}
+void UHealthAndStatusWidgetComponent::ShowComponent()
+{
+	GetHealthWidget()->SetVisibility(ESlateVisibility::Visible);
+}

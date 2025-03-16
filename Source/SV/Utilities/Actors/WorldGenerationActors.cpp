@@ -11,6 +11,7 @@
 #include "../../Environment/Ceiling/CeilingStalagtite.h"
 #include "../../Environment/Flooring/MudFloor.h"
 #include "../../Environment/Prefabs/Base/BasePrefab.h"
+#include "../../Environment/Fog/FogManager.h"
 #include "GameFramework/Character.h"
 // Sets default values
 AWorldGenerationActors::AWorldGenerationActors()
@@ -32,16 +33,17 @@ AWorldGenerationActors::AWorldGenerationActors()
 void AWorldGenerationActors::BeginPlay()
 {
 	Super::BeginPlay();
-	if (!bShouldGenerate)
+	if (bShouldGenerate)
 	{
-		UDebugMessages::LogWarning(this, "Should Generate is set to false");
-		return;
+		TearDownCurrentGen();
+		auto newLevel = NewObject<ULevelGenerationRunnable>()
+							->InsertVariables(ELevelGenType::TwoBuilding)
+							->Initialise(GetWorld())
+							->Begin();
 	}
-	TearDownCurrentGen();
-	auto newLevel = NewObject<ULevelGenerationRunnable>()
-						->InsertVariables(ELevelGenType::TwoBuilding)
-						->Initialise(GetWorld())
-						->Begin();
+
+	if (bShouldGenerateFog)
+		GenerateFog();
 }
 
 void AWorldGenerationActors::GenericLevel()
@@ -165,4 +167,32 @@ void AWorldGenerationActors::DestroyAllDebugActors()
 			}
 		}
 	}
+}
+
+void AWorldGenerationActors::GenerateFog()
+{
+	AFogManager *fogManager = nullptr;
+	auto actors = GetWorld()->GetCurrentLevel()->Actors;
+	auto totalActors = actors.Num() - 1;
+	for (int i = totalActors; i > 0; i--)
+	{
+		if (actors[i] && actors[i]->IsA<AFogManager>())
+		{
+			fogManager = Cast<AFogManager>(actors[i]);
+			break;
+		}
+	}
+
+	auto elevation = 1;
+	auto maxX = 40;
+	auto maxY = 40;
+
+	TArray<FVector> fogLocations;
+
+	for (int j = 0; j <= elevation; j++)
+		for (int i = 0; i <= maxX; i++)
+			for (int x = 0; x <= maxY; x++)
+				fogLocations.Emplace(FVector(i * 100, x * 100, j * 200));
+
+	fogManager->AddComponentsAtLocation(fogLocations);
 }

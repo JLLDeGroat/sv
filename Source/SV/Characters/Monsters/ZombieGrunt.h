@@ -17,7 +17,7 @@ class UAttackComponent;
 class UAnimSpeedComponent;
 class UHealthAndStatusWidgetComponent;
 class UAIComponent;
-
+class UFogGenReceiveComponent;
 /**
  * 
  */
@@ -60,4 +60,6 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UAnimSpeedComponent* AnimSpeedComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UHealthAndStatusWidgetComponent* HealthAndStatusComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UAIComponent* AiComponent;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UFogGenReceiveComponent* FogGenRecComponent;
 };

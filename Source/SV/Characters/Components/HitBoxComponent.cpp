@@ -9,10 +9,10 @@ UHitBoxComponent::UHitBoxComponent(const FObjectInitializer &ObjectInitializer)
 {
 
 	// SetCollisionResponseToAllChannels(ECR_Ignore);
-	SetCollisionResponseToChannel(USvUtilities::GetBulletCollisionChannel(), ECR_Overlap);
-	SetCollisionResponseToChannel(ECC_GameTraceChannel5, ECR_Overlap);
 	SetCollisionObjectType(USvUtilities::GetBulletCollisionObjectChannel());
-
+	SetCollisionResponseToChannel(USvUtilities::GetBulletCollisionChannel(), ECR_Overlap);
+	SetCollisionResponseToChannel(USvUtilities::GetBulletCollisionObjectChannel(), ECR_Overlap);
+	SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 	SetCanEverAffectNavigation(false);
 	DamageMultiplier = 1.0f;
 	Thickness = 1;

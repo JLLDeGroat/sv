@@ -33,11 +33,17 @@ protected:
 	UFUNCTION(CallInEditor, category = "win loss")
 	void RunWinLossRunnable();
 
+	UFUNCTION(CallInEditor, category = "Fog")
+	void GenerateFog();
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UStaticMeshComponent *RootMesh;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, category = "generations")
 	bool bShouldGenerate;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, category = "generations")
+	bool bShouldGenerateFog;
 
 private:
 	void TearDownCurrentGen();

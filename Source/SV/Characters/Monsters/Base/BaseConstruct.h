@@ -21,6 +21,7 @@ class UAIComponent;
 class UDropResourceComponent;
 class USpawnInComponent;
 class UFogHandlerComponent;
+class UFogGenReceiveComponent;
 
 /**
  * 
@@ -65,6 +66,8 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) USpawnInComponent* SpawnInComponent;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UFogHandlerComponent* FogHandler;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UFogGenReceiveComponent* FogGenRecComponent;
 
 protected:
 

@@ -35,6 +35,9 @@ public:
 
 	void UpdateStatusWidgetData();
 
+	void HideComponent();
+	void ShowComponent();
+
 protected:
 
 	UFUNCTION() void InternalHealthChangeCallback();

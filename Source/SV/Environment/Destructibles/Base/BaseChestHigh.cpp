@@ -19,6 +19,12 @@ ABaseChestHigh::ABaseChestHigh(const FObjectInitializer &ObjectInitializer) : AE
     DestructibleMesh = CreateDefaultSubobject<UGeometryCollectionComponent>(TEXT("GeometryCollection"));
     DestructibleMesh->SetupAttachment(RootComponent);
 
+    DestructibleMesh->SetCollisionObjectType(USvUtilities::GetEnvironmentChannel());
+	DestructibleMesh->SetCollisionResponseToChannel(USvUtilities::GetEnvironmentChannel(), ECR_Block);
+	DestructibleMesh->SetCollisionResponseToChannel(USvUtilities::GetBulletCollisionChannel(), ECR_Overlap);
+	DestructibleMesh->SetCollisionResponseToChannel(USvUtilities::GetBulletCollisionObjectChannel(), ECR_Block);
+	DestructibleMesh->SetGenerateOverlapEvents(true);
+
     StaticBoxFallOff = CreateDefaultSubobject<UBoxFalloff>(TEXT("StaticBox"));
     StaticBoxFallOff->Magnitude = 500;
     StaticBoxFallOff->MinRange = 0;

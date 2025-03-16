@@ -10,7 +10,9 @@
 #include "../../../Characters/Components/FogHandlerComponent.h"
 #include "../../../Player/Components/PawnCameraComponent.h"
 #include "../../../Environment/Destructibles/Components/DestructibleHitComponent.h"
+#include "../../../Environment/Fog/FogManager.h"
 #include "../../../Interfaces/HitComponent.h"
+#include "../../../Utilities/SvUtilities.h"
 #include "Algo/Transform.h"
 #include "Algo/Copy.h"
 
@@ -40,6 +42,13 @@ void UAiRangeAttack::DoBehaviour()
 		else
 		{
 			auto targetLocation = GetWhereToShootCharacter(thisTarget->GetCharacter(), thisTarget->GetShootLocation());
+
+			if (!targetLocation.GetIsValid())
+			{
+				UDebugMessages::LogError(this, "failed to get valid target locations");
+				SetCompletedBehaviour();
+				return;
+			}
 
 			attackComponent->TryAttackLocation(
 				thisTarget->GetShootLocation(),
@@ -93,8 +102,10 @@ FWhereToShoot UAiRangeAttack::GetWhereToShootCharacter(TScriptInterface<ISvChar>
 
 	if (preferredLocations.Num() > 0)
 		return preferredLocations[GetRandomStream().RandRange(0, preferredLocations.Num() - 1)];
-	else
+	else if (locationsToShoot.Num() > 0)
 		return locationsToShoot[GetRandomStream().RandRange(0, locationsToShoot.Num() - 1)];
+
+	return FWhereToShoot();
 }
 
 FWhereToShoot UAiRangeAttack::DeterminePossibleShootLocation(FVector startLocation, TScriptInterface<IHitComponent> destinationHitComponent)
@@ -105,7 +116,9 @@ FWhereToShoot UAiRangeAttack::DeterminePossibleShootLocation(FVector startLocati
 	whereToShoot.SetIsPreferredLocation(destinationHitComponent->GetIsPreferredHitLocation());
 	whereToShoot.SetIsValid();
 
-	GetWorld()->LineTraceMultiByChannel(hitResults, startLocation, destinationHitComponent->GetHitLocation(), ECC_Visibility);
+	GetWorld()->LineTraceMultiByChannel(hitResults, startLocation, destinationHitComponent->GetHitLocation(), USvUtilities::GetBulletCollisionChannel());
+
+	//DrawDebugLine(GetWorld(), startLocation, destinationHitComponent->GetHitLocation(), FColor::Green, false, 60, 0, 5);
 
 	UDebugMessages::LogDisplay(this, "started possible shoot locations.");
 	for (FHitResult hit : hitResults)
@@ -114,12 +127,26 @@ FWhereToShoot UAiRangeAttack::DeterminePossibleShootLocation(FVector startLocati
 		{
 			if (hit.GetActor() && !hit.GetActor()->GetComponentByClass<UDestructibleHitComponent>())
 			{
+				UDebugMessages::LogWarning(this, "found invalid " + hit.GetActor()->GetName());
 				whereToShoot.SetIsInvalid();
 			}
 			else if (hit.GetActor() && hit.GetActor()->GetComponentByClass<UDestructibleHitComponent>())
 			{
+				UDebugMessages::LogWarning(this, "found destructible " + hit.GetActor()->GetName());
 				whereToShoot.SetPassesThroughDestructionMesh(true);
 			}
+			else
+			{
+				UDebugMessages::LogWarning(this, "blocking hit against " + hit.GetActor()->GetName());
+				if (AFogManager *forManager = Cast<AFogManager>(hit.GetActor()))
+				{
+					UDebugMessages::LogWarning(this, "disabled by fog");
+				}
+			}
+		}
+		else
+		{
+			UDebugMessages::LogWarning(this, "non blocking hit on " + hit.GetActor()->GetName());
 		}
 	}
 	UDebugMessages::LogDisplay(this, "ended possible shoot locations.");

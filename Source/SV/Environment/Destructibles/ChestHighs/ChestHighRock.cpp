@@ -24,12 +24,6 @@ AChestHighRock::AChestHighRock(const FObjectInitializer &ObjectInitializer) : AB
 	if (restCollection)
 		DestructibleMesh->SetRestCollection(restCollection);
 
-	DestructibleMesh->SetCollisionObjectType(USvUtilities::GetEnvironmentChannel());
-	DestructibleMesh->SetCollisionResponseToChannel(USvUtilities::GetEnvironmentChannel(), ECR_Block);
-	DestructibleMesh->SetCollisionResponseToChannel(USvUtilities::GetBulletCollisionChannel(), ECR_Overlap);
-	DestructibleMesh->SetCollisionResponseToChannel(USvUtilities::GetBulletCollisionObjectChannel(), ECR_Overlap);
-	DestructibleMesh->SetGenerateOverlapEvents(true);
-
 	Skippable = CreateDefaultSubobject<USkippableComponent>(TEXT("Skippable"));
 	Skippable->SetupAttachment(RootComponent);
 

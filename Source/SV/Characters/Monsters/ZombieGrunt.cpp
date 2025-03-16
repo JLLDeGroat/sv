@@ -16,6 +16,7 @@
 #include "../Components/AnimSpeedComponent.h"
 #include "../Components/HealthAndStatusWidgetComponent.h"
 #include "../Components/AIComponent.h"
+#include "../Components/FogGenReceiveComponent.h"
 
 AZombieGrunt::AZombieGrunt(const FObjectInitializer& ObjectInitializer) : ABaseCharacter(ObjectInitializer) {
 
@@ -134,6 +135,7 @@ AZombieGrunt::AZombieGrunt(const FObjectInitializer& ObjectInitializer) : ABaseC
 	HealthAndStatusComponent->SetRelativeLocation(FVector(0, 0, 130));
 
 	AiComponent = CreateDefaultSubobject<UAIComponent>(TEXT("AiComponent"));
+	FogGenRecComponent = CreateDefaultSubobject<UFogGenReceiveComponent>(TEXT("FogGenRec"));
 }
 
 UGridMovementComponent* AZombieGrunt::GetGridMovementComponent() {

@@ -19,12 +19,6 @@ AChestHighFence::AChestHighFence(const FObjectInitializer &ObjectInitializer) : 
 	if (restCollection)
 		DestructibleMesh->SetRestCollection(restCollection);
 
-	DestructibleMesh->SetCollisionObjectType(USvUtilities::GetEnvironmentChannel());
-	DestructibleMesh->SetCollisionResponseToChannel(USvUtilities::GetEnvironmentChannel(), ECR_Block);
-	DestructibleMesh->SetCollisionResponseToChannel(USvUtilities::GetBulletCollisionChannel(), ECR_Overlap);
-	DestructibleMesh->SetCollisionResponseToChannel(USvUtilities::GetBulletCollisionObjectChannel(), ECR_Overlap);
-	DestructibleMesh->SetGenerateOverlapEvents(true);
-
 	Vaultable = CreateDefaultSubobject<UVaultableComponent>(TEXT("Vaultable"));
 	Vaultable->SetupAttachment(RootComponent);
 

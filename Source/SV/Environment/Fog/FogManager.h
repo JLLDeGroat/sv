@@ -40,6 +40,9 @@ public:
 	AFogManager();
 
 	void AddComponentAtLocation(FVector loc);
+	void AddComponentsAtLocation(TArray<FVector> locs);
+
+	TArray<UFogSectionComponent *> GetFogSections();
 
 protected:
 	// Called when the game starts or when spawned

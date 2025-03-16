@@ -40,7 +40,7 @@ public:
 		bIsStartZone = false;
 	}
 
-	FVector GetLocation() { return Location; }
+	FVector GetLocation() const { return Location; }
 	bool GetIsRoad() { return bIsRoad; }
 
 	void SetLocation(FVector loc) { Location = loc; }

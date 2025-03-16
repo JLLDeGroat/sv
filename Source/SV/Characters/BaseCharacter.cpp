@@ -29,6 +29,7 @@ ABaseCharacter::ABaseCharacter(const FObjectInitializer &ObjectInitializer) : AC
 	GetCapsuleComponent()->SetCollisionResponseToChannel(USvUtilities::GetClickableChannel(), ECR_Block);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(USvUtilities::GetTriggerableChannel(), ECR_Overlap);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(USvUtilities::GetFloorTargetChannel(), ECR_Block);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(USvUtilities::GetFogCollisionObjectChannel(), ECR_Block);
 
 	DetailsComponent = CreateDefaultSubobject<UCharacterDetailsComponent>(TEXT("DetailsComponent"));
 	StatusEffectsComponent = CreateDefaultSubobject<UStatusEffectsComponent>(TEXT("StatusEffects"));

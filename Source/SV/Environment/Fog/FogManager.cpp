@@ -17,7 +17,10 @@ AFogManager::AFogManager()
   MeshAsset = USvUtilities::GetStaticMesh(
       "/Script/Engine.StaticMesh'/Engine/BasicShapes/Cube.Cube'");
 }
-
+TArray<UFogSectionComponent *> AFogManager::GetFogSections()
+{
+  return FogSections;
+}
 // Called when the game starts or when spawned
 void AFogManager::BeginPlay() { Super::BeginPlay(); }
 
@@ -49,7 +52,6 @@ void AFogManager::Tick(float DeltaTime)
   auto iterations = 0;
   while (LocationsToAdd.Num() > 0 && iterations < 10)
   {
-
     auto loc = LocationsToAdd[0];
     LocationsToAdd.RemoveAt(0);
     UFogSectionComponent *newMeshComp = NewObject<UFogSectionComponent>(this);
@@ -66,9 +68,7 @@ void AFogManager::Tick(float DeltaTime)
       newMeshComp->SetMaterialInstance(instance);
 
       FogComponents.Emplace(FFogComponent(newMeshComp));
-
-      if (FogSections.Num() == 0)
-        FogSections.Emplace(newMeshComp);
+      FogSections.Emplace(newMeshComp);
 
       newMeshComp->RegisterComponent();
       newMeshComp->InitializeFogSectionProperties(loc);
@@ -88,4 +88,10 @@ void AFogManager::AddComponentAtLocation(FVector loc)
     LocationsToAdd.Emplace(loc);
   }
   SetActorTickEnabled(true);
+}
+
+void AFogManager::AddComponentsAtLocation(TArray<FVector> locs)
+{
+  for (FVector loc : locs)
+    AddComponentAtLocation(loc);
 }

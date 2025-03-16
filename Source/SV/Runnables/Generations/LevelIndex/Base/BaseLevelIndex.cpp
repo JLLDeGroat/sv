@@ -8,6 +8,7 @@
 #include "../../../../Environment/Natural/RockSection.h"
 #include "../../../../World/WorldGridItemActor.h"
 #include "../../../../Environment/Fog/FogManager.h"
+#include "Algo/Transform.h"
 
 UBaseLevelIndex::UBaseLevelIndex()
 {
@@ -73,27 +74,16 @@ void UBaseLevelIndex::CreateGrid(int maxX, int maxY, int elevation)
 
 	if (fogManager)
 	{
-		auto gridItems = GridData.GetGridItems();
-		for (FGridDataItem dataItem : GridData.GetGridItems())
-		{
-			auto gridLoc = dataItem.GetLocation();
-			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady(
-				[fogManager, gridLoc]
-				{
-					fogManager->AddComponentAtLocation(gridLoc);
-				},
-				TStatId(), nullptr, ENamedThreads::GameThread);
-		}
-		// for (int i = 0; i < gridItems.Num(); i++)
-		// {
-		// 	auto gridLoc = gridItems[i].GetLocation();
-		// 	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady(
-		// 		[fogManager, gridLoc]
-		// 		{
-		// 			fogManager->AddComponentAtLocation(gridLoc);
-		// 		},
-		// 		TStatId(), nullptr, ENamedThreads::GameThread);
-		// }
+		TArray<FVector> locationsToAdd;
+		Algo::Transform(GridData.GetGridItems(), locationsToAdd, [](const FGridDataItem &Item)
+						{ return Item.GetLocation(); });
+						
+		FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady(
+			[fogManager, locationsToAdd]
+			{
+				fogManager->AddComponentsAtLocation(locationsToAdd);
+			},
+			TStatId(), nullptr, ENamedThreads::GameThread);
 	}
 }
 void UBaseLevelIndex::SetSpawnAndEndZone()
