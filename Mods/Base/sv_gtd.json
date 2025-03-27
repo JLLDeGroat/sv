@@ -1,12 +1,19 @@
 {
     "DescriptionItems": [
         {
-            "Title":"Classic Game",
-            "DescriptionItems": [
+            "Title": "Classic Game",
+            "ModifierItems": [
                 "Enemies have standard damage and accuracy",
                 "Standard loot options",
                 "Standard Exp gain"
             ],
+            "EquipmentItems": [
+                "3 x Soldiers",
+                "3 x P. Rifles",
+                "1 x Grenade",
+                "1 x Health Kit"
+            ],
+            "ModeGoal": "Find the entrace to the next subterranien level.",
             "GameModeType": "EMT_Classic"
         }
     ]

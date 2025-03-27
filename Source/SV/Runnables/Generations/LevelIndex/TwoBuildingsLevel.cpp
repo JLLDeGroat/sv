@@ -97,7 +97,7 @@ void UTwoBuildingsLevel::GenerateLevel()
 	ObstacleAllowedLocations = RemoveListFromList(ObstacleAllowedLocations, miscGens->GetTotalUsedLocations());
 
 	auto enemyGen = NewObject<UEnemyGeneration>(this)
-						->SetTotalWalkingZombies(10)
+						->SetPodAmountAndTier(5, 1)
 						->SetupGeneration(GetWorld(), RandomStream, ObstacleAllowedLocations)
 						->SetStartAndEndZones(SpawnZone, EndZone)
 						->Generate();
