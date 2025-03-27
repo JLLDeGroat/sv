@@ -30,17 +30,32 @@ void UNewGameOptionsWidget::NativeConstruct()
 	UUserWidgetHelpers::DesignButton(BeginGameButton);
 	UUserWidgetHelpers::DesignButton(ComingSoonBtn);
 
-	UUserWidgetHelpers::DesignText(TitleText);
-	UUserWidgetHelpers::DesignText(DescriptionText);
+	// UUserWidgetHelpers::DesignText(TitleText);
+	// UUserWidgetHelpers::DesignText(DescriptionText);
+	UUserWidgetHelpers::DesignText(EquipmentTitle);
+	UUserWidgetHelpers::DesignText(ModifierTitle);
+	UUserWidgetHelpers::DesignText(ModifierText);
+	UUserWidgetHelpers::DesignText(GameModeGoalText);
+	UUserWidgetHelpers::DesignText(GameModeGoalTitle);
+	UUserWidgetHelpers::DesignText(EquipmentText);
 	UUserWidgetHelpers::DesignText(GameModeTitle);
+	UUserWidgetHelpers::DesignText(GameModeTitleText);
+
+	ResetWidget();
 }
 
 void UNewGameOptionsWidget::ResetWidget()
 {
 	SetStartButtonVisibility(false);
 
-	TitleText->SetText(FText::FromString(""));
-	DescriptionText->SetText(FText::FromString(""));
+	EquipmentTitle->SetText(FText::FromString(""));
+	ModifierTitle->SetText(FText::FromString(""));
+	ModifierText->SetText(FText::FromString(""));
+	EquipmentText->SetText(FText::FromString(""));
+
+	GameModeGoalText->SetText(FText::FromString(""));
+	GameModeGoalTitle->SetText(FText::FromString(""));
+	GameModeTitleText->SetText(FText::FromString(""));
 }
 
 void UNewGameOptionsWidget::OnClassicGameClicked()
@@ -73,15 +88,25 @@ void UNewGameOptionsWidget::UpdateTitleAndDescriptions(EGameModeType gameMode)
 	FGameTypeDescriptionItem item;
 	instance->GetGameTypeDescription(EGameModeType::EMT_Classic, item);
 
-	TitleText->SetText(FText::FromString(item.GetTitle()));
+	GameModeTitleText->SetText(FText::FromString(item.GetTitle()));
+	GameModeGoalTitle->SetText(FText::FromString("Objectives"));
 
-	auto descriptions = item.GetDescriptions();
+	EquipmentTitle->SetText(FText::FromString("Equipment"));
+	ModifierTitle->SetText(FText::FromString("Modifiers"));
+
+	GameModeGoalText->SetText(FText::FromString(item.GetModeGoal()));
+
+	auto descriptions = item.GetModifierItems();
 	FString totalDesc = "";
 	for (int i = 0; i < descriptions.Num(); i++)
-	{
 		totalDesc += descriptions[i] + "\r\n";
-	}
-	DescriptionText->SetText(FText::FromString(totalDesc));
+	ModifierText->SetText(FText::FromString(totalDesc));
+
+	auto equipments = item.GetEquipmentItems();
+	FString totalItems = "";
+	for (int i = 0; i < equipments.Num(); i++)
+		totalItems += equipments[i] + "\r\n";
+	EquipmentText->SetText(FText::FromString(totalItems));
 }
 
 void UNewGameOptionsWidget::OnGenCompleted()
