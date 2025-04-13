@@ -42,6 +42,12 @@ void ACharacterSpawnerActor::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (!bShouldGenerate)
+	{
+		UDebugMessages::LogWarning(this, GetName() + " Set bShouldGenerate to false, doing nothing");
+		return;
+	}
+
 	if (!CharacterClass)
 		return UDebugMessages::LogError(this, "no character class set for utility actor " + GetName());
 	else

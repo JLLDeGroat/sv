@@ -37,7 +37,7 @@ UBaseGenerations *UMiscellaneousGenerations::Generate()
         FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady(
             [world, toSpawn]
             {
-                world->SpawnActor<AChestHighRock>(toSpawn + FVector(50, 50, 0), FRotator::ZeroRotator);
+                world->SpawnActor<AChestHighRock>(toSpawn, FRotator::ZeroRotator);
             },
             TStatId(), nullptr, ENamedThreads::GameThread);
     }

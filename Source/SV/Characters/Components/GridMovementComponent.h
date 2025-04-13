@@ -16,20 +16,24 @@ struct FMovementData
 	GENERATED_BODY()
 
 public:
-	FMovementData(FVector start, TArray<FVector> previous) {
+	FMovementData(FVector start, TArray<FVector> previous)
+	{
 		Start = start;
 		Previous = previous;
 		IsEnd = false;
 	}
-	FMovementData(FVector start) {
+	FMovementData(FVector start)
+	{
 		Start = start;
 		IsEnd = false;
 	}
-	FMovementData() {
+	FMovementData()
+	{
 		Start = FVector::ZeroVector;
 		IsEnd = false;
 	}
-	FMovementData(FMovementData* mvData) {
+	FMovementData(FMovementData *mvData)
+	{
 		Start = mvData->GetStart();
 		Previous = mvData->GetPrevious();
 
@@ -48,14 +52,18 @@ public:
 	TArray<FVector> GetPrevious() { return Previous; }
 
 	FVector GetStart() { return Start; }
+
 protected:
+	UPROPERTY()
+	FVector Start;
+	UPROPERTY()
+	TArray<FVector> Connections;
 
-	UPROPERTY() FVector Start;
-	UPROPERTY() TArray<FVector> Connections;
+	UPROPERTY()
+	TArray<FVector> Previous;
 
-	UPROPERTY() TArray<FVector> Previous;
-
-	UPROPERTY() bool IsEnd;
+	UPROPERTY()
+	bool IsEnd;
 };
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
@@ -65,25 +73,35 @@ class SV_API UGridMovementComponent : public UAnimAccessComponent
 
 public:
 	// Sets default values for this component's properties
-	UGridMovementComponent(const FObjectInitializer& ObjectInitializer);
+	UGridMovementComponent(const FObjectInitializer &ObjectInitializer);
+
+	void SetShouldPauseMovement(bool val);
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	FTimerHandle GridMovementDelayTimer;
+	UFUNCTION()
+	void OnGridMovementDelayTimerCallback();
+	UPROPERTY()
+	bool bPauseMovement;
+	UPROPERTY()
+	bool bShouldPauseMovement;
+
 public:
 	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
 
 	bool MoveAcrossGrid(TArray<FVector> movementLocs);
 	void MovementLoop();
-	
+
 	void MoveAcrossGridPostClimb();
 
 	TArray<FVector> FindRoute(FVector start, FVector end, bool bisAI = false);
 	TArray<FVector> FindQuickestRoute(FVector start, FVector end, bool bisAI = false);
 
-	bool GetMovableAdjacentTiles(FVector start, TArray<FVector>& ValidAdjacentTiles, FVector orderByDistanceLoc = FVector::ZeroVector, bool bIgnoreVaultables = false, bool bIgnoreTraversals = false, bool bIgnoreSkippables = false);
+	bool GetMovableAdjacentTiles(FVector start, TArray<FVector> &ValidAdjacentTiles, FVector orderByDistanceLoc = FVector::ZeroVector, bool bIgnoreVaultables = false, bool bIgnoreTraversals = false, bool bIgnoreSkippables = false);
 
 	void ResetMovementSpeed();
 	void UpdateMovementSpeed(float speed);
@@ -92,32 +110,43 @@ public:
 
 	void SetMovementForOverwatchResponse();
 	void ResetMovementAndAnimPlayBack();
+
 private:
+	UPROPERTY()
+	TArray<FVector> MovementLocations;
 
-	UPROPERTY() TArray<FVector> MovementLocations;
-
-	void FindRouteRecursive(FMovementData* movementData, FVector desiredLocation, bool bisAI = false);
-	TArray<FVector> FindQuickestRouteRecursive(FVector Current, FVector End, TArray<FVector>& VisitedNodes, float& BestCost, TArray<FVector>& BestPath);
+	void FindRouteRecursive(FMovementData *movementData, FVector desiredLocation, bool bisAI = false);
+	TArray<FVector> FindQuickestRouteRecursive(FVector Current, FVector End, TArray<FVector> &VisitedNodes, float &BestCost, TArray<FVector> &BestPath);
 
 	int GetMovementDataForGridItem(FVector gridItem, TArray<FVector> previous, FVector end);
 	bool HasFoundEnd();
-	FMovementData* HasAnalysedGridItem(FVector startLocation);
+	FMovementData *HasAnalysedGridItem(FVector startLocation);
 	bool AlreadyInPrevious(FVector gridLocation, TArray<FVector> previous);
 
 	bool CanReachDestination(FVector location, FVector end, int steps);
 
-	UPROPERTY() TArray<AActor*> TestActorList;
-	UPROPERTY() TArray<FMovementData> MovementData;
+	UPROPERTY()
+	TArray<AActor *> TestActorList;
+	UPROPERTY()
+	TArray<FMovementData> MovementData;
 
-	UPROPERTY() UBaseRunnable* PostMovementRunnable;
+	UPROPERTY()
+	UBaseRunnable *PostMovementRunnable;
 
-	UPROPERTY() float MovementSpeed;
-	UPROPERTY() float RotationSpeed;
-	UPROPERTY() float DefaultMovementSpeed;
-	UPROPERTY() float DefaultRotationSpeed;
+	UPROPERTY()
+	float MovementSpeed;
+	UPROPERTY()
+	float RotationSpeed;
+	UPROPERTY()
+	float DefaultMovementSpeed;
+	UPROPERTY()
+	float DefaultRotationSpeed;
 
-	UPROPERTY() int AIRouteIterations;
-	UPROPERTY() bool bAIRouteDecided;
+	UPROPERTY()
+	int AIRouteIterations;
+	UPROPERTY()
+	bool bAIRouteDecided;
 
-	UPROPERTY() EMovementType CurrentMovementType;
+	UPROPERTY()
+	EMovementType CurrentMovementType;
 };

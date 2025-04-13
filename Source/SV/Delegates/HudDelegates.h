@@ -42,6 +42,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnResourceChange, EResourceType, Re
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSoldierDeath, AActor*, DeadSoldier);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FLevelLoadingUpdate, FString, Msg, float, Percentage);
 
 /**
  *
@@ -89,4 +90,6 @@ public:
 
 	FOnResourceChange _OnResourceChange;
 	FOnSoldierDeath _OnSoldierDeath;
+
+	FLevelLoadingUpdate _LevelLoadingUpdate;
 };

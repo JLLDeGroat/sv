@@ -118,6 +118,6 @@ void UMissionDescriptionWidget::OnStartMissionClicked() {
 	currentGameData->StartNewMission(currentLocation->GetMissionDetails()->GetName(),
 		currentLocation->GetMissionDetails()->GetMissionType(), currentLocation->GetMissionDetails());
 
-	FName lName = FName("TopDownMap");
+	FName lName = FName("TopDownMap1");
 	UGameplayStatics::OpenLevel(this, lName, true, "game=Class'/Script/SV.GameplayMode'?");
 }

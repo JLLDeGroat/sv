@@ -41,6 +41,11 @@ void UGridMovementComponent::BeginPlay()
 	SetComponentTickEnabled(false);
 }
 
+void UGridMovementComponent::SetShouldPauseMovement(bool val)
+{
+	bShouldPauseMovement = val;
+}
+
 // Called every frame
 void UGridMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
 {
@@ -48,6 +53,9 @@ void UGridMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 	if (MovementLocations.Num() > 0)
 	{
+		if (bPauseMovement)
+			return;
+
 		CurrentMovementType = EMovementType::MT_Horizontal;
 		auto zDifference = MovementLocations[0].Z - GetOwner()->GetActorLocation().Z;
 		if (zDifference > 200)
@@ -89,6 +97,11 @@ void UGridMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 			if (dist < 5)
 			{
 				MovementLocations.RemoveAt(0);
+				if (bShouldPauseMovement)
+				{
+					bPauseMovement = true;
+					GetWorld()->GetTimerManager().SetTimer(GridMovementDelayTimer, this, &UGridMovementComponent::OnGridMovementDelayTimerCallback, 1.5f, false);
+				}
 			}
 		}
 	}
@@ -104,6 +117,11 @@ void UGridMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 								   ->Initialise(GetWorld())
 								   ->Begin();
 	}
+}
+
+void UGridMovementComponent::OnGridMovementDelayTimerCallback()
+{
+	bPauseMovement = false;
 }
 
 bool UGridMovementComponent::MoveAcrossGrid(TArray<FVector> movementLocs)

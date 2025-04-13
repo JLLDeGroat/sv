@@ -52,4 +52,7 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawner Debug Options")
 	TArray<TSubclassOf<UBaseDD>> DirectivesAndDeviations;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bShouldGenerate;
 };

@@ -114,6 +114,8 @@ void UTwoBuildingsLevel::GenerateLevel()
 								->Generate();
 
 	// DebugGenerations();
+
+	UpdateLoadLevelWidget("Complete", 1);
 }
 
 void UTwoBuildingsLevel::GenerateBuildings()

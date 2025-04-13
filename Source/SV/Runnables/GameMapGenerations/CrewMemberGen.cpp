@@ -20,7 +20,7 @@ UCrewMemberGen::UCrewMemberGen(const FObjectInitializer &ObjectInitializer)
 {
     RandomStream = FRandomStream(FMath::RandRange(0, 999999));
 }
-
+#pragma optimize("", off)
 void UCrewMemberGen::GenerateCrewMembers(int amount)
 {
     auto instance = USvUtilities::GetGameInstance(GetWorld());
@@ -56,15 +56,15 @@ void UCrewMemberGen::GenerateCrewMembers(int amount)
         }
     }
 
-    gameData->AddPrimaryToCrew(EGun::G_PeaRifle);
-    gameData->AddPrimaryToCrew(EGun::G_PeaRifle);
-    gameData->AddPrimaryToCrew(EGun::G_PeaRifle);
+    // gameData->AddPrimaryToCrew(EGun::G_PeaRifle);
+    // gameData->AddPrimaryToCrew(EGun::G_PeaRifle);
+    // gameData->AddPrimaryToCrew(EGun::G_PeaRifle);
 
-    gameData->AddToolToCrew(EToolType::TT_Throwable, (uint8)EThrowable::T_Grenade);
-    gameData->AddToolToCrew(EToolType::TT_Throwable, (uint8)EThrowable::T_Grenade);
-    gameData->AddToolToCrew(EToolType::TT_Throwable, (uint8)EThrowable::T_Grenade);
-    gameData->AddToolToCrew(EToolType::TT_Throwable, (uint8)EThrowable::T_Grenade);
-    gameData->AddToolToCrew(EToolType::TT_Throwable, (uint8)EThrowable::T_Grenade);
+    // gameData->AddToolToCrew(EToolType::TT_Throwable, (uint8)EThrowable::T_Grenade);
+    // gameData->AddToolToCrew(EToolType::TT_Throwable, (uint8)EThrowable::T_Grenade);
+    // gameData->AddToolToCrew(EToolType::TT_Throwable, (uint8)EThrowable::T_Grenade);
+    // gameData->AddToolToCrew(EToolType::TT_Throwable, (uint8)EThrowable::T_Grenade);
+    // gameData->AddToolToCrew(EToolType::TT_Throwable, (uint8)EThrowable::T_Grenade);
 }
 
 TArray<TSubclassOf<UBaseDD>> UCrewMemberGen::GetStartingBaseDDClass(int amount)
@@ -84,3 +84,5 @@ TArray<TSubclassOf<UBaseDD>> UCrewMemberGen::GetStartingBaseDDClass(int amount)
 
     return arr;
 }
+
+#pragma optimize("", on)

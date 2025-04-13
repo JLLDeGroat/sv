@@ -25,4 +25,6 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) EResourceType ResType;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) int Amount;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bShouldGenerate;
+
 };

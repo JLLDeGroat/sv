@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "ManualWorldDataActor.h"
 #include "../../Instance/SvGameInstance.h"
 #include "../../Instance/Managers/CurrentGameDataManager.h"
@@ -17,7 +16,6 @@ AManualWorldDataActor::AManualWorldDataActor()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-
 	RootMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	RootMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	RootMesh->SetCanEverAffectNavigation(false);
@@ -33,10 +31,16 @@ void AManualWorldDataActor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GenerateWorldLocationData();
-	GenerateWorldLocationMissionsData();
+	if (bShouldGenerate)
+	{
+		GenerateWorldLocationData();
+		GenerateWorldLocationMissionsData();
+	}
+	else
+		UDebugMessages::LogWarning(this, GetName() + " Set bShouldGenerate to false, doing nothing");
 }
-void AManualWorldDataActor::GenerateWorldLocationData() {
+void AManualWorldDataActor::GenerateWorldLocationData()
+{
 	auto instance = USvUtilities::GetGameInstance(GetWorld());
 
 	auto currentgameDataManager = instance->GetCurrentGameDataManager();
@@ -58,27 +62,31 @@ void AManualWorldDataActor::GenerateWorldLocationData() {
 	ChosenPrimaryRoute.Emplace(FVector2D(3, 9));
 	ChosenPrimaryRoute.Emplace(FVector2D(4, 9));
 
-	TArray<FVector2D>Offshoots;
+	TArray<FVector2D> Offshoots;
 	Offshoots.Emplace(FVector2D(2, 2));
 	Offshoots.Emplace(FVector2D(3, 2));
 
 	auto worldManager = currentGameData->GetWorldData();
-	for (int i = 0; i < ChosenPrimaryRoute.Num(); i++) {
+	for (int i = 0; i < ChosenPrimaryRoute.Num(); i++)
+	{
 		auto locationId = worldManager->AddWorldLocationData(ChosenPrimaryRoute[i]);
-		if (i == 0) {
+		if (i == 0)
+		{
 			auto thisLocation = worldManager->GetWorldLocationData(locationId);
 			thisLocation->SetIsCurrent(true);
 		}
 	}
 
-	for (int i = 0; i < Offshoots.Num(); i++) {
+	for (int i = 0; i < Offshoots.Num(); i++)
+	{
 		auto locationId = worldManager->AddWorldLocationData(Offshoots[i]);
 		auto thisLocation = worldManager->GetWorldLocationData(locationId);
 		thisLocation->SetIsOffshoot(true);
 	}
 }
 
-void AManualWorldDataActor::GenerateWorldLocationMissionsData() {
+void AManualWorldDataActor::GenerateWorldLocationMissionsData()
+{
 	auto instance = USvUtilities::GetGameInstance(GetWorld());
 
 	auto currentgameDataManager = instance->GetCurrentGameDataManager();
@@ -92,7 +100,8 @@ void AManualWorldDataActor::GenerateWorldLocationMissionsData() {
 	auto missionDetailsManager = instance->GetMissionDetailsManager();
 	auto worldDataLocations = worldData->GetWorldLocationData();
 
-	for (int i = 0; i < worldDataLocations.Num(); i++) {
+	for (int i = 0; i < worldDataLocations.Num(); i++)
+	{
 		EMissionType missionType = (EMissionType)FMath::RandRange(1, 4);
 		auto thisMissionName = missionDetailsManager->GenerateMissionName();
 		auto thisMissionDesc = missionDetailsManager->GetMissionTypeDescription(missionType);
@@ -109,11 +118,13 @@ void AManualWorldDataActor::GenerateWorldLocationMissionsData() {
 		if (missionType == EMissionType::MT_Survive)
 			mDetails->SetTurnLimit(12);
 
-		if (worldDataLocations[i]->GetIsCurrent()) {
+		if (worldDataLocations[i]->GetIsCurrent())
+		{
 
-			if (MissionType != EMissionType::INVALID) {
+			if (MissionType != EMissionType::INVALID)
+			{
 				UDebugMessages::LogDisplay(this, "Manual set missionType");
-				//manual set
+				// manual set
 				mDetails->SetMissionType(MissionType);
 				mDetails->SetName(thisMissionName);
 				mDetails->SetDescription(thisMissionDesc->GetDescription());

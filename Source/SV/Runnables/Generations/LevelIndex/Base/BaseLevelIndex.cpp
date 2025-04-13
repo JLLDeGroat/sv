@@ -77,7 +77,7 @@ void UBaseLevelIndex::CreateGrid(int maxX, int maxY, int elevation)
 		TArray<FVector> locationsToAdd;
 		Algo::Transform(GridData.GetGridItems(), locationsToAdd, [](const FGridDataItem &Item)
 						{ return Item.GetLocation(); });
-						
+
 		FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady(
 			[fogManager, locationsToAdd]
 			{
@@ -938,5 +938,27 @@ void UBaseLevelIndex::SetLocationsAsEndZone(TArray<FVector> locs)
 			item->SetIsEndZone();
 		else
 			UDebugMessages::LogError(this, "SetIsBuffer but could not find in grid data");
+	}
+}
+
+void UBaseLevelIndex::UpdateLoadLevelWidget(FString msg, float percentage)
+{
+	auto task = TGraphTask<LoadLevelLoadingWidgetTask>::CreateTask();
+	auto dispatchedTask = task.ConstructAndDispatchWhenReady(msg, percentage);
+
+	// TSharedPtr<LoadLevelLoadingWidgetTask> LoadTask = MakeShared<LoadLevelLoadingWidgetTask>(msg, percentage);
+	// LoadTask->DoWork();
+	int secondsToWaitUntilGiveup = 0;
+
+	while (!dispatchedTask->IsCompleted())
+	{
+		FPlatformProcess::Sleep(1);
+		secondsToWaitUntilGiveup++;
+
+		if (secondsToWaitUntilGiveup >= 10)
+		{
+			UDebugMessages::LogError(this, "failed to UpdateLoadLevelWidget, after " + FString::SanitizeFloat(secondsToWaitUntilGiveup) + " seconds");
+			return;
+		}
 	}
 }

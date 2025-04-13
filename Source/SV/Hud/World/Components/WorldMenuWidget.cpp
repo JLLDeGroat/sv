@@ -14,27 +14,17 @@ void UWorldMenuWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	auto worldMapBtn = (UButton *)GetWidgetFromName("WorldMapBtn");
-	if (worldMapBtn)
-		worldMapBtn->OnClicked.AddDynamic(this, &UWorldMenuWidget::WorldMapClicked);
-	else
-		UDebugMessages::LogError(this, "failed to get world map btn");
+	WorldMapBtn->OnClicked.AddDynamic(this, &UWorldMenuWidget::WorldMapClicked);
+	SquadBtn->OnClicked.AddDynamic(this, &UWorldMenuWidget::SquadClicked);
+	ShopBtn->OnClicked.AddDynamic(this, &UWorldMenuWidget::SuppliesClicked);
 
-	auto squadBtn = (UButton *)GetWidgetFromName("SquadBtn");
-	if (squadBtn)
-		squadBtn->OnClicked.AddDynamic(this, &UWorldMenuWidget::SquadClicked);
-	else
-		UDebugMessages::LogError(this, "failed to get squadBtn btn");
+	UUserWidgetHelpers::DesignButton(WorldMapBtn);
+	UUserWidgetHelpers::DesignButton(SquadBtn);
+	UUserWidgetHelpers::DesignButton(ShopBtn);
+	UUserWidgetHelpers::DesignButton(OptionsBtn);
 
-	auto shopBtn = (UButton *)GetWidgetFromName("ShopBtn");
-	if (shopBtn)
-		shopBtn->OnClicked.AddDynamic(this, &UWorldMenuWidget::SuppliesClicked);
-	else
-		UDebugMessages::LogError(this, "failed to get Shop btn");
-
-	UUserWidgetHelpers::DesignButton(this, "WorldMapBtn");
-	UUserWidgetHelpers::DesignButton(this, "SquadBtn");
-	UUserWidgetHelpers::DesignButton(this, "ShopBtn");
+	OptionsBtn->SetVisibility(ESlateVisibility::Hidden);
+	UDebugMessages::LogError(this, "Hiding options button");
 }
 
 void UWorldMenuWidget::WorldMapClicked()

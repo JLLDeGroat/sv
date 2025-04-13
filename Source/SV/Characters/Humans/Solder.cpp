@@ -185,7 +185,7 @@ ASolder::ASolder(const FObjectInitializer &ObjectInitializer) : ABaseCharacter(O
 
 	FogHandler = CreateDefaultSubobject<UFogHandlerComponent>(TEXT("FogHandler"));
 	FogHandler->SetupAttachment(RootComponent);
-	FogHandler->SetSphereRadius(400);
+	FogHandler->SetSphereRadius(800);
 
 	ClimbLadderComponent = CreateDefaultSubobject<UClimbLadderComponent>(TEXT("ClimbLadder"));
 

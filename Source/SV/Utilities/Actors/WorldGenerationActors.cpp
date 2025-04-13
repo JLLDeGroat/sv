@@ -12,6 +12,7 @@
 #include "../../Environment/Flooring/MudFloor.h"
 #include "../../Environment/Prefabs/Base/BasePrefab.h"
 #include "../../Environment/Fog/FogManager.h"
+#include "../../GameModes/GameplayMode.h"
 #include "GameFramework/Character.h"
 // Sets default values
 AWorldGenerationActors::AWorldGenerationActors()
@@ -33,6 +34,12 @@ AWorldGenerationActors::AWorldGenerationActors()
 void AWorldGenerationActors::BeginPlay()
 {
 	Super::BeginPlay();
+	auto gameMode = GetWorld()->GetAuthGameMode<AGameplayMode>();
+	if (!gameMode)
+	{
+		UDebugMessages::LogDisplay(this, "game mode is null, not generating");
+		return;
+	}
 	if (bShouldGenerate)
 	{
 		TearDownCurrentGen();

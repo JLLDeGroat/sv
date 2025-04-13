@@ -15,7 +15,7 @@
 #include "../../Characters/Components/HealthAndStatusWidgetComponent.h"
 #include "../../Equipment/Equipment.h"
 #include "../../Equipment/Components/EquipmentDetailsComponent.h"
-
+#pragma optimize("", off)
 UBaseGenerations *UPlayerGeneration::Generate()
 {
 	LogGenerationStart();
@@ -55,7 +55,11 @@ UBaseGenerations *UPlayerGeneration::Generate()
 			auto creMemberId = crew[i].GetId();
 
 			auto thisPrimary = currentGameData->GetCrewPrimary(creMemberId);
-			auto gunType = thisPrimary->GetPrimaryGunType();
+			auto gunType = EGun::INVALID;
+			if (thisPrimary)
+			{
+				gunType = thisPrimary->GetPrimaryGunType();
+			}
 			auto equipment = currentGameData->GetToolsFromMember(creMemberId);
 			auto crewName = crew[i].GetName();
 
@@ -135,3 +139,4 @@ UBaseGenerations *UPlayerGeneration::Generate()
 	LogGenerationEnd();
 	return this;
 }
+#pragma optimize("", on)

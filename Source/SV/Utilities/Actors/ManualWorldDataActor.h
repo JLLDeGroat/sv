@@ -27,4 +27,6 @@ protected:
 	void GenerateWorldLocationData();
 	void GenerateWorldLocationMissionsData();
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) bool bShouldGenerate;
+
 };

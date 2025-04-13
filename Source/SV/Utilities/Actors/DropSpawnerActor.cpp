@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "DropSpawnerActor.h"
 #include "../SvUtilities.h"
 #include "../../Environment/Pickups/ResourcePickup.h"
@@ -22,24 +21,34 @@ ADropSpawnerActor::ADropSpawnerActor()
 		RootMesh->SetStaticMesh(mesh);
 }
 
-
-void ADropSpawnerActor::BeginPlay() {
+void ADropSpawnerActor::BeginPlay()
+{
 	Super::BeginPlay();
 
-	if (ResType != EResourceType::INVALID) {
+	if (!bShouldGenerate)
+	{
+		UDebugMessages::LogWarning(this, GetName() + "bShouldGenerate to false, will do nothing");
+		return;
+	}
+
+	if (ResType != EResourceType::INVALID)
+	{
 		auto res = GetWorld()->SpawnActor<AResourcePickup>(GetActorLocation(), FRotator::ZeroRotator, FActorSpawnParameters());
 
 		if (!res)
 			UDebugMessages::LogError(this, "failed to spawn resource drop actor");
-		else {
+		else
+		{
 			auto details = res->GetComponentByClass<UPickupDetailsComponent>();
-			if (details) {
+			if (details)
+			{
 				details->SetResourceType(ResType);
 				details->SetAmount(Amount);
 			}
 		}
 	}
-	else {
+	else
+	{
 		auto res = GetWorld()->SpawnActor<AIntelPickup>(GetActorLocation(), FRotator::ZeroRotator, FActorSpawnParameters());
 	}
 

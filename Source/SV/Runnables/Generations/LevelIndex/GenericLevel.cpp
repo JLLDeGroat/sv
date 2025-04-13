@@ -103,4 +103,6 @@ void UGenericLevel::GenerateLevel()
 								->SetupGeneration(GetWorld(), RandomStream, ObstacleAllowedLocations)
 								->SetStartAndEndZones(SpawnZone, EndZone)
 								->Generate();
+
+	UpdateLoadLevelWidget("Complete", 1);
 }

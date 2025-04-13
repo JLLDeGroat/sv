@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "../Data/FGridData.h"
+#include "../../Utilities/LoadLevelLoadingWidgetTask.h"
 #include "BaseLevelIndex.generated.h"
 
 class UWorld;
@@ -128,6 +129,8 @@ protected:
 	void SetLocationsAsDebris(TArray<FVector> locs);
 	void SetLocationsAsSpawnZone(TArray<FVector> locs);
 	void SetLocationsAsEndZone(TArray<FVector> locs);
+
+	void UpdateLoadLevelWidget(FString msg, float percentage);
 
 private:
 	UPROPERTY()

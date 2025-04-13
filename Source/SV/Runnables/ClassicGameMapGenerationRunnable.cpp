@@ -9,7 +9,7 @@
 #include "../Utilities/SvUtilities.h"
 #include "../Utilities/RunnableUtilities.h"
 #include "GameMapGenerations/CrewMemberGen.h"
-
+#pragma optimize("", off)
 void UClassicGameMapGenerationRunnable::ActivateThread()
 {
 	Super::ActivateThread();
@@ -357,3 +357,4 @@ void UClassicGameMapGenerationRunnable::GenerateBaseResourceAmounts()
 	auto scrap = currentGameData->GetResourceData()->GetResource(EResourceType::RT_Currency);
 	scrap->AddToAmount(200);
 }
+#pragma optimize("", on)
