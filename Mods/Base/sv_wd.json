@@ -1,0 +1,28 @@
+{
+    "WeaponItems": [
+        {
+            "Name": "PeaRifle",
+            "Description":"Standard rifle given to private millitary company SVI Inc, its strong enough to eventually hurt its target whilst being cheap enough to mass produce for the number that require it.",
+            "ThrowableType": "INVALID",
+            "GunType": "G_PeaRifle",
+            "ToolType": "INVALID",
+            "Penetration": 1
+        },
+        {
+            "Name": "PeaRifle",
+            "Description":"Standard encountered arsenal from the depths, the output can be sustained, but its overwhelming rate is often too much.",
+            "ThrowableType": "INVALID",
+            "GunType": "G_ConstructRifle",
+            "ToolType": "INVALID",
+            "Penetration": 1
+        },
+        {
+            "Name": "PeaRifle",
+            "Description":"More powerful than the rifle counterpart, this has ended many replicants.",
+            "ThrowableType": "INVALID",
+            "GunType": "G_ConstructLaser",
+            "ToolType": "INVALID",
+            "Penetration": 1
+        }
+    ]
+}

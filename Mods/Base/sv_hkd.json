@@ -1,0 +1,26 @@
+{
+    "HealthKitItems": [
+        {
+            "Name": "Basic Health Kit",
+            "Description": "A Bandage coated in a purple dust, this mesh will lightly heal most small wounds.",
+            "HealthKitType": "HK_Basic",
+            "HealAmount": 50
+        },
+        {
+            "Name": "Large Health Kit",
+            "Description": "A Bandage littered with small purple crystals, it glows with a healing ambiance.",
+            "HealthKitType": "HK_Large",
+            "HealAmount": 120
+        },
+        {
+            "Name": "Antidote",
+            "Description": "A simple chemical spray that hits the throat, tastless but has an air of caramel about it",
+            "HealthKitType": "HK_Antidote"
+        },
+        {
+            "Name": "Flame Retardent",
+            "Description": "a rubber layering that will stop equipment from burning up",
+            "HealthKitType": "HK_Antiburn"
+        }
+    ]
+}

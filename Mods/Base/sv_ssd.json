@@ -1,0 +1,26 @@
+{
+    "StockItems": [
+        {
+            "Costs": {
+                "RT_Currency": 100
+            },
+            "StockCategories": [
+                "SC_Primary"
+            ],
+            "ThrowableType": "INVALID",
+            "GunType": "G_PeaRifle",
+            "ToolType": "INVALID"
+        },
+        {
+            "Costs": {
+                "RT_Currency": 35
+            },
+            "StockCategories": [
+                "SC_Throwable"
+            ],
+            "ThrowableType": "T_Grenade",
+            "GunType": "INVALID",
+            "ToolType": "INVALID"
+        }
+    ]
+}
