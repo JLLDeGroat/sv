@@ -6,6 +6,7 @@
 #include "UObject/NoExportTypes.h"
 #include "../Data/FGridData.h"
 #include "../../Utilities/LoadLevelLoadingWidgetTask.h"
+#include "../../Utilities/LoadLevelLoadingWidgetFogWaitTask.h"
 #include "BaseLevelIndex.generated.h"
 
 class UWorld;
@@ -25,6 +26,8 @@ public:
 	void KillObject();
 
 	void DebugGenerations();
+
+	TArray<FVector> GetObstacleAllowedLocations();
 
 protected:
 	UWorld *GetWorld() const;
@@ -78,8 +81,6 @@ protected:
 
 	UPROPERTY()
 	TArray<FVector> ObstacleAllowedLocations;
-	UPROPERTY()
-	TArray<FVector> PotentialEnemyLocations;
 
 	UPROPERTY()
 	TArray<FVector> FindRouteIgnoreLocations;
@@ -131,6 +132,13 @@ protected:
 	void SetLocationsAsEndZone(TArray<FVector> locs);
 
 	void UpdateLoadLevelWidget(FString msg, float percentage);
+	void SetWaitForFogBeforeLoadingWidgetCompletes();
+
+	void SpawnMajorWallAt(FVector loc, FRotator rot = FRotator(0));
+
+	TArray<TPair<FVector, FVector>> DetermineAvailableWallSpawnLocations();
+
+	void FinishUp();
 
 private:
 	UPROPERTY()

@@ -39,7 +39,6 @@ ARollingTable::ARollingTable(const FObjectInitializer& ObjectInitializer) :
 void ARollingTable::OnConstruction(const FTransform& Transform) {
 	Super::OnConstruction(Transform);
 
-
 	FString tableMeshRef = "/Script/Engine.StaticMesh'/Game/Environment/BuildingInterior/RollingTable_Table.RollingTable_Table'";
 	FString tableWheelRef = "/Script/Engine.StaticMesh'/Game/Environment/BuildingInterior/RollingTable_TableWheel.RollingTable_TableWheel'";
 

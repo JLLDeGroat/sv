@@ -14,6 +14,7 @@
 #include "../../Characters/DandD/Base/BaseDD.h"
 #include "FCurrentGameData.generated.h"
 
+#pragma region FCrew Struct
 USTRUCT()
 struct SV_API FCrew
 {
@@ -74,7 +75,8 @@ protected:
 	UPROPERTY()
 	TArray<TSubclassOf<UBaseDD>> DirectivesAndDeviations;
 };
-
+#pragma endregion
+#pragma region FCrewPrimaries Struct
 USTRUCT()
 struct SV_API FCrewPrimaries
 {
@@ -118,7 +120,8 @@ protected:
 	UPROPERTY()
 	FGuid Id;
 };
-
+#pragma endregion
+#pragma region FCrewSecondaries Struct
 USTRUCT()
 struct SV_API FCrewSecondaries
 {
@@ -162,7 +165,8 @@ protected:
 	UPROPERTY()
 	FGuid Id;
 };
-
+#pragma endregion
+#pragma region FToolItem Struct
 USTRUCT()
 struct SV_API FToolItem
 {
@@ -190,7 +194,8 @@ protected:
 	UPROPERTY()
 	EToolType ToolType;
 };
-
+#pragma endregion
+#pragma region FCrewTools Struct
 USTRUCT()
 struct SV_API FCrewTools
 {
@@ -232,34 +237,21 @@ protected:
 	UPROPERTY()
 	FGuid Id;
 };
-
+#pragma endregion
+#pragma region FCurrentMission Struct
 USTRUCT()
 struct SV_API FCurrentMission
 {
 	GENERATED_BODY()
 public:
-	FCurrentMission()
-	{
-		Name = "INVALID";
-		Type = EMissionType::INVALID;
-		Id = FGuid::FGuid();
-		CurrentTurn = 1;
-	}
+	FCurrentMission() : Type(EMissionType::INVALID), Name("INVALID"), Id(FGuid::FGuid()), MissionDetails(FMissionDetails()) {}
 
 	FCurrentMission(EMissionType missionType, FString missionName, FMissionDetails *missionDetails)
-	{
-		Name = missionName;
-		Type = missionType;
-		Id = FGuid::NewGuid();
-		CurrentTurn = 1;
-		MissionDetails = FMissionDetails(*missionDetails);
-	}
+		: Type(missionType), Name(missionName), Id(FGuid::NewGuid()), MissionDetails(FMissionDetails(*missionDetails)) {}
 
 	EMissionType GetType() const { return Type; }
 	FString GetName() { return Name; }
 	FGuid GetId() const { return Id; }
-	int GetCurrentTurn() const { return CurrentTurn; }
-
 	FMissionDetails *GetMissionDetails() { return &MissionDetails; }
 
 protected:
@@ -270,10 +262,9 @@ protected:
 	UPROPERTY()
 	FGuid Id;
 	UPROPERTY()
-	FMissionDetails MissionDetails = FMissionDetails();
-	UPROPERTY()
-	int CurrentTurn;
+	FMissionDetails MissionDetails;
 };
+#pragma endregion
 
 /**
  *

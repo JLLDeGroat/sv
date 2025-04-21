@@ -77,7 +77,7 @@ void USpawnChecker::RunScript() {
 			auto thisSpawner = ValidSpawners[i];
 			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([thisSpawner]
 				{
-					thisSpawner->StartSpawn();
+					thisSpawner->StartSpawnFromGround();
 				},
 				TStatId(), nullptr, ENamedThreads::GameThread);
 

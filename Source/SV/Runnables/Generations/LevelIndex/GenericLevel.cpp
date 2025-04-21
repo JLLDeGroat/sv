@@ -52,8 +52,12 @@ void UGenericLevel::GenerateLevel()
 	FindPrimaryRouteBetweenRecursive(GetRandomLocationAlongPrimaryRoute(), GetRandomLocationWithinGrid(), 90, 5);
 	FindPrimaryRouteBetweenRecursive(GetRandomLocationAlongPrimaryRoute(), GetRandomLocationWithinGrid(), 90, 6);
 
+	UpdateLoadLevelWidget("Finding Route", .1f);
+
 	GenerateCaveWalls();
 	FillAllObstacleAllowedLocations();
+
+	UpdateLoadLevelWidget("Obstacles", .2f);
 
 	/*for (int i = 0; i < ObstacleAllowedLocations.Num(); i++)
 		SpawnDebugGrid_SetIsObstacle(ObstacleAllowedLocations[i]);*/
@@ -71,6 +75,8 @@ void UGenericLevel::GenerateLevel()
 						  ->SetupGeneration(GetWorld(), RandomStream, ObstacleAllowedLocations)
 						  ->Generate();
 	ObstacleAllowedLocations = RemoveListFromList(ObstacleAllowedLocations, buildinGen->GetRequiredLocations());
+
+	UpdateLoadLevelWidget("Structures", .3f);
 	// ObstacleAllowedLocations = buildinGen->GetUnusedSpotsLeft();
 
 	/*for (int i = 0; i < ObstacleAllowedLocations.Num(); i++) {
@@ -85,6 +91,8 @@ void UGenericLevel::GenerateLevel()
 					   ->SetStartAndEndZones(SpawnZone, EndZone)
 					   ->Generate();
 
+	UpdateLoadLevelWidget("Roading", .4f);
+
 	UDebugMessages::LogDisplay(this, "Road Generation complete");
 
 	auto enemyGen = NewObject<UEnemyGeneration>(this)
@@ -98,11 +106,13 @@ void UGenericLevel::GenerateLevel()
 						 ->SetStartAndEndZones(SpawnZone, EndZone)
 						 ->Generate();
 
+	UpdateLoadLevelWidget("People", .5f);
+
 	auto staticSpawnerGen = NewObject<UStaticSpawnerGeneration>(this)
 								->SetAmountToSpawn(10)
 								->SetupGeneration(GetWorld(), RandomStream, ObstacleAllowedLocations)
 								->SetStartAndEndZones(SpawnZone, EndZone)
 								->Generate();
-
+	FinishUp();
 	UpdateLoadLevelWidget("Complete", 1);
 }

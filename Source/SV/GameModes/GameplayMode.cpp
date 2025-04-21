@@ -9,10 +9,12 @@
 #include "Managers/LevelSpawnerManager.h"
 #include "Managers/ObjectivesManager.h"
 #include "Managers/OverwatchManager.h"
+#include "Managers/DirectorManager.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "../Runnables/LevelGenerationRunnable.h"
 #include "../Runnables/Checkers/WinLossCheckerRunnable.h"
 #include "../Runnables/Stats/StatUpdateRunnable.h"
+#include "../Runnables/DirectorStats/DirectorStatRunnable.h"
 
 AGameplayMode::AGameplayMode()
 {
@@ -25,6 +27,7 @@ AGameplayMode::AGameplayMode()
 	LevelSpawnerManager = CreateDefaultSubobject<ULevelSpawnerManager>(TEXT("SpawnerManager"));
 	ObjectivesManager = CreateDefaultSubobject<UObjectivesManager>(TEXT("ObjectiveManager"));
 	OverwatchManager = CreateDefaultSubobject<UOverwatchManager>(TEXT("OverwatchManager"));
+	DirectorManager = CreateDefaultSubobject<UDirectorManager>(TEXT("DirectorManager"));
 }
 
 void AGameplayMode::BeginPlay()
@@ -40,6 +43,10 @@ UObjectivesManager *AGameplayMode::GetObjectivesManager()
 UCharacterManager *AGameplayMode::GetCharacterManager()
 {
 	return CharacterManager;
+}
+UTurnManager *AGameplayMode::GetTurnManager()
+{
+	return TurnManager;
 }
 
 void AGameplayMode::EndTurn()
@@ -86,11 +93,11 @@ bool AGameplayMode::AttemptToStartWinLossChecker()
 	}
 }
 
-void AGameplayMode::StartStatRunnable(AActor *statOwner, EStatisticType statType, float damage)
+void AGameplayMode::StartStatRunnable(AActor *statOwner, EStatisticType statType, float value)
 {
 	UDebugMessages::LogDisplay(this, "StartStatRunnable");
 	auto newStatRunnable = (UStatUpdateRunnable *)NewObject<UStatUpdateRunnable>(this)
-							   ->InsertVariables(statOwner, statType, damage)
+							   ->InsertVariables(statOwner, statType, value)
 							   ->Initialise(GetWorld())
 							   ->Begin();
 
@@ -112,7 +119,46 @@ void AGameplayMode::StartStatRunnable(AActor *statOwner, EStatisticType statType
 	StatRunnables.Emplace(newStatRunnable);
 }
 
+void AGameplayMode::StartDirectorStatRunnable(AActor *statOwner, EDirectorStatType statType, float value)
+{
+	UDebugMessages::LogDisplay(this, "StartDirectorStatRunnable");
+	auto newStatRunnable = (UDirectorStatRunnable *)NewObject<UDirectorStatRunnable>(this)
+							   ->InsertVariables(statOwner, statType, value)
+							   ->Initialise(GetWorld())
+							   ->Begin();
+
+	bool noChange = false;
+	while (!noChange)
+	{
+		noChange = true;
+		for (int i = 0; i < DirectorRunnables.Num(); i++)
+		{
+			if (!DirectorRunnables[i] || DirectorRunnables[i]->GetIsCompleteStatItem())
+			{
+				DirectorRunnables.RemoveAt(i);
+				noChange = false;
+				break;
+			}
+		}
+	}
+
+	DirectorRunnables.Emplace(newStatRunnable);
+}
+
 UOverwatchManager *AGameplayMode::GetOverwatchManager()
 {
 	return OverwatchManager;
+}
+
+UDirectorManager *AGameplayMode::GetDirectorManager()
+{
+	return DirectorManager;
+}
+AFogManager *AGameplayMode::GetFogManager()
+{
+	return FogManager;
+}
+void AGameplayMode::SetFogManager(AFogManager *manager)
+{
+	FogManager = manager;
 }

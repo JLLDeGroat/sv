@@ -47,14 +47,17 @@ void UClassicGameMapGenerationRunnable::ActivateThread()
 	GenerateWorldLocationMissionsData();
 	UDebugMessages::LogDisplay(this, "GenerateCrewMembers");
 	auto crewMemberGen = NewObject<UCrewMemberGen>(this);
-	crewMemberGen->GenerateCrewMembers(2);
+	crewMemberGen->GenerateCrewMembers(3);
 	crewMemberGen->ClearInternalFlags(EInternalObjectFlags::Async);
-	// GenerateCrewMembers(2);
 	UDebugMessages::LogDisplay(this, "GenerateBaseResourceAmounts");
 	GenerateBaseResourceAmounts();
 
-	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([widget]
-																		 { widget->OnGenCompleted(); }, TStatId(), nullptr, ENamedThreads::GameThread);
+	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady(
+		[widget]
+		{
+			widget->OnGenCompleted();
+		},
+		TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
 UClassicGameMapGenerationRunnable *UClassicGameMapGenerationRunnable::InsertVariables(UNewGameOptionsWidget *widget, FMapGridData *mapGrid)
@@ -76,7 +79,6 @@ void UClassicGameMapGenerationRunnable::FindValidRoutes()
 }
 void UClassicGameMapGenerationRunnable::FindValidRoutesRecursive(TArray<FVector2D> currentRoute)
 {
-
 	if (currentRoute.Num() > 26 ||
 		!ChosenPrimaryRoute.IsEmpty())
 		return;

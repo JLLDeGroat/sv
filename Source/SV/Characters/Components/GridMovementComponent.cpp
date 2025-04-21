@@ -97,8 +97,13 @@ void UGridMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 			if (dist < 5)
 			{
 				MovementLocations.RemoveAt(0);
+				USvUtilities::AttemptToStartStatUpdater(GetOwner(), EStatisticType::ST_MOVEMENT, 1);
+				USvUtilities::AttemptToStartDirectorStatUpdater(GetOwner(), EDirectorStatType::DS_MOVEMENT, 1);
+				USvUtilities::AttemptToStartDirectorStatUpdater(GetOwner(), EDirectorStatType::DS_NOISE, 1);
 				if (bShouldPauseMovement)
 				{
+					bShouldPauseMovement = false; // revert this to false as to not hit next time
+					AnimInstance->UpdateSpeed(0);
 					bPauseMovement = true;
 					GetWorld()->GetTimerManager().SetTimer(GridMovementDelayTimer, this, &UGridMovementComponent::OnGridMovementDelayTimerCallback, 1.5f, false);
 				}

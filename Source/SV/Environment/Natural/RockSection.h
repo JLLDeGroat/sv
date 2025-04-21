@@ -6,6 +6,7 @@
 #include "../EnvironmentActor.h"
 #include "RockSection.generated.h"
 
+class UEnvironmentDetailsComponent;
 /**
  * 
  */
@@ -27,6 +28,8 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* Rock2Mesh;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* Rock3Mesh;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStaticMeshComponent* Rock4Mesh;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UEnvironmentDetailsComponent* DetailsComponent;
 
 private:
 

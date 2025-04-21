@@ -22,6 +22,8 @@ public:
 
 	void KillRunnable();
 
+	int GetCurrentTurn();
+
 private:
 
 	UPROPERTY() UBaseRunnable* Runnable;

@@ -12,6 +12,7 @@ class IGameplay;
 class UNiagaraSystem;
 class USoundWave;
 class UCharacterManager;
+class UDirectorManager;
 class UObjectivesManager;
 class UWinLossManager;
 class USvGameInstance;
@@ -20,6 +21,7 @@ class UTextureRenderTarget2D;
 class UGeometryCache;
 class UGeometryCollection;
 class UOverwatchManager;
+class UTurnManager;
 
 struct FCurrentGameData;
 
@@ -67,6 +69,8 @@ public:
 	static UCharacterManager* GetGameModeCharacterManager(UWorld* world);
 	static UObjectivesManager* GetGameModeObjectiveManager(UWorld* world);
 	static UOverwatchManager* GetGameModeOverwatchManager(UWorld* world);
+	static UDirectorManager* GetGameModeDirectorManager(UWorld* world);
+	static UTurnManager* GetGameModeTurnManager(UWorld* world);
 
 	static USvGameInstance* GetGameInstance(UWorld* world);
 	static FCurrentGameData* GetCurrentGameData(UWorld* world);
@@ -84,6 +88,7 @@ public:
 	static AActor* AttemptToGetCurrentSelectedActor(UWorld* world);
 
 	static void AttemptToStartStatUpdater(AActor* statOwner, EStatisticType statType, float value = 0.0f);
+	static void AttemptToStartDirectorStatUpdater(AActor* statOwner, EDirectorStatType statType, float value = 0.0f);
 
 	static FString GetSocketNameFromAttachment(EAttachType attachmentType);
 
@@ -104,6 +109,7 @@ public:
 	static void GetAdjacentTilesForFogCalculation(AActor* startActor, TArray<FVector>& validAdjacentTiles);
 
 	static USoundWave* GetSoundWave(FString reference);
+
 private:
 
 	static bool IsInBounds(FVector location);

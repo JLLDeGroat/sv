@@ -43,6 +43,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnResourceChange, EResourceType, Re
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSoldierDeath, AActor*, DeadSoldier);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FLevelLoadingUpdate, FString, Msg, float, Percentage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLevelLoadingSetWaitForFog);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLevelLoadingSetWaitForFogComplete);
 
 /**
  *
@@ -92,4 +94,6 @@ public:
 	FOnSoldierDeath _OnSoldierDeath;
 
 	FLevelLoadingUpdate _LevelLoadingUpdate;
+	FLevelLoadingSetWaitForFog _LevelLoadingSetWaitForFog;
+	FLevelLoadingSetWaitForFogComplete _LevelLoadingSetWaitForFogComplete;
 };

@@ -20,6 +20,9 @@
 #include "../Characters/Components/CharacterDetailsComponent.h"
 #include "../Environment/Components/VaultableComponent.h"
 
+#include "../Characters/BaseCharacter.h"
+#include "../Characters/Components/SpawnInComponent.h"
+
 ECollisionChannel USvUtilities::GetFloorTargetChannel()
 {
 	return ECollisionChannel::ECC_GameTraceChannel1;
@@ -146,6 +149,16 @@ UOverwatchManager *USvUtilities::GetGameModeOverwatchManager(UWorld *world)
 {
 	auto gameMode = GetGameMode(world);
 	return gameMode->GetOverwatchManager();
+}
+UDirectorManager *USvUtilities::GetGameModeDirectorManager(UWorld *world)
+{
+	auto gameMode = GetGameMode(world);
+	return gameMode->GetDirectorManager();
+}
+UTurnManager *USvUtilities::GetGameModeTurnManager(UWorld *world)
+{
+	auto gameMode = GetGameMode(world);
+	return gameMode->GetTurnManager();
 }
 
 void USvUtilities::GetAdjacentGridTiles(FVector location, TArray<FVector> &adjacentTiles)
@@ -320,6 +333,12 @@ void USvUtilities::AttemptToStartStatUpdater(AActor *statOwner, EStatisticType s
 {
 	auto gameMode = GetGameMode(statOwner->GetWorld());
 	gameMode->StartStatRunnable(statOwner, statType, value);
+}
+
+void USvUtilities::AttemptToStartDirectorStatUpdater(AActor *statOwner, EDirectorStatType statType, float value)
+{
+	auto gameMode = GetGameMode(statOwner->GetWorld());
+	gameMode->StartDirectorStatRunnable(statOwner, statType, value);
 }
 
 FString USvUtilities::GetSocketNameFromAttachment(EAttachType attachmentType)

@@ -4,7 +4,6 @@
 #include "CoreMinimal.h"
 #include "FCrewMemberStats.generated.h"
 
-
 USTRUCT()
 struct SV_API FCrewMemberStats
 {
@@ -15,13 +14,20 @@ public:
 	int GetTotalDamage() const { return TotalDamage; }
 	int GetKills() const { return Kills; }
 	int GetMissionsCompleted() const { return MissionsCompleted; }
+	int GetMovement() const { return Movement; }
 
 	void AddToDamage(int value) { TotalDamage += value; }
 	void AddToKills(int value) { Kills += value; }
 	void AddToMissionsCompleted(int value) { MissionsCompleted += value; }
+	void AddToMovement(int value) { Movement += value; }
 
 protected:
-	UPROPERTY() int TotalDamage;
-	UPROPERTY() int Kills;
-	UPROPERTY() int MissionsCompleted;
+	UPROPERTY()
+	int TotalDamage;
+	UPROPERTY()
+	int Kills;
+	UPROPERTY()
+	int Movement;
+	UPROPERTY()
+	int MissionsCompleted;
 };

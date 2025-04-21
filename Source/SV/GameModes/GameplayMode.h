@@ -15,7 +15,10 @@ class ULevelSpawnerManager;
 class UObjectivesManager;
 class UWinLossCheckerRunnable;
 class UStatUpdateRunnable;
+class UDirectorStatRunnable;
+class UDirectorManager;
 class UOverwatchManager;
+class AFogManager;
 /**
  *
  */
@@ -34,6 +37,10 @@ public:
 	virtual UCharacterManager* GetCharacterManager() override;
 	virtual UObjectivesManager* GetObjectivesManager() override;
 	virtual UOverwatchManager* GetOverwatchManager() override;
+	virtual UDirectorManager* GetDirectorManager() override;
+	virtual UTurnManager* GetTurnManager() override;
+	virtual AFogManager* GetFogManager() override;
+	virtual void SetFogManager(AFogManager* manager) override;
 	virtual void EndTurn() override;
 	virtual void BeginPlayerTurn() override;
 
@@ -43,7 +50,8 @@ public:
 	virtual void BeginDestroy() override;
 
 	virtual bool AttemptToStartWinLossChecker() override;
-	virtual void StartStatRunnable(AActor* statOwner, EStatisticType statType, float damage = 0.0f);
+	virtual void StartStatRunnable(AActor* statOwner, EStatisticType statType, float value = 0.0f);
+	virtual void StartDirectorStatRunnable(AActor* statOwner, EDirectorStatType statType, float value = 0.0f);
 
 protected:
 
@@ -52,6 +60,10 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) ULevelSpawnerManager* LevelSpawnerManager;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UObjectivesManager* ObjectivesManager;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UOverwatchManager* OverwatchManager;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UDirectorManager* DirectorManager;
 	UPROPERTY() UWinLossCheckerRunnable* WinLossCheckerThread;
 	UPROPERTY() TArray<UStatUpdateRunnable*> StatRunnables;
+	UPROPERTY() TArray<UDirectorStatRunnable*> DirectorRunnables;
+
+	UPROPERTY() AFogManager* FogManager;
 };

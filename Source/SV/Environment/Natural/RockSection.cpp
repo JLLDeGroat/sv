@@ -1,11 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "RockSection.h"
+#include "../Components/EnvironmentDetailsComponent.h"
 #include "../../Utilities/SvUtilities.h"
 
-ARockSection::ARockSection(const FObjectInitializer& ObjectInitializer)
-	: AEnvironmentActor(ObjectInitializer) {
+ARockSection::ARockSection(const FObjectInitializer &ObjectInitializer)
+	: AEnvironmentActor(ObjectInitializer)
+{
 
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	RootComponent = Root;
@@ -24,9 +25,14 @@ ARockSection::ARockSection(const FObjectInitializer& ObjectInitializer)
 	SetupEnvironmentMeshComponent(Rock2Mesh);
 	SetupEnvironmentMeshComponent(Rock3Mesh);
 	SetupEnvironmentMeshComponent(Rock4Mesh);
+
+	DetailsComponent = CreateDefaultSubobject<UEnvironmentDetailsComponent>(TEXT("EnvDetails"));
+	DetailsComponent->SetAffectsFog(true);
+	DetailsComponent->SetThickness(10);
 }
 
-void ARockSection::OnConstruction(const FTransform& Transform) {
+void ARockSection::OnConstruction(const FTransform &Transform)
+{
 	Super::OnConstruction(Transform);
 
 	auto rock1MeshRef = "/Script/Engine.StaticMesh'/Game/Environment/RockSection.RockSection'";
@@ -41,16 +47,20 @@ void ARockSection::OnConstruction(const FTransform& Transform) {
 
 	SetActorScale3D(FVector(1, 1, 1));
 
-	if (rock1Mesh) {
+	if (rock1Mesh)
+	{
 		Rock1Mesh->SetStaticMesh(rock1Mesh);
 	}
-	if (rock2Mesh) {
+	if (rock2Mesh)
+	{
 		Rock2Mesh->SetStaticMesh(rock2Mesh);
 	}
-	if (rock3Mesh) {
+	if (rock3Mesh)
+	{
 		Rock3Mesh->SetStaticMesh(rock3Mesh);
 	}
-	if (rock4Mesh) {
+	if (rock4Mesh)
+	{
 		Rock4Mesh->SetStaticMesh(rock4Mesh);
 	}
 
@@ -58,17 +68,21 @@ void ARockSection::OnConstruction(const FTransform& Transform) {
 	DictateRotation();
 }
 
-void ARockSection::DictatePosition() {
-	TArray<UStaticMeshComponent*> meshes;
+void ARockSection::DictatePosition()
+{
+	TArray<UStaticMeshComponent *> meshes;
 	meshes.Emplace(Rock1Mesh);
 	meshes.Emplace(Rock2Mesh);
 	meshes.Emplace(Rock3Mesh);
 	meshes.Emplace(Rock4Mesh);
 
 	int currentZ = 0;
-	while (meshes.Num() > 0) {
-		for (int i = 0; i < meshes.Num(); i++) {
-			if (FMath::RandRange(1, 101) > 60) {
+	while (meshes.Num() > 0)
+	{
+		for (int i = 0; i < meshes.Num(); i++)
+		{
+			if (FMath::RandRange(1, 101) > 60)
+			{
 				meshes[i]->SetRelativeLocation(FVector(0, 0, currentZ));
 				currentZ += 50;
 				meshes.RemoveAt(i);
@@ -77,7 +91,8 @@ void ARockSection::DictatePosition() {
 		}
 	}
 }
-void ARockSection::DictateRotation() {
+void ARockSection::DictateRotation()
+{
 	auto randomRot1 = FRotator(0, FMath::RandRange(0, 360), 0);
 	auto randomRot2 = FRotator(0, FMath::RandRange(0, 360), 0);
 	auto randomRot3 = FRotator(0, FMath::RandRange(0, 360), 0);

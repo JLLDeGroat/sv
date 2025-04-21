@@ -3,24 +3,6 @@
 
 #include "FMissionDetails.h"
 
-FMissionDetails::FMissionDetails() {
-	bValidMission = false;
-	bIsCompleted = false;
-	Turn = 0;
-	MissionStats = FMissionStats();
-}
-
-FMissionDetails::FMissionDetails(FString name, FString desc, EMissionType type, FString missionTypeDescription) {
-	Name = name;
-	Description = desc;
-	MissionType = type;
-	bValidMission = true;
-	MissionTypeDescription = missionTypeDescription;
-	bIsCompleted = false;
-	Turn = 0;
-	MissionStats = FMissionStats();
-}
-
 FString FMissionDetails::GetName() {
 	return Name;
 }

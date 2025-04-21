@@ -8,6 +8,9 @@
 #include "../../../../Environment/Natural/RockSection.h"
 #include "../../../../World/WorldGridItemActor.h"
 #include "../../../../Environment/Fog/FogManager.h"
+#include "../../../../Environment/Constructions/Wall.h"
+#include "../../../../Utilities/SvUtilities.h"
+#include "../../../../GameModes/Managers/DirectorManager.h"
 #include "Algo/Transform.h"
 
 UBaseLevelIndex::UBaseLevelIndex()
@@ -62,11 +65,13 @@ void UBaseLevelIndex::CreateGrid(int maxX, int maxY, int elevation)
 	auto &actors = GetWorld()->GetCurrentLevel()->Actors;
 	for (int i = 0; i < actors.Num(); i++)
 	{
+
 		if (actors[i])
 		{
 			if (AFogManager *fManager = Cast<AFogManager>(actors[i]))
 			{
 				fogManager = fManager;
+				SetWaitForFogBeforeLoadingWidgetCompletes();
 				break;
 			}
 		}
@@ -158,9 +163,9 @@ void UBaseLevelIndex::SetSpawnAndEndZone()
 void UBaseLevelIndex::GenerateBoundaryWalls()
 {
 	auto gameMode = GetWorld()->GetAuthGameMode<AGameplayMode>();
-	auto spawnerManager = gameMode->GetLevelSpawnerManager();
-
 	auto gridItems = GridData.GetGridItems();
+
+	auto baseLevelIndex = this;
 
 	for (int i = 0; i < gridItems.Num(); i++)
 	{
@@ -169,75 +174,75 @@ void UBaseLevelIndex::GenerateBoundaryWalls()
 		if (gridItems[i].GetLocation().X == 0 && gridItems[i].GetLocation().Y == 0)
 		{
 			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady(
-				[spawnerManager, thisLocation]
+				[baseLevelIndex, thisLocation]
 				{
-					spawnerManager->SpawnMajorWallAt(thisLocation, FRotator(0, 90, 0));
+					baseLevelIndex->SpawnMajorWallAt(thisLocation, FRotator(0, 90, 0));
 				},
 				TStatId(), nullptr, ENamedThreads::GameThread);
 		}
 		// bottom right corner
 		else if (gridItems[i].GetLocation().Y == MaxY * 100 && gridItems[i].GetLocation().X == 0)
 		{
-			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([spawnerManager, thisLocation]
+			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([baseLevelIndex, thisLocation]
 																				 {
-				spawnerManager->SpawnMajorWallAt(thisLocation, FRotator(0, 0, 0));
-				spawnerManager->SpawnMajorWallAt(thisLocation + FVector(0, 100, 0), FRotator(0, 0, 0));
-				spawnerManager->SpawnMajorWallAt(thisLocation + FVector(0, 100, 0), FRotator(0, 90, 0)); }, TStatId(), nullptr, ENamedThreads::GameThread);
+				baseLevelIndex->SpawnMajorWallAt(thisLocation, FRotator(0, 0, 0));
+				baseLevelIndex->SpawnMajorWallAt(thisLocation + FVector(0, 100, 0), FRotator(0, 0, 0));
+				baseLevelIndex->SpawnMajorWallAt(thisLocation + FVector(0, 100, 0), FRotator(0, 90, 0)); }, TStatId(), nullptr, ENamedThreads::GameThread);
 		}
 		// top left corner
 		else if (gridItems[i].GetLocation().X == MaxX * 100 && gridItems[i].GetLocation().Y == 0)
 		{
 			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady(
-				[spawnerManager, thisLocation]
-				{ spawnerManager->SpawnMajorWallAt(thisLocation, FRotator(0, 90, 0)); }, TStatId(), nullptr, ENamedThreads::GameThread);
+				[baseLevelIndex, thisLocation]
+				{ baseLevelIndex->SpawnMajorWallAt(thisLocation, FRotator(0, 90, 0)); }, TStatId(), nullptr, ENamedThreads::GameThread);
 		}
 		// top right corner
 		else if (gridItems[i].GetLocation().X == MaxX * 100 && gridItems[i].GetLocation().Y == MaxY * 100)
 		{
 			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady(
-				[spawnerManager, thisLocation]
+				[baseLevelIndex, thisLocation]
 				{
 					// spawnerManager->SpawnMajorWallAt(thisLocation + FVector(0, 100, 0), FRotator(0, 90, 0));
-					spawnerManager->SpawnMajorWallAt(thisLocation + FVector(100, 0, 0), FRotator(0, 0, 0));
-					spawnerManager->SpawnMajorWallAt(thisLocation + FVector(100, 100, 0), FRotator(0, 0, 0));
+					baseLevelIndex->SpawnMajorWallAt(thisLocation + FVector(100, 0, 0), FRotator(0, 0, 0));
+					baseLevelIndex->SpawnMajorWallAt(thisLocation + FVector(100, 100, 0), FRotator(0, 0, 0));
 
-					spawnerManager->SpawnMajorWallAt(thisLocation + FVector(0, 100, 0), FRotator(0, 90, 0));
+					baseLevelIndex->SpawnMajorWallAt(thisLocation + FVector(0, 100, 0), FRotator(0, 90, 0));
 				},
 				TStatId(), nullptr, ENamedThreads::GameThread);
 		}
 		else if (gridItems[i].GetLocation().X == 0)
 		{
 			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady(
-				[spawnerManager, thisLocation]
+				[baseLevelIndex, thisLocation]
 				{
-					spawnerManager->SpawnMajorWallAt(thisLocation);
+					baseLevelIndex->SpawnMajorWallAt(thisLocation);
 				},
 				TStatId(), nullptr, ENamedThreads::GameThread);
 		}
 		else if (gridItems[i].GetLocation().X == MaxX * 100)
 		{
 			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady(
-				[spawnerManager, thisLocation]
+				[baseLevelIndex, thisLocation]
 				{
-					spawnerManager->SpawnMajorWallAt(thisLocation + FVector(100, 0, 0));
+					baseLevelIndex->SpawnMajorWallAt(thisLocation + FVector(100, 0, 0));
 				},
 				TStatId(), nullptr, ENamedThreads::GameThread);
 		}
 		else if (gridItems[i].GetLocation().Y == 0)
 		{
 			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady(
-				[spawnerManager, thisLocation]
+				[baseLevelIndex, thisLocation]
 				{
-					spawnerManager->SpawnMajorWallAt(thisLocation, FRotator(0, 90, 0));
+					baseLevelIndex->SpawnMajorWallAt(thisLocation, FRotator(0, 90, 0));
 				},
 				TStatId(), nullptr, ENamedThreads::GameThread);
 		}
 		else if (gridItems[i].GetLocation().Y == MaxY * 100)
 		{
 			FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady(
-				[spawnerManager, thisLocation]
+				[baseLevelIndex, thisLocation]
 				{
-					spawnerManager->SpawnMajorWallAt(thisLocation + FVector(0, 100, 0), FRotator(0, 90, 0));
+					baseLevelIndex->SpawnMajorWallAt(thisLocation + FVector(0, 100, 0), FRotator(0, 90, 0));
 				},
 				TStatId(), nullptr, ENamedThreads::GameThread);
 		}
@@ -709,6 +714,10 @@ FVector UBaseLevelIndex::GetClosestAllowedLocation(FVector loc)
 
 	return resultingLoc;
 }
+TArray<FVector> UBaseLevelIndex::GetObstacleAllowedLocations()
+{
+	return ObstacleAllowedLocations;
+}
 
 void UBaseLevelIndex::SpawnDebugGrid_SetIsStart(FVector location, float delay)
 {
@@ -961,4 +970,62 @@ void UBaseLevelIndex::UpdateLoadLevelWidget(FString msg, float percentage)
 			return;
 		}
 	}
+}
+
+void UBaseLevelIndex::SetWaitForFogBeforeLoadingWidgetCompletes()
+{
+	auto task = TGraphTask<LoadLevelLoadingWidgetFogWaitTask>::CreateTask();
+	auto dispatchedTask = task.ConstructAndDispatchWhenReady();
+
+	// TSharedPtr<LoadLevelLoadingWidgetTask> LoadTask = MakeShared<LoadLevelLoadingWidgetTask>(msg, percentage);
+	// LoadTask->DoWork();
+	int secondsToWaitUntilGiveup = 0;
+
+	while (!dispatchedTask->IsCompleted())
+	{
+		FPlatformProcess::Sleep(1);
+		secondsToWaitUntilGiveup++;
+
+		if (secondsToWaitUntilGiveup >= 10)
+		{
+			UDebugMessages::LogError(this, "failed to LoadLevelLoadingWidgetFogWaitTask, after " + FString::SanitizeFloat(secondsToWaitUntilGiveup) + " seconds");
+			return;
+		}
+	}
+}
+
+void UBaseLevelIndex::SpawnMajorWallAt(FVector loc, FRotator rot)
+{
+	// UDebugMessages::LogDisplay(this, "spawning wall at " + loc.ToString());
+	GetWorld()->SpawnActor<AWall>(loc, rot);
+}
+
+TArray<TPair<FVector, FVector>> UBaseLevelIndex::DetermineAvailableWallSpawnLocations()
+{
+	TArray<TPair<FVector, FVector>> AvailableWallSpawnLocations;
+	for (FVector wallLoc : WallLocations)
+	{
+		TArray<FVector> cardinals;
+		cardinals.Emplace(wallLoc + FVector(0, -100, 0));
+		cardinals.Emplace(wallLoc + FVector(0, 100, 0));
+		cardinals.Emplace(wallLoc + FVector(-100, 0, 0));
+		cardinals.Emplace(wallLoc + FVector(100, 0, 0));
+
+		FVector allowedCardinal = FVector(-1, -1, -1);
+		for (FVector cardinal : cardinals)
+		{
+			if (IsWithinList(ObstacleAllowedLocations, cardinal))
+			{
+				AvailableWallSpawnLocations.Emplace(TPair<FVector, FVector>(wallLoc, cardinal));
+				break;
+			}
+		}
+	}
+	return AvailableWallSpawnLocations;
+}
+
+void UBaseLevelIndex::FinishUp()
+{
+	auto directorManager = USvUtilities::GetGameModeDirectorManager(GetWorld());
+	directorManager->MapAvailableSpawns(DetermineAvailableWallSpawnLocations());
 }

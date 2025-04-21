@@ -1,5 +1,6 @@
 #include "FogManager.h"
 #include "../../Delegates/CharacterDelegates.h"
+#include "../../Delegates/HudDelegates.h"
 #include "../../Utilities/SvUtilities.h"
 #include "Components/FogSectionComponent.h"
 #include "Components/PrimitiveComponent.h"
@@ -36,13 +37,15 @@ void AFogManager::Tick(float DeltaTime)
     SetActorTickEnabled(false);
 
     auto characterDelegates = UCharacterDelegates::GetInstance();
+    auto hudDelegates = UHudDelegates::GetInstance();
 
-    if (!characterDelegates)
-      UDebugMessages::LogError(this, "not found character delegates");
+    if (!characterDelegates || !hudDelegates)
+      UDebugMessages::LogError(this, "not found character|hud delegates");
 
     FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady(
-        [characterDelegates]
+        [characterDelegates, hudDelegates]
         {
+          hudDelegates->_LevelLoadingSetWaitForFogComplete.Broadcast();
           characterDelegates->_OnFogGenerationComplete.Broadcast();
         },
         TStatId(), nullptr, ENamedThreads::GameThread);

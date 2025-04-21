@@ -18,6 +18,7 @@ public:
 
 	USpawnInComponent(const FObjectInitializer& ObjectInitializer);
 	void StartSpawnInFromGround();
+	void StartSpawnInFromWall();
 	void UpdateMovementSpeed(float speed);
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

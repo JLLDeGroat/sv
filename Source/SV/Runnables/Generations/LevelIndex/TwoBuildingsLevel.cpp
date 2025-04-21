@@ -68,15 +68,15 @@ void UTwoBuildingsLevel::GenerateLevel()
 						  ->SetupGeneration(GetWorld(), RandomStream, ObstacleAllowedLocations)
 						  ->SetStartAndEndZones(SpawnZone, EndZone)
 						  ->Generate();
-
+	UpdateLoadLevelWidget("Finding Route", .1f);
 	GenerateBuildings();
 
 	GenerateRoads();
-
+	UpdateLoadLevelWidget("Obstacles", .2f);
 	GenerateExteriors();
 
 	GenerateCaveWalls();
-
+	UpdateLoadLevelWidget("Structures", .3f);
 	TArray<FGridDataItem *> onlyRoads;
 	for (FGridDataItem &dataItem : GridData.GetGridItems())
 	{
@@ -93,7 +93,7 @@ void UTwoBuildingsLevel::GenerateLevel()
 						->Generate();
 
 	SetLocationsAsDebris(miscGens->GetTotalUsedLocations());
-
+	UpdateLoadLevelWidget("Roading", .4f);
 	ObstacleAllowedLocations = RemoveListFromList(ObstacleAllowedLocations, miscGens->GetTotalUsedLocations());
 
 	auto enemyGen = NewObject<UEnemyGeneration>(this)
@@ -112,9 +112,9 @@ void UTwoBuildingsLevel::GenerateLevel()
 								->SetupGeneration(GetWorld(), RandomStream, ObstacleAllowedLocations)
 								->SetStartAndEndZones(SpawnZone, EndZone)
 								->Generate();
-
+	UpdateLoadLevelWidget("People", .5f);
 	// DebugGenerations();
-
+	FinishUp();
 	UpdateLoadLevelWidget("Complete", 1);
 }
 

@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "TurnManager.h"
 #include "../../Player/GamePlayerController.h"
 #include "../../Interfaces/SvChar.h"
@@ -15,12 +14,12 @@
 #include "ObjectivesManager.h"
 #include "CharacterManager.h"
 
-UTurnManager::UTurnManager(const FObjectInitializer& ObjectInitializer) : UObject(ObjectInitializer) {
-
+UTurnManager::UTurnManager(const FObjectInitializer &ObjectInitializer) : UObject(ObjectInitializer)
+{
 }
 
-void UTurnManager::BeginAITurn() {
-
+void UTurnManager::BeginAITurn()
+{
 	auto gameplayDelegates = UGameplayDelegates::GetInstance();
 	if (!gameplayDelegates)
 		return UDebugMessages::LogError(this, "failed to get gameplay delegates");
@@ -43,24 +42,28 @@ void UTurnManager::BeginAITurn() {
 	aiDelegates->_AiTurnIndicatorVisibility.Broadcast(true);
 
 	Runnable = NewObject<UAITurnRunnable>(this)
-		->Initialise(GetWorld())
-		->Begin();
+				   ->Initialise(GetWorld())
+				   ->Begin();
 }
 
-void UTurnManager::BeginPlayerTurn() {
-	if (!this || !GetWorld()) return;
+void UTurnManager::BeginPlayerTurn()
+{
+	if (!this || !GetWorld())
+		return;
 
 	auto currentGameData = USvUtilities::GetCurrentGameData(GetWorld());
 	if (!currentGameData)
 		return UDebugMessages::LogError(this, "failed to get currentGameData");
 
 	auto gameplayMode = GetWorld()->GetAuthGameMode<AGameplayMode>();
-	if (!gameplayMode) {
+	if (!gameplayMode)
+	{
 		UDebugMessages::LogDisplay(this, "failed to get gameplay to start player turn");
 		return;
 	}
 	auto characterManager = gameplayMode->GetCharacterManager();
-	if (!characterManager) {
+	if (!characterManager)
+	{
 		UDebugMessages::LogDisplay(this, "failed to get characterManager to start player turn");
 		return;
 	}
@@ -80,7 +83,7 @@ void UTurnManager::BeginPlayerTurn() {
 	currentMission->AddToTurnCounter();
 	UDebugMessages::LogDisplay(this, "current turn " + FString::SanitizeFloat(currentMission->GetTurn()));
 
-	//mission complete, end here
+	// mission complete, end here
 	if (currentMission->GetTurn() >= currentMission->GetTurnLimit())
 		return hudDelegates->_ShowMissionCompleteWidget.Broadcast();
 
@@ -97,8 +100,10 @@ void UTurnManager::BeginPlayerTurn() {
 	TArray<TScriptInterface<ISvChar>> foundCharacters;
 	characterManager->GetCharacterListOfCharacterType(ECharacterControl::CC_Player, foundCharacters);
 
-	for (int i = 0; i < foundCharacters.Num(); i++) {
-		if (!foundCharacters[i]) continue;
+	for (int i = 0; i < foundCharacters.Num(); i++)
+	{
+		if (!foundCharacters[i])
+			continue;
 
 		auto characterActor = foundCharacters[i]->GetAsActor();
 		auto detailsComponent = characterActor->GetComponentByClass<UCharacterDetailsComponent>();
@@ -110,12 +115,22 @@ void UTurnManager::BeginPlayerTurn() {
 	}
 }
 
-void UTurnManager::KillRunnable() {
-	if (this && Runnable) {
-		auto turnRunnable = (UAITurnRunnable*)Runnable;
-		if (turnRunnable) {
+void UTurnManager::KillRunnable()
+{
+	if (this && Runnable)
+	{
+		auto turnRunnable = (UAITurnRunnable *)Runnable;
+		if (turnRunnable)
+		{
 			turnRunnable->KillThreads();
 			turnRunnable->EnsureCompletion();
 		}
 	}
+}
+
+int UTurnManager::GetCurrentTurn()
+{
+	auto currentGameData = USvUtilities::GetCurrentGameData(GetWorld());
+	auto currentMission = currentGameData->GetCurrentMission()->GetMissionDetails();
+	return currentMission->GetTurn();
 }

@@ -22,6 +22,7 @@
 #include "AI/AiTurnMoveChecker.h"
 #include "AI/PreMoveChecker.h"
 #include "AI/PostMoveChecker.h"
+#include "AI/Director/SVDirector.h"
 
 void UAITurnRunnable::ActivateThread()
 {
@@ -139,6 +140,10 @@ void UAITurnRunnable::ActivateThread()
 	auto spawnCheck = NewObject<USpawnChecker>(this);
 	spawnCheck->RunScript();
 	spawnCheck->ClearInternalFlags(EInternalObjectFlags::Async);
+
+	auto svDirector = NewObject<USVDirector>(this);
+	svDirector->ActivateSvDirector();
+	svDirector->ClearInternalFlags(EInternalObjectFlags::Async);
 
 	UDebugMessages::LogDisplay(this, "All Complete");
 	FGraphEventRef Task = FFunctionGraphTask::CreateAndDispatchWhenReady([gamePlay]

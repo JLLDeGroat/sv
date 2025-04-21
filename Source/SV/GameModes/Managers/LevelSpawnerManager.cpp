@@ -2,7 +2,6 @@
 
 
 #include "LevelSpawnerManager.h"
-#include "../../Environment/Constructions/Wall.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 // Sets default values for this component's properties
 ULevelSpawnerManager::ULevelSpawnerManager()
@@ -22,10 +21,4 @@ void ULevelSpawnerManager::BeginPlay()
 
 	// ...
 	
-}
-
-void ULevelSpawnerManager::SpawnMajorWallAt(FVector loc, FRotator rot) {
-	//UDebugMessages::LogDisplay(this, "spawning wall at " + loc.ToString());
-	GetWorld()->SpawnActor<AWall>(loc, rot);
-
 }
