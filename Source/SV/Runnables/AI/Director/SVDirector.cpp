@@ -81,4 +81,4 @@ void USVDirector::ActivateSvDirector()
 
     // UDebugMessages::LogDisplay(this, "Total noise " + FString::SanitizeFloat(accumulatedNoise));
 }
-#pragma optimize("", off)
+#pragma optimize("", on)
