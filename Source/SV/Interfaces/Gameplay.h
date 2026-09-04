@@ -42,4 +42,7 @@ public:
 	virtual bool AttemptToStartWinLossChecker() = 0;
 	virtual void StartStatRunnable(AActor *statOwner, EStatisticType statType, float value = 0.0f) = 0;
 	virtual void StartDirectorStatRunnable(AActor *statOwner, EDirectorStatType statType, float value = 0.0f) = 0;
+
+	virtual void SetGameIsOver() = 0;
+	virtual bool GetIsGameOver() = 0;
 };

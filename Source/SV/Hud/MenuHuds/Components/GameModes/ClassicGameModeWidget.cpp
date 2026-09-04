@@ -8,6 +8,8 @@
 void UClassicGameModeWidget::NativeConstruct() {
 	Super::NativeConstruct();
 	CurrentMapGrid = FMapGridData(12, 8);
+
+	///Script/Engine.Material'/Game/Materials/Widgets/LargeBack_M.LargeBack_M'
 }
 
 void UClassicGameModeWidget::StartGeneration() {

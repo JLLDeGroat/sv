@@ -95,12 +95,12 @@ void USpawnChecker::DetermineValidSpawners() {
 		auto spawnerLoc = Spawners[i]->GetActorLocation();
 		for (int x = 0; x < Enemies.Num(); x++) {
 			auto dist = FVector::Dist(Enemies[x]->GetActorLocation(), spawnerLoc);
-			if (dist < 150) bIsValid = false;
+			if (dist < 300) bIsValid = false;
 		}
 
 		for (int x = 0; x < Players.Num(); x++) {
 			auto dist = FVector::Dist(Players[x]->GetActorLocation(), spawnerLoc);
-			if (dist < 150) bIsValid = false;
+			if (dist < 300) bIsValid = false;
 		}
 
 		if (bIsValid)

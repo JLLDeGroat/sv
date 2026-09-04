@@ -13,6 +13,8 @@ class UTextBlock;
 class UVerticalBox;
 class UScrollBox;
 class UBaseDD;
+class UButton;
+class UCrewDetailsGridWidget;
 /**
  *
  */
@@ -25,6 +27,8 @@ public:
     virtual void NativeConstruct() override;
 
     void SetDetailsForCrew(TArray<TSubclassOf<UBaseDD>> dAndDs, TMap<FString, int> stats);
+
+    void SetCrewDetailsWidget(UCrewDetailsGridWidget *detailsGridWidget);
 
 protected:
     UPROPERTY(meta = (BindWidget))
@@ -41,5 +45,16 @@ protected:
     UCDGSItemWidget *CreateStatItem();
     UCDGDDItemWidget *CreateDDItem();
 
-    void ClearGrids();
+    UPROPERTY(meta = (BindWidget))
+    UButton *TraitButton;
+
+    UPROPERTY()
+    TArray<TSubclassOf<UBaseDD>> DAndDs;
+
+    UPROPERTY() UCrewDetailsGridWidget *DetailsGrid;
+
+    void ClearStatGrid();
+
+    UFUNCTION()
+    void OnTraitClicked();
 };

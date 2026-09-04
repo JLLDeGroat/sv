@@ -1,12 +1,10 @@
 /.git
-/.vs
 /.vscode
 /Content
 /DerivedDataCache
 /Intermediate
 /Mods
 /Saved
-/Plugins/VgCore/Content
 /Plugins/VgCore/Intermediate
 /Plugins/VgFlMngmnt/Content
 /Plugins/VgFlMngmnt/Intermediate

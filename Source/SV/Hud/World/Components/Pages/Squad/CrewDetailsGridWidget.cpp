@@ -10,6 +10,7 @@
 #include "Components/Button.h"
 #include "../../../../Helpers/UserWidgetHelpers.h"
 #include "SelectEquipmentListWidget.h"
+#include "../../../SquadPageWidget.h"
 
 void UCrewDetailsGridWidget::NativeConstruct()
 {
@@ -46,6 +47,7 @@ void UCrewDetailsGridWidget::NativeConstruct()
 	}
 
 	CurrentCrewId = FGuid::FGuid();
+	CrewStatWidget->SetCrewDetailsWidget(this);
 }
 
 void UCrewDetailsGridWidget::InitialiseGridForCrewMember(FGuid crewMember)
@@ -163,4 +165,14 @@ void UCrewDetailsGridWidget::ResetPrimaryInventoryImage(UImage *image)
 void UCrewDetailsGridWidget::ResetEquipmentInventoryImage(UImage *image)
 {
 	image->SetBrushFromTexture(UUserWidgetHelpers::GetEquipmentNonTexture());
+}
+
+void UCrewDetailsGridWidget::SetSquadPage(USquadPageWidget *page)
+{
+	SquadPage = page;
+}
+
+USquadPageWidget *UCrewDetailsGridWidget::GetSquadPage()
+{
+	return SquadPage;
 }

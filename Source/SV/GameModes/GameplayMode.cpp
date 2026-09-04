@@ -28,6 +28,8 @@ AGameplayMode::AGameplayMode()
 	ObjectivesManager = CreateDefaultSubobject<UObjectivesManager>(TEXT("ObjectiveManager"));
 	OverwatchManager = CreateDefaultSubobject<UOverwatchManager>(TEXT("OverwatchManager"));
 	DirectorManager = CreateDefaultSubobject<UDirectorManager>(TEXT("DirectorManager"));
+
+	GameIsOver = false;
 }
 
 void AGameplayMode::BeginPlay()
@@ -161,4 +163,14 @@ AFogManager *AGameplayMode::GetFogManager()
 void AGameplayMode::SetFogManager(AFogManager *manager)
 {
 	FogManager = manager;
+}
+
+void AGameplayMode::SetGameIsOver()
+{
+	GameIsOver = true;
+}
+
+bool AGameplayMode::GetIsGameOver()
+{
+	return GameIsOver;
 }

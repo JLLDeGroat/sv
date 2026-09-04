@@ -131,7 +131,7 @@ UTargetAction* UActionManager::GetTargetAction() {
 ULeftClickAction* UActionManager::GetLeftClickAction() {
 	return LeftClickActionComponent;
 }
-URightClickAction* UActionManager::GetGetRightClickAction() {
+URightClickAction* UActionManager::GetRightClickAction() {
 	return RightClickActionComponent;
 }
 UGrenadeActionComponent* UActionManager::GetGrenadeAction() {

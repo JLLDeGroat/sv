@@ -9,7 +9,7 @@
             "Penetration": 1
         },
         {
-            "Name": "PeaRifle",
+            "Name": "ConstructRifle",
             "Description":"Standard encountered arsenal from the depths, the output can be sustained, but its overwhelming rate is often too much.",
             "ThrowableType": "INVALID",
             "GunType": "G_ConstructRifle",
@@ -17,7 +17,7 @@
             "Penetration": 1
         },
         {
-            "Name": "PeaRifle",
+            "Name": "ConstructLaser",
             "Description":"More powerful than the rifle counterpart, this has ended many replicants.",
             "ThrowableType": "INVALID",
             "GunType": "G_ConstructLaser",

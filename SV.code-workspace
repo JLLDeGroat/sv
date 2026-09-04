@@ -6,16 +6,16 @@
 		},
 		{
 			"name": "UE5",
-			"path": "D:\\Epic\\UE_5.6"
+			"path": "E:\\Unreal\\UE_5.8"
 		}
 	],
 	"settings": {
-		"typescript.tsc.autoDetect": "off",
+		"js/ts.tsc.autoDetect": "off",
 		"npm.autoDetect": "off",
 		"terminal.integrated.env.windows": {
-			"PATH": "D:\\Epic\\UE_5.6\\Engine\\Binaries\\ThirdParty\\DotNet\\8.0.300\\win-x64;${env:PATH}",
-			"DOTNET_ROOT": "D:\\Epic\\UE_5.6\\Engine\\Binaries\\ThirdParty\\DotNet\\8.0.300\\win-x64",
-			"DOTNET_HOST_PATH": "D:\\Epic\\UE_5.6\\Engine\\Binaries\\ThirdParty\\DotNet\\8.0.300\\win-x64\\dotnet.exe",
+			"PATH": "E:\\Unreal\\UE_5.8\\Engine\\Binaries\\ThirdParty\\DotNet\\10.0\\win-x64;${env:PATH}",
+			"DOTNET_ROOT": "E:\\Unreal\\UE_5.8\\Engine\\Binaries\\ThirdParty\\DotNet\\10.0\\win-x64",
+			"DOTNET_HOST_PATH": "E:\\Unreal\\UE_5.8\\Engine\\Binaries\\ThirdParty\\DotNet\\10.0\\win-x64\\dotnet.exe",
 			"DOTNET_MULTILEVEL_LOOKUP": "0",
 			"DOTNET_ROLL_FORWARD": "LatestMajor"
 		}
@@ -37,13 +37,13 @@
 					"SV",
 					"Win64",
 					"Debug",
-					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"E:\\Projects\\Unreal\\sv\\SV.uproject",
 					"-waitmutex"
 				],
 				"problemMatcher": "$msCompile",
 				"type": "shell",
 				"options": {
-					"cwd": "D:\\Epic\\UE_5.6"
+					"cwd": "E:\\Unreal\\UE_5.8"
 				}
 			},
 			{
@@ -54,7 +54,7 @@
 					"SV",
 					"Win64",
 					"Debug",
-					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"E:\\Projects\\Unreal\\sv\\SV.uproject",
 					"-waitmutex"
 				],
 				"problemMatcher": "$msCompile",
@@ -63,7 +63,7 @@
 				],
 				"type": "shell",
 				"options": {
-					"cwd": "D:\\Epic\\UE_5.6"
+					"cwd": "E:\\Unreal\\UE_5.8"
 				}
 			},
 			{
@@ -74,13 +74,13 @@
 					"SV",
 					"Win64",
 					"Debug",
-					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"E:\\Projects\\Unreal\\sv\\SV.uproject",
 					"-waitmutex"
 				],
 				"problemMatcher": "$msCompile",
 				"type": "shell",
 				"options": {
-					"cwd": "D:\\Epic\\UE_5.6"
+					"cwd": "E:\\Unreal\\UE_5.8"
 				}
 			},
 			{
@@ -91,13 +91,13 @@
 					"SV",
 					"Win64",
 					"DebugGame",
-					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"E:\\Projects\\Unreal\\sv\\SV.uproject",
 					"-waitmutex"
 				],
 				"problemMatcher": "$msCompile",
 				"type": "shell",
 				"options": {
-					"cwd": "D:\\Epic\\UE_5.6"
+					"cwd": "E:\\Unreal\\UE_5.8"
 				}
 			},
 			{
@@ -108,7 +108,7 @@
 					"SV",
 					"Win64",
 					"DebugGame",
-					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"E:\\Projects\\Unreal\\sv\\SV.uproject",
 					"-waitmutex"
 				],
 				"problemMatcher": "$msCompile",
@@ -117,7 +117,7 @@
 				],
 				"type": "shell",
 				"options": {
-					"cwd": "D:\\Epic\\UE_5.6"
+					"cwd": "E:\\Unreal\\UE_5.8"
 				}
 			},
 			{
@@ -128,13 +128,13 @@
 					"SV",
 					"Win64",
 					"DebugGame",
-					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"E:\\Projects\\Unreal\\sv\\SV.uproject",
 					"-waitmutex"
 				],
 				"problemMatcher": "$msCompile",
 				"type": "shell",
 				"options": {
-					"cwd": "D:\\Epic\\UE_5.6"
+					"cwd": "E:\\Unreal\\UE_5.8"
 				}
 			},
 			{
@@ -145,13 +145,13 @@
 					"SV",
 					"Win64",
 					"Development",
-					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"E:\\Projects\\Unreal\\sv\\SV.uproject",
 					"-waitmutex"
 				],
 				"problemMatcher": "$msCompile",
 				"type": "shell",
 				"options": {
-					"cwd": "D:\\Epic\\UE_5.6"
+					"cwd": "E:\\Unreal\\UE_5.8"
 				}
 			},
 			{
@@ -162,7 +162,7 @@
 					"SV",
 					"Win64",
 					"Development",
-					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"E:\\Projects\\Unreal\\sv\\SV.uproject",
 					"-waitmutex"
 				],
 				"problemMatcher": "$msCompile",
@@ -171,7 +171,7 @@
 				],
 				"type": "shell",
 				"options": {
-					"cwd": "D:\\Epic\\UE_5.6"
+					"cwd": "E:\\Unreal\\UE_5.8"
 				}
 			},
 			{
@@ -182,13 +182,13 @@
 					"SV",
 					"Win64",
 					"Development",
-					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"E:\\Projects\\Unreal\\sv\\SV.uproject",
 					"-waitmutex"
 				],
 				"problemMatcher": "$msCompile",
 				"type": "shell",
 				"options": {
-					"cwd": "D:\\Epic\\UE_5.6"
+					"cwd": "E:\\Unreal\\UE_5.8"
 				}
 			},
 			{
@@ -199,13 +199,13 @@
 					"SV",
 					"Win64",
 					"Test",
-					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"E:\\Projects\\Unreal\\sv\\SV.uproject",
 					"-waitmutex"
 				],
 				"problemMatcher": "$msCompile",
 				"type": "shell",
 				"options": {
-					"cwd": "D:\\Epic\\UE_5.6"
+					"cwd": "E:\\Unreal\\UE_5.8"
 				}
 			},
 			{
@@ -216,7 +216,7 @@
 					"SV",
 					"Win64",
 					"Test",
-					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"E:\\Projects\\Unreal\\sv\\SV.uproject",
 					"-waitmutex"
 				],
 				"problemMatcher": "$msCompile",
@@ -225,7 +225,7 @@
 				],
 				"type": "shell",
 				"options": {
-					"cwd": "D:\\Epic\\UE_5.6"
+					"cwd": "E:\\Unreal\\UE_5.8"
 				}
 			},
 			{
@@ -236,13 +236,13 @@
 					"SV",
 					"Win64",
 					"Test",
-					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"E:\\Projects\\Unreal\\sv\\SV.uproject",
 					"-waitmutex"
 				],
 				"problemMatcher": "$msCompile",
 				"type": "shell",
 				"options": {
-					"cwd": "D:\\Epic\\UE_5.6"
+					"cwd": "E:\\Unreal\\UE_5.8"
 				}
 			},
 			{
@@ -253,13 +253,13 @@
 					"SV",
 					"Win64",
 					"Shipping",
-					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"E:\\Projects\\Unreal\\sv\\SV.uproject",
 					"-waitmutex"
 				],
 				"problemMatcher": "$msCompile",
 				"type": "shell",
 				"options": {
-					"cwd": "D:\\Epic\\UE_5.6"
+					"cwd": "E:\\Unreal\\UE_5.8"
 				}
 			},
 			{
@@ -270,7 +270,7 @@
 					"SV",
 					"Win64",
 					"Shipping",
-					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"E:\\Projects\\Unreal\\sv\\SV.uproject",
 					"-waitmutex"
 				],
 				"problemMatcher": "$msCompile",
@@ -279,7 +279,7 @@
 				],
 				"type": "shell",
 				"options": {
-					"cwd": "D:\\Epic\\UE_5.6"
+					"cwd": "E:\\Unreal\\UE_5.8"
 				}
 			},
 			{
@@ -290,13 +290,13 @@
 					"SV",
 					"Win64",
 					"Shipping",
-					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"E:\\Projects\\Unreal\\sv\\SV.uproject",
 					"-waitmutex"
 				],
 				"problemMatcher": "$msCompile",
 				"type": "shell",
 				"options": {
-					"cwd": "D:\\Epic\\UE_5.6"
+					"cwd": "E:\\Unreal\\UE_5.8"
 				}
 			},
 			{
@@ -307,13 +307,13 @@
 					"SVEditor",
 					"Win64",
 					"Debug",
-					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"E:\\Projects\\Unreal\\sv\\SV.uproject",
 					"-waitmutex"
 				],
 				"problemMatcher": "$msCompile",
 				"type": "shell",
 				"options": {
-					"cwd": "D:\\Epic\\UE_5.6"
+					"cwd": "E:\\Unreal\\UE_5.8"
 				}
 			},
 			{
@@ -324,7 +324,7 @@
 					"SVEditor",
 					"Win64",
 					"Debug",
-					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"E:\\Projects\\Unreal\\sv\\SV.uproject",
 					"-waitmutex"
 				],
 				"problemMatcher": "$msCompile",
@@ -333,7 +333,7 @@
 				],
 				"type": "shell",
 				"options": {
-					"cwd": "D:\\Epic\\UE_5.6"
+					"cwd": "E:\\Unreal\\UE_5.8"
 				}
 			},
 			{
@@ -344,13 +344,13 @@
 					"SVEditor",
 					"Win64",
 					"Debug",
-					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"E:\\Projects\\Unreal\\sv\\SV.uproject",
 					"-waitmutex"
 				],
 				"problemMatcher": "$msCompile",
 				"type": "shell",
 				"options": {
-					"cwd": "D:\\Epic\\UE_5.6"
+					"cwd": "E:\\Unreal\\UE_5.8"
 				}
 			},
 			{
@@ -361,13 +361,13 @@
 					"SVEditor",
 					"Win64",
 					"DebugGame",
-					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"E:\\Projects\\Unreal\\sv\\SV.uproject",
 					"-waitmutex"
 				],
 				"problemMatcher": "$msCompile",
 				"type": "shell",
 				"options": {
-					"cwd": "D:\\Epic\\UE_5.6"
+					"cwd": "E:\\Unreal\\UE_5.8"
 				}
 			},
 			{
@@ -378,7 +378,7 @@
 					"SVEditor",
 					"Win64",
 					"DebugGame",
-					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"E:\\Projects\\Unreal\\sv\\SV.uproject",
 					"-waitmutex"
 				],
 				"problemMatcher": "$msCompile",
@@ -387,7 +387,7 @@
 				],
 				"type": "shell",
 				"options": {
-					"cwd": "D:\\Epic\\UE_5.6"
+					"cwd": "E:\\Unreal\\UE_5.8"
 				}
 			},
 			{
@@ -398,13 +398,13 @@
 					"SVEditor",
 					"Win64",
 					"DebugGame",
-					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"E:\\Projects\\Unreal\\sv\\SV.uproject",
 					"-waitmutex"
 				],
 				"problemMatcher": "$msCompile",
 				"type": "shell",
 				"options": {
-					"cwd": "D:\\Epic\\UE_5.6"
+					"cwd": "E:\\Unreal\\UE_5.8"
 				}
 			},
 			{
@@ -415,13 +415,13 @@
 					"SVEditor",
 					"Win64",
 					"Development",
-					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"E:\\Projects\\Unreal\\sv\\SV.uproject",
 					"-waitmutex"
 				],
 				"problemMatcher": "$msCompile",
 				"type": "shell",
 				"options": {
-					"cwd": "D:\\Epic\\UE_5.6"
+					"cwd": "E:\\Unreal\\UE_5.8"
 				}
 			},
 			{
@@ -432,7 +432,7 @@
 					"SVEditor",
 					"Win64",
 					"Development",
-					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"E:\\Projects\\Unreal\\sv\\SV.uproject",
 					"-waitmutex"
 				],
 				"problemMatcher": "$msCompile",
@@ -441,7 +441,7 @@
 				],
 				"type": "shell",
 				"options": {
-					"cwd": "D:\\Epic\\UE_5.6"
+					"cwd": "E:\\Unreal\\UE_5.8"
 				}
 			},
 			{
@@ -452,13 +452,13 @@
 					"SVEditor",
 					"Win64",
 					"Development",
-					"D:\\Unreal Projects\\SV\\SV.uproject",
+					"E:\\Projects\\Unreal\\sv\\SV.uproject",
 					"-waitmutex"
 				],
 				"problemMatcher": "$msCompile",
 				"type": "shell",
 				"options": {
-					"cwd": "D:\\Epic\\UE_5.6"
+					"cwd": "E:\\Unreal\\UE_5.8"
 				}
 			}
 		]
@@ -469,148 +469,156 @@
 			{
 				"name": "Launch SV (Debug)",
 				"request": "launch",
-				"program": "D:\\Unreal Projects\\SV\\Binaries\\Win64\\UnrealGame-Win64-Debug.exe",
+				"program": "E:\\Projects\\Unreal\\sv\\Binaries\\Win64\\UnrealGame-Win64-Debug.exe",
 				"preLaunchTask": "SV Win64 Debug Build",
 				"args": [
 				],
-				"cwd": "D:\\Epic\\UE_5.6",
+				"cwd": "E:\\Unreal\\UE_5.8",
 				"stopAtEntry": false,
 				"console": "integratedTerminal",
 				"type": "cppvsdbg",
-				"visualizerFile": "D:\\Epic\\UE_5.6\\Engine\\Extras\\VisualStudioDebugging\\Unreal.natvis",
+				"visualizerFile": "E:\\Unreal\\UE_5.8\\Engine\\Extras\\VisualStudioDebugging\\Unreal.natvis",
 				"sourceFileMap": {
-					"D:\\build\\++UE5\\Sync": "D:\\Epic\\UE_5.6",
-					"Z:\\UEVFS\\SV": "D:\\Unreal Projects\\SV",
-					"Z:\\UEVFS\\Root": "D:\\Epic\\UE_5.6"
+					"D:\\build\\++UE5\\Sync": "E:\\Unreal\\UE_5.8"
+				},
+				"sourceMap": {
+					"D:\\build\\++UE5\\Sync": "E:\\Unreal\\UE_5.8"
 				}
 			},
 			{
 				"name": "Launch SV (DebugGame)",
 				"request": "launch",
-				"program": "D:\\Unreal Projects\\SV\\Binaries\\Win64\\UnrealGame-Win64-DebugGame.exe",
+				"program": "E:\\Projects\\Unreal\\sv\\Binaries\\Win64\\UnrealGame-Win64-DebugGame.exe",
 				"preLaunchTask": "SV Win64 DebugGame Build",
 				"args": [
 				],
-				"cwd": "D:\\Epic\\UE_5.6",
+				"cwd": "E:\\Unreal\\UE_5.8",
 				"stopAtEntry": false,
 				"console": "integratedTerminal",
 				"type": "cppvsdbg",
-				"visualizerFile": "D:\\Epic\\UE_5.6\\Engine\\Extras\\VisualStudioDebugging\\Unreal.natvis",
+				"visualizerFile": "E:\\Unreal\\UE_5.8\\Engine\\Extras\\VisualStudioDebugging\\Unreal.natvis",
 				"sourceFileMap": {
-					"D:\\build\\++UE5\\Sync": "D:\\Epic\\UE_5.6",
-					"Z:\\UEVFS\\SV": "D:\\Unreal Projects\\SV",
-					"Z:\\UEVFS\\Root": "D:\\Epic\\UE_5.6"
+					"D:\\build\\++UE5\\Sync": "E:\\Unreal\\UE_5.8"
+				},
+				"sourceMap": {
+					"D:\\build\\++UE5\\Sync": "E:\\Unreal\\UE_5.8"
 				}
 			},
 			{
 				"name": "Launch SV (Development)",
 				"request": "launch",
-				"program": "D:\\Unreal Projects\\SV\\Binaries\\Win64\\UnrealGame.exe",
+				"program": "E:\\Projects\\Unreal\\sv\\Binaries\\Win64\\UnrealGame.exe",
 				"preLaunchTask": "SV Win64 Development Build",
 				"args": [
 				],
-				"cwd": "D:\\Epic\\UE_5.6",
+				"cwd": "E:\\Unreal\\UE_5.8",
 				"stopAtEntry": false,
 				"console": "integratedTerminal",
 				"type": "cppvsdbg",
-				"visualizerFile": "D:\\Epic\\UE_5.6\\Engine\\Extras\\VisualStudioDebugging\\Unreal.natvis",
+				"visualizerFile": "E:\\Unreal\\UE_5.8\\Engine\\Extras\\VisualStudioDebugging\\Unreal.natvis",
 				"sourceFileMap": {
-					"D:\\build\\++UE5\\Sync": "D:\\Epic\\UE_5.6",
-					"Z:\\UEVFS\\SV": "D:\\Unreal Projects\\SV",
-					"Z:\\UEVFS\\Root": "D:\\Epic\\UE_5.6"
+					"D:\\build\\++UE5\\Sync": "E:\\Unreal\\UE_5.8"
+				},
+				"sourceMap": {
+					"D:\\build\\++UE5\\Sync": "E:\\Unreal\\UE_5.8"
 				}
 			},
 			{
 				"name": "Launch SV (Test)",
 				"request": "launch",
-				"program": "D:\\Unreal Projects\\SV\\Binaries\\Win64\\UnrealGame-Win64-Test.exe",
+				"program": "E:\\Projects\\Unreal\\sv\\Binaries\\Win64\\UnrealGame-Win64-Test.exe",
 				"preLaunchTask": "SV Win64 Test Build",
 				"args": [
 				],
-				"cwd": "D:\\Epic\\UE_5.6",
+				"cwd": "E:\\Unreal\\UE_5.8",
 				"stopAtEntry": false,
 				"console": "integratedTerminal",
 				"type": "cppvsdbg",
-				"visualizerFile": "D:\\Epic\\UE_5.6\\Engine\\Extras\\VisualStudioDebugging\\Unreal.natvis",
+				"visualizerFile": "E:\\Unreal\\UE_5.8\\Engine\\Extras\\VisualStudioDebugging\\Unreal.natvis",
 				"sourceFileMap": {
-					"D:\\build\\++UE5\\Sync": "D:\\Epic\\UE_5.6",
-					"Z:\\UEVFS\\SV": "D:\\Unreal Projects\\SV",
-					"Z:\\UEVFS\\Root": "D:\\Epic\\UE_5.6"
+					"D:\\build\\++UE5\\Sync": "E:\\Unreal\\UE_5.8"
+				},
+				"sourceMap": {
+					"D:\\build\\++UE5\\Sync": "E:\\Unreal\\UE_5.8"
 				}
 			},
 			{
 				"name": "Launch SV (Shipping)",
 				"request": "launch",
-				"program": "D:\\Unreal Projects\\SV\\Binaries\\Win64\\UnrealGame-Win64-Shipping.exe",
+				"program": "E:\\Projects\\Unreal\\sv\\Binaries\\Win64\\UnrealGame-Win64-Shipping.exe",
 				"preLaunchTask": "SV Win64 Shipping Build",
 				"args": [
 				],
-				"cwd": "D:\\Epic\\UE_5.6",
+				"cwd": "E:\\Unreal\\UE_5.8",
 				"stopAtEntry": false,
 				"console": "integratedTerminal",
 				"type": "cppvsdbg",
-				"visualizerFile": "D:\\Epic\\UE_5.6\\Engine\\Extras\\VisualStudioDebugging\\Unreal.natvis",
+				"visualizerFile": "E:\\Unreal\\UE_5.8\\Engine\\Extras\\VisualStudioDebugging\\Unreal.natvis",
 				"sourceFileMap": {
-					"D:\\build\\++UE5\\Sync": "D:\\Epic\\UE_5.6",
-					"Z:\\UEVFS\\SV": "D:\\Unreal Projects\\SV",
-					"Z:\\UEVFS\\Root": "D:\\Epic\\UE_5.6"
+					"D:\\build\\++UE5\\Sync": "E:\\Unreal\\UE_5.8"
+				},
+				"sourceMap": {
+					"D:\\build\\++UE5\\Sync": "E:\\Unreal\\UE_5.8"
 				}
 			},
 			{
 				"name": "Launch SVEditor (Debug)",
 				"request": "launch",
-				"program": "D:\\Epic\\UE_5.6\\Engine\\Binaries\\Win64\\UnrealEditor-Win64-Debug.exe",
+				"program": "E:\\Unreal\\UE_5.8\\Engine\\Binaries\\Win64\\UnrealEditor-Win64-Debug.exe",
 				"preLaunchTask": "SVEditor Win64 Debug Build",
 				"args": [
-					"D:\\Unreal Projects\\SV\\SV.uproject"
+					"E:\\Projects\\Unreal\\sv\\SV.uproject"
 				],
-				"cwd": "D:\\Epic\\UE_5.6",
+				"cwd": "E:\\Unreal\\UE_5.8",
 				"stopAtEntry": false,
 				"console": "integratedTerminal",
 				"type": "cppvsdbg",
-				"visualizerFile": "D:\\Epic\\UE_5.6\\Engine\\Extras\\VisualStudioDebugging\\Unreal.natvis",
+				"visualizerFile": "E:\\Unreal\\UE_5.8\\Engine\\Extras\\VisualStudioDebugging\\Unreal.natvis",
 				"sourceFileMap": {
-					"D:\\build\\++UE5\\Sync": "D:\\Epic\\UE_5.6",
-					"Z:\\UEVFS\\SV": "D:\\Unreal Projects\\SV",
-					"Z:\\UEVFS\\Root": "D:\\Epic\\UE_5.6"
+					"D:\\build\\++UE5\\Sync": "E:\\Unreal\\UE_5.8"
+				},
+				"sourceMap": {
+					"D:\\build\\++UE5\\Sync": "E:\\Unreal\\UE_5.8"
 				}
 			},
 			{
 				"name": "Launch SVEditor (DebugGame)",
 				"request": "launch",
-				"program": "D:\\Epic\\UE_5.6\\Engine\\Binaries\\Win64\\UnrealEditor-Win64-DebugGame.exe",
+				"program": "E:\\Unreal\\UE_5.8\\Engine\\Binaries\\Win64\\UnrealEditor-Win64-DebugGame.exe",
 				"preLaunchTask": "SVEditor Win64 DebugGame Build",
 				"args": [
-					"D:\\Unreal Projects\\SV\\SV.uproject"
+					"E:\\Projects\\Unreal\\sv\\SV.uproject"
 				],
-				"cwd": "D:\\Epic\\UE_5.6",
+				"cwd": "E:\\Unreal\\UE_5.8",
 				"stopAtEntry": false,
 				"console": "integratedTerminal",
 				"type": "cppvsdbg",
-				"visualizerFile": "D:\\Epic\\UE_5.6\\Engine\\Extras\\VisualStudioDebugging\\Unreal.natvis",
+				"visualizerFile": "E:\\Unreal\\UE_5.8\\Engine\\Extras\\VisualStudioDebugging\\Unreal.natvis",
 				"sourceFileMap": {
-					"D:\\build\\++UE5\\Sync": "D:\\Epic\\UE_5.6",
-					"Z:\\UEVFS\\SV": "D:\\Unreal Projects\\SV",
-					"Z:\\UEVFS\\Root": "D:\\Epic\\UE_5.6"
+					"D:\\build\\++UE5\\Sync": "E:\\Unreal\\UE_5.8"
+				},
+				"sourceMap": {
+					"D:\\build\\++UE5\\Sync": "E:\\Unreal\\UE_5.8"
 				}
 			},
 			{
 				"name": "Launch SVEditor (Development)",
 				"request": "launch",
-				"program": "D:\\Epic\\UE_5.6\\Engine\\Binaries\\Win64\\UnrealEditor.exe",
+				"program": "E:\\Unreal\\UE_5.8\\Engine\\Binaries\\Win64\\UnrealEditor.exe",
 				"preLaunchTask": "SVEditor Win64 Development Build",
 				"args": [
-					"D:\\Unreal Projects\\SV\\SV.uproject"
+					"E:\\Projects\\Unreal\\sv\\SV.uproject"
 				],
-				"cwd": "D:\\Epic\\UE_5.6",
+				"cwd": "E:\\Unreal\\UE_5.8",
 				"stopAtEntry": false,
 				"console": "integratedTerminal",
 				"type": "cppvsdbg",
-				"visualizerFile": "D:\\Epic\\UE_5.6\\Engine\\Extras\\VisualStudioDebugging\\Unreal.natvis",
+				"visualizerFile": "E:\\Unreal\\UE_5.8\\Engine\\Extras\\VisualStudioDebugging\\Unreal.natvis",
 				"sourceFileMap": {
-					"D:\\build\\++UE5\\Sync": "D:\\Epic\\UE_5.6",
-					"Z:\\UEVFS\\SV": "D:\\Unreal Projects\\SV",
-					"Z:\\UEVFS\\Root": "D:\\Epic\\UE_5.6"
+					"D:\\build\\++UE5\\Sync": "E:\\Unreal\\UE_5.8"
+				},
+				"sourceMap": {
+					"D:\\build\\++UE5\\Sync": "E:\\Unreal\\UE_5.8"
 				}
 			},
 			{
@@ -618,25 +626,25 @@
 				"type": "coreclr",
 				"request": "launch",
 				"preLaunchTask": "UnrealBuildTool Win64 Development Build",
-				"program": "D:\\Epic\\UE_5.6\\Engine\\Build\\BatchFiles\\RunUBT.bat",
+				"program": "E:\\Unreal\\UE_5.8\\Engine\\Build\\BatchFiles\\RunUBT.bat",
 				"args": [
 					"-projectfiles",
 					"-vscode",
-					"-project=D:\\Unreal Projects\\SV\\SV.uproject",
+					"-project=E:\\Projects\\Unreal\\sv\\SV.uproject",
 					"-game",
 					"-engine",
 					"-dotnet"
 				],
 				"env": {
-					"PATH": "D:\\Epic\\UE_5.6\\Engine\\Binaries\\ThirdParty\\DotNet\\8.0.300\\win-x64;${env:PATH}",
-					"DOTNET_ROOT": "D:\\Epic\\UE_5.6\\Engine\\Binaries\\ThirdParty\\DotNet\\8.0.300\\win-x64",
-					"DOTNET_HOST_PATH": "D:\\Epic\\UE_5.6\\Engine\\Binaries\\ThirdParty\\DotNet\\8.0.300\\win-x64\\dotnet.exe",
+					"PATH": "E:\\Unreal\\UE_5.8\\Engine\\Binaries\\ThirdParty\\DotNet\\10.0\\win-x64;${env:PATH}",
+					"DOTNET_ROOT": "E:\\Unreal\\UE_5.8\\Engine\\Binaries\\ThirdParty\\DotNet\\10.0\\win-x64",
+					"DOTNET_HOST_PATH": "E:\\Unreal\\UE_5.8\\Engine\\Binaries\\ThirdParty\\DotNet\\10.0\\win-x64\\dotnet.exe",
 					"DOTNET_MULTILEVEL_LOOKUP": "0",
 					"DOTNET_ROLL_FORWARD": "LatestMajor"
 				},
 				"console": "integratedTerminal",
 				"stopAtEntry": false,
-				"cwd": "D:\\Epic\\UE_5.6"
+				"cwd": "E:\\Unreal\\UE_5.8"
 			}
 		]
 	}

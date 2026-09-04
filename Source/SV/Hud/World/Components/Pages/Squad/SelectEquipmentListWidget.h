@@ -9,7 +9,7 @@
 
 class USelectEquipmentListItemWidget;
 class UScrollBox;
-
+class USquadPageWidget;
 /**
  *
  */
@@ -19,7 +19,6 @@ class SV_API USelectEquipmentListWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-
 	virtual void NativeConstruct() override;
 
 	void OpenListForTools(FGuid memberId, int toolIndex);
@@ -27,17 +26,23 @@ public:
 	void OpenListForPrimaries(FGuid memberId);
 	void PrimaryButtonClicked(EGun gunType, FGuid primaryId);
 	void ToolButtonClicked(EToolType toolType, uint8 tool);
+	void SetSquadPage(USquadPageWidget *page);
 
-	protected:
+protected:
+	UPROPERTY(meta = (BindWidget))
+	UScrollBox *ScrollBox;
+	UPROPERTY()
+	USquadPageWidget *SquadPage;
 
-	UPROPERTY(meta = (BindWidget)) UScrollBox* ScrollBox; 
+	
 
 private:
-
-	USelectEquipmentListItemWidget* CreateListItem();
+	USelectEquipmentListItemWidget *CreateListItem();
 
 	void ResetDetailsGrid();
 
-	UPROPERTY() FGuid CurrentMemberId;
-	UPROPERTY() int CurrentToolIndex;
+	UPROPERTY()
+	FGuid CurrentMemberId;
+	UPROPERTY()
+	int CurrentToolIndex;
 };

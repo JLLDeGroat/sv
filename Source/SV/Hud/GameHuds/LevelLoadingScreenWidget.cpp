@@ -16,6 +16,7 @@ void ULevelLoadingScreenWidget::NativeConstruct()
 		hudDelegates->_LevelLoadingUpdate.AddDynamic(this, &ULevelLoadingScreenWidget::OnLevelLoadingUpdate);
 		hudDelegates->_LevelLoadingSetWaitForFog.AddDynamic(this, &ULevelLoadingScreenWidget::OnLevelLoadingWaitForFog);
 		hudDelegates->_LevelLoadingSetWaitForFogComplete.AddDynamic(this, &ULevelLoadingScreenWidget::OnLevelLoadingSetWaitForFogComplete);
+		hudDelegates->_ManualHideLevelLoadingWidget.AddDynamic(this, &ULevelLoadingScreenWidget::OnManualHideLevelLoadingWidget);
 	}
 	LoadingText->SetText(FText::FromString(""));
 	LoadingProgress->SetPercent(0);
@@ -55,4 +56,11 @@ void ULevelLoadingScreenWidget::OnLevelLoadingSetWaitForFogComplete()
 {
 	bFogIsComplete = true;
 	OnLevelLoadingUpdate(CurrentMessage, CurrentPercentage);
+}
+
+void ULevelLoadingScreenWidget::OnManualHideLevelLoadingWidget()
+{
+	bFogIsComplete = true;
+	SetVisibility(ESlateVisibility::Hidden);
+	OnLevelLoadingUpdate("Manual complete", 1.0f);
 }

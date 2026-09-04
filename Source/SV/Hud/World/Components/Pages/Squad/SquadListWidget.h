@@ -7,6 +7,7 @@
 #include "SquadListWidget.generated.h"
 
 class UButton;
+class USquadPageWidget;
 /**
  *
  */
@@ -16,28 +17,40 @@ class SV_API USquadListWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-
 	void SetupCrewList();
 	virtual void NativeConstruct() override;
+	void SetSquadPage(USquadPageWidget *page);
 
 protected:
+	UFUNCTION()
+	void Crew1Clicked();
+	UFUNCTION()
+	void Crew2Clicked();
+	UFUNCTION()
+	void Crew3Clicked();
+	UFUNCTION()
+	void Crew4Clicked();
+	UFUNCTION()
+	void Crew5Clicked();
+	UFUNCTION()
+	void Crew6Clicked();
 
-	UFUNCTION() void Crew1Clicked();
-	UFUNCTION() void Crew2Clicked();
-	UFUNCTION() void Crew3Clicked();
-	UFUNCTION() void Crew4Clicked();
-	UFUNCTION() void Crew5Clicked();
-	UFUNCTION() void Crew6Clicked();
+	UPROPERTY(meta = (BindWidget))
+	UButton *CrewBtn1;
+	UPROPERTY(meta = (BindWidget))
+	UButton *CrewBtn2;
+	UPROPERTY(meta = (BindWidget))
+	UButton *CrewBtn3;
+	UPROPERTY(meta = (BindWidget))
+	UButton *CrewBtn4;
+	UPROPERTY(meta = (BindWidget))
+	UButton *CrewBtn5;
+	UPROPERTY(meta = (BindWidget))
+	UButton *CrewBtn6;
 
-	UPROPERTY(meta = (BindWidget)) UButton* CrewBtn1;
-	UPROPERTY(meta = (BindWidget)) UButton* CrewBtn2;
-	UPROPERTY(meta = (BindWidget)) UButton* CrewBtn3;
-	UPROPERTY(meta = (BindWidget)) UButton* CrewBtn4;
-	UPROPERTY(meta = (BindWidget)) UButton* CrewBtn5;
-	UPROPERTY(meta = (BindWidget)) UButton* CrewBtn6;
+	UPROPERTY()
+	USquadPageWidget *SquadPage;
 
 private:
-
 	void ShowCrewDetails(int crewClicked);
-
 };

@@ -45,6 +45,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSoldierDeath, AActor*, DeadSoldie
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FLevelLoadingUpdate, FString, Msg, float, Percentage);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLevelLoadingSetWaitForFog);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLevelLoadingSetWaitForFogComplete);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FManualHideLevelLoadingWidget);
 
 /**
  *
@@ -96,4 +97,6 @@ public:
 	FLevelLoadingUpdate _LevelLoadingUpdate;
 	FLevelLoadingSetWaitForFog _LevelLoadingSetWaitForFog;
 	FLevelLoadingSetWaitForFogComplete _LevelLoadingSetWaitForFogComplete;
+
+	FManualHideLevelLoadingWidget _ManualHideLevelLoadingWidget;
 };

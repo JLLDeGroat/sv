@@ -11,6 +11,7 @@
 class UButton;
 class UTextBlock;
 class UBaseRunnable;
+class UBorder;
 
 class UClassicGameModeWidget;
 
@@ -33,6 +34,12 @@ protected:
 	void OnClassicGameClicked();
 	UFUNCTION()
 	void OnStartGameClicked();
+
+	UPROPERTY(meta = (BindWidget))
+	UBorder *TitleBorder;
+
+	UPROPERTY(meta = (BindWidget))
+	UBorder *MainBorder;
 
 	UPROPERTY(meta = (BindWidget))
 	UButton *ClassicBtn;

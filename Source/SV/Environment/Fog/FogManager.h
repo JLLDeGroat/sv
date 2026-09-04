@@ -54,6 +54,8 @@ protected:
 	UPROPERTY()
 	TArray<FFogComponent> FogComponents;
 	UPROPERTY()
+	TArray<FVector> FogComponentLocations;
+	UPROPERTY() // this gets filled regardless Why!!!
 	TArray<FVector> LocationsToAdd;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
@@ -67,7 +69,6 @@ public:
 	bool bActivateOnStartup;
 
 private:
-	void AddComponent();
 	UPROPERTY()
 	UMaterial *MaterialAsset;
 	UPROPERTY()

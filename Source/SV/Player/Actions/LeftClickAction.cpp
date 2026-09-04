@@ -30,6 +30,7 @@
 #include "TargetAction.h"
 #include "OverwatchAction.h"
 #include "HealthKitUseComponent.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values for this component's properties
 ULeftClickAction::ULeftClickAction(const FObjectInitializer &ObjectInitializer) : UBaseActionComponent(ObjectInitializer)
@@ -72,6 +73,25 @@ void ULeftClickAction::DoAction()
 		auto pawnCameraComponent = pawn->GetComponentByClass<UPawnCameraComponent>();
 		auto pawnOverlapCameraComponent = pawn->GetComponentByClass<UCameraOverlapComponent>();
 		auto pawnCamera = pawn->GetComponentByClass<UCameraComponent>();
+
+		//testing the offset camera follow functionality
+		// FHitResult FloorClickHit;
+		// controller->GetHitResultUnderCursor(USvUtilities::GetFloorTargetChannel(), false, FloorClickHit);
+
+		// FHitResult testHit;
+		// pawn->GetWorld()->LineTraceSingleByChannel(testHit, pawnCamera->GetComponentLocation(), pawnCamera->GetComponentLocation() + (pawnCamera->GetForwardVector() * 5000), USvUtilities::GetFloorTargetChannel());
+
+		// if (testHit.GetActor())
+		// {
+		// 	DrawDebugLine(pawn->GetWorld(), pawnCamera->GetComponentLocation(), pawnCamera->GetComponentLocation() + (pawnCamera->GetForwardVector() * 5000), FColor::Red, false, 30.0f, 0, 5);
+		// 	DrawDebugSphere(pawn->GetWorld(), testHit.ImpactPoint, 25.0f, 12, FColor::Red, false, 30.0f, 0, 5);
+
+		// 	auto vectorDifference = testHit.ImpactPoint - pawn->GetActorLocation();
+		// 	auto location = FloorClickHit.Location - vectorDifference;
+		// 	location.Z = pawn->GetActorLocation().Z;
+		// 	pawn->SetActorLocation(location);
+		// }
+		// DrawDebugLine(pawn->GetWorld(), pawnCamera->GetComponentLocation(), (pawnCamera->GetComponentLocation() + (pawnCamera->GetForwardVector() * 5000)), FColor::Red, false, 30.0f, 0, 5);
 
 		if (!IsInValidCameraState(pawnCameraComponent->GetCurrentCameraState()))
 			return;

@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "SquadListWidget.h"
 #include "../../../../../Utilities/SvUtilities.h"
 #include "../../../../../Instance/SvGameInstance.h"
@@ -11,38 +10,46 @@
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "CrewDetailsGridWidget.h"
 #include "../../../../Helpers/UserWidgetHelpers.h"
+#include "../../../SquadPageWidget.h"
 
-void USquadListWidget::NativeConstruct() {
+void USquadListWidget::NativeConstruct()
+{
 	Super::NativeConstruct();
 
-	if (CrewBtn1) {
+	if (CrewBtn1)
+	{
 		CrewBtn1->OnClicked.AddDynamic(this, &USquadListWidget::Crew1Clicked);
-		UUserWidgetHelpers::DesignButton(CrewBtn1);
+		UUserWidgetHelpers::DesignLongButton(CrewBtn1);
 	}
-	if (CrewBtn2) {
+	if (CrewBtn2)
+	{
 		CrewBtn2->OnClicked.AddDynamic(this, &USquadListWidget::Crew2Clicked);
-		UUserWidgetHelpers::DesignButton(CrewBtn2);
+		UUserWidgetHelpers::DesignLongButton(CrewBtn2);
 	}
-	if (CrewBtn3) {
+	if (CrewBtn3)
+	{
 		CrewBtn3->OnClicked.AddDynamic(this, &USquadListWidget::Crew3Clicked);
-		UUserWidgetHelpers::DesignButton(CrewBtn3);
+		UUserWidgetHelpers::DesignLongButton(CrewBtn3);
 	}
-	if (CrewBtn4) {
+	if (CrewBtn4)
+	{
 		CrewBtn4->OnClicked.AddDynamic(this, &USquadListWidget::Crew4Clicked);
-		UUserWidgetHelpers::DesignButton(CrewBtn4);
+		UUserWidgetHelpers::DesignLongButton(CrewBtn4);
 	}
-	if (CrewBtn5) {
+	if (CrewBtn5)
+	{
 		CrewBtn5->OnClicked.AddDynamic(this, &USquadListWidget::Crew5Clicked);
-		UUserWidgetHelpers::DesignButton(CrewBtn5);
+		UUserWidgetHelpers::DesignLongButton(CrewBtn5);
 	}
-	if (CrewBtn6) {
+	if (CrewBtn6)
+	{
 		CrewBtn6->OnClicked.AddDynamic(this, &USquadListWidget::Crew6Clicked);
-		UUserWidgetHelpers::DesignButton(CrewBtn6);
+		UUserWidgetHelpers::DesignLongButton(CrewBtn6);
 	}
-
 }
 
-void USquadListWidget::SetupCrewList() {
+void USquadListWidget::SetupCrewList()
+{
 	auto instance = USvUtilities::GetGameInstance(GetWorld());
 
 	if (!instance || !instance->GetCurrentGameDataManager())
@@ -51,40 +58,50 @@ void USquadListWidget::SetupCrewList() {
 	auto gameData = instance->GetCurrentGameDataManager();
 	auto crew = gameData->GetEntireCrew();
 
-	for (int i = 0; i < 6; i++) {
-		if (crew.Num() > i) {
-			auto text = (UTextBlock*)GetWidgetFromName(FName("CrewText" + FString::SanitizeFloat(i + 1, 0)));
+	for (int i = 0; i < 6; i++)
+	{
+		if (crew.Num() > i)
+		{
+			auto text = (UTextBlock *)GetWidgetFromName(FName("CrewText" + FString::SanitizeFloat(i + 1, 0)));
 			if (text)
 				text->SetText(FText::FromString(crew[i].GetName()));
 		}
-		else {
-			auto btn = (UButton*)GetWidgetFromName(FName("CrewBtn" + FString::SanitizeFloat(i + 1, 0)));
+		else
+		{
+			auto btn = (UButton *)GetWidgetFromName(FName("CrewBtn" + FString::SanitizeFloat(i + 1, 0)));
 			if (btn)
 				btn->SetVisibility(ESlateVisibility::Hidden);
 		}
 	}
 }
 
-void USquadListWidget::Crew1Clicked() {
+void USquadListWidget::Crew1Clicked()
+{
 	ShowCrewDetails(0);
 }
-void USquadListWidget::Crew2Clicked() {
+void USquadListWidget::Crew2Clicked()
+{
 	ShowCrewDetails(1);
 }
-void USquadListWidget::Crew3Clicked() {
+void USquadListWidget::Crew3Clicked()
+{
 	ShowCrewDetails(2);
 }
-void USquadListWidget::Crew4Clicked() {
+void USquadListWidget::Crew4Clicked()
+{
 	ShowCrewDetails(3);
 }
-void USquadListWidget::Crew5Clicked() {
+void USquadListWidget::Crew5Clicked()
+{
 	ShowCrewDetails(4);
 }
-void USquadListWidget::Crew6Clicked() {
+void USquadListWidget::Crew6Clicked()
+{
 	ShowCrewDetails(5);
 }
 
-void USquadListWidget::ShowCrewDetails(int crewClicked) {
+void USquadListWidget::ShowCrewDetails(int crewClicked)
+{
 	auto tutorialDelegates = UTutorialDelegates::GetInstance();
 	if (!tutorialDelegates)
 		return UDebugMessages::LogError(this, "failed to get tutorial delegates");
@@ -93,16 +110,22 @@ void USquadListWidget::ShowCrewDetails(int crewClicked) {
 
 	UDebugMessages::LogDisplay(this, "crew clicked " + FString::SanitizeFloat(crewClicked));
 
-	auto parentWidget = (UUserWidget*)GetOuter()->GetOuter();
-	auto detailsGrid = (UCrewDetailsGridWidget*)parentWidget->GetWidgetFromName("CrewDetailsGrid");
+	auto parentWidget = (UUserWidget *)GetOuter()->GetOuter();
+	auto detailsGrid = (UCrewDetailsGridWidget *)parentWidget->GetWidgetFromName("CrewDetailsGrid");
 
 	auto instance = USvUtilities::GetGameInstance(GetWorld());
 	auto gameDataManager = instance->GetCurrentGameDataManager();
 	auto gameData = gameDataManager->GetCurrentGameData();
 	auto crewMemberData = gameData->GetCrew()[crewClicked];
 
-	if (detailsGrid) {
+	if (detailsGrid)
+	{
 		detailsGrid->SetVisibility(ESlateVisibility::Visible);
 		detailsGrid->InitialiseGridForCrewMember(crewMemberData.GetId());
 	}
+}
+
+void USquadListWidget::SetSquadPage(USquadPageWidget *page)
+{
+	SquadPage = page;
 }

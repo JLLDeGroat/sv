@@ -7,6 +7,10 @@
 #include "../../Interfaces/UI/WorldPage.h"
 #include "SquadPageWidget.generated.h"
 
+class UCrewDADDetails;
+class USquadListWidget;
+class UCrewDetailsGridWidget;
+class USelectEquipmentListWidget;
 
 UCLASS()
 class SV_API USquadPageWidget : public UUserWidget, public IWorldPage
@@ -14,10 +18,21 @@ class SV_API USquadPageWidget : public UUserWidget, public IWorldPage
 	GENERATED_BODY()
 
 public:
-
 	virtual void NativeConstruct() override;
 	virtual void OpenPage() override;
 
-protected:
+	UCrewDADDetails* GetCrewDADDetails();
 
+protected:
+	UPROPERTY(meta = (BindWidget))
+	UCrewDADDetails *CrewDaDDetails;
+
+	UPROPERTY(meta = (BindWidget))
+	USquadListWidget *SquadListWidget;
+
+	UPROPERTY(meta = (BindWidget))
+	UCrewDetailsGridWidget *CrewDetailsGrid;
+
+	UPROPERTY(meta = (BindWidget))
+	USelectEquipmentListWidget *SelectPrimaryList;
 };

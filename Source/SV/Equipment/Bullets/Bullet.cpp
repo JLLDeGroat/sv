@@ -39,6 +39,8 @@ ABullet::ABullet(const FObjectInitializer& ObjectInitializer) : ABaseBullet(Obje
 
 	BulletRearComponent->SetSphereRadius(1);
 	BulletRearComponent->SetRelativeLocation(FVector(-30, 0, 0));
+
+	BulletDetailsComponent->SetBaseImpulse(5000.0f);
 }
 
 // Called when the game starts or when spawned

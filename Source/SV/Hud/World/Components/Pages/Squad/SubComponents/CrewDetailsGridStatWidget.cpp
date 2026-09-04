@@ -12,6 +12,11 @@
 
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
+#include "Components/Button.h"
+
+#include "../CrewDetailsGridWidget.h"
+#include "../CrewDADDetails.h"
+#include "../../../../SquadPageWidget.h"
 
 void UCrewDetailsGridStatWidget::NativeConstruct()
 {
@@ -23,33 +28,18 @@ void UCrewDetailsGridStatWidget::NativeConstruct()
     if (DDTitle)
         UUserWidgetHelpers::DesignText(DDTitle, 28);
 
-    ClearGrids();
+    if (TraitButton)
+        UUserWidgetHelpers::DesignButton(TraitButton);
+
+    TraitButton->OnClicked.AddDynamic(this, &UCrewDetailsGridStatWidget::OnTraitClicked);
+
+    ClearStatGrid();
 }
 
 void UCrewDetailsGridStatWidget::SetDetailsForCrew(TArray<TSubclassOf<UBaseDD>> dAndDs, TMap<FString, int> stats)
 {
-    ClearGrids();
-
-    for (TSubclassOf<UBaseDD> dAndD : dAndDs)
-    {
-        UBaseDD *baseDD = NewObject<UBaseDD>(this, dAndD);
-        auto ddItem = CreateDDItem();
-        if (ddItem && baseDD)
-        {
-            ddItem->SetDescription(baseDD->GetDeviationOrDirectiveDescription());
-            if (baseDD->GetDeviationOrDirective() == EDDType::DD_Directive)
-                ddItem->SetImageAsDirective();
-            else
-                ddItem->SetImageAsDeviation();
-
-            ddItem->SetTitle(baseDD->GetDeviationOrDirectiveTitle());
-
-            DDBox->AddChildToVerticalBox(ddItem);
-        }
-
-        baseDD = nullptr;
-    }
-
+    ClearStatGrid();
+    DAndDs = dAndDs;
     for (TPair<FString, int> stat : stats)
     {
         auto statItem = CreateStatItem();
@@ -82,11 +72,20 @@ UCDGDDItemWidget *UCrewDetailsGridStatWidget::CreateDDItem()
     return nullptr;
 }
 
-void UCrewDetailsGridStatWidget::ClearGrids()
+void UCrewDetailsGridStatWidget::ClearStatGrid()
 {
     if (StatBox)
         StatBox->ClearChildren();
+}
 
-    if (DDBox)
-        DDBox->ClearChildren();
+void UCrewDetailsGridStatWidget::SetCrewDetailsWidget(UCrewDetailsGridWidget *detailsGridWidget)
+{
+    DetailsGrid = detailsGridWidget;
+}
+
+void UCrewDetailsGridStatWidget::OnTraitClicked()
+{
+    auto squadPage = DetailsGrid->GetSquadPage();
+    auto crewDADDetails = squadPage->GetCrewDADDetails();
+    crewDADDetails->SetupDADDetails(DAndDs);
 }

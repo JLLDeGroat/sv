@@ -406,70 +406,73 @@ UGeometryCollection *USvUtilities::GetGeometryCollection(FString reference)
 
 UMaterial *USvUtilities::GetRandomBloodSpatterForWall()
 {
-	auto reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter10_M.WallSpatter10_M'";
-
-	auto random = FMath::RandRange(0, 9);
-	switch (random)
-	{
-	case 1:
-		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter1_M.WallSpatter1_M'";
-		break;
-	case 2:
-		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter2_M.WallSpatter2_M'";
-		break;
-	case 3:
-		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter3_M.WallSpatter3_M'";
-		break;
-	case 4:
-		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter4_M.WallSpatter4_M'";
-		break;
-	case 5:
-		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter5_M.WallSpatter5_M'";
-		break;
-	case 6:
-		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter6_M.WallSpatter6_M'";
-		break;
-	case 7:
-		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter7_M.WallSpatter7_M'";
-		break;
-	case 8:
-		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter8_M.WallSpatter8_M'";
-		break;
-	case 9:
-		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter9_M.WallSpatter9_M'";
-		break;
-	}
+	auto sanitizedRandom = FString::SanitizeFloat(FMath::RandRange(1, 17), 0);
+	FString reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter" + sanitizedRandom + "_M.WallSpatter" + sanitizedRandom + "_M'";
+	//auto reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter10_M.WallSpatter10_M'";
+	// auto random = FMath::RandRange(0, 9);
+	// switch (random)
+	// {
+	// case 1:
+	// 	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter1_M.WallSpatter1_M'";
+	// 	break;
+	// case 2:
+	// 	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter2_M.WallSpatter2_M'";
+	// 	break;
+	// case 3:
+	// 	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter3_M.WallSpatter3_M'";
+	// 	break;
+	// case 4:
+	// 	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter4_M.WallSpatter4_M'";
+	// 	break;
+	// case 5:
+	// 	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter5_M.WallSpatter5_M'";
+	// 	break;
+	// case 6:
+	// 	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter6_M.WallSpatter6_M'";
+	// 	break;
+	// case 7:
+	// 	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter7_M.WallSpatter7_M'";
+	// 	break;
+	// case 8:
+	// 	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter8_M.WallSpatter8_M'";
+	// 	break;
+	// case 9:
+	// 	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter9_M.WallSpatter9_M'";
+	// 	break;
+	// }
 
 	return GetMaterial(reference);
 }
 UMaterial *USvUtilities::GetRandomBloodSpatterForFloor()
 {
-	auto reference = "/Script/Engine.Material'/Game/Decals/Spatters/Floor/FloorSpatter1_M.FloorSpatter1_M'";
-	auto random = FMath::RandRange(0, 7);
-	switch (random)
-	{
-	case 1:
-		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Floor/FloorSpatter2_M.FloorSpatter2_M'";
-		break;
-	case 2:
-		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Floor/FloorSpatter3_M.FloorSpatter3_M'";
-		break;
-	case 3:
-		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Floor/FloorSpatter4_M.FloorSpatter4_M'";
-		break;
-	case 4:
-		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Floor/FloorSpatter5_M.FloorSpatter5_M'";
-		break;
-	case 5:
-		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Floor/FloorSpatter6_M.FloorSpatter6_M'";
-		break;
-	case 6:
-		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Floor/FloorSpatter7_M.FloorSpatter7_M'";
-		break;
-	case 7:
-		reference = "/Script/Engine.Material'/Game/Decals/Spatters/Floor/FloorSpatter8_M.FloorSpatter8_M'";
-		break;
-	}
+	FString reference = "/Script/Engine.Material'/Game/Decals/Spatters/Floor/FloorSpatter1_M.FloorSpatter1_M'";
+	// auto random = FMath::RandRange(1, 15);
+	auto sanitizedRandom = FString::SanitizeFloat(FMath::RandRange(1, 15), 0);
+	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Floor/FloorSpatter" + sanitizedRandom + "_M.FloorSpatter" + sanitizedRandom + "_M'";
+	// switch (random)
+	// {
+	// case 1:
+	// 	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Floor/FloorSpatter2_M.FloorSpatter2_M'";
+	// 	break;
+	// case 2:
+	// 	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Floor/FloorSpatter3_M.FloorSpatter3_M'";
+	// 	break;
+	// case 3:
+	// 	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Floor/FloorSpatter4_M.FloorSpatter4_M'";
+	// 	break;
+	// case 4:
+	// 	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Floor/FloorSpatter5_M.FloorSpatter5_M'";
+	// 	break;
+	// case 5:
+	// 	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Floor/FloorSpatter6_M.FloorSpatter6_M'";
+	// 	break;
+	// case 6:
+	// 	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Floor/FloorSpatter7_M.FloorSpatter7_M'";
+	// 	break;
+	// case 7:
+	// 	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Floor/FloorSpatter8_M.FloorSpatter8_M'";
+	// 	break;
+	// }
 	return GetMaterial(reference);
 }
 

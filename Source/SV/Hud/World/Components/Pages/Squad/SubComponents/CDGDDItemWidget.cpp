@@ -15,6 +15,8 @@ void UCDGDDItemWidget::NativeConstruct()
 
 	if (DDDescription)
 		UUserWidgetHelpers::DesignText(DDDescription, 18);
+
+	DDImage->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UCDGDDItemWidget::SetTitle(FString str)

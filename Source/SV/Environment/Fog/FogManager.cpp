@@ -30,7 +30,7 @@ void AFogManager::Tick(float DeltaTime)
 {
   Super::Tick(DeltaTime);
 
-  if (LocationsToAdd.Num() == 0)
+  if (FogComponentLocations.Num() == 0)
   {
     // UDebugMessages::LogDisplay(this, "Total Locations " +
     // FString::SanitizeFloat(FogComponents.Num()));
@@ -53,10 +53,12 @@ void AFogManager::Tick(float DeltaTime)
   }
 
   auto iterations = 0;
-  while (LocationsToAdd.Num() > 0 && iterations < 10)
+  UDebugMessages::LogDisplay(this, "Adding fog components, remaining locations: " +
+                                       FString::FromInt(FogComponentLocations.Num()));
+  while (FogComponentLocations.Num() > 0 && iterations < 10)
   {
-    auto loc = LocationsToAdd[0];
-    LocationsToAdd.RemoveAt(0);
+    auto loc = FogComponentLocations[0];
+    FogComponentLocations.RemoveAt(0);
     UFogSectionComponent *newMeshComp = NewObject<UFogSectionComponent>(this);
 
     if (newMeshComp)
@@ -85,10 +87,11 @@ void AFogManager::Tick(float DeltaTime)
 
 void AFogManager::AddComponentAtLocation(FVector loc)
 {
+  UDebugMessages::LogDisplay(this, "Adding fog at location " + loc.ToString());
   if (!FogLocations.Contains(loc))
   {
     FogLocations.Add(loc, 1);
-    LocationsToAdd.Emplace(loc);
+    FogComponentLocations.Emplace(loc);
   }
   SetActorTickEnabled(true);
 }

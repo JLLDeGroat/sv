@@ -29,6 +29,9 @@ protected:
 	UFUNCTION()
 	void OnLevelLoadingSetWaitForFogComplete();
 
+	UFUNCTION()
+	void OnManualHideLevelLoadingWidget();
+
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock *LoadingText;
 	UPROPERTY(meta = (BindWidget))
@@ -39,6 +42,8 @@ protected:
 	UPROPERTY()
 	bool bFogIsComplete;
 
-	UPROPERTY() float CurrentPercentage;
-	UPROPERTY() FString CurrentMessage;
+	UPROPERTY()
+	float CurrentPercentage;
+	UPROPERTY()
+	FString CurrentMessage;
 };

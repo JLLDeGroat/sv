@@ -9,6 +9,8 @@
 #include "PostMovements/PostMovementFogHandler.h"
 #include "PostMovements/Interfaces/PostMovementComponent.h"
 
+#include "../Player/Components/CameraFollowComponent.h"
+
 void UPostMovementRunnable::ActivateThread()
 {
 	auto postMovementCrouch = (IPostMovementComponent *)NewObject<UPostMovementCrouch>(this);
@@ -25,6 +27,11 @@ void UPostMovementRunnable::ActivateThread()
 	postMovementFogHandler->Setup(MovedActor);
 	postMovementFogHandler->BeginComponent();
 	postMovementFogHandler->Finish();
+
+	auto pawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+	auto cameraComponent = pawn->GetComponentByClass<UCameraFollowComponent>();
+	if (cameraComponent)
+		cameraComponent->CompleteFollow();
 
 	if (MovedActor->GetComponentByClass<UAIComponent>())
 	{

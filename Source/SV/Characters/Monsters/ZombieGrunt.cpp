@@ -135,6 +135,9 @@ AZombieGrunt::AZombieGrunt(const FObjectInitializer& ObjectInitializer) : ABaseC
 	HealthAndStatusComponent->SetRelativeLocation(FVector(0, 0, 130));
 
 	AiComponent = CreateDefaultSubobject<UAIComponent>(TEXT("AiComponent"));
+	AiComponent->SetMovementRoute(EAIBehaviourMoveRoutes::BMR_Melee);
+	AiComponent->SetAttackRoute(EAIBehaviourAttackRoutes::BAR_Melee);
+	
 	FogGenRecComponent = CreateDefaultSubobject<UFogGenReceiveComponent>(TEXT("FogGenRec"));
 }
 

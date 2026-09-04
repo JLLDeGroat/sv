@@ -22,18 +22,18 @@ public:
 	virtual void BeginDestroy() override;
 
 protected:
-	UFUNCTION(CallInEditor, category = "generations")
+	// UFUNCTION(CallInEditor, category = "generations")
 	void GenericLevel();
-	UFUNCTION(CallInEditor, category = "generations")
+	// UFUNCTION(CallInEditor, category = "generations")
 	void TwoBuildingLevel();
 
-	UFUNCTION(CallInEditor, category = "generations")
+	// UFUNCTION(CallInEditor, category = "generations")
 	void DestroyAllDebugActors();
 
-	UFUNCTION(CallInEditor, category = "win loss")
+	// UFUNCTION(CallInEditor, category = "win loss")
 	void RunWinLossRunnable();
 
-	UFUNCTION(CallInEditor, category = "Fog")
+	// UFUNCTION(CallInEditor, category = "Fog")
 	void GenerateFog();
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
@@ -45,8 +45,13 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, category = "generations")
 	bool bShouldGenerateFog;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, category = "generations")
+	int SoldiersToGenerate;
+
 private:
 	void TearDownCurrentGen();
+
+	void CreateSoldierData();
 
 	UPROPERTY()
 	UBaseRunnable *BaseRunnable;

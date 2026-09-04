@@ -14,6 +14,8 @@
 #include "../../Environment/Fog/FogManager.h"
 #include "../../GameModes/GameplayMode.h"
 #include "GameFramework/Character.h"
+#include "../../Delegates/HudDelegates.h"
+#include "../../Runnables/GameMapGenerations/CrewMemberGen.h"
 // Sets default values
 AWorldGenerationActors::AWorldGenerationActors()
 {
@@ -40,6 +42,12 @@ void AWorldGenerationActors::BeginPlay()
 		UDebugMessages::LogDisplay(this, "game mode is null, not generating");
 		return;
 	}
+
+	if (SoldiersToGenerate <= 0)
+		UDebugMessages::LogWarning(this, "Soldiers to generate is set to 0 or less, not generating soldiers");
+	else
+		CreateSoldierData();
+
 	if (bShouldGenerate)
 	{
 		TearDownCurrentGen();
@@ -48,9 +56,26 @@ void AWorldGenerationActors::BeginPlay()
 							->Initialise(GetWorld())
 							->Begin();
 	}
+	else
+	{
+		UDebugMessages::LogError(this, "should generate is false, not generating");
+		auto hudDelegates = UHudDelegates::GetInstance();
+
+		FTimerHandle TimerHandle;
+		FTimerDelegate TimerDel;
+		TimerDel.BindLambda([this]()
+							{
+								UE_LOG(LogTemp, Warning, TEXT("Timer finished from lambda! hiding ui"));
+								auto hudDelegates = UHudDelegates::GetInstance();
+								if (hudDelegates)
+									hudDelegates->_ManualHideLevelLoadingWidget.Broadcast(); });
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDel, 1.0f, false);
+	}
 
 	if (bShouldGenerateFog)
 		GenerateFog();
+	else
+		UDebugMessages::LogWarning(this, "should generate fog is false, not generating fog");
 }
 
 void AWorldGenerationActors::GenericLevel()
@@ -202,4 +227,11 @@ void AWorldGenerationActors::GenerateFog()
 				fogLocations.Emplace(FVector(i * 100, x * 100, j * 200));
 
 	fogManager->AddComponentsAtLocation(fogLocations);
+}
+
+void AWorldGenerationActors::CreateSoldierData()
+{
+	auto crewMemberGen = NewObject<UCrewMemberGen>(this);
+	crewMemberGen->GenerateCrewMembers(SoldiersToGenerate);
+	// crewMemberGen->ClearInternalFlags(EInternalObjectFlags::Async);
 }

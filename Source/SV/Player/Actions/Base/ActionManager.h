@@ -32,7 +32,7 @@ public:
 
 	UTargetAction* GetTargetAction();
 	ULeftClickAction* GetLeftClickAction();
-	URightClickAction* GetGetRightClickAction();
+	URightClickAction* GetRightClickAction();
 	UGrenadeActionComponent* GetGrenadeAction();
 	UActivateToggleAction* GetActivateToggleAction();
 	USleepAction* GetSleepAction();

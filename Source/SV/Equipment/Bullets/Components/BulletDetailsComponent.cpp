@@ -7,7 +7,7 @@
 UBulletDetailsComponent::UBulletDetailsComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
-	BaseImpulse = 250.0f;
+	BaseImpulse = 500.0f;
 	PenetrationAbility = 1;
 }
 

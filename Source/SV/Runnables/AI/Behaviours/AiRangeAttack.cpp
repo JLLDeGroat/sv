@@ -138,7 +138,7 @@ FWhereToShoot UAiRangeAttack::DeterminePossibleShootLocation(FVector startLocati
 			else
 			{
 				UDebugMessages::LogWarning(this, "blocking hit against " + hit.GetActor()->GetName());
-				if (AFogManager *forManager = Cast<AFogManager>(hit.GetActor()))
+				if (AFogManager *fogManager = Cast<AFogManager>(hit.GetActor()))
 				{
 					UDebugMessages::LogWarning(this, "disabled by fog");
 				}

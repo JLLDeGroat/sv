@@ -10,6 +10,7 @@ class UCameraComponent;
 class UPawnCameraComponent;
 class UPostProcessComponent;
 class UCameraOverlapComponent;
+class UCameraFollowComponent;
 
 UCLASS()
 class SV_API APlayerPawn : public APawn
@@ -31,7 +32,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UPawnCameraComponent* CameraComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UCameraOverlapComponent* CameraOverlapComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UPostProcessComponent* PostProcessComponent;
-
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UCameraFollowComponent* CameraFollowComponent;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

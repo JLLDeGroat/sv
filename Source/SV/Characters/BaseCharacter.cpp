@@ -93,8 +93,11 @@ AActor *ABaseCharacter::GetAsActor()
 }
 float ABaseCharacter::GetHeadZHeight()
 {
-	auto loc = GetMesh()->GetSocketLocation(FName("HeadSocket"));
-	return loc.Z;
+	// using headsocket location is not good, as when they are crouching the head socket is far lower
+	// auto loc = GetMesh()->GetSocketLocation(FName("HeadSocket"));
+	auto loc = GetActorLocation();
+	return loc.Z + 130;
+	// 130 gets to the top of the capsule component
 }
 TArray<TScriptInterface<IHitComponent>> ABaseCharacter::GetHitComponents()
 {

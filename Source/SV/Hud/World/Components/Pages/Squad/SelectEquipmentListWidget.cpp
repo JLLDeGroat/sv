@@ -9,6 +9,7 @@
 #include "Components/ScrollBox.h"
 #include "Components/Button.h"
 #include "CrewDetailsGridWidget.h"
+#include "../../../SquadPageWidget.h"
 
 void USelectEquipmentListWidget::NativeConstruct()
 {
@@ -182,4 +183,9 @@ USelectEquipmentListItemWidget *USelectEquipmentListWidget::CreateListItem()
 		return CreateWidget<USelectEquipmentListItemWidget>(this, hudUIWidgetClass);
 	}
 	return nullptr;
+}
+
+void USelectEquipmentListWidget::SetSquadPage(USquadPageWidget *page)
+{
+	SquadPage = page;
 }

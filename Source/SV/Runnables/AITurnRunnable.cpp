@@ -56,8 +56,13 @@ void UAITurnRunnable::ActivateThread()
 				UDebugMessages::LogError(this, aiEnemies[i]->GetAsActor()->GetName() + " DOES NOT HAVE AI COMPONENT");
 	}
 
+	auto gameMode = USvUtilities::GetGameMode(GetWorld());
+
 	for (int i = 0; i < aiEnemies.Num(); i++)
 	{
+		//more than likely on ai has killed the last character, we dont continue on from this
+		if(gameMode->GetIsGameOver()) break;
+		
 		auto aiComponent = aiEnemies[i]->GetAsActor()->GetComponentByClass<UAIComponent>();
 		if (!aiComponent)
 		{

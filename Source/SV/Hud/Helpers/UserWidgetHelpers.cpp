@@ -1,28 +1,33 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "UserWidgetHelpers.h"
 #include "Components/Image.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
+#include "Components/Border.h"
 #include "Blueprint/UserWidget.h"
 #include "../../Utilities/SvUtilities.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 
-UImage* UUserWidgetHelpers::GetImageFromWidget(UUserWidget* widget, FString widgetName) {
-	return (UImage*)widget->GetWidgetFromName(FName(widgetName));
+UImage *UUserWidgetHelpers::GetImageFromWidget(UUserWidget *widget, FString widgetName)
+{
+	return (UImage *)widget->GetWidgetFromName(FName(widgetName));
 }
-UButton* UUserWidgetHelpers::GetButtonFromWidget(UUserWidget* widget, FString widgetName) {
-	return (UButton*)widget->GetWidgetFromName(FName(widgetName));
+UButton *UUserWidgetHelpers::GetButtonFromWidget(UUserWidget *widget, FString widgetName)
+{
+	return (UButton *)widget->GetWidgetFromName(FName(widgetName));
 }
-UTextBlock* UUserWidgetHelpers::GetTextBlockFromWidget(UUserWidget* widget, FString widgetName) {
-	return (UTextBlock*)widget->GetWidgetFromName(FName(widgetName));
+UTextBlock *UUserWidgetHelpers::GetTextBlockFromWidget(UUserWidget *widget, FString widgetName)
+{
+	return (UTextBlock *)widget->GetWidgetFromName(FName(widgetName));
 }
 
-UTexture2D* UUserWidgetHelpers::GetTextureForGun(EGun gunType) {
+UTexture2D *UUserWidgetHelpers::GetTextureForGun(EGun gunType)
+{
 	auto string = "/Script/Engine.Texture2D'/Game/Images/EmptyPrimarySlot.EmptyPrimarySlot'";
 
-	switch (gunType) {
+	switch (gunType)
+	{
 	case EGun::G_PeaRifle:
 		string = "/Script/Engine.Texture2D'/Game/Images/PeaRifleImage.PeaRifleImage'";
 		break;
@@ -31,12 +36,15 @@ UTexture2D* UUserWidgetHelpers::GetTextureForGun(EGun gunType) {
 	return USvUtilities::GetTexture(string);
 }
 
-UTexture2D* UUserWidgetHelpers::GetTextureForTool(EToolType toolType, uint8 tool) {
+UTexture2D *UUserWidgetHelpers::GetTextureForTool(EToolType toolType, uint8 tool)
+{
 	auto string = "/Script/Engine.Texture2D'/Game/Images/EmptyToolSlot.EmptyToolSlot'";
-	switch (toolType) {
+	switch (toolType)
+	{
 	case EToolType::TT_Throwable:
 	{
-		switch ((EThrowable)tool) {
+		switch ((EThrowable)tool)
+		{
 		case EThrowable::T_Grenade:
 			string = "/Script/Engine.Texture2D'/Game/Images/GrenadeToolSlot.GrenadeToolSlot'";
 			break;
@@ -47,16 +55,20 @@ UTexture2D* UUserWidgetHelpers::GetTextureForTool(EToolType toolType, uint8 tool
 	return USvUtilities::GetTexture(string);
 }
 
-UTexture2D* UUserWidgetHelpers::GetPrimaryNonTexture() {
+UTexture2D *UUserWidgetHelpers::GetPrimaryNonTexture()
+{
 	return USvUtilities::GetTexture("/Script/Engine.Texture2D'/Game/Images/EmptyPrimarySlot.EmptyPrimarySlot'");
 }
-UTexture2D* UUserWidgetHelpers::GetEquipmentNonTexture() {
+UTexture2D *UUserWidgetHelpers::GetEquipmentNonTexture()
+{
 	return USvUtilities::GetTexture("/Script/Engine.Texture2D'/Game/Images/EmptyToolSlot.EmptyToolSlot'");
 }
 
-UTexture2D* UUserWidgetHelpers::GetTextureForActionType(EActionType actionType) {
-	UTexture2D* texture = nullptr;
-	switch (actionType) {
+UTexture2D *UUserWidgetHelpers::GetTextureForActionType(EActionType actionType)
+{
+	UTexture2D *texture = nullptr;
+	switch (actionType)
+	{
 	case EActionType::AT_Extract:
 		texture = USvUtilities::GetTexture("/Script/Engine.Texture2D'/Game/Images/UI/ExtractIcon.ExtractIcon'");
 		break;
@@ -92,9 +104,11 @@ UTexture2D* UUserWidgetHelpers::GetTextureForActionType(EActionType actionType) 
 	return texture;
 }
 
-UTexture2D* UUserWidgetHelpers::GetTextureForResourceType(EResourceType rType) {
-	UTexture2D* texture = nullptr;
-	switch (rType) {
+UTexture2D *UUserWidgetHelpers::GetTextureForResourceType(EResourceType rType)
+{
+	UTexture2D *texture = nullptr;
+	switch (rType)
+	{
 	case EResourceType::RT_Currency:
 		texture = USvUtilities::GetTexture("/Script/Engine.Texture2D'/Game/Images/UI/ScrapIcon.ScrapIcon'");
 		break;
@@ -102,7 +116,8 @@ UTexture2D* UUserWidgetHelpers::GetTextureForResourceType(EResourceType rType) {
 	return texture;
 }
 
-UTexture2D* UUserWidgetHelpers::GetRandomMissionImage() {
+UTexture2D *UUserWidgetHelpers::GetRandomMissionImage()
+{
 	auto random = FMath::RandRange(1, 12);
 	auto reference = "/Script/Engine.Texture2D'/Game/Images/Levels/levelImage" + FString::SanitizeFloat(random, 0) + ".levelImage" + FString::SanitizeFloat(random, 0) + "'";
 
@@ -110,7 +125,8 @@ UTexture2D* UUserWidgetHelpers::GetRandomMissionImage() {
 	return texture;
 }
 
-void UUserWidgetHelpers::DesignButton(UUserWidget* widget, FString btnName, int fontSize) {
+void UUserWidgetHelpers::DesignButton(UUserWidget *widget, FString btnName, int fontSize)
+{
 	auto btn = GetButtonFromWidget(widget, btnName);
 	if (btn)
 		DesignButton(btn, fontSize);
@@ -118,45 +134,174 @@ void UUserWidgetHelpers::DesignButton(UUserWidget* widget, FString btnName, int 
 		UDebugMessages::LogError(widget, "failed to get button for design");
 }
 
-void UUserWidgetHelpers::DesignButton(UButton* btn, int fontSize) {
-	auto normalTexture = USvUtilities::GetTexture("/Script/Engine.Texture2D'/Game/Images/UI/BasicButton.BasicButton'");
-	auto hoveredTexture = USvUtilities::GetTexture("/Script/Engine.Texture2D'/Game/Images/UI/BasicButtonHovered.BasicButtonHovered'");
-	auto pressedTexture = USvUtilities::GetTexture("/Script/Engine.Texture2D'/Game/Images/UI/BasicButtonSelected.BasicButtonSelected'");
+void UUserWidgetHelpers::DesignButton(UButton *btn, int fontSize)
+{
+	// auto normalTexture = USvUtilities::GetTexture("/Script/Engine.Texture2D'/Game/Images/UI/BasicButton.BasicButton'");
+	// auto hoveredTexture = USvUtilities::GetTexture("/Script/Engine.Texture2D'/Game/Images/UI/BasicButtonHovered.BasicButtonHovered'");
+	// auto pressedTexture = USvUtilities::GetTexture("/Script/Engine.Texture2D'/Game/Images/UI/BasicButtonSelected.BasicButtonSelected'");
 
-	auto style = FButtonStyle();
-	style.Normal.SetResourceObject(normalTexture);
-	style.Normal.OutlineSettings.CornerRadii = FVector4(10);
-	style.Normal.OutlineSettings.RoundingType = ESlateBrushRoundingType::FixedRadius;
+	auto normalMat = USvUtilities::GetMaterial("/Script/Engine.Material'/Game/Materials/Widgets/BorderBckBasic_M.BorderBckBasic_M'");
+	auto pressedMat = USvUtilities::GetMaterial("/Script/Engine.Material'/Game/Materials/Widgets/BorderBckPressed_M.BorderBckPressed_M'");
+	auto hoveredMat = USvUtilities::GetMaterial("/Script/Engine.Material'/Game/Materials/Widgets/BorderBckHover_M.BorderBckHover_M'");
+	UMaterialInstanceDynamic *dynamicNormalMat = UMaterialInstanceDynamic::Create(normalMat, btn);
+	UMaterialInstanceDynamic *dynamicPressedMat = UMaterialInstanceDynamic::Create(pressedMat, btn);
+	UMaterialInstanceDynamic *dynamicHoveredMat = UMaterialInstanceDynamic::Create(hoveredMat, btn);
 
-	style.Pressed.SetResourceObject(pressedTexture);
-	style.Pressed.OutlineSettings.CornerRadii = FVector4(10);
-	style.Pressed.OutlineSettings.RoundingType = ESlateBrushRoundingType::FixedRadius;
+	FSlateBrush normalBrush;
+	normalBrush.SetResourceObject(dynamicNormalMat);
+	normalBrush.ImageSize = FVector2D(24.f, 32.f);
 
-	style.Hovered.SetResourceObject(hoveredTexture);
-	style.Hovered.OutlineSettings.CornerRadii = FVector4(10);
-	style.Hovered.OutlineSettings.RoundingType = ESlateBrushRoundingType::FixedRadius;
+	FSlateBrush pressedBrush;
+	pressedBrush.SetResourceObject(dynamicPressedMat);
+	pressedBrush.ImageSize = FVector2D(24.f, 32.f);
 
-	UWidget* ButtonContent = btn->GetChildAt(0);
-	if (UTextBlock* TextBlock = Cast<UTextBlock>(ButtonContent))
+	FSlateBrush hoveredBrush;
+	hoveredBrush.SetResourceObject(dynamicHoveredMat);
+	hoveredBrush.ImageSize = FVector2D(24.f, 32.f);
+	// any non-zero size Brush.DrawAs = ESlateBrushDrawType::Image;
+
+	FButtonStyle buttonStyle = btn->WidgetStyle; // Assign the brush to whichever states you want
+	buttonStyle.SetNormal(normalBrush);
+	buttonStyle.SetHovered(hoveredBrush);
+	buttonStyle.SetPressed(pressedBrush); // Apply the style back to the button
+	btn->SetStyle(buttonStyle);
+
+	// MyBorderMaterial = DynMat;
+
+	// auto style = FButtonStyle();
+	// style.Normal.SetResourceObject(normalTexture);
+	// style.Normal.OutlineSettings.CornerRadii = FVector4(10);
+	// style.Normal.OutlineSettings.RoundingType = ESlateBrushRoundingType::FixedRadius;
+
+	// style.Pressed.SetResourceObject(pressedTexture);
+	// style.Pressed.OutlineSettings.CornerRadii = FVector4(10);
+	// style.Pressed.OutlineSettings.RoundingType = ESlateBrushRoundingType::FixedRadius;
+
+	// style.Hovered.SetResourceObject(hoveredTexture);
+	// style.Hovered.OutlineSettings.CornerRadii = FVector4(10);
+	// style.Hovered.OutlineSettings.RoundingType = ESlateBrushRoundingType::FixedRadius;
+
+	// Dark base colors const
+	// FLinearColor BaseColor(0.03f, 0.05f, 0.08f, 1.0f);		// near black, bluish const
+	// FLinearColor HoverColor(0.05f, 0.10f, 0.18f, 1.0f);		// brighter const
+	// FLinearColor PressedColor(0.02f, 0.04f, 0.06f, 1.0f);	// slightly darker
+	// const FLinearColor BorderColor(0.0f, 0.9f, 1.0f, 1.0f); // cyan neon
+
+	// FSlateBrush NormalBrush;
+	// NormalBrush.TintColor = BaseColor;
+	// FSlateBrush HoveredBrush;
+	// HoveredBrush.TintColor = HoverColor;
+	// FSlateBrush PressedBrush;
+	// PressedBrush.TintColor = PressedColor;
+	// FSlateBrush DisabledBrush;
+	// DisabledBrush.TintColor = FLinearColor(0.02f, 0.02f, 0.03f, 0.6f);
+
+	// auto style = FButtonStyle()
+	// 				 .SetNormal(NormalBrush)
+	// 				 .SetHovered(HoveredBrush)
+	// 				 .SetPressed(PressedBrush)
+	// 				 .SetDisabled(DisabledBrush)
+	// 				 .SetNormalForeground(BorderColor)
+	// 				 .SetHoveredForeground(BorderColor * 1.2f)
+	// 				 .SetPressedForeground(BorderColor * 0.8f)
+	// 				 .SetDisabledForeground(FLinearColor::Gray)
+	// 				 .SetNormalPadding(FMargin(8.0f, 4.0f))
+	// 				 .SetPressedPadding(FMargin(9.0f, 3.0f));
+
+	UWidget *ButtonContent = btn->GetChildAt(0);
+	if (UTextBlock *TextBlock = Cast<UTextBlock>(ButtonContent))
 		UUserWidgetHelpers::DesignText(TextBlock, fontSize);
 
-	btn->SetStyle(style);
+	// btn->SetStyle(style);
 }
 
-void UUserWidgetHelpers::DesignButtonTextOnly(UButton* btn, int fontSize) {
-	UWidget* ButtonContent = btn->GetChildAt(0);
-	if (UTextBlock* TextBlock = Cast<UTextBlock>(ButtonContent))
+void UUserWidgetHelpers::DesignBorder(UBorder *border, FString materialRef)
+{
+	UMaterial *mat = nullptr;
+	if (materialRef == "INVALID")
+		mat = USvUtilities::GetMaterial("/Script/Engine.Material'/Game/Materials/Widgets/BorderBckRounded_M.BorderBckRounded_M'");
+	else
+		mat = USvUtilities::GetMaterial(materialRef);
+
+	UMaterialInstanceDynamic *dynamicMat = UMaterialInstanceDynamic::Create(mat, border);
+
+	FSlateBrush Brush;
+	Brush.SetResourceObject(dynamicMat);
+	Brush.ImageSize = FVector2D(24.f, 32.f);
+	// any non-zero size Brush.DrawAs = ESlateBrushDrawType::Image;
+
+	border->SetBrush(Brush); // MyBorderMaterial = DynMat;
+							 // const FLinearColor BaseColor(0.03f, 0.05f, 0.08f, 1.0f);
+							 // const FLinearColor HoverColor(0.05f, 0.10f, 0.18f, 1.0f);
+							 // const FLinearColor BorderColor(0.0f, 0.9f, 1.0f, 1.0f); // --- Background brush ---
+
+	// FSlateBrush BackgroundBrush;
+	// BackgroundBrush.TintColor = BaseColor;
+	// BackgroundBrush.DrawAs = ESlateBrushDrawType::Box;
+	// BackgroundBrush.Margin = FMargin(0.05f);
+	// // subtle sci-fi bevel // --- Border brush (cyan glow) ---
+
+	// FSlateBrush GlowBrush;
+	// GlowBrush.TintColor = BorderColor;
+	// GlowBrush.DrawAs = ESlateBrushDrawType::Border;
+	// GlowBrush.Margin = FMargin(2.0f);
+	// // thickness of glow // Apply brushes
+
+	// border->SetBrush(BackgroundBrush);
+	// border->SetBrushColor(BaseColor); // Optional: set padding so text sits nicely inside Border->SetPadding(FMargin(8.f, 4.f));
+}
+
+void UUserWidgetHelpers::DesignLongButton(UButton *btn, int fontSize)
+{
+	auto normalMat = USvUtilities::GetMaterial("/Script/Engine.Material'/Game/Materials/Widgets/BorderBckBasicLong_M.BorderBckBasicLong_M'");
+	auto hoveredMat = USvUtilities::GetMaterial("/Script/Engine.Material'/Game/Materials/Widgets/BorderBckLongHover_M.BorderBckLongHover_M'");
+	auto pressedMat = USvUtilities::GetMaterial("/Script/Engine.Material'/Game/Materials/Widgets/BorderBckLongPressed_M.BorderBckLongPressed_M'");
+	UMaterialInstanceDynamic *dynamicNormalMat = UMaterialInstanceDynamic::Create(normalMat, btn);
+	UMaterialInstanceDynamic *dynamicPressedMat = UMaterialInstanceDynamic::Create(pressedMat, btn);
+	UMaterialInstanceDynamic *dynamicHoveredMat = UMaterialInstanceDynamic::Create(hoveredMat, btn);
+
+	FSlateBrush normalBrush;
+	normalBrush.SetResourceObject(dynamicNormalMat);
+	normalBrush.ImageSize = FVector2D(24.f, 32.f);
+
+	FSlateBrush pressedBrush;
+	pressedBrush.SetResourceObject(dynamicPressedMat);
+	pressedBrush.ImageSize = FVector2D(24.f, 32.f);
+
+	FSlateBrush hoveredBrush;
+	hoveredBrush.SetResourceObject(dynamicHoveredMat);
+	hoveredBrush.ImageSize = FVector2D(24.f, 32.f);
+	// any non-zero size Brush.DrawAs = ESlateBrushDrawType::Image;
+
+	FButtonStyle buttonStyle = btn->WidgetStyle; // Assign the brush to whichever states you want
+	buttonStyle.SetNormal(normalBrush);
+	buttonStyle.SetHovered(hoveredBrush);
+	buttonStyle.SetPressed(pressedBrush); // Apply the style back to the button
+	btn->SetStyle(buttonStyle);
+
+	UWidget *ButtonContent = btn->GetChildAt(0);
+	if (UTextBlock *TextBlock = Cast<UTextBlock>(ButtonContent))
 		UUserWidgetHelpers::DesignText(TextBlock, fontSize);
 }
 
-void UUserWidgetHelpers::SetButtonText(UButton* btn, FString text) {
-	UWidget* ButtonContent = btn->GetChildAt(0);
-	if (UTextBlock* TextBlock = Cast<UTextBlock>(ButtonContent)) {
+void UUserWidgetHelpers::DesignButtonTextOnly(UButton *btn, int fontSize)
+{
+	UWidget *ButtonContent = btn->GetChildAt(0);
+	if (UTextBlock *TextBlock = Cast<UTextBlock>(ButtonContent))
+		UUserWidgetHelpers::DesignText(TextBlock, fontSize);
+}
+
+void UUserWidgetHelpers::SetButtonText(UButton *btn, FString text)
+{
+	UWidget *ButtonContent = btn->GetChildAt(0);
+	if (UTextBlock *TextBlock = Cast<UTextBlock>(ButtonContent))
+	{
 		TextBlock->SetText(FText::FromString(text));
 	}
 }
 
-void UUserWidgetHelpers::DesignText(UTextBlock* textBlock, int fontSize, FLinearColor linearColor) {
+void UUserWidgetHelpers::DesignText(UTextBlock *textBlock, int fontSize, FLinearColor linearColor)
+{
 	// /Script/Engine.Font'/Game/Fonts/Aaargh_Font.Aaargh_Font'
 	// /Script/Engine.Font'/Game/Fonts/AARDC____Font.AARDC____Font'
 	// /Script/Engine.Font'/Game/Fonts/Urba_Font.Urba_Font'
@@ -175,9 +320,11 @@ void UUserWidgetHelpers::DesignText(UTextBlock* textBlock, int fontSize, FLinear
 	textBlock->SetColorAndOpacity(color);
 }
 
-UTexture2D* UUserWidgetHelpers::GetTargetIcon(ETargetIcon TargetIcon) {
-	UTexture2D* texture = nullptr;
-	switch (TargetIcon) {
+UTexture2D *UUserWidgetHelpers::GetTargetIcon(ETargetIcon TargetIcon)
+{
+	UTexture2D *texture = nullptr;
+	switch (TargetIcon)
+	{
 	case ETargetIcon::TI_ConstructRange:
 		texture = USvUtilities::GetTexture("/Script/Engine.Texture2D'/Game/Images/UI/ConstructRange.ConstructRange'");
 		break;
@@ -188,10 +335,12 @@ UTexture2D* UUserWidgetHelpers::GetTargetIcon(ETargetIcon TargetIcon) {
 	return texture;
 }
 
-bool UUserWidgetHelpers::GetNameAndDescriptionFromAction(EActionType actionType, FString& name, FString& desc) {
+bool UUserWidgetHelpers::GetNameAndDescriptionFromAction(EActionType actionType, FString &name, FString &desc)
+{
 	name = "UNKNOWN";
 	desc = "UNKNOWN";
-	switch (actionType) {
+	switch (actionType)
+	{
 	case EActionType::AT_FlameRetardentKit:
 		name = "Flame Retardent Kit";
 		desc = "apply a kit to stop the affects of burning, or burns.";

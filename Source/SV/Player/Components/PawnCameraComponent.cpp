@@ -17,6 +17,7 @@ UPawnCameraComponent::UPawnCameraComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 	CurrentCameraState = ECameraState::CS_Control;
+
 }
 
 

@@ -8,44 +8,59 @@
 
 class UImage;
 class UButton;
-class UCrewDetailsGridStatWidget; 
+class UCrewDetailsGridStatWidget;
+class USquadPageWidget;
 
 UCLASS()
 class SV_API UCrewDetailsGridWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-
 	virtual void NativeConstruct() override;
 
 	void InitialiseGridForCrewMember(FGuid crewMember);
+	void SetSquadPage(USquadPageWidget *page);
+	USquadPageWidget *GetSquadPage();
 
 protected:
+	UPROPERTY(meta = (BindWidget))
+	UButton *PrimaryBtn;
 
-	UPROPERTY(meta = (BindWidget)) UButton* PrimaryBtn;
+	UPROPERTY(meta = (BindWidget))
+	UUserWidget *EquipmentSlot1;
+	UPROPERTY(meta = (BindWidget))
+	UUserWidget *EquipmentSlot2;
+	UPROPERTY(meta = (BindWidget))
+	UUserWidget *EquipmentSlot3;
 
-	UPROPERTY(meta = (BindWidget)) UUserWidget* EquipmentSlot1;
-	UPROPERTY(meta = (BindWidget)) UUserWidget* EquipmentSlot2;
-	UPROPERTY(meta = (BindWidget)) UUserWidget* EquipmentSlot3;
+	UPROPERTY(meta = (BindWidget))
+	UCrewDetailsGridStatWidget *CrewStatWidget;
 
-	UPROPERTY(meta = (BindWidget)) UCrewDetailsGridStatWidget* CrewStatWidget;
+	UPROPERTY(meta = (BindWidget))
+	UImage *PrimaryImage;
+	UPROPERTY(meta = (BindWidget))
+	UImage *SecondaryImage;
 
-	UPROPERTY(meta = (BindWidget)) UImage* PrimaryImage;
-	UPROPERTY(meta = (BindWidget)) UImage* SecondaryImage;
-
-	UFUNCTION() void PrimaryClicked();
-	UFUNCTION() void Tool1Clicked();
-	UFUNCTION() void Tool2Clicked();
-	UFUNCTION() void Tool3Clicked();
+	UFUNCTION()
+	void PrimaryClicked();
+	UFUNCTION()
+	void Tool1Clicked();
+	UFUNCTION()
+	void Tool2Clicked();
+	UFUNCTION()
+	void Tool3Clicked();
 
 	void OpenToolSelectionMenu(int toolIndex);
+
+	UPROPERTY()
+	USquadPageWidget *SquadPage;
 
 private:
 	void ResetDetailsGrid();
 
-	void ResetPrimaryInventoryImage(UImage* image);
-	void ResetEquipmentInventoryImage(UImage* image);
+	void ResetPrimaryInventoryImage(UImage *image);
+	void ResetEquipmentInventoryImage(UImage *image);
 
-
-	UPROPERTY() FGuid CurrentCrewId;
+	UPROPERTY()
+	FGuid CurrentCrewId;
 };

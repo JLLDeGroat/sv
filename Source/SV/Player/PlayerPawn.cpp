@@ -1,13 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "PlayerPawn.h"
 #include "Camera/CameraComponent.h"
 #include "Components/PawnCameraComponent.h"
 #include "Components/CameraOverlapComponent.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "Components/PostProcessComponent.h"
-
+#include "Components/CameraFollowComponent.h"
 // Sets default values
 APlayerPawn::APlayerPawn()
 {
@@ -17,11 +16,13 @@ APlayerPawn::APlayerPawn()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetRelativeRotation(FRotator(-70, 0, 0));
 
-	auto defaultLocation = FVector(200, 0, 600);
+	auto defaultLocation = FVector(200, 0, 400);
 	Camera->SetRelativeLocation(defaultLocation);
 
 	CameraComponent = CreateDefaultSubobject<UPawnCameraComponent>(TEXT("CameraMovement"));
 	CameraComponent->SetDefaultCameraOffset(defaultLocation);
+
+	CameraFollowComponent = CreateDefaultSubobject<UCameraFollowComponent>(TEXT("CameraFollow"));
 
 	CameraOverlapComponent = CreateDefaultSubobject<UCameraOverlapComponent>(TEXT("OverlapComponent"));
 	CameraOverlapComponent->SetupAttachment(Camera);
@@ -40,6 +41,8 @@ APlayerPawn::APlayerPawn()
 	PostProcessComponent->Settings.DepthOfFieldMinFstop = .4f;
 	PostProcessComponent->Settings.DepthOfFieldSensorWidth = 144;
 	PostProcessComponent->Settings.DepthOfFieldFocalDistance = 600;
+
+	CameraFollowComponent->SetCameraComponent(Camera);
 }
 
 // Called when the game starts or when spawned
@@ -57,15 +60,16 @@ void APlayerPawn::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 // Called to bind functionality to input
-void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void APlayerPawn::SetupPlayerInputComponent(UInputComponent *PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 
-UPawnCameraComponent* APlayerPawn::GetPawnCameraComponent() {
+UPawnCameraComponent *APlayerPawn::GetPawnCameraComponent()
+{
 	return CameraComponent;
 }
-UCameraComponent* APlayerPawn::GetCameraComponent() {
+UCameraComponent *APlayerPawn::GetCameraComponent()
+{
 	return Camera;
 }

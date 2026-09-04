@@ -20,7 +20,7 @@ void UBaseTutorialWidget::NativeConstruct()
 	if (ConfirmBtn)
 	{
 		ConfirmBtn->OnClicked.AddDynamic(this, &UBaseTutorialWidget::OnConfirmClick);
-		UUserWidgetHelpers::DesignButton(ConfirmBtn);
+		UUserWidgetHelpers::DesignLongButton(ConfirmBtn);
 		UUserWidgetHelpers::SetButtonText(ConfirmBtn, "Confirm");
 	}
 	auto tutorialDelegates = UTutorialDelegates::GetInstance();
@@ -32,9 +32,8 @@ void UBaseTutorialWidget::NativeConstruct()
 
 	if (TutorialBorder)
 	{
-		FSlateBrush brush;
-		brush.TintColor = FSlateColor(FLinearColor(0, 0, 0, 1.0f)); // 50% opacity
-		TutorialBorder->SetBrush(brush);
+		FString materialRef = "/Script/Engine.Material'/Game/Materials/Widgets/BorderBckTutorial_M.BorderBckTutorial_M'";
+		UUserWidgetHelpers::DesignBorder(TutorialBorder, materialRef);
 	}
 }
 

@@ -171,7 +171,7 @@ void AGamePlayerController::SetupInputComponent()
 	{
 		// Setup touch input events
 		EnhancedInputComponent->BindAction(ClickAction, ETriggerEvent::Started, ActionManager->GetLeftClickAction(), &ULeftClickAction::DoAction);
-		EnhancedInputComponent->BindAction(RightClickAction, ETriggerEvent::Started, ActionManager->GetGetRightClickAction(), &URightClickAction::DoAction);
+		EnhancedInputComponent->BindAction(RightClickAction, ETriggerEvent::Started, ActionManager->GetRightClickAction(), &URightClickAction::DoAction);
 		EnhancedInputComponent->BindAction(MoveUpAction, ETriggerEvent::Triggered, this, &AGamePlayerController::MoveUp_Started);
 		EnhancedInputComponent->BindAction(MoveRightAction, ETriggerEvent::Triggered, this, &AGamePlayerController::MoveRight_Started);
 		EnhancedInputComponent->BindAction(CameraMoveAction, ETriggerEvent::Triggered, this, &AGamePlayerController::MouseMove);

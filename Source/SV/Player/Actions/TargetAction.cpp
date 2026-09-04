@@ -102,6 +102,9 @@ void UTargetAction::DoAction() {
 				}
 				//assuming only one target data
 
+				//if current character is crouching, the camare move to location is lower, and doesnt see over the chest high wall
+				// this needs to be taken into consideration when getting camera move to location
+
 				pawnCameraComponent->UpdateCameraState(ECameraState::CS_GunTarget, currentTargetData->GetShootCameraLocation(),
 					currentTargetData->GetCharacter()->GetSelectableGridLocation());
 

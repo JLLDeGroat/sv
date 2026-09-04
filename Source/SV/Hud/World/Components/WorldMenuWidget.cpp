@@ -18,10 +18,10 @@ void UWorldMenuWidget::NativeConstruct()
 	SquadBtn->OnClicked.AddDynamic(this, &UWorldMenuWidget::SquadClicked);
 	ShopBtn->OnClicked.AddDynamic(this, &UWorldMenuWidget::SuppliesClicked);
 
-	UUserWidgetHelpers::DesignButton(WorldMapBtn);
-	UUserWidgetHelpers::DesignButton(SquadBtn);
-	UUserWidgetHelpers::DesignButton(ShopBtn);
-	UUserWidgetHelpers::DesignButton(OptionsBtn);
+	UUserWidgetHelpers::DesignLongButton(WorldMapBtn);
+	UUserWidgetHelpers::DesignLongButton(SquadBtn);
+	UUserWidgetHelpers::DesignLongButton(ShopBtn);
+	UUserWidgetHelpers::DesignLongButton(OptionsBtn);
 
 	OptionsBtn->SetVisibility(ESlateVisibility::Hidden);
 	UDebugMessages::LogError(this, "Hiding options button");

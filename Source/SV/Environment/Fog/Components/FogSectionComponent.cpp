@@ -40,11 +40,11 @@ void UFogSectionComponent::InitializeFogSectionProperties(FVector loc)
   SetRelativeLocation(loc);
   SetRelativeScale3D(FVector(1.f, 1.f, 2.f));
   SetGenerateOverlapEvents(true);
-  SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+  
   SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
   SetCollisionObjectType(USvUtilities::GetFogCollisionObjectChannel());
   SetCollisionResponseToChannel(USvUtilities::GetFogCollisionObjectChannel(),
                                 ECollisionResponse::ECR_Overlap);
   SetCanEverAffectNavigation(false);
-  this->UpdateCollisionProfile();
+  SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }

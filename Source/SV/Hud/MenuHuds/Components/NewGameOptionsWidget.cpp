@@ -10,6 +10,7 @@
 #include "GameModes/ClassicGameModeWidget.h"
 #include "../../../Runnables/ClassicGameMapGenerationRunnable.h"
 #include "../../Helpers/UserWidgetHelpers.h"
+#include "Components/Border.h"
 
 void UNewGameOptionsWidget::NativeConstruct()
 {
@@ -20,11 +21,11 @@ void UNewGameOptionsWidget::NativeConstruct()
 	BeginGameButton->OnClicked.AddDynamic(this, &UNewGameOptionsWidget::OnStartGameClicked);
 	SetStartButtonVisibility(false);
 
-	auto classicWidget = GetWidgetFromName("ClassicMode");
-	auto classic = (UClassicGameModeWidget *)classicWidget;
-	ClassicGameModeWidget = classic;
+	//auto classicWidget = GetWidgetFromName("ClassicMode");
+	//auto classic = (UClassicGameModeWidget *)classicWidget;
+	//ClassicGameModeWidget = classic;
 
-	ClassicGameModeWidget->SetVisibility(ESlateVisibility::Hidden);
+	//ClassicGameModeWidget->SetVisibility(ESlateVisibility::Hidden);
 
 	UUserWidgetHelpers::DesignButton(ClassicBtn);
 	UUserWidgetHelpers::DesignButton(BeginGameButton);
@@ -41,6 +42,9 @@ void UNewGameOptionsWidget::NativeConstruct()
 	UUserWidgetHelpers::DesignText(GameModeTitle);
 	UUserWidgetHelpers::DesignText(GameModeTitleText);
 
+	UUserWidgetHelpers::DesignBorder(TitleBorder);
+	UUserWidgetHelpers::DesignBorder(MainBorder, "Script/Engine.Material'/Game/Materials/Widgets/LargeBack_M.LargeBack_M'");
+
 	ResetWidget();
 }
 
@@ -56,6 +60,8 @@ void UNewGameOptionsWidget::ResetWidget()
 	GameModeGoalText->SetText(FText::FromString(""));
 	GameModeGoalTitle->SetText(FText::FromString(""));
 	GameModeTitleText->SetText(FText::FromString(""));
+
+	MainBorder->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UNewGameOptionsWidget::OnClassicGameClicked()
@@ -107,6 +113,8 @@ void UNewGameOptionsWidget::UpdateTitleAndDescriptions(EGameModeType gameMode)
 	for (int i = 0; i < equipments.Num(); i++)
 		totalItems += equipments[i] + "\r\n";
 	EquipmentText->SetText(FText::FromString(totalItems));
+
+	MainBorder->SetVisibility(ESlateVisibility::Visible);
 }
 
 void UNewGameOptionsWidget::OnGenCompleted()
