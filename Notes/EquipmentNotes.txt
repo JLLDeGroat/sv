@@ -1,0 +1,44 @@
+sockets created for equipment
+
+RightArmGuardSocket
+RightWristGuardSocket
+
+LeftWristGuardSocket
+LeftArmGuardSocket
+
+LeftShoulderSocket
+RightShoulderSocket
+
+HeadHelmetSocket
+
+BackGuardSocket
+FrontGuardSocket
+
+RightShinGuardSocket
+LeftShinGuardSocket
+
+RightThighGuardSocket
+LeftThighGuardSocket 
+
+
+
+
+the characters equipment component will find out what equipment to get
+
+we need a way to determine this
+
+int? uint or string value to dertmine which equipment or equipment grade is going to be installed into which section
+the sections are 
+Legs, Chests, arms, head
+
+legs are shins/thighs
+head is helmet
+chests are back and forward guard
+arms are wrists, arms and shoulders
+
+
+equipmentcomponent will need an equip clothing method that takes a clothing section and a clothing type/grade
+that method will use the variables to dertemine which class to spawn
+
+the equipment component will then send the skeletal mesh of the owner of this component to the clothing component
+this method will be used to attach all the various parts that this clothing item requires
