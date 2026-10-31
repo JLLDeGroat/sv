@@ -7,6 +7,7 @@
 #include "BloodSpatterDecal.generated.h"
 
 class UDecalComponent;
+class UMaterialInstanceDynamic;
 
 UCLASS()
 class SV_API ABloodSpatterDecal : public AActor
@@ -20,19 +21,29 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void SetupForWall();
-	void SetupForFloor(FVector originLocation, FRotator rotation);
+	void SetupForFloor(FVector originLocation, FRotator rotation, int distance);
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) UDecalComponent* Spatter1Component;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) UDecalComponent* Spatter2Component;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) UDecalComponent* Spatter3Component;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) UDecalComponent* Spatter4Component;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) UDecalComponent* Spatter5Component;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UDecalComponent *Spatter1Component;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UDecalComponent *Spatter2Component;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UDecalComponent *Spatter3Component;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UDecalComponent *Spatter4Component;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UDecalComponent *Spatter5Component;
+
+	UMaterialInstanceDynamic *GenerateMaterial();
+
+	UPROPERTY()
+	UMaterial *BaseMaterial;
 
 private:
-	UDecalComponent* SetupWallComponent(UDecalComponent* comp);
-	UDecalComponent* SetupFloorComponent(FVector originLocation, UDecalComponent* comp);
+	UDecalComponent *SetupWallComponent(UDecalComponent *comp);
+	UDecalComponent *SetupFloorComponent(FVector originLocation, UDecalComponent *component, FRotator rotation, int distance);
 };

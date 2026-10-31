@@ -16,8 +16,7 @@ class SV_API UHitCapsuleComponent : public UCapsuleComponent, public IHitCompone
 	GENERATED_BODY()
 
 public:
-
-	UHitCapsuleComponent(const FObjectInitializer& ObjectInitializer);
+	UHitCapsuleComponent(const FObjectInitializer &ObjectInitializer);
 
 	void SetHitDimageMultiplier(float value);
 	void SetThickness(int thickness);
@@ -26,22 +25,25 @@ public:
 	virtual float GetHitDamageMultiplier() override;
 	virtual int GetThickness() override;
 	virtual int GetSpatterBackDistance() override;
-	virtual void SetModularComponent(UModularSkeletonComponent* comp) override;
-	virtual UModularSkeletonComponent* GetModularComponent() override;
+	virtual void SetModularComponent(UModularSkeletonComponent *comp) override;
+	virtual UModularSkeletonComponent *GetModularComponent() override;
 	virtual void DamageModularComponent(int amount, FVector direction) override;
 
-	virtual void AddEquipmentAsModularChild(AEquipment* equipment) override;
+	virtual void AddEquipmentAsModularChild(AEquipment *equipment) override;
 	virtual bool GetIsPreferredHitLocation() override;
 	virtual void SetIsPreferredHitLocation(bool val) override;
 	virtual FVector GetHitLocation() override;
-	virtual AActor *GetOwner() override;
+	virtual AActor *GetOwningActor() override;
 
+	virtual UPrimitiveComponent *GetAsPrimitiveComponent() override;
 private:
+	UPROPERTY()
+	float DamageMultiplier;
+	UPROPERTY()
+	int Thickness;
+	UPROPERTY()
+	bool bIsPreferredTarget;
 
-	UPROPERTY() float DamageMultiplier;
-	UPROPERTY() int Thickness;
-	UPROPERTY() bool bIsPreferredTarget;
-
-	UPROPERTY() UModularSkeletonComponent* ModularComponent;
-
+	UPROPERTY()
+	UModularSkeletonComponent *ModularComponent;
 };

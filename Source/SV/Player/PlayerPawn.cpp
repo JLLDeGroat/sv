@@ -16,7 +16,7 @@ APlayerPawn::APlayerPawn()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetRelativeRotation(FRotator(-70, 0, 0));
 
-	auto defaultLocation = FVector(200, 0, 400);
+	auto defaultLocation = FVector(200, 0, 600);
 	Camera->SetRelativeLocation(defaultLocation);
 
 	CameraComponent = CreateDefaultSubobject<UPawnCameraComponent>(TEXT("CameraMovement"));

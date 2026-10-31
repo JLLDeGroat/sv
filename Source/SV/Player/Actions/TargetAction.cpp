@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "TargetAction.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "../../Enums/ECharacterEnums.h"
@@ -22,17 +21,22 @@
 #include "Components/SphereComponent.h"
 #include "../Utility/TargetingIndicatorActor.h"
 
-UTargetAction::UTargetAction(const FObjectInitializer& ObjectInitializer) :UBaseActionComponent(ObjectInitializer) {
+DEFINE_LOG_CATEGORY(LogTargetAction)
+
+UTargetAction::UTargetAction(const FObjectInitializer &ObjectInitializer) : UBaseActionComponent(ObjectInitializer)
+{
 	ValidCameraStates.Emplace(ECameraState::CS_Control);
 	ValidCameraStates.Emplace(ECameraState::CS_GunTarget);
 
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-void UTargetAction::BeginPlay() {
+void UTargetAction::BeginPlay()
+{
 	Super::BeginPlay();
 	SetComponentTickEnabled(false);
-	if (!TargetingIndicator) {
+	if (!TargetingIndicator)
+	{
 		TargetingIndicator = GetWorld()->SpawnActor<ATargetingIndicatorActor>();
 		TargetingIndicator->SetActorLocation(FVector(0, 0, -1000));
 	}
@@ -43,22 +47,34 @@ void UTargetAction::BeginPlay() {
 		PawnCameraComponent = pawn->GetComponentByClass<UCameraComponent>();
 }
 
-void UTargetAction::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
+void UTargetAction::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
+{
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	FHitResult hit;
 	FVector targetLocation = FVector::ZeroVector;
 	GetTargetLocation(hit, targetLocation, PawnCameraComponent);
+
+	// if (hit.GetActor())
+	// {
+	// 	if (hit.GetActor()->GetOwner())
+	// 		UDebugMessages::LogError(this, "Component/name name hit: " + hit.GetActor()->GetName() + "|" + hit.GetComponent()->GetName() + "|" + hit.GetActor()->GetOwner()->GetName(), LogTargetAction);
+	// 	else
+	// 		UDebugMessages::LogError(this, "Component/name name hit: " + hit.GetActor()->GetName() + "|" + hit.GetComponent()->GetName(), LogTargetAction);
+	// }
+
 	TargetingIndicator->SetActorLocation(targetLocation);
 
 	auto gunAccuracy = USvUtilities::DetermineAccuracyInidicatorScale(PawnCameraComponent->GetComponentLocation(), targetLocation,
-		CurrentTargetAccuracy, CurrentTargetAccuracyDecay, CurrentTargetBaseAccuracy);
+																	  CurrentTargetAccuracy, CurrentTargetAccuracyDecay, CurrentTargetBaseAccuracy);
 
 	TargetingIndicator->SetActorScale3D(gunAccuracy);
 }
 
-void UTargetAction::DoAction() {
-	if (IsWithinValidControlLimiter()) {
+void UTargetAction::DoAction()
+{
+	if (IsWithinValidControlLimiter())
+	{
 		ResetActionEffects();
 
 		auto owner = GetOwner<AGamePlayerController>();
@@ -75,15 +91,17 @@ void UTargetAction::DoAction() {
 
 		auto hudDelegates = UHudDelegates::GetInstance();
 		if (!hudDelegates)
-			return UDebugMessages::LogError(this, "failed to get hud delegates, cannot do target action");
+			return UDebugMessages::LogError(this, "failed to get hud delegates, cannot do target action", LogTargetAction);
 
 		// reset values
-		if (pawnCameraComponent->GetCurrentCameraState() == ECameraState::CS_GunTarget) {
+		if (pawnCameraComponent->GetCurrentCameraState() == ECameraState::CS_GunTarget)
+		{
 			pawnCameraComponent->UpdateCameraState(ECameraState::CS_Control);
 			owner->SetMouseAsUi();
 			hudDelegates->_AimTargetVisibility.Broadcast(false);
 		}
-		else if (selected) {
+		else if (selected)
+		{
 			auto actor = selected->GetAsActor();
 
 			auto equipmentComponent = actor->GetComponentByClass<UEquipmentComponent>();
@@ -91,63 +109,72 @@ void UTargetAction::DoAction() {
 
 			if (!equipmentComponent || !detailsComponent ||
 				equipmentComponent->GetActionPointsNeededToUseEquipment() > detailsComponent->GetActionPoints())
-				return UDebugMessages::LogError(this, "could not get equpiment or details component, or not enough action points. will not begin targeting");
+				return UDebugMessages::LogError(this, "could not get equpiment or details component, or not enough action points. will not begin targeting", LogTargetAction);
 
 			auto targetingComponent = actor->GetComponentByClass<UTargetingComponent>();
-			if (targetingComponent) {
+			if (targetingComponent)
+			{
 				auto currentTargetData = targetingComponent->GetCurrentMainTarget();
-				if (!currentTargetData) {
-					UDebugMessages::LogError(this, "no targeting data");
+				if (!currentTargetData)
+				{
+					UDebugMessages::LogError(this, "no targeting data", LogTargetAction);
 					return;
 				}
-				//assuming only one target data
+				// assuming only one target data
 
-				//if current character is crouching, the camare move to location is lower, and doesnt see over the chest high wall
-				// this needs to be taken into consideration when getting camera move to location
+				// if current character is crouching, the camare move to location is lower, and doesnt see over the chest high wall
+				//  this needs to be taken into consideration when getting camera move to location
 
 				pawnCameraComponent->UpdateCameraState(ECameraState::CS_GunTarget, currentTargetData->GetShootCameraLocation(),
-					currentTargetData->GetCharacter()->GetSelectableGridLocation());
+													   currentTargetData->GetCharacter()->GetSelectableGridLocation());
 
 				owner->SetMouseAsGame();
 
 				SetCurrentEquipmentAccuracy(actor);
 
-				//shows the hud on screen
-				//hudDelegates->_AimTargetVisibility.Broadcast(true);
+				// shows the hud on screen
+				// hudDelegates->_AimTargetVisibility.Broadcast(true);
 				SetComponentTickEnabled(true);
 			}
 		}
 	}
 }
 
-float UTargetAction::GetTargetingIndicatorRadius() {
+float UTargetAction::GetTargetingIndicatorRadius()
+{
 	return TargetingIndicator->GetSphereScaledRadius();
 }
 
-float UTargetAction::SetScaleAndGetTargetingRadius(FVector scale) {
+float UTargetAction::SetScaleAndGetTargetingRadius(FVector scale)
+{
 	TargetingIndicator->SetActorScale3D(scale);
 	return GetTargetingIndicatorRadius();
 }
 
-ATargetingIndicatorActor* UTargetAction::GetTargetingIndicatorActor() {
+ATargetingIndicatorActor *UTargetAction::GetTargetingIndicatorActor()
+{
 	return TargetingIndicator;
 }
 
-void UTargetAction::ResetTargetingActor() {
+void UTargetAction::ResetTargetingActor()
+{
 	SetComponentTickEnabled(false);
 	TargetingIndicator->SetActorLocation(FVector(0, 0, 5000));
 }
 
-void UTargetAction::SetCurrentEquipmentAccuracy(AActor* actor) {
+void UTargetAction::SetCurrentEquipmentAccuracy(AActor *actor)
+{
 	CurrentTargetAccuracy = 0;
 	CurrentTargetAccuracyDecay = 0;
 	CurrentTargetBaseAccuracy = 0;
 
 	auto equipmentComponent = actor->GetComponentByClass<UEquipmentComponent>();
-	if (equipmentComponent) {
+	if (equipmentComponent)
+	{
 		auto targetingEquipment = equipmentComponent->GetPrimaryEquipment();
 		auto equipmentDetails = targetingEquipment->GetComponentByClass<UEquipmentDetailsComponent>();
-		if (equipmentComponent) {
+		if (equipmentComponent)
+		{
 			CurrentTargetAccuracyDecay = equipmentDetails->GetAccuracyDecay();
 			CurrentTargetAccuracy = equipmentDetails->GetAccuracy();
 			CurrentTargetBaseAccuracy = equipmentDetails->GetBaseAccuracy();

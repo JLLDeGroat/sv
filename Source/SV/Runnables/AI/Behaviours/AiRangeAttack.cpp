@@ -56,7 +56,9 @@ void UAiRangeAttack::DoBehaviour()
 				targetLocation.GetPassesThroughDestructionMesh() ? 35 : 25);
 
 			auto pawnCamera = GetWorld()->GetFirstPlayerController()->GetPawn()->GetComponentByClass<UPawnCameraComponent>();
-			pawnCamera->UpdateCameraState(ECameraState::CS_ReTarget, (GetThisEnemy()->GetActorLocation() + targetLocation.GetLocation()) / 2);
+			// pawnCamera->UpdateCameraState(ECameraState::CS_ReTarget, (GetThisEnemy()->GetActorLocation() + targetLocation.GetLocation()) / 2);
+
+			pawnCamera->UpdateCameraState(ECameraState::CS_AiShoot, GetThisEnemy(), thisTarget->GetCharacter()->GetAsActor());
 
 			auto fogHandler = GetThisEnemy()->GetComponentByClass<UFogHandlerComponent>();
 			if (!fogHandler)
@@ -118,7 +120,7 @@ FWhereToShoot UAiRangeAttack::DeterminePossibleShootLocation(FVector startLocati
 
 	GetWorld()->LineTraceMultiByChannel(hitResults, startLocation, destinationHitComponent->GetHitLocation(), USvUtilities::GetBulletCollisionChannel());
 
-	//DrawDebugLine(GetWorld(), startLocation, destinationHitComponent->GetHitLocation(), FColor::Green, false, 60, 0, 5);
+	// DrawDebugLine(GetWorld(), startLocation, destinationHitComponent->GetHitLocation(), FColor::Green, false, 60, 0, 5);
 
 	UDebugMessages::LogDisplay(this, "started possible shoot locations.");
 	for (FHitResult hit : hitResults)

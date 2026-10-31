@@ -6,13 +6,12 @@
 #include "Components/ActorComponent.h"
 #include "BulletDetailsComponent.generated.h"
 
-
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class SV_API UBulletDetailsComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	// Sets default values for this component's properties
 	UBulletDetailsComponent();
 
@@ -22,8 +21,8 @@ public:
 	int GetBaseImpulse();
 	void SetBaseImpulse(int impulse);
 
-	void SetGunShotFrom(AActor* gun);
-	AActor* GetGunShotFrom();
+	void SetGunShotFrom(AActor *gun);
+	AActor *GetGunShotFrom();
 
 	int GetPenetrationAbility();
 	void SetPenetrationAbility(int ability);
@@ -33,23 +32,37 @@ public:
 	void CompleteSetup();
 	bool GetIsSetup();
 
+	void AddToDamageDone(int amount);
+	int GetDamageDone();
+
+	void AddDamageMitigation(float amount);
+	float GetDamageMitigation();
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
 
 private:
+	UPROPERTY()
+	int BaseDamage;
+	UPROPERTY()
+	int BaseImpulse;
 
-	UPROPERTY() int BaseDamage;
-	UPROPERTY() int BaseImpulse;
+	UPROPERTY()
+	AActor *GunShotFrom;
 
-	UPROPERTY() AActor* GunShotFrom;
+	UPROPERTY()
+	int PenetrationAbility;
+	UPROPERTY()
+	bool bSetup;
 
-	UPROPERTY() int PenetrationAbility;
-	UPROPERTY() bool bSetup;
-		
+	UPROPERTY()
+	int DamageDone;
+
+	UPROPERTY()
+	float DamageMitigation;
 };

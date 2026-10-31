@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "BulletDetailsComponent.h"
 
 // Sets default values for this component's properties
@@ -17,43 +16,70 @@ void UBulletDetailsComponent::BeginPlay()
 	Super::BeginPlay();
 }
 
-
 // Called every frame
-void UBulletDetailsComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UBulletDetailsComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-int UBulletDetailsComponent::GetBaseDamage() {
+int UBulletDetailsComponent::GetBaseDamage()
+{
 	return BaseDamage;
 }
-void UBulletDetailsComponent::SetBaseDamage(int damage) {
+void UBulletDetailsComponent::SetBaseDamage(int damage)
+{
 	BaseDamage = damage;
 }
-int UBulletDetailsComponent::GetBaseImpulse() {
+int UBulletDetailsComponent::GetBaseImpulse()
+{
 	return BaseImpulse;
 }
-void UBulletDetailsComponent::SetBaseImpulse(int impulse) {
+void UBulletDetailsComponent::SetBaseImpulse(int impulse)
+{
 	BaseImpulse = impulse;
 }
-void UBulletDetailsComponent::SetGunShotFrom(AActor* gun) {
+void UBulletDetailsComponent::SetGunShotFrom(AActor *gun)
+{
 	GunShotFrom = gun;
 }
-AActor* UBulletDetailsComponent::GetGunShotFrom() {
+AActor *UBulletDetailsComponent::GetGunShotFrom()
+{
 	return GunShotFrom;
 }
-int UBulletDetailsComponent::GetPenetrationAbility() {
+int UBulletDetailsComponent::GetPenetrationAbility()
+{
 	return PenetrationAbility;
 }
-void UBulletDetailsComponent::SetPenetrationAbility(int ability) {
+void UBulletDetailsComponent::SetPenetrationAbility(int ability)
+{
 	PenetrationAbility = ability;
 }
-void UBulletDetailsComponent::RemoveFromPenetrationAbility(int amount) {
+void UBulletDetailsComponent::RemoveFromPenetrationAbility(int amount)
+{
 	PenetrationAbility -= amount;
 }
-void UBulletDetailsComponent::CompleteSetup() {
+void UBulletDetailsComponent::CompleteSetup()
+{
 	bSetup = true;
 }
-bool UBulletDetailsComponent::GetIsSetup() {
+bool UBulletDetailsComponent::GetIsSetup()
+{
 	return bSetup;
+}
+
+void UBulletDetailsComponent::AddToDamageDone(int amount)
+{
+	DamageDone += amount;
+}
+int UBulletDetailsComponent::GetDamageDone()
+{
+	return DamageDone;
+}
+void UBulletDetailsComponent::AddDamageMitigation(float amount)
+{
+	DamageMitigation += amount;
+}
+float UBulletDetailsComponent::GetDamageMitigation()
+{
+	return DamageMitigation;
 }

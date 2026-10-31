@@ -73,13 +73,19 @@ bool UHitBoxComponent::GetIsPreferredHitLocation()
 {
 	return bIsPreferredTarget;
 }
-void UHitBoxComponent::SetIsPreferredHitLocation(bool val) {
-	bIsPreferredTarget=val;
+void UHitBoxComponent::SetIsPreferredHitLocation(bool val)
+{
+	bIsPreferredTarget = val;
 }
 FVector UHitBoxComponent::GetHitLocation()
 {
 	return GetComponentLocation();
 }
-AActor* UHitBoxComponent::GetOwner(){
+AActor *UHitBoxComponent::GetOwningActor()
+{
 	return GetOwner();
+}
+UPrimitiveComponent *UHitBoxComponent::GetAsPrimitiveComponent()
+{
+	return this;
 }

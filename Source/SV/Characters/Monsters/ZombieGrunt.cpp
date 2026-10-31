@@ -8,7 +8,7 @@
 #include "../Components/CharacterDetailsComponent.h"
 #include "../Components/HitBoxComponent.h"
 #include "../Components/HitCapsuleComponent.h"
-#include "../Components/DamageRecieveComponent.h"
+#include "../Components/DamageReceiveComponent.h"
 #include "../Components/EquipmentComponent.h"
 #include "../Components/CharacterDetailsComponent.h"
 #include "../Components/SkillsComponent.h"
@@ -38,7 +38,7 @@ AZombieGrunt::AZombieGrunt(const FObjectInitializer& ObjectInitializer) : ABaseC
 	DetailsComponent->SetCharacterControl(ECharacterControl::CC_AI);
 	DetailsComponent->SetHealth(100);
 
-	DamageRecieveComponent = CreateDefaultSubobject<UDamageRecieveComponent>(TEXT("DamageRecieve"));
+	DamageReceiveComponent = CreateDefaultSubobject<UDamageReceiveComponent>(TEXT("DamageReceive"));
 
 	DetailsComponent->AddMaxActionPoints(2);
 	DetailsComponent->AddActionPoints(2);

@@ -10,6 +10,11 @@
 class ABaseCharacter;
 class UBaseDD;
 class UStaticMeshComponent;
+class AClothingArms;
+class AClothingChest;
+class AClothingHelmet;
+class AClothingLegs;
+class AClothingShoulders;
 
 UCLASS()
 class SV_API ACharacterSpawnerActor : public AActor
@@ -37,6 +42,21 @@ protected:
 	EGun SecondaryGunType;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawner Debug Options")
 	FString OverrideCharacterName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner Debug Options")
+	TSubclassOf<AClothingArms> ArmsArmorType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner Debug Options")
+	TSubclassOf<AClothingChest> ChestArmourType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner Debug Options")
+	TSubclassOf<AClothingHelmet> HelmetArmorType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner Debug Options")
+	TSubclassOf<AClothingLegs> LegArmourType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner Debug Options")
+	TSubclassOf<AClothingShoulders> ShoulderArmorType;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawner Debug Options")
 	UStaticMeshComponent *RootMesh;

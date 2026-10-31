@@ -11,7 +11,7 @@
 class UGridMovementComponent;
 class UHitCapsuleComponent;
 class UHitBoxComponent;
-class UDamageRecieveComponent;
+class UDamageReceiveComponent;
 class UEquipmentComponent;
 class USkillsComponent;
 class UAttackComponent;

@@ -5,7 +5,7 @@
 #include "../../../Utilities/SvUtilities.h"
 #include "../../../Utilities/GridUtilities.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
-#include "../../../Characters/Components/DamageRecieveComponent.h"
+#include "../../../Characters/Components/DamageReceiveComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "../../Components/EquipmentDetailsComponent.h"
 #include "../Components/ThrownOwnerComponent.h"
@@ -49,7 +49,7 @@ void UThrowExplosionComponent::Overlapped(UPrimitiveComponent* OverlappedComp, A
 	}
 	ActorsCaughtInExplosion.Emplace(OtherActor);
 	UDebugMessages::LogDisplay(this, OtherActor->GetName() + " got caught in explosion");
-	auto damageReceiveComponent = OtherActor->GetComponentByClass<UDamageRecieveComponent>();
+	auto damageReceiveComponent = OtherActor->GetComponentByClass<UDamageReceiveComponent>();
 	auto equipmentDetailsComponent = GetOwner()->GetComponentByClass<UEquipmentDetailsComponent>();
 	if (damageReceiveComponent && equipmentDetailsComponent) {
 		damageReceiveComponent->DoDamage(1.0f, 200, 150000, 

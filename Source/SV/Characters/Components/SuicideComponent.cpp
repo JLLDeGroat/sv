@@ -2,10 +2,10 @@
 
 
 #include "SuicideComponent.h"
-#include "DamageRecieveComponent.h"
+#include "DamageReceiveComponent.h"
 #include "../../Effects/ConstructSuicideEffect.h"
 #include "../Anim/CharAnimInstance.h"
-#include "../../Runnables/PostMovementRunnable.h"
+#include "../../Runnables/PostMovements/PostMovementRunnable.h"
 // Sets default values for this component's properties
 USuicideComponent::USuicideComponent(const FObjectInitializer& ObjectInitializer)
 	: UAnimAccessComponent(ObjectInitializer)

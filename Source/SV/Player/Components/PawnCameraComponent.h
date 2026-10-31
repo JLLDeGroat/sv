@@ -10,6 +10,8 @@
 class UCameraComponent;
 class UPostProcessComponent;
 
+DECLARE_LOG_CATEGORY_EXTERN(LogPawnCameraComponent, Log, All);
+
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class SV_API UPawnCameraComponent : public UActorComponent
 {
@@ -19,61 +21,86 @@ public:
 	// Sets default values for this component's properties
 	UPawnCameraComponent();
 
+	// Called every frame
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
+
 	void UpdateCameraState(ECameraState cameraState, FVector moveToLocation = FVector::ZeroVector, FVector lookAtLocation = FVector::ZeroVector, bool overrideCameraMovements = false, bool doNotSetReturn = false);
+	void UpdateCameraState(ECameraState cameraState, AActor *aiShooter, AActor *aiShootersTarget);
+
+	FORCEINLINE void SetCameraMoving();
 	ECameraState GetCurrentCameraState();
 
-	void DoCinematicAttackCameraMovement(AActor* attacker, AActor* target);
-	void DoOverwatchCinematicAttackCameraMovement(AActor* attacker, AActor* target);
+	void DoCinematicAttackCameraMovement(AActor *attacker, AActor *target);
+	void DoOverwatchCinematicAttackCameraMovement(AActor *attacker, AActor *target);
 	void SetOverwatchReturnLocation(FVector loc);
 
 	void SetDefaultCameraOffset(FVector defaultValue);
 
-	void SetToDeathWatchCamera(AActor* deathActor);
+	void SetToDeathWatchCamera(AActor *deathActor);
 	void SetEndDeathWatchCamera();
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	ECameraState CurrentCameraState;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) ECameraState CurrentCameraState;
 private:
+	void CinematicAttackCameraMovement(AActor *attacker, AActor *target);
 
-	void CinematicAttackCameraMovement(AActor* attacker, AActor* target);
+	UPROPERTY()
+	FVector MoveToLocation;
+	UPROPERTY()
+	FVector LookToLocation;
 
-	UPROPERTY() FVector MoveToLocation;
-	UPROPERTY() FVector LookToLocation;
+	UPROPERTY()
+	FVector ReturnLocation;
+	UPROPERTY()
+	FRotator ReturnRotation;
 
-	UPROPERTY() FVector ReturnLocation;
+	UPROPERTY()
+	FVector CurrentMoveTo;
+	UPROPERTY()
+	FVector CurrentRotateToLocation;
 
-	UPROPERTY() FVector CurrentMoveTo;
-	UPROPERTY() FVector CurrentRotateToLocation;
+	UPROPERTY()
+	bool CurrentlyMoving;
 
-	UPROPERTY() bool CurrentlyMoving;
+	UPROPERTY()
+	FVector DefaultCameraOffset;
 
-	UPROPERTY() FVector DefaultCameraOffset;
-
-	UPROPERTY() UCameraComponent* CameraComponent;
+	UPROPERTY()
+	UCameraComponent *CameraComponent;
 
 	bool ShoudUseSetRotation() const;
 
-	UPROPERTY() AActor* CinematicActorAttacker;
-	UPROPERTY() AActor* CinematicActorTarget;
+	UPROPERTY()
+	AActor *CinematicActorAttacker;
+	UPROPERTY()
+	AActor *CinematicActorTarget;
 
-	UPROPERTY() AActor* DeathActor;
-	UPROPERTY() UPrimitiveComponent* DeathComponentToWatch;
-	UPROPERTY() FVector DeathWatchFromLocation;
+	UPROPERTY()
+	AActor *AiShooter;
+	UPROPERTY()
+	AActor *AiShootersTarget;
 
-	bool GetValidCinematicLocation(FVector& location);
-	bool GetValidCinematicLocation(AActor* actor, FVector& location);
+	UPROPERTY()
+	AActor *DeathActor;
+	UPROPERTY()
+	UPrimitiveComponent *DeathComponentToWatch;
+	UPROPERTY()
+	FVector DeathWatchFromLocation;
 
-	UPROPERTY() float DefaultDepthOfFieldFstopValue = 0.0f;
-	UPROPERTY() float DefaultDepthOfFieldSensorWidth = 0.0f;
-	UPROPERTY() float DefaultDepthOfFieldFocalDistance = 0.0f;
+	bool GetValidCinematicLocation(FVector &location);
+	bool GetValidCinematicLocation(AActor *actor, FVector &location);
 
+	UPROPERTY()
+	float DefaultDepthOfFieldFstopValue = 0.0f;
+	UPROPERTY()
+	float DefaultDepthOfFieldSensorWidth = 0.0f;
+	UPROPERTY()
+	float DefaultDepthOfFieldFocalDistance = 0.0f;
 
 	void AttemptToAlterAttackerStatusWidgetVisibility(bool val);
 };

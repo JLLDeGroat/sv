@@ -18,13 +18,13 @@ void UCharacterTileWidget::NativeConstruct() {
 	if (!hudDelegates)
 		return UDebugMessages::LogError(this, "failed to get hudDelegates");
 
-	hudDelegates->_AddSoldierToCharacterTileWidget.AddDynamic(this, &UCharacterTileWidget::RecieveCharacter);
+	hudDelegates->_AddSoldierToCharacterTileWidget.AddDynamic(this, &UCharacterTileWidget::ReceiveCharacter);
 	hudDelegates->_SelectNextCharacterWithAp.AddDynamic(this, &UCharacterTileWidget::AttemptToSelectNextUnitWithAP);
 
 	hudDelegates->_CharacterTileVisibility.AddDynamic(this, &UCharacterTileWidget::SetCharacterTileVisibility);
 }
 
-void UCharacterTileWidget::RecieveCharacter(AActor* actor) {
+void UCharacterTileWidget::ReceiveCharacter(AActor* actor) {
 
 	auto horizontalBox = (UHorizontalBox*)GetWidgetFromName("HorizontalBox");
 	if (horizontalBox) {

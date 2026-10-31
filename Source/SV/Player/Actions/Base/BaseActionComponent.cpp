@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "BaseActionComponent.h"
 #include "../../Managers/SelectionManager.h"
 #include "../../Managers/ControlManager.h"
@@ -15,8 +14,11 @@
 #include "../../../Delegates/GameplayDelegates.h"
 #include "../../../Interfaces/Selectable.h"
 #include "../../Components/PawnCameraComponent.h"
+#include "../../../Characters/Components/EquipmentComponent.h"
+#include "../../../Equipment/Equipment.h"
+#include "../../../Equipment/Clothing/Clothing.h"
 // Sets default values for this component's properties
-UBaseActionComponent::UBaseActionComponent(const FObjectInitializer& ObjectInitializer) : UActorComponent(ObjectInitializer)
+UBaseActionComponent::UBaseActionComponent(const FObjectInitializer &ObjectInitializer) : UActorComponent(ObjectInitializer)
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -24,7 +26,6 @@ UBaseActionComponent::UBaseActionComponent(const FObjectInitializer& ObjectIniti
 	ValidControlLimits.Emplace(EControlLimit::CL_NONE);
 	// ...
 }
-
 
 // Called when the game starts
 void UBaseActionComponent::BeginPlay()
@@ -36,29 +37,36 @@ void UBaseActionComponent::BeginPlay()
 	ControlManager = GetOwner()->GetComponentByClass<UControlManager>();
 }
 
-AGamePlayerController* UBaseActionComponent::GetOwningController() {
-	if (!PlayerController) {
+AGamePlayerController *UBaseActionComponent::GetOwningController()
+{
+	if (!PlayerController)
+	{
 		PlayerController = GetOwner<AGamePlayerController>();
 	}
 	return PlayerController;
 }
 
-bool UBaseActionComponent::IsInValidCameraState(ECameraState currentCameraState) {
-	for (int i = 0; i < ValidCameraStates.Num(); i++) {
-		if (ValidCameraStates[i] == currentCameraState) return true;
+bool UBaseActionComponent::IsInValidCameraState(ECameraState currentCameraState)
+{
+	for (int i = 0; i < ValidCameraStates.Num(); i++)
+	{
+		if (ValidCameraStates[i] == currentCameraState)
+			return true;
 	}
 
 	UDebugMessages::LogWarning(this, "not in valid camera state to do action, current state " + ECharacterEnums::GetCameraStateAsString(currentCameraState));
 	return false;
 }
 
-bool UBaseActionComponent::IsInValidCameraState() {
+bool UBaseActionComponent::IsInValidCameraState()
+{
 	auto pawn = GetOwningController()->GetPawn();
 	auto pawnCamera = pawn->GetComponentByClass<UPawnCameraComponent>();
 	return IsInValidCameraState(pawnCamera->GetCurrentCameraState());
 }
 
-void UBaseActionComponent::GetTargetLocation(FHitResult& hit, FVector& targetLocation, UCameraComponent* cameraComp) {
+void UBaseActionComponent::GetTargetLocation(FHitResult &hit, FVector &targetLocation, UCameraComponent *cameraComp)
+{
 	if (!cameraComp)
 		return UDebugMessages::LogError(this, "camera comp is null");
 
@@ -70,12 +78,24 @@ void UBaseActionComponent::GetTargetLocation(FHitResult& hit, FVector& targetLoc
 	collisionParams.AddObjectTypesToQuery(USvUtilities::GetFloorTargetChannel());
 
 	auto selectionComponent = GetOwner()->GetComponentByClass<USelectionManager>();
-	if (!SelectionManager->GetSelected()) {
+	if (!SelectionManager->GetSelected())
+	{
 		return UDebugMessages::LogError(this, "failed to get selected actor");
 	}
 
 	FCollisionQueryParams queryParams;
-	queryParams.AddIgnoredActor(SelectionManager->GetSelected()->GetAsActor());
+
+	auto selectableAsActor = SelectionManager->GetSelected()->GetAsActor();
+	queryParams.AddIgnoredActor(selectableAsActor);
+	auto equipmentComponent = selectableAsActor->GetComponentByClass<UEquipmentComponent>();
+	if (equipmentComponent)
+	{
+		for (auto equipment : equipmentComponent->GetAllEquipment())
+			queryParams.AddIgnoredActor(equipment);
+
+		for (auto clothing : equipmentComponent->GetAllClothing())
+			queryParams.AddIgnoredActor(clothing);
+	}
 
 	GetWorld()->LineTraceSingleByObjectType(hit, cameraComp->GetComponentLocation(), targetLocation, collisionParams, queryParams);
 
@@ -83,15 +103,18 @@ void UBaseActionComponent::GetTargetLocation(FHitResult& hit, FVector& targetLoc
 		targetLocation = hit.Location;
 }
 
-void UBaseActionComponent::ResetActionEffects() {
+void UBaseActionComponent::ResetActionEffects()
+{
 	auto controller = GetOwningController();
 	auto targetAction = controller->GetComponentByClass<UTargetAction>();
-	if (targetAction) {
+	if (targetAction)
+	{
 		targetAction->ResetTargetingActor();
 	}
 }
 
-void UBaseActionComponent::UpdateControlLimit(EControlLimit controlLimit) {
+void UBaseActionComponent::UpdateControlLimit(EControlLimit controlLimit)
+{
 	auto gamePlay = UGameplayDelegates::GetInstance();
 	if (!gamePlay)
 		return UDebugMessages::LogError(this, "failed to get gameplay delegates");
@@ -99,10 +122,12 @@ void UBaseActionComponent::UpdateControlLimit(EControlLimit controlLimit) {
 	gamePlay->_ChangeControlLimits.Broadcast(controlLimit);
 }
 
-bool UBaseActionComponent::IsWithinValidControlLimiter() {
+bool UBaseActionComponent::IsWithinValidControlLimiter()
+{
 	auto controller = GetOwningController();
 	auto controlAction = controller->GetComponentByClass<UControlManager>();
-	if (controlAction) {
+	if (controlAction)
+	{
 		auto currentLimit = controlAction->GetControlLimit();
 
 		for (int i = 0; i < ValidControlLimits.Num(); i++)

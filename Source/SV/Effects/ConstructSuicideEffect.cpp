@@ -7,7 +7,7 @@
 #include "../Utilities/GridUtilities.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "Components/SphereComponent.h"
-#include "../Characters/Components/DamageRecieveComponent.h"
+#include "../Characters/Components/DamageReceiveComponent.h"
 
 
 // Sets default values
@@ -52,7 +52,7 @@ void AConstructSuicideEffect::Overlapped(UPrimitiveComponent* OverlappedComp, AA
 
 	ActorsCaughtInExplosion.Emplace(OtherActor);
 	UDebugMessages::LogDisplay(this, OtherActor->GetName() + " got caught in explosion");
-	auto damageReceiveComponent = OtherActor->GetComponentByClass<UDamageRecieveComponent>();
+	auto damageReceiveComponent = OtherActor->GetComponentByClass<UDamageReceiveComponent>();
 	/*auto equipmentDetailsComponent = GetOwner()->GetComponentByClass<UEquipmentDetailsComponent>();*/
 	if (damageReceiveComponent) {
 		damageReceiveComponent->DoDamage(1.0f, 999, 500,

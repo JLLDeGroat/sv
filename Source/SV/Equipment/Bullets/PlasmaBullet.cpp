@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "PlasmaBullet.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/BulletCollisionComponent.h"
@@ -13,8 +12,9 @@
 #include "Components/BulletRearComponent.h"
 #include "Components/BulletAuraComponent.h"
 
-APlasmaBullet::APlasmaBullet(const FObjectInitializer& ObjectInitializer)
-	: ABaseBullet(ObjectInitializer) {
+APlasmaBullet::APlasmaBullet(const FObjectInitializer &ObjectInitializer)
+	: ABaseBullet(ObjectInitializer)
+{
 	PrimaryActorTick.bCanEverTick = false;
 
 	BulletCollisionComponent->SetRelativeLocation(FVector(-7, 0, 0));
@@ -23,7 +23,8 @@ APlasmaBullet::APlasmaBullet(const FObjectInitializer& ObjectInitializer)
 	BulletCollisionComponent->SetRelativeRotation(FRotator(90, 0, 0));
 
 	auto bulletMesh = USvUtilities::GetStaticMesh("/Script/Engine.StaticMesh'/Game/Equipment/Bullets/Bullet.Bullet'");
-	if (bulletMesh) {
+	if (bulletMesh)
+	{
 		BulletMeshComponent->SetStaticMesh(bulletMesh);
 
 		auto bulletMat = USvUtilities::GetMaterial("/Script/Engine.Material'/Game/Materials/Bullets/Bullet_M.Bullet_M'");
@@ -35,16 +36,20 @@ APlasmaBullet::APlasmaBullet(const FObjectInitializer& ObjectInitializer)
 
 	BulletAuraComponent = CreateDefaultSubobject<UBulletAuraComponent>(TEXT("BulletAura"));
 	BulletAuraComponent->SetupAttachment(RootComponent);
-	
+
 	auto basicAssetRef = "/Script/Niagara.NiagaraSystem'/Game/Effects/PlasmaAura_N.PlasmaAura_N'";
 	auto bulletAura = USvUtilities::GetNiagaraSystem(basicAssetRef);
-	if (bulletAura) {
+	if (bulletAura)
+	{
 		BulletAuraComponent->SetAsset(bulletAura);
 	}
 
 	auto bulletTrailRef = "/Script/Niagara.NiagaraSystem'/Game/Effects/Trails/PlasmaBulletTrail_N.PlasmaBulletTrail_N'";
 	auto plasmaTrailSystem = USvUtilities::GetNiagaraSystem(bulletTrailRef);
-	if (plasmaTrailSystem) {
+	if (plasmaTrailSystem)
+	{
 		BulletTrailComponent->SetAsset(plasmaTrailSystem);
 	}
+
+	BulletDetailsComponent->SetPenetrationAbility(2);
 }

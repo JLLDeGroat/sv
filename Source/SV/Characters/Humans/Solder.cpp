@@ -8,7 +8,7 @@
 #include "../Components/TargetingComponent.h"
 #include "../Components/EquipmentComponent.h"
 #include "../Components/AttackComponent.h"
-#include "../Components/DamageRecieveComponent.h"
+#include "../Components/DamageReceiveComponent.h"
 #include "../Components/AnimSpeedComponent.h"
 #include "../Components/ThrowableComponent.h"
 #include "../Components/ActivateTogglesComponent.h"
@@ -64,7 +64,7 @@ ASolder::ASolder(const FObjectInitializer &ObjectInitializer) : ABaseCharacter(O
 	EquipmentComponent = CreateDefaultSubobject<UEquipmentComponent>(TEXT("Equipment"));
 	AttackComponent = CreateDefaultSubobject<UAttackComponent>(TEXT("Attack"));
 
-	DamageRecieveComponent = CreateDefaultSubobject<UDamageRecieveComponent>(TEXT("DamageRecieve"));
+	DamageReceiveComponent = CreateDefaultSubobject<UDamageReceiveComponent>(TEXT("DamageReceive"));
 
 	DetailsComponent->AddMaxMovementPoints(5);
 	DetailsComponent->AddMovementPoints(5);

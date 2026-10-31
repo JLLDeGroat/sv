@@ -78,12 +78,19 @@ bool UHitCapsuleComponent::GetIsPreferredHitLocation()
 {
 	return bIsPreferredTarget;
 }
- void UHitCapsuleComponent::SetIsPreferredHitLocation(bool val) {
-	bIsPreferredTarget=val;
+void UHitCapsuleComponent::SetIsPreferredHitLocation(bool val)
+{
+	bIsPreferredTarget = val;
 }
-FVector UHitCapsuleComponent::GetHitLocation(){
+FVector UHitCapsuleComponent::GetHitLocation()
+{
 	return GetComponentLocation();
 }
-AActor* UHitCapsuleComponent::GetOwner(){
+AActor *UHitCapsuleComponent::GetOwningActor()
+{
 	return GetOwner();
+}
+UPrimitiveComponent *UHitCapsuleComponent::GetAsPrimitiveComponent()
+{
+	return this;
 }

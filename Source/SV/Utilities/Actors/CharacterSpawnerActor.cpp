@@ -8,7 +8,7 @@
 #include "../../Characters/Components/ThrowableComponent.h"
 #include "../../Characters/Components/CharacterCaptureComponent.h"
 #include "../../Equipment/Components/EquipmentDetailsComponent.h"
-#include "../../Characters/Components/DamageRecieveComponent.h"
+#include "../../Characters/Components/DamageReceiveComponent.h"
 #include "../../Characters/Components/AIComponent.h"
 #include "../../Characters/Components/HealthKitsComponent.h"
 #include "../../Characters/DAndD/Base/BaseDD.h"
@@ -20,6 +20,12 @@
 #include "../../Instance/Managers/CurrentGameDataManager.h"
 #include "../GridUtilities.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
+
+#include "../../Equipment/Clothing/MetalGuard/MetalGuardArms.h"
+#include "../../Equipment/Clothing/MetalGuard/MetalGuardChest.h"
+#include "../../Equipment/Clothing/MetalGuard/MetalGuardLegs.h"
+#include "../../Equipment/Clothing/MetalGuard/MetalGuardHead.h"
+#include "../../Equipment/Clothing/MetalGuard/MetalGuardShoulders.h"
 
 // Sets default values
 ACharacterSpawnerActor::ACharacterSpawnerActor()
@@ -165,19 +171,92 @@ void ACharacterSpawnerActor::BeginPlay()
 						auto secondaryEquipment = secondary->GetComponentByClass<UEquipmentDetailsComponent>();
 						secondaryEquipment->SetEquipmentId(gunId);
 					}
+
+					if (HelmetArmorType)
+					{
+						UObject *defaults = HelmetArmorType->GetDefaultObject();
+						if (IClothingItem *clothing = Cast<IClothingItem>(defaults))
+						{
+							equipmentComponent->EquipClothing(
+								clothing->GetClothingType(),
+								clothing->GetClothingGrade());
+						}
+					}
+
+					if (ChestArmourType)
+					{
+						UObject *defaults = ChestArmourType->GetDefaultObject();
+						if (IClothingItem *clothing = Cast<IClothingItem>(defaults))
+						{
+							equipmentComponent->EquipClothing(
+								clothing->GetClothingType(),
+								clothing->GetClothingGrade());
+						}
+					}
+
+					if (ShoulderArmorType)
+					{
+						UObject *defaults = ShoulderArmorType->GetDefaultObject();
+						if (IClothingItem *clothing = Cast<IClothingItem>(defaults))
+						{
+							equipmentComponent->EquipClothing(
+								clothing->GetClothingType(),
+								clothing->GetClothingGrade());
+						}
+					}
+
+					if (LegArmourType)
+					{
+						UObject *defaults = LegArmourType->GetDefaultObject();
+						if (IClothingItem *clothing = Cast<IClothingItem>(defaults))
+						{
+							equipmentComponent->EquipClothing(
+								clothing->GetClothingType(),
+								clothing->GetClothingGrade());
+						}
+					}
+
+					if (ArmsArmorType)
+					{
+						UObject *defaults = ArmsArmorType->GetDefaultObject();
+						if (IClothingItem *clothing = Cast<IClothingItem>(defaults))
+						{
+							equipmentComponent->EquipClothing(
+								clothing->GetClothingType(),
+								clothing->GetClothingGrade());
+						}
+					}
+
+					// if (LegArmourType)
+					// {
+					// 	auto clothingInterface = LegArmourType->GetDefaultObject<IClothingItem>();
+					// 	equipmentComponent->EquipClothing(clothingInterface->GetClothingType(), clothingInterface->GetClothingGrade());
+					// }
+
+					// if (ArmsArmorType)
+					// {
+					// 	auto clothingInterface = ArmsArmorType->GetDefaultObject<IClothingItem>();
+					// 	equipmentComponent->EquipClothing(clothingInterface->GetClothingType(), clothingInterface->GetClothingGrade());
+					// }
+
+					// if (ShoulderArmorType)
+					// {
+					// 	auto clothingInterface = ShoulderArmorType->GetDefaultObject<IClothingItem>();
+					// 	equipmentComponent->EquipClothing(clothingInterface->GetClothingType(), clothingInterface->GetClothingGrade());
+					// }
+				}
+
+				if (TakeImmediateDamage > 0)
+				{
+					auto damageReceiveComponent = actor->GetComponentByClass<UDamageReceiveComponent>();
+					if (!damageReceiveComponent)
+						UDebugMessages::LogError(this, "cannot take immediate damage, no UDamageReceiveComponent component");
+					else
+						damageReceiveComponent->DoDamage(1, TakeImmediateDamage);
 				}
 			}
-
-			if (TakeImmediateDamage > 0)
-			{
-				auto damageRecieveComponent = actor->GetComponentByClass<UDamageRecieveComponent>();
-				if (!damageRecieveComponent)
-					UDebugMessages::LogError(this, "cannot take immediate damage, no UDamageRecieveComponent component");
-				else
-					damageRecieveComponent->DoDamage(1, TakeImmediateDamage);
-			}
+			Destroy();
 		}
-		Destroy();
 	}
 }
 

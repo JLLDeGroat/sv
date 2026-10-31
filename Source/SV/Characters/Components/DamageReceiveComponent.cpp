@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
-#include "DamageRecieveComponent.h"
+#include "DamageReceiveComponent.h"
 #include "CharacterDetailsComponent.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "../../Delegates/CharacterDelegates.h"
@@ -18,8 +17,11 @@
 #include "../Anim/CharAnimInstance.h"
 #include "../../Player/Components/PawnCameraComponent.h"
 #include "DropResourceComponent.h"
+
+DEFINE_LOG_CATEGORY(LogDamageReceiveComponent)
+
 // Sets default values for this component's properties
-UDamageRecieveComponent::UDamageRecieveComponent(const FObjectInitializer& ObjectInitializer)
+UDamageReceiveComponent::UDamageReceiveComponent(const FObjectInitializer &ObjectInitializer)
 	: UAnimAccessComponent(ObjectInitializer)
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
@@ -29,27 +31,27 @@ UDamageRecieveComponent::UDamageRecieveComponent(const FObjectInitializer& Objec
 	// ...
 }
 
-
 // Called when the game starts
-void UDamageRecieveComponent::BeginPlay()
+void UDamageReceiveComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
 	// ...
-
 }
 
 // Called every frame
-void UDamageRecieveComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UDamageReceiveComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
 }
 
-float UDamageRecieveComponent::DoDamage(float multiplier, int damage, float impulseDamage, FRotator angleOfDamage, FVector locationOfDamage) {
+float UDamageReceiveComponent::DoDamage(float multiplier, int damage, float impulseDamage, FRotator angleOfDamage, FVector locationOfDamage)
+{
 	auto details = GetOwner()->GetComponentByClass<UCharacterDetailsComponent>();
-	if (!details) {
+	if (!details)
+	{
 		UDebugMessages::LogError(this, "No details component, cannot take damage");
 		return 0;
 	}
@@ -61,7 +63,8 @@ float UDamageRecieveComponent::DoDamage(float multiplier, int damage, float impu
 	details->RemoveHealth(total, isDead);
 
 	auto statusComponent = GetOwner()->GetComponentByClass<UHealthAndStatusWidgetComponent>();
-	if (statusComponent) {
+	if (statusComponent)
+	{
 		UDebugMessages::LogDisplay(this, "updating health change on status widget");
 		statusComponent->UpdateOnHealthChange();
 		statusComponent->TakenDamage(total);
@@ -71,7 +74,8 @@ float UDamageRecieveComponent::DoDamage(float multiplier, int damage, float impu
 
 	UDebugMessages::LogDisplay(this, "health is now " + FString::SanitizeFloat(details->GetHealth()));
 
-	if (isDead) {
+	if (isDead)
+	{
 		TScriptInterface<ISvChar> ownerAsCharacter = GetOwner();
 
 		auto gameMode = USvUtilities::GetGameMode(GetOwner()->GetWorld());
@@ -81,20 +85,23 @@ float UDamageRecieveComponent::DoDamage(float multiplier, int damage, float impu
 		auto owner = GetOwner();
 		auto skeleton = owner->GetComponentByClass<USkeletalMeshComponent>();
 
-		GetOwner()->GetWorld()->GetTimerManager().SetTimer(DeathHandle, this, &UDamageRecieveComponent::OnDeathHandleCallback, 3.5f, false);
+		GetOwner()->GetWorld()->GetTimerManager().SetTimer(DeathHandle, this, &UDamageReceiveComponent::OnDeathHandleCallback, 3.5f, false);
 
-		if (!skeleton) {
+		if (!skeleton)
+		{
 			UDebugMessages::LogError(this, "failed to get skeletalmeshComponent on death");
 			return 0;
 		}
 
-		if (details->GetCharacterControl() == ECharacterControl::CC_Player) {
+		if (details->GetCharacterControl() == ECharacterControl::CC_Player)
+		{
 			UDebugMessages::LogDisplay(this, "time dilation set to 10%");
-			GetOwner()->GetWorld()->GetTimerManager().SetTimer(DeathPhysicsHandle, this, &UDamageRecieveComponent::OnDeathPhysicsHandleCallback, .6f, false);
+			GetOwner()->GetWorld()->GetTimerManager().SetTimer(DeathPhysicsHandle, this, &UDamageReceiveComponent::OnDeathPhysicsHandleCallback, .6f, false);
 			GetWorld()->GetWorldSettings()->TimeDilation = 0.1f;
 
 			auto pawnCamera = GetWorld()->GetFirstPlayerController()->GetPawn()->GetComponentByClass<UPawnCameraComponent>();
-			if (pawnCamera) {
+			if (pawnCamera)
+			{
 				pawnCamera->SetToDeathWatchCamera(GetOwner());
 			}
 		}
@@ -107,15 +114,17 @@ float UDamageRecieveComponent::DoDamage(float multiplier, int damage, float impu
 		else
 			skeleton->AddImpulse(angleOfDamage.Vector() * impulseDamage);
 
-		//if (location == FVector::ZeroVector)
+		// if (location == FVector::ZeroVector)
 		//	UDebugMessages::LogError(this, "location was zero vector, cannot add impulse on death");
-		//else
+		// else
 		//	skeleton->AddImpulse(FVector(0, 0, 100000));
 		//	//skeleton->AddRadialImpulse(location, 350, impulseDamage, ERadialImpulseFalloff::RIF_Linear);
 
-		if (details->GetCharacterControl() == ECharacterControl::CC_Player) {
+		if (details->GetCharacterControl() == ECharacterControl::CC_Player)
+		{
 			auto instance = USvUtilities::GetGameInstance(GetWorld());
-			if (!instance->GetCurrentGameDataManager() || !instance->GetCurrentGameDataManager()->GetCurrentGameData()) {
+			if (!instance->GetCurrentGameDataManager() || !instance->GetCurrentGameDataManager()->GetCurrentGameData())
+			{
 				UDebugMessages::LogError(this, "failed to get game instance current game data");
 				return 0.0f;
 			}
@@ -125,12 +134,14 @@ float UDamageRecieveComponent::DoDamage(float multiplier, int damage, float impu
 		}
 
 		auto dropResource = owner->GetComponentByClass<UDropResourceComponent>();
-		if (dropResource) {
+		if (dropResource)
+		{
 			dropResource->AttemptToDropResource();
 		}
 
 		auto hudDelegates = UHudDelegates::GetInstance();
-		if (!hudDelegates) {
+		if (!hudDelegates)
+		{
 			UDebugMessages::LogError(this, "failed to get hud delegates");
 			return 0.0f;
 		}
@@ -142,15 +153,23 @@ float UDamageRecieveComponent::DoDamage(float multiplier, int damage, float impu
 	return total;
 }
 
-void UDamageRecieveComponent::OnDeathHandleCallback() {
+float UDamageReceiveComponent::DamageToMitigateFromBullet(float multiplier, int damage)
+{
+	return 0;
+}
+
+void UDamageReceiveComponent::OnDeathHandleCallback()
+{
 	GetOwner()->Destroy();
 }
 
-void UDamageRecieveComponent::OnDeathPhysicsHandleCallback() {
+void UDamageReceiveComponent::OnDeathPhysicsHandleCallback()
+{
 	GetWorld()->GetWorldSettings()->TimeDilation = 1.0f;
 
 	auto pawnCamera = GetWorld()->GetFirstPlayerController()->GetPawn()->GetComponentByClass<UPawnCameraComponent>();
-	if (pawnCamera) {
+	if (pawnCamera)
+	{
 		pawnCamera->SetEndDeathWatchCamera();
 	}
 }

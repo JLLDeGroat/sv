@@ -11,7 +11,7 @@ class UGridMovementComponent;
 class UTargetingComponent;
 class UEquipmentComponent;
 class UAttackComponent;
-class UDamageRecieveComponent;
+class UDamageReceiveComponent;
 class UAnimSpeedComponent;
 class UThrowableComponent;
 class UActivateTogglesComponent;
@@ -59,7 +59,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UAttackComponent *AttackComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	UDamageRecieveComponent *DamageRecieveComponent;
+	UDamageReceiveComponent *DamageReceiveComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UAnimSpeedComponent *AnimSpeedComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

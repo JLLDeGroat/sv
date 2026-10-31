@@ -365,6 +365,51 @@ FString USvUtilities::GetSocketNameFromAttachment(EAttachType attachmentType)
 	case EAttachType::AT_LeftHand:
 		result = "LeftHandSocket";
 		break;
+
+	case EAttachType::AT_Helmet:
+		result = "HeadHelmetSocket";
+		break;
+	case EAttachType::AT_LeftShoulder:
+		result = "LeftShoulderSocket";
+		break;
+	case EAttachType::AT_RightShoulder:
+		result = "RightShoulderSocket";
+		break;
+	case EAttachType::AT_LeftArmGuard:
+		result = "LeftArmGuardSocket";
+		break;
+	case EAttachType::AT_RightArmGuard:
+		result = "RightArmGuardSocket";
+		break;
+	case EAttachType::AT_LeftWristGuard:
+		result = "LeftWristGuardSocket";
+		break;
+	case EAttachType::AT_RightWristGuard:
+		result = "RightWristGuardSocket";
+		break;
+
+	case EAttachType::AT_FrontChestGuard:
+		result = "FrontGuardSocket";
+		break;
+	case EAttachType::AT_BackChestGuard:
+		result = "BackGuardSocket";
+		break;
+
+	case EAttachType::AT_LeftThighGuard:
+		result = "LeftThighGuardSocket";
+		break;
+
+	case EAttachType::AT_RightThighGuard:
+		result = "RightThighGuardSocket";
+		break;
+
+	case EAttachType::AT_LeftShinGuard:
+		result = "LeftShinGuardSocket";
+		break;
+
+	case EAttachType::AT_RightShinGuard:
+		result = "RightShinGuardSocket";
+		break;
 	}
 
 	return result;
@@ -408,38 +453,38 @@ UMaterial *USvUtilities::GetRandomBloodSpatterForWall()
 {
 	auto sanitizedRandom = FString::SanitizeFloat(FMath::RandRange(1, 17), 0);
 	FString reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter" + sanitizedRandom + "_M.WallSpatter" + sanitizedRandom + "_M'";
-	//auto reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter10_M.WallSpatter10_M'";
-	// auto random = FMath::RandRange(0, 9);
-	// switch (random)
-	// {
-	// case 1:
-	// 	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter1_M.WallSpatter1_M'";
-	// 	break;
-	// case 2:
-	// 	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter2_M.WallSpatter2_M'";
-	// 	break;
-	// case 3:
-	// 	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter3_M.WallSpatter3_M'";
-	// 	break;
-	// case 4:
-	// 	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter4_M.WallSpatter4_M'";
-	// 	break;
-	// case 5:
-	// 	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter5_M.WallSpatter5_M'";
-	// 	break;
-	// case 6:
-	// 	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter6_M.WallSpatter6_M'";
-	// 	break;
-	// case 7:
-	// 	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter7_M.WallSpatter7_M'";
-	// 	break;
-	// case 8:
-	// 	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter8_M.WallSpatter8_M'";
-	// 	break;
-	// case 9:
-	// 	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter9_M.WallSpatter9_M'";
-	// 	break;
-	// }
+	// auto reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter10_M.WallSpatter10_M'";
+	//  auto random = FMath::RandRange(0, 9);
+	//  switch (random)
+	//  {
+	//  case 1:
+	//  	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter1_M.WallSpatter1_M'";
+	//  	break;
+	//  case 2:
+	//  	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter2_M.WallSpatter2_M'";
+	//  	break;
+	//  case 3:
+	//  	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter3_M.WallSpatter3_M'";
+	//  	break;
+	//  case 4:
+	//  	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter4_M.WallSpatter4_M'";
+	//  	break;
+	//  case 5:
+	//  	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter5_M.WallSpatter5_M'";
+	//  	break;
+	//  case 6:
+	//  	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter6_M.WallSpatter6_M'";
+	//  	break;
+	//  case 7:
+	//  	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter7_M.WallSpatter7_M'";
+	//  	break;
+	//  case 8:
+	//  	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter8_M.WallSpatter8_M'";
+	//  	break;
+	//  case 9:
+	//  	reference = "/Script/Engine.Material'/Game/Decals/Spatters/Wall/WallSpatter9_M.WallSpatter9_M'";
+	//  	break;
+	//  }
 
 	return GetMaterial(reference);
 }

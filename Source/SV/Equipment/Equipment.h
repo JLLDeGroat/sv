@@ -24,6 +24,8 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UEquipmentDetailsComponent* EquipmentDetailsComponent;
+
+	/* only used for weapons & utilities... clothing has separate attach process */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UAttachedVectorComponent* AttachedVectorComponent;
 
 public:	

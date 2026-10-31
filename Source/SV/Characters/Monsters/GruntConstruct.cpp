@@ -9,7 +9,7 @@
 #include "../Components/CharacterDetailsComponent.h"
 #include "../Components/HitBoxComponent.h"
 #include "../Components/HitCapsuleComponent.h"
-#include "../Components/DamageRecieveComponent.h"
+#include "../Components/DamageReceiveComponent.h"
 #include "../Components/EquipmentComponent.h"
 #include "../Components/SkillsComponent.h"
 #include "../Components/AttackComponent.h"

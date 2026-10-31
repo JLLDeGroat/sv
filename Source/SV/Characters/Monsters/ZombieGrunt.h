@@ -10,7 +10,7 @@
 class UGridMovementComponent;
 class UHitCapsuleComponent;
 class UHitBoxComponent;
-class UDamageRecieveComponent;
+class UDamageReceiveComponent;
 class UEquipmentComponent;
 class USkillsComponent;
 class UAttackComponent;
@@ -35,7 +35,7 @@ protected:
 	virtual UGridMovementComponent* GetGridMovementComponent() override;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UGridMovementComponent* GridMovementComponent;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) UDamageRecieveComponent* DamageRecieveComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) UDamageReceiveComponent* DamageReceiveComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UEquipmentComponent* EquipmentComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) USkillsComponent* SkillComponent;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere) UAttackComponent* AttackComponent;

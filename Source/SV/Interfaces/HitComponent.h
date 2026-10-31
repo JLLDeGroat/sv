@@ -8,6 +8,7 @@
 
 class UModularSkeletonComponent;
 class AEquipment;
+class UPrimitiveComponent;
 
 UINTERFACE(BlueprintType)
 class SV_API UHitComponent : public UInterface
@@ -33,5 +34,7 @@ public:
 	virtual void SetIsPreferredHitLocation(bool val) = 0;
 	virtual bool GetIsPreferredHitLocation() = 0;
 	virtual FVector GetHitLocation() = 0;
-	virtual AActor *GetOwner() = 0;
+	virtual AActor *GetOwningActor() = 0;
+
+	virtual UPrimitiveComponent *GetAsPrimitiveComponent() = 0;
 };

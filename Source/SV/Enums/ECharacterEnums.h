@@ -8,21 +8,24 @@
  *
  */
 UENUM(BlueprintType)
-enum class ECharacterControl : uint8 {
+enum class ECharacterControl : uint8
+{
 	INVALID = 0,
 	CC_AI = 1,
 	CC_Player = 2
 };
 
 UENUM(BlueprintType)
-enum class ECharacterAnimState : uint8 {
+enum class ECharacterAnimState : uint8
+{
 	INVALID = 0,
 	AS_AR = 1,
 	AS_PISTOL = 2
 };
 
 UENUM(BlueprintType)
-enum class EAttackType : uint8 {
+enum class EAttackType : uint8
+{
 	INVALID = 0,
 	AT_NONE = 1,
 	AT_BasicFire = 2,
@@ -33,7 +36,8 @@ enum class EAttackType : uint8 {
 };
 
 UENUM(BlueprintType)
-enum class ECameraState : uint8 {
+enum class ECameraState : uint8
+{
 	INVALID = 0,
 	CS_Control,
 	CS_GunTarget,
@@ -45,12 +49,14 @@ enum class ECameraState : uint8 {
 	CS_Throw,
 	CS_Overwatch,
 	CS_ToolUsage,
-	CS_CharacterDeath
+	CS_CharacterDeath,
+	CS_AiShoot,
+	CS_AiShoot_Return
 };
 
-
 UENUM(BlueprintType)
-enum class EAttackState : uint8 {
+enum class EAttackState : uint8
+{
 	INVALID = 0,
 	CS_NONE = 1,
 	CS_RotatingToMelee = 2,
@@ -61,7 +67,8 @@ enum class EAttackState : uint8 {
 };
 
 UENUM(BlueprintType)
-enum class EActionType :uint8 {
+enum class EActionType : uint8
+{
 	INVALiD = 0,
 	AT_Shoot = 1,
 	AT_Grenade = 2,
@@ -76,25 +83,27 @@ enum class EActionType :uint8 {
 	AT_LargeHealthKit = 11,
 	AT_AnditodeKit = 12,
 	AT_FlameRetardentKit = 13,
-
 };
 
 UENUM(BlueprintType)
-enum class ETargetIcon :uint8 {
+enum class ETargetIcon : uint8
+{
 	INVALiD = 0,
 	TI_ConstructRange = 1,
 	TI_ConstructMelee = 2
 };
 
 UENUM(BlueprintType)
-enum class EBloodType :uint8 {
+enum class EBloodType : uint8
+{
 	INVALiD = 0,
 	BT_RedBlood = 1,
 	BT_PurpleCrystal = 2
 };
 
 UENUM(BlueprintType)
-enum class EDebuffType : uint8 {
+enum class EDebuffType : uint8
+{
 	INVALID = 0,
 	DBT_Accuracy = 1,
 };
@@ -102,15 +111,16 @@ enum class EDebuffType : uint8 {
 class SV_API ECharacterEnums
 {
 public:
-	template< typename T >
+	template <typename T>
 	static FORCEINLINE FString ToString(T EnumValue)
 	{
-		static_assert(TIsUEnumClass< T >::Value, "'T' template parameter to EnumToString must be a valid UEnum");
-		return StaticEnum< T >()->GetNameStringByIndex((int32)EnumValue);
+		static_assert(TIsUEnumClass<T>::Value, "'T' template parameter to EnumToString must be a valid UEnum");
+		return StaticEnum<T>()->GetNameStringByIndex((int32)EnumValue);
 	}
 
-	static FORCEINLINE FString GetCameraStateAsString(ECameraState cState) {
-		UEnum* EnumPtr = FindObject<UEnum>(GetTransientPackage(), TEXT("ECameraState"), true);
+	static FORCEINLINE FString GetCameraStateAsString(ECameraState cState)
+	{
+		UEnum *EnumPtr = FindObject<UEnum>(GetTransientPackage(), TEXT("ECameraState"), EFindObjectFlags::ExactClass);
 		if (EnumPtr)
 			return EnumPtr->GetNameStringByValue((int64)cState);
 		else

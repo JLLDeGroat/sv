@@ -4,7 +4,7 @@
 #include "SkillsComponent.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "../Components/AttackComponent.h"
-#include "../Components/DamageRecieveComponent.h"
+#include "../Components/DamageReceiveComponent.h"
 #include "../../Interfaces/SvChar.h"
 #include "../../Instance/SvGameInstance.h"
 
@@ -65,10 +65,10 @@ void USkillsComponent::UseCurrentSkillOnTarget() {
 	auto attackComponent = GetOwner()->GetComponentByClass<UAttackComponent>();
 	if (attackComponent) {
 		auto target = attackComponent->GetCurrentTargetCharacter();
-		auto damageRecieve = target->GetAsActor()->GetComponentByClass<UDamageRecieveComponent>();
+		auto damageReceive = target->GetAsActor()->GetComponentByClass<UDamageReceiveComponent>();
 
 		auto damage = FMath::RandRange(CurrentActiveSkill.GetDamageMin(), CurrentActiveSkill.GetDamageMax());
 
-		damageRecieve->DoDamage(1.0f, damage);
+		damageReceive->DoDamage(1.0f, damage);
 	}
 }

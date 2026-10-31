@@ -1,16 +1,20 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PostMovementRunnable.h"
-#include "../Characters/Components/AIComponent.h"
-#include "../Delegates/AIDelegates.h"
+#include "../../Characters/Components/AIComponent.h"
+#include "../../Delegates/AIDelegates.h"
 
-#include "PostMovements/PostMovementCrouch.h"
-#include "PostMovements/PostMovementWinLossChecker.h"
-#include "PostMovements/PostMovementFogHandler.h"
-#include "PostMovements/Interfaces/PostMovementComponent.h"
+#include "../../Enums/ECharacterEnums.h"
 
-#include "../Player/Components/CameraFollowComponent.h"
+#include "PostMovementCrouch.h"
+#include "PostMovementWinLossChecker.h"
+#include "PostMovementFogHandler.h"
+#include "Interfaces/PostMovementComponent.h"
 
+#include "../../Player/Components/CameraFollowComponent.h"
+#include "../../Player/Components/PawnCameraComponent.h"
+
+#pragma optimize("", off)
 void UPostMovementRunnable::ActivateThread()
 {
 	auto postMovementCrouch = (IPostMovementComponent *)NewObject<UPostMovementCrouch>(this);
@@ -29,15 +33,17 @@ void UPostMovementRunnable::ActivateThread()
 	postMovementFogHandler->Finish();
 
 	auto pawn = GetWorld()->GetFirstPlayerController()->GetPawn();
-	auto cameraComponent = pawn->GetComponentByClass<UCameraFollowComponent>();
-	if (cameraComponent)
-		cameraComponent->CompleteFollow();
+	auto cameraFollowComponent = pawn->GetComponentByClass<UCameraFollowComponent>();
+	auto cameraComponent = pawn->GetComponentByClass<UPawnCameraComponent>();
 
 	if (MovedActor->GetComponentByClass<UAIComponent>())
 	{
 		auto aiDelegates = UAIDelegates::GetInstance();
 		if (!aiDelegates)
 			return UDebugMessages::LogError(this, "failed to get ai delegates");
+
+		if (cameraComponent->GetCurrentCameraState() == ECameraState::CS_AiShoot)
+			cameraComponent->UpdateCameraState(ECameraState::CS_Control);
 
 		FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady(
 			[aiDelegates]
@@ -46,7 +52,11 @@ void UPostMovementRunnable::ActivateThread()
 			},
 			TStatId(), nullptr, ENamedThreads::GameThread);
 	}
+
+	if (cameraFollowComponent)
+		cameraFollowComponent->CompleteFollow();
 }
+#pragma optimize("", on)
 
 UPostMovementRunnable *UPostMovementRunnable::InsertVariables(AActor *movementActor)
 {

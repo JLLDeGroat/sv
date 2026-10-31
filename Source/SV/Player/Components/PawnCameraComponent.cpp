@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "PawnCameraComponent.h"
 #include "Camera/CameraComponent.h"
 #include "../../Utilities/SvUtilities.h"
@@ -10,6 +9,8 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "../../Characters/Components/HealthAndStatusWidgetComponent.h"
 
+DEFINE_LOG_CATEGORY(LogPawnCameraComponent)
+
 // Sets default values for this component's properties
 UPawnCameraComponent::UPawnCameraComponent()
 {
@@ -17,9 +18,7 @@ UPawnCameraComponent::UPawnCameraComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 	CurrentCameraState = ECameraState::CS_Control;
-
 }
-
 
 // Called when the game starts
 void UPawnCameraComponent::BeginPlay()
@@ -29,18 +28,18 @@ void UPawnCameraComponent::BeginPlay()
 	CameraComponent = GetOwner()->GetComponentByClass<UCameraComponent>();
 
 	if (!CameraComponent)
-		return UDebugMessages::LogError(this, "failed to get camera comonent");
-
+		return UDebugMessages::LogError(this, "failed to get camera comonent", LogPawnCameraComponent);
 
 	auto currentLoc = CameraComponent->GetComponentLocation();
 	auto forwardVec = CameraComponent->GetForwardVector();
 
 	FHitResult hitResult;
 	GetWorld()->LineTraceSingleByChannel(hitResult, currentLoc, (currentLoc + (forwardVec * 5000)), USvUtilities::GetFloorTargetChannel());
-	if (hitResult.bBlockingHit || hitResult.GetActor()) {
-		//DrawDebugLine(GetWorld(), currentLoc, hitResult.Location, FColor::Red, true, 100, 0, 4);
+	if (hitResult.bBlockingHit || hitResult.GetActor())
+	{
+		// DrawDebugLine(GetWorld(), currentLoc, hitResult.Location, FColor::Red, true, 100, 0, 4);
 		DefaultCameraOffset = hitResult.Location - currentLoc;
-		UDebugMessages::LogDisplay(this, DefaultCameraOffset.ToString());
+		UDebugMessages::LogDisplay(this, DefaultCameraOffset.ToString(), LogPawnCameraComponent);
 		if (DefaultCameraOffset.X > 0)
 			DefaultCameraOffset.X = DefaultCameraOffset.X * -1;
 
@@ -51,13 +50,13 @@ void UPawnCameraComponent::BeginPlay()
 	}
 }
 
-
 // Called every frame
-void UPawnCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UPawnCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (CurrentlyMoving) {
+	if (CurrentlyMoving)
+	{
 		auto currentLocation = GetOwner()->GetActorLocation();
 		FVector newLocation = currentLocation;
 		FRotator newRotation = CameraComponent->GetComponentRotation();
@@ -66,27 +65,43 @@ void UPawnCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 		if (CurrentCameraState == ECameraState::CS_CinematicShoot ||
 			CurrentCameraState == ECameraState::CS_OverwatchCinematicShoot)
 		{
-			if (GetValidCinematicLocation(newLocation)) {
+			if (GetValidCinematicLocation(newLocation))
+			{
 				requiredRotation = UGridUtilities::FindLookAtRotation(newLocation, CinematicActorTarget->GetActorLocation());
 				newRotation = UKismetMathLibrary::RInterpTo_Constant(CameraComponent->GetComponentRotation(), requiredRotation, DeltaTime, 500);
 			}
-			else UDebugMessages::LogError(this, "failed to get valid cinematic location");
+			else
+				UDebugMessages::LogError(this, "failed to get valid cinematic location", LogPawnCameraComponent);
 		}
-		else if (CurrentCameraState == ECameraState::CS_CharacterDeath) {
+		else if (CurrentCameraState == ECameraState::CS_CharacterDeath)
+		{
 			newLocation = DeathWatchFromLocation;
 			newRotation = UGridUtilities::FindLookAtRotation(newLocation, DeathComponentToWatch->GetComponentLocation());
 		}
-		else {
+		else if (CurrentCameraState == ECameraState::CS_AiShoot)
+		{
+			// UDebugMessages::LogDisplay(this, "AI shoot hit here", LogPawnCameraComponent);
+			auto mid = (AiShooter->GetActorLocation() + AiShootersTarget->GetActorLocation()) / 2;
+
+			newLocation = UKismetMathLibrary::VInterpTo_Constant(currentLocation, CurrentMoveTo, DeltaTime, 1500);
+			requiredRotation = UGridUtilities::FindLookAtRotation(newLocation, mid);
+			newRotation = UKismetMathLibrary::RInterpTo_Constant(newRotation, requiredRotation, DeltaTime, 500);
+		}
+		else if (CurrentCameraState == ECameraState::CS_AiShoot_Return)
+		{
+			newLocation = UKismetMathLibrary::VInterpTo_Constant(currentLocation, ReturnLocation, DeltaTime, 1500);
+			newRotation = UKismetMathLibrary::RInterpTo_Constant(newRotation, ReturnRotation, DeltaTime, 500);
+		}
+		else
+		{
 			newLocation = UKismetMathLibrary::VInterpTo_Constant(currentLocation, CurrentMoveTo, DeltaTime, 1500);
 
-			requiredRotation = ShoudUseSetRotation() ?
-				UGridUtilities::FindLookAtRotation(newLocation, CurrentRotateToLocation) :
-				FRotator(-70, 0, 0);
+			requiredRotation = ShoudUseSetRotation() ? UGridUtilities::FindLookAtRotation(newLocation, CurrentRotateToLocation) : FRotator(-70, 0, 0);
 
-			newRotation = UKismetMathLibrary::RInterpTo_Constant(CameraComponent->GetComponentRotation(), requiredRotation, DeltaTime, 500);
+			newRotation = UKismetMathLibrary::RInterpTo_Constant(newRotation, requiredRotation, DeltaTime, 500);
 		}
 
-		//UDebugMessages::LogDisplay(this, "moving from: " + CameraComponent->GetComponentLocation().ToString() + " to: " +
+		// UDebugMessages::LogDisplay(this, "moving from: " + CameraComponent->GetComponentLocation().ToString() + " to: " +
 		//	CurrentMoveTo.ToString() +
 		//	" newloc: " + newLocation.ToString());
 
@@ -97,7 +112,8 @@ void UPawnCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 			return;
 
 		if (FVector::Dist(CameraComponent->GetComponentLocation(), CurrentMoveTo) < 5 &&
-			CameraComponent->GetComponentRotation().Equals(requiredRotation)) {
+			CameraComponent->GetComponentRotation().Equals(requiredRotation))
+		{
 			CurrentlyMoving = false;
 			CurrentRotateToLocation = FVector::ZeroVector;
 			SetComponentTickEnabled(false);
@@ -108,13 +124,15 @@ void UPawnCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	}
 }
 
-void UPawnCameraComponent::UpdateCameraState(ECameraState cameraState, FVector moveToLocation, FVector lookAtLocation, bool overrideCameraMovements, bool doNotSetReturn) {
+void UPawnCameraComponent::UpdateCameraState(ECameraState cameraState, FVector moveToLocation, FVector lookAtLocation, bool overrideCameraMovements, bool doNotSetReturn)
+{
 	CurrentCameraState = cameraState;
 
 	if (overrideCameraMovements)
 		return;
 
-	if (CurrentCameraState == ECameraState::CS_Control) {
+	if (CurrentCameraState == ECameraState::CS_Control)
+	{
 		CurrentMoveTo = ReturnLocation;
 		CurrentRotateToLocation = lookAtLocation;
 
@@ -128,35 +146,78 @@ void UPawnCameraComponent::UpdateCameraState(ECameraState cameraState, FVector m
 
 		AttemptToAlterAttackerStatusWidgetVisibility(true);
 	}
-	else if (CurrentCameraState == ECameraState::CS_ReTarget) {
+	else if (CurrentCameraState == ECameraState::CS_ReTarget)
+	{
 		CurrentMoveTo = moveToLocation + DefaultCameraOffset;
 		AttemptToAlterAttackerStatusWidgetVisibility(true);
 	}
-	else {
-		if (!doNotSetReturn) {
+	else
+	{
+		if (!doNotSetReturn)
+		{
 			ReturnLocation = CameraComponent->GetComponentLocation();
 		}
 		CurrentMoveTo = moveToLocation;
 		CurrentRotateToLocation = lookAtLocation;
 	}
 
+	SetCameraMoving();
+}
+
+void UPawnCameraComponent::UpdateCameraState(ECameraState cameraState, AActor *aiShooter, AActor *aiShootersTarget)
+{
+	AiShooter = aiShooter;
+	AiShootersTarget = aiShootersTarget;
+	CurrentCameraState = cameraState;
+
+	ReturnLocation = CameraComponent->GetComponentLocation();
+	ReturnRotation = CameraComponent->GetComponentRotation();
+
+	// calculating in the middle and above with an offset should the camera go when the ai shoots so both the shooter and shootee are in vision of the camera
+	auto aiShooterLocation = AiShooter->GetActorLocation();
+	auto shootingAtLocation = AiShootersTarget->GetActorLocation();
+
+	auto mid = (aiShooterLocation + shootingAtLocation) / 2;
+
+	auto midDistance = FVector::Dist(aiShooterLocation, mid);
+	const FVector shooterToTarget = shootingAtLocation - aiShooterLocation;
+	const FVector horizontalShotDirection = FVector(shooterToTarget.X, shooterToTarget.Y, 0).GetSafeNormal();
+	FVector cameraLocation = mid + FVector::UpVector * FVector::Dist(aiShooterLocation, mid);
+	if (!horizontalShotDirection.IsNearlyZero())
+	{
+		const FVector cameraSide = FVector::CrossProduct(FVector::UpVector, horizontalShotDirection).GetSafeNormal();
+		const float cameraOffset = midDistance * FMath::Sqrt(0.25f);
+		cameraLocation = mid + (cameraSide * cameraOffset) + (FVector::UpVector * FVector::Dist(aiShooterLocation, mid));
+	}
+
+	CurrentMoveTo = cameraLocation;
+
+	SetCameraMoving();
+}
+
+void UPawnCameraComponent::SetCameraMoving()
+{
 	CurrentlyMoving = true;
 	SetComponentTickEnabled(true);
 }
 
-void UPawnCameraComponent::DoCinematicAttackCameraMovement(AActor* attacker, AActor* target) {
+void UPawnCameraComponent::DoCinematicAttackCameraMovement(AActor *attacker, AActor *target)
+{
 	CurrentCameraState = ECameraState::CS_CinematicShoot;
 	CinematicAttackCameraMovement(attacker, target);
 }
-void UPawnCameraComponent::DoOverwatchCinematicAttackCameraMovement(AActor* attacker, AActor* target) {
+void UPawnCameraComponent::DoOverwatchCinematicAttackCameraMovement(AActor *attacker, AActor *target)
+{
 	CurrentCameraState = ECameraState::CS_OverwatchCinematicShoot;
-	//ReturnLocation = CameraComponent->GetComponentLocation();
+	// ReturnLocation = CameraComponent->GetComponentLocation();
 	CinematicAttackCameraMovement(attacker, target);
 }
-void UPawnCameraComponent::SetOverwatchReturnLocation(FVector loc) {
+void UPawnCameraComponent::SetOverwatchReturnLocation(FVector loc)
+{
 	ReturnLocation = loc;
 }
-void UPawnCameraComponent::CinematicAttackCameraMovement(AActor* attacker, AActor* target) {
+void UPawnCameraComponent::CinematicAttackCameraMovement(AActor *attacker, AActor *target)
+{
 	CinematicActorAttacker = attacker;
 	CinematicActorTarget = target;
 
@@ -171,15 +232,18 @@ void UPawnCameraComponent::CinematicAttackCameraMovement(AActor* attacker, AActo
 	CameraComponent->FieldOfView = 90.0f;
 }
 
-ECameraState UPawnCameraComponent::GetCurrentCameraState() {
+ECameraState UPawnCameraComponent::GetCurrentCameraState()
+{
 	return CurrentCameraState;
 }
 
-void UPawnCameraComponent::SetDefaultCameraOffset(FVector defaultValue) {
+void UPawnCameraComponent::SetDefaultCameraOffset(FVector defaultValue)
+{
 	DefaultCameraOffset = defaultValue;
 }
 
-bool UPawnCameraComponent::ShoudUseSetRotation() const {
+bool UPawnCameraComponent::ShoudUseSetRotation() const
+{
 	if (CurrentCameraState == ECameraState::CS_Control ||
 		CurrentCameraState == ECameraState::CS_ReTarget ||
 		CurrentCameraState == ECameraState::CS_ThrowTarget)
@@ -188,17 +252,20 @@ bool UPawnCameraComponent::ShoudUseSetRotation() const {
 	return true;
 }
 
-bool UPawnCameraComponent::GetValidCinematicLocation(FVector& location) {
+bool UPawnCameraComponent::GetValidCinematicLocation(FVector &location)
+{
 	return GetValidCinematicLocation(CinematicActorAttacker, location);
 }
 
-bool UPawnCameraComponent::GetValidCinematicLocation(AActor* actor, FVector& location) {
+bool UPawnCameraComponent::GetValidCinematicLocation(AActor *actor, FVector &location)
+{
 	auto skeletalComponent = actor->GetComponentByClass<USkeletalMeshComponent>();
-	if (!skeletalComponent) {
+	if (!skeletalComponent)
+	{
 		return false;
 	}
 
-	location = skeletalComponent->GetSocketLocation(FName("RightShoulderSocket"));
+	location = skeletalComponent->GetSocketLocation(FName("CinematicCameraSocket"));
 
 	if (location == FVector::ZeroVector)
 		return false;
@@ -206,20 +273,24 @@ bool UPawnCameraComponent::GetValidCinematicLocation(AActor* actor, FVector& loc
 	return true;
 }
 
-void UPawnCameraComponent::AttemptToAlterAttackerStatusWidgetVisibility(bool val) {
-	if (CinematicActorAttacker) {
+void UPawnCameraComponent::AttemptToAlterAttackerStatusWidgetVisibility(bool val)
+{
+	if (CinematicActorAttacker)
+	{
 		auto healthAndStatusComponent = CinematicActorAttacker->GetComponentByClass<UHealthAndStatusWidgetComponent>();
 		if (healthAndStatusComponent)
 			healthAndStatusComponent->SetVisibility(val);
 	}
 }
 
-void UPawnCameraComponent::SetToDeathWatchCamera(AActor* deathActor) {
+void UPawnCameraComponent::SetToDeathWatchCamera(AActor *deathActor)
+{
 	DeathActor = deathActor;
 	DeathComponentToWatch = deathActor->GetComponentByClass<USkeletalMeshComponent>();
 
 	FVector validLoc;
-	if (GetValidCinematicLocation(DeathActor, validLoc)) {
+	if (GetValidCinematicLocation(DeathActor, validLoc))
+	{
 		DeathWatchFromLocation = validLoc;
 		CurrentCameraState = ECameraState::CS_CharacterDeath;
 
@@ -230,7 +301,8 @@ void UPawnCameraComponent::SetToDeathWatchCamera(AActor* deathActor) {
 	}
 }
 
-void UPawnCameraComponent::SetEndDeathWatchCamera() {
+void UPawnCameraComponent::SetEndDeathWatchCamera()
+{
 	CurrentlyMoving = false;
 	SetComponentTickEnabled(false);
 
@@ -238,6 +310,6 @@ void UPawnCameraComponent::SetEndDeathWatchCamera() {
 
 	CameraComponent->SetWorldLocation(ReturnLocation);
 	CameraComponent->SetRelativeRotation(FRotator(-70, 0, 0));
-	
+
 	CurrentCameraState = ECameraState::CS_Control;
 }

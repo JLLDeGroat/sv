@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+
 
 #include "EquipmentComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -18,7 +18,12 @@
 #include "../Anim/CharAnimInstance.h"
 #include "../../Equipment/Guns/Components/GunActivationComponent.h"
 #include "../../Utilities/SvUtilities.h"
+#include "../../Equipment/Clothing/ClothingHelpers.h"
+#include "../../Equipment/Clothing/Clothing.h"
+#include "../../Equipment/Clothing/Components/ClothingAttachComponent.h"
 #include "StatusEffectsComponent.h"
+
+DEFINE_LOG_CATEGORY(SVLogEquipmentComponent);
 
 // Sets default values for this component's properties
 UEquipmentComponent::UEquipmentComponent(const FObjectInitializer &ObjectInitializer)
@@ -144,7 +149,6 @@ void UEquipmentComponent::FireEquippedGun()
 	auto attackComponent = GetOwner()->GetComponentByClass<UAttackComponent>();
 	if (attackComponent)
 	{
-
 		if (!CurrentMainEquipment)
 			return UDebugMessages::LogError(this, "cannot fire gun, there is no current main equipment");
 
@@ -195,6 +199,15 @@ TArray<AEquipment *> UEquipmentComponent::GetAllMeleeEquipment()
 			foundEquipment.Emplace(Equipment[i]);
 	}
 	return foundEquipment;
+}
+
+TArray<AEquipment *> UEquipmentComponent::GetAllEquipment()
+{
+	return Equipment;
+}
+TArray<AClothing *> UEquipmentComponent::GetAllClothing()
+{
+	return Clothing;
 }
 
 AEquipment *UEquipmentComponent::GetPrimaryEquipment()
@@ -338,7 +351,48 @@ ECharacterAnimState UEquipmentComponent::GetAnimStateFromGunType(EGun gunType)
 
 	return ECharacterAnimState::INVALID;
 }
+#pragma optimize("", off)
+void UEquipmentComponent::EquipClothing(EClothingType clothingType, EClothingGrade clothingGrade)
+{
+	UDebugMessages::LogDisplay(this, "Equipping Clothing", SVLogEquipmentComponent);
+	auto clothingClass = UClothingHelpers::DetermineClothingClass(clothingType, clothingGrade);
+	if (!clothingClass)
+		return UDebugMessages::LogError(this, "failed to get clothing class", SVLogEquipmentComponent);
 
+	FActorSpawnParameters spawnParams;
+	spawnParams.Owner = GetOwner();
+
+	auto spawnedClothing = GetOwner()->GetWorld()->SpawnActor<AClothing>(clothingClass, spawnParams);
+	if (!spawnedClothing)
+		return UDebugMessages::LogError(this, "failed to spawn clothing", SVLogEquipmentComponent);
+
+	auto skeleMesh = GetOwner()->GetComponentByClass<USkeletalMeshComponent>();
+	if (!skeleMesh)
+		return UDebugMessages::LogError(this, "failed to get skeletal mesh", SVLogEquipmentComponent);
+
+	// no send the skeleton to the clothing so it can attach and set the correct vector locations
+
+	auto clothingAttachComponent = spawnedClothing->GetComponentByClass<UClothingAttachComponent>();
+	if (!clothingAttachComponent)
+		return UDebugMessages::LogError(this, "failed to get clothing attach component", SVLogEquipmentComponent);
+
+	auto attachments = clothingAttachComponent->GetAttachments();
+	if (attachments.Num() == 0)
+		return UDebugMessages::LogError(this, "failed to get attachments from clothing attach component", SVLogEquipmentComponent);
+
+	for (auto attachment : attachments)
+	{
+		auto attachSocketName = USvUtilities::GetSocketNameFromAttachment(attachment.GetType());
+		UDebugMessages::LogDisplay(this, "Attaching to  " + attachSocketName, SVLogEquipmentComponent);
+		attachment.GetMesh()->AttachToComponent(skeleMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName(attachSocketName));
+		attachment.GetMesh()->SetRelativeLocation(attachment.GetOffset());
+		attachment.GetMesh()->SetRelativeRotation(attachment.GetRotationOffset());
+		attachment.GetMesh()->SetRelativeScale3D(attachment.GetScale());
+	}
+
+	Clothing.Emplace(spawnedClothing);
+}
+#pragma optimize("", on)
 void UEquipmentComponent::UnEquip(AEquipment *equipment)
 {
 	for (int i = 0; i < Equipment.Num(); i++)
