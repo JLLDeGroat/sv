@@ -59,4 +59,5 @@ AMetalGuardShoulders::AMetalGuardShoulders(const FObjectInitializer &ObjectIniti
 
     StatsComponent->SetDamageMitigation(.2f);
     StatsComponent->SetHealth(50);
+    StatsComponent->SetMaxHealth(50);
 }

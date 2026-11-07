@@ -17,6 +17,8 @@ public:
 
 	void SetHealth(int newHealth);
 	int GetHealth();
+	void SetMaxHealth(int newMaxHealth);
+	int GetMaxHealth();
 	void RemoveFromHealth(int health);
 	void AddToHealth(int health);
 
@@ -26,6 +28,8 @@ public:
 protected:
 	UPROPERTY()
 	int Health;
+	UPROPERTY()
+	int MaxHealth;
 	UPROPERTY()
 	float DamageMitigation;
 };

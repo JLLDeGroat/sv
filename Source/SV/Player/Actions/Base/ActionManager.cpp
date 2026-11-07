@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "ActionManager.h"
 #include "../TargetAction.h"
 #include "../LeftClickAction.h"
@@ -15,6 +14,7 @@
 #include "../PickupAction.h"
 #include "../SwapWeaponAction.h"
 #include "../HealthKitUseComponent.h"
+#include "../RepairArmourAction.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
 
 // Sets default values for this component's properties
@@ -37,8 +37,8 @@ UActionManager::UActionManager()
 	PickupActionComponent = CreateDefaultSubobject<UPickupAction>(TEXT("PickupAction"));
 	SwapActionComponent = CreateDefaultSubobject<USwapWeaponAction>(TEXT("SwapAction"));
 	HealthKitUseComponent = CreateDefaultSubobject<UHealthKitUseComponent>(TEXT("HealthKitAction"));
+	RepairArmourActionComponent = CreateDefaultSubobject<URepairArmourAction>(TEXT("RepairArmourAction"));
 }
-
 
 // Called when the game starts
 void UActionManager::BeginPlay()
@@ -46,11 +46,12 @@ void UActionManager::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-
 }
 
-void UActionManager::DoActionFromUI(EActionType actionType) {
-	switch (actionType) {
+void UActionManager::DoActionFromUI(EActionType actionType)
+{
+	switch (actionType)
+	{
 	case EActionType::AT_Sleep:
 	{
 		SleepActionComponent->DoAction();
@@ -116,42 +117,54 @@ void UActionManager::DoActionFromUI(EActionType actionType) {
 		HealthKitUseComponent->DoFlameRetardent();
 	}
 	break;
+	case EActionType::AT_RepairArmour:
+	{
+		RepairArmourActionComponent->DoAction();
+	}
 	default:
 	{
 		UDebugMessages::LogDisplay(this, "Failed to get an action");
 	}
 	}
-
 }
 
-
-UTargetAction* UActionManager::GetTargetAction() {
+UTargetAction *UActionManager::GetTargetAction()
+{
 	return TargetActionComponent;
 }
-ULeftClickAction* UActionManager::GetLeftClickAction() {
+ULeftClickAction *UActionManager::GetLeftClickAction()
+{
 	return LeftClickActionComponent;
 }
-URightClickAction* UActionManager::GetRightClickAction() {
+URightClickAction *UActionManager::GetRightClickAction()
+{
 	return RightClickActionComponent;
 }
-UGrenadeActionComponent* UActionManager::GetGrenadeAction() {
+UGrenadeActionComponent *UActionManager::GetGrenadeAction()
+{
 	return GrenadeActionComponent;
 }
-UActivateToggleAction* UActionManager::GetActivateToggleAction() {
+UActivateToggleAction *UActionManager::GetActivateToggleAction()
+{
 	return ActivateToggleActionComponent;
 }
-USleepAction* UActionManager::GetSleepAction() {
+USleepAction *UActionManager::GetSleepAction()
+{
 	return SleepActionComponent;
 }
-UReloadAction* UActionManager::GetReloadAction() {
+UReloadAction *UActionManager::GetReloadAction()
+{
 	return ReloadActionComponent;
 }
-UCycleTargetAction* UActionManager::GetCycleTargetAction() {
+UCycleTargetAction *UActionManager::GetCycleTargetAction()
+{
 	return CycleTargetComponent;
 }
-UOverwatchAction* UActionManager::GetOverwatchAction() {
+UOverwatchAction *UActionManager::GetOverwatchAction()
+{
 	return OverwatchComponent;
 }
-USwapWeaponAction* UActionManager::GetSwapWeaponAction() {
+USwapWeaponAction *UActionManager::GetSwapWeaponAction()
+{
 	return SwapActionComponent;
 }

@@ -60,4 +60,5 @@ AMetalGuardChest::AMetalGuardChest(const FObjectInitializer &ObjectInitializer) 
 
     StatsComponent->SetDamageMitigation(.2f);
     StatsComponent->SetHealth(50);
+    StatsComponent->SetMaxHealth(50);
 }

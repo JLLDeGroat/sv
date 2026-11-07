@@ -83,6 +83,7 @@ enum class EActionType : uint8
 	AT_LargeHealthKit = 11,
 	AT_AnditodeKit = 12,
 	AT_FlameRetardentKit = 13,
+	AT_RepairArmour = 14
 };
 
 UENUM(BlueprintType)

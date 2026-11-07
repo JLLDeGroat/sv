@@ -22,6 +22,15 @@ int UClothingStatsComponent::GetHealth()
 	return Health;
 }
 
+void UClothingStatsComponent::SetMaxHealth(int newMaxHealth)
+{
+	MaxHealth = newMaxHealth;
+}
+int UClothingStatsComponent::GetMaxHealth()
+{
+	return MaxHealth;
+}
+
 void UClothingStatsComponent::SetDamageMitigation(float mitigation)
 {
 	DamageMitigation = mitigation;
