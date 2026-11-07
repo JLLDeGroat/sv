@@ -1,9 +1,12 @@
+-- done
 when a bullet collides with the armour, it needs to deal damage to the armour
     them remove that damage from the bullet based on somethign yet to be determined
     armour needs to be able to be damaged
 
-
+-- done
 When an enemy attacks
     we need to camarea to move so that it can see both the shooter and the shootee, find a way to make this happen
 
+
+-- doing
 a new turn action to "repair" armour that may have been damaged
