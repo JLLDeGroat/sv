@@ -94,7 +94,7 @@ void UHealthAndStatusWidgetComponent::UpdateStatusWidgetData()
 			case EClothingType::CT_Arms:
 			{
 				MaxArmArmour = stats->GetHealth();
-				ArmArmour = MaxArmArmour;
+				ArmArmour = stats->GetMaxHealth();
 				bUseArmArmourBar = true;
 				progressBarsToUse.Emplace(statusWidget->GetArmourBarArms());
 				dynamicProgressBarsToUse.Emplace(statusWidget->GetArmourBarArmsDynamic());
@@ -105,7 +105,7 @@ void UHealthAndStatusWidgetComponent::UpdateStatusWidgetData()
 			case EClothingType::CT_Legs:
 			{
 				MaxLegArmour = stats->GetHealth();
-				LegArmour = MaxLegArmour;
+				LegArmour = stats->GetMaxHealth();
 				bUseLegArmourBar = true;
 				progressBarsToUse.Emplace(statusWidget->GetArmourBarLegs());
 				dynamicProgressBarsToUse.Emplace(statusWidget->GetArmourBarLegsDynamic());
@@ -116,7 +116,7 @@ void UHealthAndStatusWidgetComponent::UpdateStatusWidgetData()
 			case EClothingType::CT_Shoulders:
 			{
 				MaxShoulderArmour = stats->GetHealth();
-				ShoulderArmour = MaxShoulderArmour;
+				ShoulderArmour = stats->GetMaxHealth();
 				bUseShoulderArmourBar = true;
 				progressBarsToUse.Emplace(statusWidget->GetArmourBarShoulder());
 				dynamicProgressBarsToUse.Emplace(statusWidget->GetArmourBarShoulderDynamic());
@@ -127,7 +127,7 @@ void UHealthAndStatusWidgetComponent::UpdateStatusWidgetData()
 			case EClothingType::CT_Chest:
 			{
 				MaxChestArmour = stats->GetHealth();
-				ChestArmour = MaxChestArmour;
+				ChestArmour = stats->GetMaxHealth();
 				bUseChestArmourBar = true;
 				progressBarsToUse.Emplace(statusWidget->GetArmourBarChest());
 				dynamicProgressBarsToUse.Emplace(statusWidget->GetArmourBarChestDynamic());
@@ -138,7 +138,7 @@ void UHealthAndStatusWidgetComponent::UpdateStatusWidgetData()
 			case EClothingType::CT_Helmet:
 			{
 				MaxHelmetArmour = stats->GetHealth();
-				HelmetArmour = MaxHelmetArmour;
+				HelmetArmour = stats->GetMaxHealth();
 				bUseHelmetArmourBar = true;
 				progressBarsToUse.Emplace(statusWidget->GetArmourBarHelmet());
 				dynamicProgressBarsToUse.Emplace(statusWidget->GetArmourBarHelmetDynamic());

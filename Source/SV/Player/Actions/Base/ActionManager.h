@@ -20,6 +20,7 @@ class UExtractionAction;
 class UPickupAction;
 class USwapWeaponAction;
 class UHealthKitUseComponent;
+class URepairArmourAction;
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class SV_API UActionManager : public UActorComponent
@@ -60,4 +61,5 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) UPickupAction* PickupActionComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) USwapWeaponAction* SwapActionComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) UHealthKitUseComponent* HealthKitUseComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) URepairArmourAction* RepairArmourActionComponent;
 };

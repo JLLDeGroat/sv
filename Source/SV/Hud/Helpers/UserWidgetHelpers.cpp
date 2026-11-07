@@ -393,6 +393,10 @@ bool UUserWidgetHelpers::GetNameAndDescriptionFromAction(EActionType actionType,
 		name = "Swap weapon";
 		desc = "Swap to your altenate gift from above";
 		break;
+	case EActionType::AT_RepairArmour:
+		name = "Repair Armour";
+		desc = "Repair your armour, it will not last forever.";
+		break;
 	}
 
 	return name != desc;

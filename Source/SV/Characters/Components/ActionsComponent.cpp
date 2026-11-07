@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "ActionsComponent.h"
 #include "TargetingComponent.h"
 #include "EquipmentComponent.h"
@@ -13,6 +12,9 @@
 #include "../../Characters/Components/ActivateTogglesComponent.h"
 #include "../../Characters/Components/HealthKitsComponent.h"
 #include "VgCore/Domain/Debug/DebugMessages.h"
+
+#include "../../Equipment/Clothing/Clothing.h"
+#include "../../Equipment/Clothing/Components/ClothingStatsComponent.h"
 
 // Sets default values for this component's properties
 UActionsComponent::UActionsComponent()
@@ -28,14 +30,17 @@ void UActionsComponent::BeginPlay()
 	Super::BeginPlay();
 }
 
-void UActionsComponent::SetCanExtract(bool val) {
+void UActionsComponent::SetCanExtract(bool val)
+{
 	bCanExtract = val;
 }
-bool UActionsComponent::GetCanExtract() {
+bool UActionsComponent::GetCanExtract()
+{
 	return bCanExtract;
 }
 
-void UActionsComponent::SendActionsToUI() {
+void UActionsComponent::SendActionsToUI()
+{
 	UDebugMessages::LogDisplay(this, "SendActionsToUI");
 	auto hudDelegates = UHudDelegates::GetInstance();
 	if (!hudDelegates)
@@ -49,12 +54,15 @@ void UActionsComponent::SendActionsToUI() {
 		return UDebugMessages::LogError(this, "could not find character details");
 
 	auto equipmentComponent = GetOwner()->GetComponentByClass<UEquipmentComponent>();
-	if (equipmentComponent) {
+	if (equipmentComponent)
+	{
 		auto primaryEquipment = equipmentComponent->GetPrimaryEquipment();
-		if (primaryEquipment) {
+		if (primaryEquipment)
+		{
 			auto primaryEquipmentDetails = primaryEquipment->GetComponentByClass<UEquipmentDetailsComponent>();
 
-			if (primaryEquipmentDetails) {
+			if (primaryEquipmentDetails)
+			{
 				if (primaryEquipmentDetails->CanReloadWeapon())
 					hudDelegates->_AddActionIconToHud.Broadcast(EActionType::AT_Reload, "R");
 
@@ -71,25 +79,38 @@ void UActionsComponent::SendActionsToUI() {
 
 		if (equipmentComponent->GetCanSwapWeapon())
 			hudDelegates->_AddActionIconToHud.Broadcast(EActionType::AT_SwapWeapon, ".");
-	}
 
-	auto activateToggleComponent = GetOwner()->GetComponentByClass<UActivateTogglesComponent>();
-	if (activateToggleComponent) {
-		auto toggles = activateToggleComponent->GetToggleComponents();
-		for (int i = 0; i < toggles.Num(); i++) {
-			if (toggles[i]) {
-				hudDelegates->_AddActionIconToHud.Broadcast(EActionType::AT_Interact, "");
+		for (auto clothing : equipmentComponent->GetAllClothing())
+		{
+			auto clothingStats = clothing->GetComponentByClass<UClothingStatsComponent>();
+			if (clothingStats && clothingStats->GetHealth() < clothingStats->GetMaxHealth())
+			{
+				hudDelegates->_AddActionIconToHud.Broadcast(EActionType::AT_RepairArmour, "H");
+				break;
 			}
 		}
 	}
 
+	auto activateToggleComponent = GetOwner()->GetComponentByClass<UActivateTogglesComponent>();
+	if (activateToggleComponent)
+	{
+		auto toggles = activateToggleComponent->GetToggleComponents();
+		for (int i = 0; i < toggles.Num(); i++)
+		{
+			if (toggles[i])
+			{
+				hudDelegates->_AddActionIconToHud.Broadcast(EActionType::AT_Interact, "");
+			}
+		}
+	}
 
 	auto throwableComponent = GetOwner()->GetComponentByClass<UThrowableComponent>();
 	if (throwableComponent && throwableComponent->GetThrowableAmount(EThrowable::T_Grenade))
 		hudDelegates->_AddActionIconToHud.Broadcast(EActionType::AT_Grenade, "G");
 
 	auto healthKitsComponent = GetOwner()->GetComponentByClass<UHealthKitsComponent>();
-	if (healthKitsComponent) {
+	if (healthKitsComponent)
+	{
 		if (healthKitsComponent->GetHealthKitAmounts(EHealthKits::HK_Basic))
 			hudDelegates->_AddActionIconToHud.Broadcast(EActionType::AT_BasicHealthKit, "");
 
@@ -97,8 +118,8 @@ void UActionsComponent::SendActionsToUI() {
 			hudDelegates->_AddActionIconToHud.Broadcast(EActionType::AT_LargeHealthKit, "");
 	}
 
-
-	if (bCanExtract) {
+	if (bCanExtract)
+	{
 		hudDelegates->_AddActionIconToHud.Broadcast(EActionType::AT_Extract, "E");
 	}
 
