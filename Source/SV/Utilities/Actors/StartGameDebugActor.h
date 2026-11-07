@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "StartGameDebugActor.generated.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(SvStartGameDebugActor, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(SVLogStartGameDebugActor, Log, All);
 
 class UStaticMeshComponent;
 UCLASS()

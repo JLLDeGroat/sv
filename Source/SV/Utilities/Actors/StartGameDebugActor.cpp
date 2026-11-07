@@ -5,7 +5,7 @@
 #include "../SvUtilities.h"
 #include "Kismet/GameplayStatics.h"
 
-DEFINE_LOG_CATEGORY(SvStartGameDebugActor)
+DEFINE_LOG_CATEGORY(SVLogStartGameDebugActor)
 
 // Sets default values
 AStartGameDebugActor::AStartGameDebugActor()

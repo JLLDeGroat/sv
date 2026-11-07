@@ -6,7 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "MainMenuLayoutWidget.generated.h"
 
-SV_API DECLARE_LOG_CATEGORY_EXTERN(SVMainMenuLayoutWidget, Log, All);
+SV_API DECLARE_LOG_CATEGORY_EXTERN(SVLogMainMenuLayoutWidget, Log, All);
 
 class UNewGameOptionsWidget;
 class UCancelButtonWidget;

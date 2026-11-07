@@ -18,7 +18,7 @@
 #include "../../Player/Components/PawnCameraComponent.h"
 #include "DropResourceComponent.h"
 
-DEFINE_LOG_CATEGORY(LogDamageReceiveComponent)
+DEFINE_LOG_CATEGORY(SVLogDamageReceiveComponent)
 
 // Sets default values for this component's properties
 UDamageReceiveComponent::UDamageReceiveComponent(const FObjectInitializer &ObjectInitializer)

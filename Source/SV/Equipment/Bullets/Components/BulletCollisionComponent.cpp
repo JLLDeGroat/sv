@@ -32,7 +32,7 @@
 #include "../../../Equipment/Equipment.h"
 #include "../../../Equipment/Clothing/Clothing.h"
 
-DEFINE_LOG_CATEGORY(LogBulletCollision)
+DEFINE_LOG_CATEGORY(SVLogBulletCollision)
 
 UBulletCollisionComponent::UBulletCollisionComponent(const FObjectInitializer &ObjectInitializer)
 	: UCapsuleComponent(ObjectInitializer)
@@ -47,6 +47,8 @@ UBulletCollisionComponent::UBulletCollisionComponent(const FObjectInitializer &O
 	SetCollisionResponseToChannel(USvUtilities::GetFloorTargetChannel(), ECR_Overlap);
 	SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
 
+	ComponentId = FGuid::NewGuid();
+
 	OnComponentBeginOverlap.AddDynamic(this, &UBulletCollisionComponent::Overlapped);
 }
 #pragma optimize("", off)
@@ -58,7 +60,7 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent *OverlappedComp, 
 
 	auto bulletDetails = GetOwner()->GetComponentByClass<UBulletDetailsComponent>();
 	if (!bulletDetails->GetIsSetup())
-		return UDebugMessages::LogWarning(this, "collision happened before setup, ignoring", LogBulletCollision);
+		return UDebugMessages::LogWarning(this, ComponentId.ToString() + ": " + "collision happened before setup, ignoring", SVLogBulletCollision);
 
 	// DrawDebugLine(GetWorld(), GetOwner()->GetActorLocation(), OtherComp->GetComponentLocation(), FColor::Red, false, 50, 0, 0);
 	if (OtherComp->Implements<UHitComponent>())
@@ -66,7 +68,7 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent *OverlappedComp, 
 		if (FVector::Dist(GetOwner()->GetActorLocation(), OtherComp->GetComponentLocation()) > 50)
 		{
 			GetOwner()->SetActorLocation(OtherComp->GetComponentLocation());
-			UDebugMessages::LogWarning(this, "bullet was to far away, moved to the component", LogBulletCollision);
+			UDebugMessages::LogWarning(this, ComponentId.ToString() + ": " + "bullet was to far away, moved to the component", SVLogBulletCollision);
 		}
 
 		auto actorAndHitComponent = DetermineActorToDamageWithBullet(OtherComp, OtherActor);
@@ -75,7 +77,7 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent *OverlappedComp, 
 
 		if (!actorToDamage || !hitComp)
 		{
-			UDebugMessages::LogError(this, "failed collision", LogBulletCollision);
+			UDebugMessages::LogError(this, ComponentId.ToString() + ": " + "failed collision", SVLogBulletCollision);
 			return;
 		}
 
@@ -89,7 +91,7 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent *OverlappedComp, 
 		{
 			bIsDisabled = true;
 			GetWorld()->GetTimerManager().SetTimer(DestroyTimer, this, &UBulletCollisionComponent::OnDestroyCallback, 5.0f, false);
-			return UDebugMessages::LogError(this, "no bullet details, damage Receive or character details, or has 0 penetration ERROR, will do no damage", LogBulletCollision);
+			return UDebugMessages::LogError(this, ComponentId.ToString() + ": " + "no bullet details, damage Receive or character details, or has 0 penetration ERROR, will do no damage", SVLogBulletCollision);
 		}
 		else
 		{
@@ -99,7 +101,7 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent *OverlappedComp, 
 			if (!otherCharacterDetails->GetIsDead())
 			{
 				auto damageMitigated = damageReceive->DamageToMitigateFromBullet(damageMultiplier, bulletDetails->GetBaseDamage());
-				UDebugMessages::LogDisplay(this, "bullet damage mitigated " + FString::SanitizeFloat(damageMitigated, 0) + " damage", LogBulletCollision);
+				UDebugMessages::LogDisplay(this, ComponentId.ToString() + ": " + "bullet damage mitigated " + FString::SanitizeFloat(damageMitigated, 0) + " damage", SVLogBulletCollision);
 
 				bulletDetails->AddDamageMitigation(damageMitigated);
 				auto mitigatedBaseDamage = bulletDetails->GetBaseDamage() - bulletDetails->GetDamageMitigation();
@@ -108,7 +110,7 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent *OverlappedComp, 
 
 				bulletDetails->AddToDamageDone(damageDone);
 
-				UDebugMessages::LogDisplay(this, "bullet did " + FString::SanitizeFloat(damageDone, 0) + " damage", LogBulletCollision);
+				UDebugMessages::LogDisplay(this, ComponentId.ToString() + ": " + "bullet did " + FString::SanitizeFloat(damageDone, 0) + " damage", SVLogBulletCollision);
 				AttemptToInitiateBulletSound();
 
 				if (hitComp->GetModularComponent())
@@ -124,7 +126,7 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent *OverlappedComp, 
 
 			auto sourceGun = bulletDetails->GetGunShotFrom();
 			if (!sourceGun || !sourceGun->GetAttachParentActor())
-				UDebugMessages::LogError(this, "could not determine where bullet came from", LogBulletCollision);
+				UDebugMessages::LogError(this, "could not determine where bullet came from", SVLogBulletCollision);
 			else
 			{
 				auto firer = sourceGun->GetAttachParentActor();
@@ -142,7 +144,7 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent *OverlappedComp, 
 			if (bulletDetails->GetPenetrationAbility() <= 0)
 			{
 				bIsDisabled = true;
-				UDebugMessages::LogDisplay(this, "bullet can no longer penetrate", LogBulletCollision);
+				UDebugMessages::LogDisplay(this, "bullet can no longer penetrate", SVLogBulletCollision);
 				DisableBullet();
 			}
 		}
@@ -171,7 +173,7 @@ void UBulletCollisionComponent::Overlapped(UPrimitiveComponent *OverlappedComp, 
 
 			if (bulletDetails->GetPenetrationAbility() <= 0)
 			{
-				UDebugMessages::LogDisplay(this, "bullet can no longer penetrate", LogBulletCollision);
+				UDebugMessages::LogDisplay(this, ComponentId.ToString() + ": " + "bullet can no longer penetrate", SVLogBulletCollision);
 				DisableBullet();
 			}
 		}
@@ -196,7 +198,7 @@ void UBulletCollisionComponent::AttemptToInitiateBulletSound()
 
 void UBulletCollisionComponent::OnDestroyCallback()
 {
-	UDebugMessages::LogDisplay(this, "Destroying bullet");
+	UDebugMessages::LogDisplay(this, ComponentId.ToString() + ": " + "Destroying bullet", SVLogBulletCollision);
 	GetOwner()->Destroy();
 }
 
@@ -251,7 +253,7 @@ FVector UBulletCollisionComponent::GetLocationToSpawnBloodHitEffect(UPrimitiveCo
 	if (hitComponent->GetClosestPointOnCollision(traceStart, closestPoint) >= 0.0f)
 		return closestPoint + direction * 2.0f;
 
-	UDebugMessages::LogWarning(this, "could not trace the hit component for a blood effect exit point; using its forward bound", LogBulletCollision);
+	UDebugMessages::LogWarning(this, "could not trace the hit component for a blood effect exit point; using its forward bound", SVLogBulletCollision);
 	const float forwardExtent = FVector::DotProduct(direction.GetAbs(), bounds.BoxExtent);
 	return bounds.Origin + direction * (forwardExtent + 2.0f);
 }
@@ -349,54 +351,61 @@ TTuple<AActor *, TScriptInterface<IHitComponent>> UBulletCollisionComponent::Det
 	{
 		// we found that its hit the soldier directly
 
-		UDebugMessages::LogDisplay(this, "starting multi scan", LogBulletCollision);
+		UDebugMessages::LogDisplay(this, ComponentId.ToString() + ": " + "starting multi scan", SVLogBulletCollision);
 
 		TArray<FHitResult> Hits;
 		GetCollisionSweepForBulletCollision(Hits);
 
-		UDebugMessages::LogDisplay(this, "going to get the first armor segment", LogBulletCollision);
+		UDebugMessages::LogDisplay(this, ComponentId.ToString() + ": " + "going to get the first armor segment", SVLogBulletCollision);
 		for (const FHitResult &Hit : Hits)
 		{
+			UDebugMessages::LogDisplay(this, ComponentId.ToString() + ": " + "hit actor " + Hit.GetActor()->GetName() + " | " + Hit.GetComponent()->GetName(), SVLogBulletCollision);
 			if (Hit.GetActor()->IsA<AClothing>())
 			{
-				UDebugMessages::LogDisplay(this, "hit armor segment " + Hit.GetActor()->GetName() + " | " + Hit.GetComponent()->GetName(), LogBulletCollision);
+				UDebugMessages::LogDisplay(this, ComponentId.ToString() + ": " + "hit armor segment " + Hit.GetActor()->GetName() + " | " + Hit.GetComponent()->GetName(), SVLogBulletCollision);
 				if (ActorAlreadyCollidedWith(Hit.GetActor()))
 				{
-					UDebugMessages::LogWarning(this, "Already collided with armor, use person", LogBulletCollision);
+					UDebugMessages::LogWarning(this, ComponentId.ToString() + ": " + "Already collided with armor, use person", SVLogBulletCollision);
 					return MakeResult(Hit.GetActor(), Hit.GetComponent());
 				}
 				else
 				{
 					// use this armor set piece
-					UDebugMessages::LogWarning(this, "Found Armour piece " + Hit.GetComponent()->GetName(), LogBulletCollision);
+					UDebugMessages::LogWarning(this, ComponentId.ToString() + ": " + "Found Armour piece " + Hit.GetComponent()->GetName(), SVLogBulletCollision);
 					return MakeResult(Hit.GetActor(), Hit.GetComponent());
 				}
 				break; // only deal with the first armour hit
 			}
 		}
-		UDebugMessages::LogDisplay(this, "ending multi scan", LogBulletCollision);
+		UDebugMessages::LogDisplay(this, ComponentId.ToString() + ": " + "ending multi scan counldnt find armour, going to harm character", SVLogBulletCollision);
+		return MakeResult(otherActor, component);
 	}
 	else
 	{
-		UDebugMessages::LogDisplay(this, "natively hit armor, this is cool", LogBulletCollision);
+		UDebugMessages::LogDisplay(this, ComponentId.ToString() + ": " + "natively hit armor, this is cool", SVLogBulletCollision);
 		if (ActorAlreadyCollidedWith(otherActor))
 		{
-			UDebugMessages::LogDisplay(this, "already collided with natively hit armour", LogBulletCollision);
+			UDebugMessages::LogDisplay(this, ComponentId.ToString() + ": " + "already collided with natively hit armour", SVLogBulletCollision);
 			TArray<FHitResult> nearbyHits;
 			GetCollisionSweepForBulletCollision(nearbyHits);
 
 			for (auto Hit : nearbyHits)
 			{
-				if (Hit.GetActor()->IsA<ACharacter>())
+				if (Hit.GetActor()->IsA<ACharacter>() && Hit.GetComponent()->Implements<UHitComponent>())
 				{
-					UDebugMessages::LogDisplay(this, "found character near armor", LogBulletCollision);
+					UDebugMessages::LogDisplay(this, ComponentId.ToString() + ": " + "found character near armor", SVLogBulletCollision);
 					return MakeResult(Hit.GetActor(), Hit.GetComponent());
 				}
 			}
 		}
+		else
+		{
+			UDebugMessages::LogDisplay(this, ComponentId.ToString() + ": " + "first time hitting natively hit armour", SVLogBulletCollision);
+			return MakeResult(otherActor, component);
+		}
 	}
 
-	UDebugMessages::LogDisplay(this, "could determine a hit type, both are nullptr " + otherActor->GetName(), LogBulletCollision);
+	UDebugMessages::LogDisplay(this, ComponentId.ToString() + ": " + "could not determine a hit type, both are nullptr " + otherActor->GetName(), SVLogBulletCollision);
 
 	return MakeResult(nullptr, nullptr);
 }
@@ -447,7 +456,7 @@ EBloodEffect UBulletCollisionComponent::GetEffectsRequiredForCollision(AActor *o
 		auto aiComp = otherActor->GetComponentByClass<UAIComponent>();
 		if (aiComp)
 		{
-			UDebugMessages::LogError(this, "this is not done", LogBulletCollision);
+			UDebugMessages::LogError(this, "this is not done", SVLogBulletCollision);
 			return EBloodEffect::INVALID;
 		}
 		else
@@ -469,7 +478,7 @@ EBloodEffect UBulletCollisionComponent::GetEffectsRequiredForCollision(AActor *o
 		}
 	}
 
-	UDebugMessages::LogError(this, "this should not have happened", LogBulletCollision);
+	UDebugMessages::LogError(this, "this should not have happened", SVLogBulletCollision);
 	return EBloodEffect::INVALID;
 }
 
@@ -482,7 +491,7 @@ void UBulletCollisionComponent::SpawnBloodEffects(TScriptInterface<IHitComponent
 	{
 		auto wallSpatterActor = GetWorld()->SpawnActor<AArmourHitEffect>(GetOwner()->GetActorLocation(), GetOwner()->GetActorRotation());
 		if (!wallSpatterActor)
-			UDebugMessages::LogError(this, "failed to create armour hit effect", LogBulletCollision);
+			UDebugMessages::LogError(this, "failed to create armour hit effect", SVLogBulletCollision);
 	}
 	else if (effectToSpawn == EBloodEffect::BE_Blood)
 	{
@@ -501,7 +510,7 @@ void UBulletCollisionComponent::SpawnBloodEffects(TScriptInterface<IHitComponent
 				// spawning wall spatters as behind is a wall
 				auto wallSpatterActor = GetWorld()->SpawnActor<ABloodSpatterDecal>(bloodSpatterResult.ImpactPoint, bloodSpatterResult.ImpactNormal.Rotation());
 				if (!wallSpatterActor)
-					UDebugMessages::LogError(this, "failed to create wall spatter", LogBulletCollision);
+					UDebugMessages::LogError(this, "failed to create wall spatter", SVLogBulletCollision);
 				else
 					wallSpatterActor->SetupForWall();
 			}
@@ -519,7 +528,7 @@ void UBulletCollisionComponent::SpawnBloodEffects(TScriptInterface<IHitComponent
 					// auto floorSpatterActor = GetWorld()->SpawnActor<ABloodSpatterDecal>(bloodSpatterResult.ImpactPoint, bloodSpatterResult.ImpactNormal.Rotation());
 					auto floorSpatterActor = GetWorld()->SpawnActor<ABloodSpatterDecal>(bulletSpawnPoint, FRotator(0, GetOwner()->GetActorForwardVector().Rotation().Yaw, 0));
 					if (!floorSpatterActor)
-						UDebugMessages::LogError(this, "failed to create floor spatter", LogBulletCollision);
+						UDebugMessages::LogError(this, "failed to create floor spatter", SVLogBulletCollision);
 					else
 						floorSpatterActor->SetupForFloor(bloodEffectActor->GetActorLocation(), GetOwner()->GetActorForwardVector().Rotation(), 250);
 				}
@@ -533,7 +542,7 @@ void UBulletCollisionComponent::SpawnBloodEffects(TScriptInterface<IHitComponent
 			auto spatterLocation = GetLocationToSpawnBloodHitEffect(hitComponent->GetAsPrimitiveComponent(), entryLocation, GetOwner()->GetActorForwardVector());
 			auto spatterActor = GetWorld()->SpawnActor<ABloodHitEffect>(spatterLocation, GetOwner()->GetActorRotation());
 			if (!spatterActor)
-				UDebugMessages::LogWarning(this, "failed to spawn spatter actor", LogBulletCollision);
+				UDebugMessages::LogWarning(this, "failed to spawn spatter actor", SVLogBulletCollision);
 			else
 			{
 				spatterActor->MoveBackSplatter(hitComponent->GetSpatterBackDistance());

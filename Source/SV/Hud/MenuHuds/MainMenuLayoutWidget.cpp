@@ -11,7 +11,7 @@
 #include "VgCore/Domain/Debug/DebugMessages.h"
 #include "../Helpers/UserWidgetHelpers.h"
 
-DEFINE_LOG_CATEGORY(SVMainMenuLayoutWidget);
+DEFINE_LOG_CATEGORY(SVLogMainMenuLayoutWidget);
 
 void UMainMenuLayoutWidget::NativeConstruct()
 {

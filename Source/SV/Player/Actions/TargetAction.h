@@ -6,7 +6,7 @@
 #include "Base/BaseActionComponent.h"
 #include "TargetAction.generated.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogTargetAction, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(SVLogTargetAction, Log, All);
 
 class ATargetingIndicatorActor;
 class UCameraComponent;
