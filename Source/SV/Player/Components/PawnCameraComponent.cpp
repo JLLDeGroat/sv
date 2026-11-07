@@ -190,6 +190,10 @@ void UPawnCameraComponent::UpdateCameraState(ECameraState cameraState, AActor *a
 		cameraLocation = mid + (cameraSide * cameraOffset) + (FVector::UpVector * FVector::Dist(aiShooterLocation, mid));
 	}
 
+	// ensures we dont get too close when the shooter and target are too close together
+	if (cameraLocation.Z < CameraComponent->GetComponentLocation().Z)
+		cameraLocation.Z = CameraComponent->GetComponentLocation().Z;
+
 	CurrentMoveTo = cameraLocation;
 
 	SetCameraMoving();
