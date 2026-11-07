@@ -30,6 +30,11 @@ public:
 		MaxHealth = 0;
 		Bio = "";
 		Stats = FCrewMemberStats();
+		HelmetArmourGrade = EClothingGrade::INVALID;
+		ChestArmourGrade = EClothingGrade::INVALID;
+		LegsArmourGrade = EClothingGrade::INVALID;
+		ShoulderArmourGrade = EClothingGrade::INVALID;
+		ArmsArmourGrade = EClothingGrade::INVALID;
 	}
 
 	FCrew(FString fName, FString lName, FString bio, int health, int maxHealth, FGuid guid = FGuid::NewGuid())
@@ -43,6 +48,11 @@ public:
 		Bio = bio;
 		Id = guid;
 		Stats = FCrewMemberStats();
+		HelmetArmourGrade = EClothingGrade::INVALID;
+		ChestArmourGrade = EClothingGrade::INVALID;
+		LegsArmourGrade = EClothingGrade::INVALID;
+		ShoulderArmourGrade = EClothingGrade::INVALID;
+		ArmsArmourGrade = EClothingGrade::INVALID;
 	}
 
 	FString GetName() const { return FirstName + " " + LastName; }
@@ -52,6 +62,18 @@ public:
 
 	TArray<TSubclassOf<UBaseDD>> GetDirectivesAndDeviations() { return DirectivesAndDeviations; }
 	void AddDirectiveAndDeviation(TSubclassOf<UBaseDD> dD) { DirectivesAndDeviations.Emplace(dD); }
+
+	void SetHelmetClothingGrade(EClothingGrade grade) { HelmetArmourGrade = grade; }
+	void SetChestClothingGrade(EClothingGrade grade) { ChestArmourGrade = grade; }
+	void SetLegsClothingGrade(EClothingGrade grade) { LegsArmourGrade = grade; }
+	void SetShoulderClothingGrade(EClothingGrade grade) { ShoulderArmourGrade = grade; }
+	void SetArmsClothingGrade(EClothingGrade grade) { ArmsArmourGrade = grade; }
+
+	EClothingGrade GetHelmetClothingGrade() { return HelmetArmourGrade; }
+	EClothingGrade GetChestClothingGrade() { return ChestArmourGrade; }
+	EClothingGrade GetLegsClothingGrade() { return LegsArmourGrade; }
+	EClothingGrade GetShoulderClothingGrade() { return ShoulderArmourGrade; }
+	EClothingGrade GetArmsClothingGrade() { return ArmsArmourGrade; }
 
 protected:
 	UPROPERTY()
@@ -74,6 +96,17 @@ protected:
 	FCrewMemberStats Stats;
 	UPROPERTY()
 	TArray<TSubclassOf<UBaseDD>> DirectivesAndDeviations;
+
+	UPROPERTY()
+	EClothingGrade HelmetArmourGrade;
+	UPROPERTY()
+	EClothingGrade ChestArmourGrade;
+	UPROPERTY()
+	EClothingGrade LegsArmourGrade;
+	UPROPERTY()
+	EClothingGrade ShoulderArmourGrade;
+	UPROPERTY()
+	EClothingGrade ArmsArmourGrade;
 };
 #pragma endregion
 #pragma region FCrewPrimaries Struct

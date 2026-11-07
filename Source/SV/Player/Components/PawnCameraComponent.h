@@ -10,7 +10,7 @@
 class UCameraComponent;
 class UPostProcessComponent;
 
-DECLARE_LOG_CATEGORY_EXTERN(LogPawnCameraComponent, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(SVLogPawnCameraComponent, Log, All);
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class SV_API UPawnCameraComponent : public UActorComponent

@@ -65,8 +65,14 @@ UBaseGenerations *UPlayerGeneration::Generate()
 
 			auto self = this;
 
+			auto helmetArmour = crew[i].GetHelmetClothingGrade();
+			auto chestArmour = crew[i].GetChestClothingGrade();
+			auto shoulderArmour = crew[i].GetShoulderClothingGrade();
+			auto legsArmour = crew[i].GetLegsClothingGrade();
+			auto armsArmour = crew[i].GetArmsClothingGrade();
+
 			FGraphEventRef routeTask = FFunctionGraphTask::CreateAndDispatchWhenReady(
-				[world, loc, cameraComponent, playerGen, gunType, equipment, self, crewName, creMemberId, thisPrimary, crewNumber]
+				[world, loc, cameraComponent, playerGen, gunType, equipment, self, crewName, creMemberId, thisPrimary, crewNumber, helmetArmour, chestArmour, shoulderArmour, legsArmour, armsArmour]
 				{
 					auto actor = world->SpawnActor<ASolder>(loc, FRotator::ZeroRotator);
 
@@ -74,9 +80,9 @@ UBaseGenerations *UPlayerGeneration::Generate()
 						return UDebugMessages::LogError(playerGen, "failed to spawn one of the crew, game breaking");
 
 					// equip primary weapon
+					auto equipmentComponent = actor->GetComponentByClass<UEquipmentComponent>();
 					if (gunType != EGun::INVALID)
 					{
-						auto equipmentComponent = actor->GetComponentByClass<UEquipmentComponent>();
 						equipmentComponent->EquipPrimary(gunType);
 
 						auto primaryEquipment = equipmentComponent->GetPrimaryEquipment();
@@ -130,6 +136,19 @@ UBaseGenerations *UPlayerGeneration::Generate()
 					auto captureComponent = actor->GetComponentByClass<UCharacterCaptureComponent>();
 					if (captureComponent)
 						captureComponent->SetToRenderTargetNumber(crewNumber);
+
+					if (helmetArmour != EClothingGrade::INVALID)
+						equipmentComponent->EquipClothing(EClothingType::CT_Helmet, helmetArmour);
+					if (chestArmour != EClothingGrade::INVALID)
+						equipmentComponent->EquipClothing(EClothingType::CT_Chest, chestArmour);
+					if (shoulderArmour != EClothingGrade::INVALID)
+						equipmentComponent->EquipClothing(EClothingType::CT_Shoulders, shoulderArmour);
+					if (legsArmour != EClothingGrade::INVALID)
+						equipmentComponent->EquipClothing(EClothingType::CT_Legs, legsArmour);
+					if (armsArmour != EClothingGrade::INVALID)
+						equipmentComponent->EquipClothing(EClothingType::CT_Arms, armsArmour);
+
+					actor->OnCompleteSpawn();
 				},
 				TStatId(), nullptr, ENamedThreads::GameThread);
 		}

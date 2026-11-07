@@ -390,6 +390,7 @@ void UEquipmentComponent::EquipClothing(EClothingType clothingType, EClothingGra
 		attachment.GetMesh()->SetRelativeScale3D(attachment.GetScale());
 	}
 
+	UDebugMessages::LogDisplay(this, "Finished Equipping Clothing", SVLogEquipmentComponent);
 	Clothing.Emplace(spawnedClothing);
 }
 #pragma optimize("", on)

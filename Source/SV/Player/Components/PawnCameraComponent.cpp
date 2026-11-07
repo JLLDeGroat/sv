@@ -9,7 +9,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "../../Characters/Components/HealthAndStatusWidgetComponent.h"
 
-DEFINE_LOG_CATEGORY(LogPawnCameraComponent)
+DEFINE_LOG_CATEGORY(SVLogPawnCameraComponent)
 
 // Sets default values for this component's properties
 UPawnCameraComponent::UPawnCameraComponent()
@@ -28,7 +28,7 @@ void UPawnCameraComponent::BeginPlay()
 	CameraComponent = GetOwner()->GetComponentByClass<UCameraComponent>();
 
 	if (!CameraComponent)
-		return UDebugMessages::LogError(this, "failed to get camera comonent", LogPawnCameraComponent);
+		return UDebugMessages::LogError(this, "failed to get camera comonent", SVLogPawnCameraComponent);
 
 	auto currentLoc = CameraComponent->GetComponentLocation();
 	auto forwardVec = CameraComponent->GetForwardVector();
@@ -39,7 +39,7 @@ void UPawnCameraComponent::BeginPlay()
 	{
 		// DrawDebugLine(GetWorld(), currentLoc, hitResult.Location, FColor::Red, true, 100, 0, 4);
 		DefaultCameraOffset = hitResult.Location - currentLoc;
-		UDebugMessages::LogDisplay(this, DefaultCameraOffset.ToString(), LogPawnCameraComponent);
+		UDebugMessages::LogDisplay(this, DefaultCameraOffset.ToString(), SVLogPawnCameraComponent);
 		if (DefaultCameraOffset.X > 0)
 			DefaultCameraOffset.X = DefaultCameraOffset.X * -1;
 
@@ -71,7 +71,7 @@ void UPawnCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 				newRotation = UKismetMathLibrary::RInterpTo_Constant(CameraComponent->GetComponentRotation(), requiredRotation, DeltaTime, 500);
 			}
 			else
-				UDebugMessages::LogError(this, "failed to get valid cinematic location", LogPawnCameraComponent);
+				UDebugMessages::LogError(this, "failed to get valid cinematic location", SVLogPawnCameraComponent);
 		}
 		else if (CurrentCameraState == ECameraState::CS_CharacterDeath)
 		{
@@ -80,7 +80,7 @@ void UPawnCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 		}
 		else if (CurrentCameraState == ECameraState::CS_AiShoot)
 		{
-			// UDebugMessages::LogDisplay(this, "AI shoot hit here", LogPawnCameraComponent);
+			// UDebugMessages::LogDisplay(this, "AI shoot hit here", SVLogPawnCameraComponent);
 			auto mid = (AiShooter->GetActorLocation() + AiShootersTarget->GetActorLocation()) / 2;
 
 			newLocation = UKismetMathLibrary::VInterpTo_Constant(currentLocation, CurrentMoveTo, DeltaTime, 1500);

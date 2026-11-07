@@ -9,7 +9,7 @@
 #include "../../../Enums/EEffectsEnum.h"
 #include "BulletCollisionComponent.generated.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogBulletCollision, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(SVLogBulletCollision, Log, All);
 
 class UCharacterDetailsComponent;
 
@@ -38,6 +38,9 @@ protected:
 	UPROPERTY()
 	TArray<AActor *> CollidedWith;
 
+	UPROPERTY()
+	FGuid ComponentId;
+
 private:
 	void AttemptToInitiateBulletSound();
 
@@ -55,7 +58,7 @@ private:
 
 	void GetCollisionSweepForBulletCollision(TArray<struct FHitResult> &OutHits);
 	bool ActorAlreadyCollidedWith(AActor *testActor);
-	void AddToAlreadyCollidedWith(AActor* actor);
+	void AddToAlreadyCollidedWith(AActor *actor);
 
 	EBloodEffect GetEffectsRequiredForCollision(AActor *otherActor);
 
