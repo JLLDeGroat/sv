@@ -27,6 +27,8 @@
 #include "../../Equipment/Clothing/MetalGuard/MetalGuardHead.h"
 #include "../../Equipment/Clothing/MetalGuard/MetalGuardShoulders.h"
 
+#include "../../Equipment/Clothing/Components/ClothingStatsComponent.h"
+
 // Sets default values
 ACharacterSpawnerActor::ACharacterSpawnerActor()
 {
@@ -227,6 +229,16 @@ void ACharacterSpawnerActor::BeginPlay()
 						}
 					}
 
+					// UDebugMessages::LogError(this, "DELETING ARMOUR HEALTH DELETE THIS");
+					// for (auto clothing : equipmentComponent->GetAllClothing())
+					// {
+					// 	auto stats = clothing->GetComponentByClass<UClothingStatsComponent>();
+					// 	stats->SetHealth(0);
+					// }
+
+					// auto widgetComponent = actor->GetComponentByClass<UHealthAndStatusWidgetComponent>();
+					// widgetComponent->UpdateOnHealthChange();
+
 					// if (LegArmourType)
 					// {
 					// 	auto clothingInterface = LegArmourType->GetDefaultObject<IClothingItem>();
@@ -254,6 +266,8 @@ void ACharacterSpawnerActor::BeginPlay()
 					else
 						damageReceiveComponent->DoDamage(1, TakeImmediateDamage);
 				}
+
+				actor->OnCompleteSpawn();
 			}
 			Destroy();
 		}

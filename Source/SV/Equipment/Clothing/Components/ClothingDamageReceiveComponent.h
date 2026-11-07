@@ -7,7 +7,7 @@
 #include "../../../Interfaces/DamageReceiver.h"
 #include "ClothingDamageReceiveComponent.generated.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogClothingDamageReceiveComponent, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(SVLogClothingDamageReceiveComponent, Log, All);
 
 class UClothingStatsComponent;
 

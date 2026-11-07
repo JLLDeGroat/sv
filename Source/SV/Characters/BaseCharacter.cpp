@@ -129,3 +129,10 @@ void ABaseCharacter::UpdateActorVisibility(bool value)
 	if (healthAndStatus)
 		healthAndStatus->SetVisibility(value);
 }
+
+void ABaseCharacter::OnCompleteSpawn()
+{
+	auto healthAndStatus = GetComponentByClass<UHealthAndStatusWidgetComponent>();
+	if (healthAndStatus)
+		healthAndStatus->UpdateStatusWidgetData();
+}

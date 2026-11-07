@@ -17,35 +17,39 @@ UCLASS()
 class SV_API ABaseCharacter : public ACharacter, public ISelectable, public ISvChar
 {
 	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
-	ABaseCharacter(const FObjectInitializer& ObjectInitializer);
 
-	//Inherited from ISelectable
+public:
+	// Sets default values for this actor's properties
+	ABaseCharacter(const FObjectInitializer &ObjectInitializer);
+
+	// Inherited from ISelectable
 	virtual FVector GetSelectableGridLocation() override;
-	virtual bool TryGetAsMoveable(TScriptInterface<IMovable>& Moveable) override;
+	virtual bool TryGetAsMoveable(TScriptInterface<IMovable> &Moveable) override;
 	virtual bool IsControlType(ECharacterControl characterControl) override;
 	virtual void TryVisualiseTargets() override;
-	virtual AActor* GetAsActor() override;
+	virtual AActor *GetAsActor() override;
 	virtual float GetHeadZHeight() override;
-	AAIController* GetAIController() const;
+	AAIController *GetAIController() const;
 
-	//inherited from ISVChar
+	// inherited from ISVChar
 	virtual TArray<TScriptInterface<IHitComponent>> GetHitComponents() override;
 	virtual void UpdateActorVisibility(bool value) override;
+
+	// when unit is spawned and all components are added to it, this will allow components to use each other to complete their data such as status widget and equipment widget showing armour
+	virtual void OnCompleteSpawn() override;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) UCharacterDetailsComponent* DetailsComponent;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere) UStatusEffectsComponent* StatusEffectsComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UCharacterDetailsComponent *DetailsComponent;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UStatusEffectsComponent *StatusEffectsComponent;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	
 };

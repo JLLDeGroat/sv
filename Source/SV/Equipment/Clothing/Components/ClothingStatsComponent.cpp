@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ClothingStatsComponent.h"
+#include "VgCore/Domain/Debug/DebugMessages.h"
 
 // Sets default values for this component's properties
 UClothingStatsComponent::UClothingStatsComponent()
@@ -32,7 +33,9 @@ float UClothingStatsComponent::GetDamageMitigation()
 
 void UClothingStatsComponent::RemoveFromHealth(int health)
 {
+	UDebugMessages::LogDisplay(this, "removing " + FString::SanitizeFloat(health, 2) + " from health " + FString::SanitizeFloat(Health, 2));
 	Health -= health;
+	UDebugMessages::LogDisplay(this, "health is now " + FString::SanitizeFloat(Health, 2));
 }
 void UClothingStatsComponent::AddToHealth(int health)
 {

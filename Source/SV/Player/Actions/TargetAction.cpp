@@ -21,7 +21,7 @@
 #include "Components/SphereComponent.h"
 #include "../Utility/TargetingIndicatorActor.h"
 
-DEFINE_LOG_CATEGORY(LogTargetAction)
+DEFINE_LOG_CATEGORY(SVLogTargetAction)
 
 UTargetAction::UTargetAction(const FObjectInitializer &ObjectInitializer) : UBaseActionComponent(ObjectInitializer)
 {
@@ -58,9 +58,9 @@ void UTargetAction::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 	// if (hit.GetActor())
 	// {
 	// 	if (hit.GetActor()->GetOwner())
-	// 		UDebugMessages::LogError(this, "Component/name name hit: " + hit.GetActor()->GetName() + "|" + hit.GetComponent()->GetName() + "|" + hit.GetActor()->GetOwner()->GetName(), LogTargetAction);
+	// 		UDebugMessages::LogError(this, "Component/name name hit: " + hit.GetActor()->GetName() + "|" + hit.GetComponent()->GetName() + "|" + hit.GetActor()->GetOwner()->GetName(), SVLogTargetAction);
 	// 	else
-	// 		UDebugMessages::LogError(this, "Component/name name hit: " + hit.GetActor()->GetName() + "|" + hit.GetComponent()->GetName(), LogTargetAction);
+	// 		UDebugMessages::LogError(this, "Component/name name hit: " + hit.GetActor()->GetName() + "|" + hit.GetComponent()->GetName(), SVLogTargetAction);
 	// }
 
 	TargetingIndicator->SetActorLocation(targetLocation);
@@ -91,7 +91,7 @@ void UTargetAction::DoAction()
 
 		auto hudDelegates = UHudDelegates::GetInstance();
 		if (!hudDelegates)
-			return UDebugMessages::LogError(this, "failed to get hud delegates, cannot do target action", LogTargetAction);
+			return UDebugMessages::LogError(this, "failed to get hud delegates, cannot do target action", SVLogTargetAction);
 
 		// reset values
 		if (pawnCameraComponent->GetCurrentCameraState() == ECameraState::CS_GunTarget)
@@ -109,7 +109,7 @@ void UTargetAction::DoAction()
 
 			if (!equipmentComponent || !detailsComponent ||
 				equipmentComponent->GetActionPointsNeededToUseEquipment() > detailsComponent->GetActionPoints())
-				return UDebugMessages::LogError(this, "could not get equpiment or details component, or not enough action points. will not begin targeting", LogTargetAction);
+				return UDebugMessages::LogError(this, "could not get equpiment or details component, or not enough action points. will not begin targeting", SVLogTargetAction);
 
 			auto targetingComponent = actor->GetComponentByClass<UTargetingComponent>();
 			if (targetingComponent)
@@ -117,7 +117,7 @@ void UTargetAction::DoAction()
 				auto currentTargetData = targetingComponent->GetCurrentMainTarget();
 				if (!currentTargetData)
 				{
-					UDebugMessages::LogError(this, "no targeting data", LogTargetAction);
+					UDebugMessages::LogError(this, "no targeting data", SVLogTargetAction);
 					return;
 				}
 				// assuming only one target data
@@ -131,7 +131,6 @@ void UTargetAction::DoAction()
 				owner->SetMouseAsGame();
 
 				SetCurrentEquipmentAccuracy(actor);
-
 				// shows the hud on screen
 				// hudDelegates->_AimTargetVisibility.Broadcast(true);
 				SetComponentTickEnabled(true);

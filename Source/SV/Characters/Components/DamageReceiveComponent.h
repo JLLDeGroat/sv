@@ -7,7 +7,7 @@
 #include "../../Interfaces/DamageReceiver.h"
 #include "DamageReceiveComponent.generated.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogDamageReceiveComponent, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(SVLogDamageReceiveComponent, Log, All);
 
 class UBaseRunnable;
 
